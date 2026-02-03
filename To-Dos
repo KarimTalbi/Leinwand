@@ -1,0 +1,34 @@
+### frontend:
+
+- copy / paste nodes
+- auto create node instead of adding with button
+- auto arrange nodes
+- add different types of nodes
+    - system prompts
+    - file uploads
+    - set models
+
+### Backend:
+- connect multiple node paths
+
+## AI engineering
+- set system prompts
+
+## Database
+- add user data
+- authentication (api key or login)
+
+## Python
+- update db models
+- add schemas
+
+## Structure
+- restructure filetree
+
+## GitHub
+- Create repo
+- Connect to repo
+
+## Project management
+- update notion page
+- create db schematic
