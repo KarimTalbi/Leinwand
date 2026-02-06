@@ -6,6 +6,9 @@ from pydantic import BaseModel
 
 load_dotenv()
 
+class Message:
+    pass
+
 SYSTEM_PROMPT = """
 ### ROLE
 You are an AI assistant operating within a "Multidimensional Chat Canvas." Unlike a linear chat, this conversation is a Directed Acyclic Graph (DAG) where paths can split and reunite.

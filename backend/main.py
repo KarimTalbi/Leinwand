@@ -8,6 +8,7 @@ from google import genai
 
 from data.db_models import Node, Edge, CanvasState
 from data.db_session import get_session, get_db
+from data.crud import get_canvas_data, get_node
 
 load_dotenv()
 
@@ -63,35 +64,13 @@ async def save_canvas(state: CanvasState, session: Session = Depends(get_session
 
 @app.get("/get-canvas")
 async def get_canvas(session: Session = Depends(get_session)):
-    nodes = session.exec(select(Node)).all()
-    edges = session.exec(select(Edge)).all()
-
-    # Format back to React Flow's expected nested structure
-    return {
-        "nodes": [
-            {
-                "id": n.id,
-                "type": n.type,
-                "position": {"x": n.pos_x, "y": n.pos_y},
-                "data": {"label": n.label, "prompt": n.prompt, "response": n.response}
-            } for n in nodes
-        ],
-        "edges": [
-            {"id": e.id, "source": e.source, "target": e.target, "animated": e.animated}
-            for e in edges
-        ]
-    }
-
-
-print(get_canvas())
+    return get_canvas_data(session)
 
 
 @app.post("/run-node/{node_id}")
 async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
     # 1. Get the current node
-    node = session.get(Node, node_id)
-    if not node:
-        raise HTTPException(status_code=404, detail="Node not found")
+    node = get_node(node_id, session)
 
     # 2. Trace history
     history = get_node_context(node_id, session)

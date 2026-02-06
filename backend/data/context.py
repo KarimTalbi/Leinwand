@@ -1,102 +1,128 @@
 from collections import defaultdict, deque
+from typing import List, Dict
 
-from sqlalchemy import text
-from sqlmodel import Session
+from pydantic import BaseModel, PrivateAttr
+from sqlmodel import Session, select
+from sqlalchemy import select as sa_select
+
 from db_session import get_db
+from db_models import Node, Edge
 
 
+class GraphContext(BaseModel):
+    nodes: List[Node]
+    edges: List[Edge]
+
+    _adj: Dict[str, List[str]] = PrivateAttr(default_factory=lambda: defaultdict(list))
+    _parent_map: Dict[str, List[str]] = PrivateAttr(default_factory=lambda: defaultdict(list))
+    _in_degree: Dict[str, int] = PrivateAttr(default_factory=dict)
+    _out_degree: Dict[str, int] = PrivateAttr(default_factory=lambda: defaultdict(int))
+    _node_map: Dict[str, Node] = PrivateAttr(default_factory=dict)
+
+    _context_start: str = "--- START OF CANVAS CONTEXT ---\n\n"
+    _context_end: str = "--- END OF CANVAS CONTEXT ---"
+    _context_merge: str = ">>> MERGE POINT: The following node combines context from %s\n"
+    _context_branch: str = "<<< BRANCH POINT: The conversation splits here into %s different paths.\n"
+    _context_node: str = "### Node: %s\n**User:** %s\n**AI Assistant:** %s\n"
+
+    def model_post_init(self, __context):
+        print("hello")
+        self._node_map = {node.id: node for node in self.nodes}
+        self._in_degree = {node.id: 0 for node in self.nodes}
+
+        for edge in self.edges:
+            source, target = edge.source, edge.target
+            if source in self._node_map and target in self._node_map:
+                self._adj[source].append(target)
+                self._parent_map[target].append(source)
+                self._in_degree[target] += 1
+                self._out_degree[source] += 1
+
+    def topological_sort(self):
+        temp_in_degree = self._in_degree.copy()
+        queue = deque([node_id for node_id, degree in temp_in_degree.items() if degree == 0])
+        sorted_nodes = []
+
+        while queue:
+            u = queue.popleft()
+            sorted_nodes.append(self._node_map[u])
+            for v in self._adj[u]:
+                temp_in_degree[v] -= 1
+                if temp_in_degree[v] == 0:
+                    queue.append(v)
+
+        return sorted_nodes
+
+    def build_prompt(self):
+        sorted_nodes = self.topological_sort()
+        context_str = self._context_start
+
+        for node in sorted_nodes:
+            node_id = node.id
+            parents = self._parent_map[node_id]
+
+            if len(parents) > 1:
+                context_str += self._context_merge % ', '.join(parents)
+
+            context_str += self._context_node % (node_id, node.prompt, node.response)
+
+            if self._out_degree[node_id] > 1:
+                context_str += self._context_branch % self._out_degree[node_id]
+
+            context_str += "\n"
+
+        context_str += self._context_end
+
+        return context_str
 
 
-def build_multidimensional_context(nodes, edges):
-    """
-    Full context builder that identifies both Branching Points (one parent -> many children)
-    and Merge Points (many parents -> one child).
-    """
-    adj = defaultdict(list)
-    parent_map = defaultdict(list)
-    in_degree = {node['id']: 0 for node in nodes}
-    node_map = {node['id']: node for node in nodes}
+def build_cte(current_node_id: str):
+    base = (
+        select(Node.id, Node.type, Node.pos_x, Node.pos_y, Node.label, Node.prompt, Node.response)
+        .where(Node.id == current_node_id)
+        .cte(recursive=True, name="ancestor_nodes")
+    )
 
-    # Track how many children each node has to identify branching
-    out_degree = defaultdict(int)
+    recursion = sa_select(
+        Node.id, Node.type, Node.pos_x, Node.pos_y, Node.label, Node.prompt, Node.response
+    ).join(
+        Edge, Node.id == Edge.source
+    ).join(
+        base, Edge.target == base.c.id
+    )
 
-    for edge in edges:
-        source, target = edge['source'], edge['target']
-        if source in node_map and target in node_map:
-            adj[source].append(target)
-            parent_map[target].append(source)
-            in_degree[target] += 1
-            out_degree[source] += 1
+    ancestor_cte = base.union(recursion)
 
-    # Topological Sort
-    queue = deque([n_id for n_id, degree in in_degree.items() if degree == 0])
-    sorted_nodes = []
-    while queue:
-        u = queue.popleft()
-        sorted_nodes.append(node_map[u])
-        for v in adj[u]:
-            in_degree[v] -= 1
-            if in_degree[v] == 0:
-                queue.append(v)
-
-    # Construct the Prompt String
-    context_str = "--- START OF CANVAS CONTEXT ---\n\n"
-    context_str += "### Root Node:"
-    for node in sorted_nodes:
-        node_id = node['id']
-        parents = parent_map[node_id]
-        children_count = out_degree[node_id]
-
-        # 1. MARKER: MERGE POINT (Multiple paths coming together)
-        if len(parents) > 1:
-            context_str += f">>> MERGE POINT: The following node combines context from: {', '.join(parents)}\n"
-
-        # Standard Node Content
-        context_str += f"### Node: {node_id}\n"
-        context_str += f"**User:** {node['prompt']}\n"
-        context_str += f"**AI Assistant:** {node['response']}\n"
-
-        # 2. MARKER: BRANCH POINT (One path splitting into many)
-        if children_count > 1:
-            context_str += f"<<< BRANCH POINT: The conversation splits here into {children_count} different paths.\n"
-
-        context_str += "\n"
-
-    context_str += "--- END OF CANVAS CONTEXT ---"
-
-    return context_str
+    return select(ancestor_cte)
 
 
 def get_graph_data(current_node_id: str, session: Session):
-    # This query gets all ancestors (nodes) AND the edges connecting them
-    query = text("""
-                 WITH RECURSIVE ancestor_nodes AS (
-                     -- Base case: The node the user is currently interacting with
-                     SELECT id, prompt, response
-                     FROM nodes
-                     WHERE id = :start_id
-                     UNION
-                     -- Recursive step: Find parents of the nodes already in our list
-                     SELECT n.id, n.prompt, n.response
-                     FROM nodes n
-                              JOIN edges e ON n.id = e.source
-                              JOIN ancestor_nodes an ON e.target = an.id)
-                 SELECT *
-                 FROM ancestor_nodes;
-                 """)
+    stmt = build_cte(current_node_id)
 
-    # Fetch nodes
-    node_results = session.exec(query, params={"start_id": current_node_id}).all()
-    # Convert list of tuples/rows to list of dicts
-    nodes = [{"id": r.id, "prompt": r.prompt, "response": r.response} for r in node_results]
+    result = session.execute(stmt)
+    nodes = [dict(row) for row in result.mappings().all()]
 
-    # Fetch only the edges that exist between these specific ancestor nodes
+    if not nodes:
+        return [], []
+
     node_ids = [n["id"] for n in nodes]
-    edge_query = text("SELECT source, target FROM edges WHERE source = ANY(:ids) AND target = ANY(:ids)")
-    edge_results = session.exec(edge_query, params={"ids": node_ids}).all()
-    edges = [{"source": e.source, "target": e.target} for e in edge_results]
+
+
+    edge_stmt = select(Edge).where(
+        Edge.source.in_(node_ids),
+        Edge.target.in_(node_ids)
+    )
+    edge_objs = session.exec(edge_stmt).all()
+
+    edges = [
+        {"id": e.id, "source": e.source, "target": e.target, "animated": e.animated}
+        for e in edge_objs
+    ]
 
     return nodes, edges
 
 
-print(build_multidimensional_context(*get_graph_data("node_1769770953700", get_db())))
+nodes, edges = get_graph_data("node_1769770953700", get_db())
+print(
+    GraphContext(nodes=nodes, edges=edges).build_prompt()
+)
