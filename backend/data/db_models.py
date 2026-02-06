@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Text
 from sqlmodel import Field, SQLModel
 
 
@@ -12,8 +12,6 @@ class Node(SQLModel, table=True):
 
     prompt: Optional[str] = None
     response: Optional[str] = None
-
-    is_expanded = Optional[bool] = True
 
 
 class Edge(SQLModel, table=True):

@@ -1,21 +1,15 @@
-import uvicorn
-from typing import List
 from dotenv import load_dotenv
+from collections import defaultdict, deque
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session, select, delete
+from sqlmodel import delete, select, Session, text
 
 from google import genai
-from openai import OpenAI
 
-from db_models import Node, Edge, CanvasState
-from db_session import engine
+from data.db_models import Node, Edge, CanvasState
+from data.db_session import get_session, get_db
 
 load_dotenv()
-
-
-
-
 
 app = FastAPI()
 
@@ -26,65 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-def get_conversation_history(node_id: str, session: Session) -> List[dict]:
-    history = []
-    current_id = node_id
-
-    while current_id:
-        node = session.get(Node, current_id)
-        if not node:
-            break
-
-        if node.prompt:
-            history.insert(0, {"role": "user", "content": node.prompt})
-        if node.response:
-            history.insert(0, {"role": "assistant", "content": node.response})
-
-        edge = session.exec(select(Edge).where(Edge.target == current_id)).first()
-
-        if edge:
-            current_id = edge.source
-        else:
-            current_id = None
-
-    return history
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
-def get_node_context(node_id: str, session: Session) -> List[Node]:
-    """
-    Recursively finds all ancestor nodes for a given node_id.
-    Returns a list of Node objects in chronological order.
-    """
-    context_nodes = []
-    current_id = node_id
-
-    # Simple iterative trace-back (assumes a tree/branching structure)
-    while current_id:
-        # Find the edge where the current node is the 'target'
-        edge = session.exec(
-            select(Edge).where(Edge.target == current_id)
-        ).first()
-
-        if edge:
-            # Find the parent node
-            parent = session.get(Node, edge.source)
-            if parent:
-                context_nodes.insert(0, parent)  # Add to start of list
-                current_id = parent.id
-            else:
-                break
-        else:
-            # No more parents found (reached a root node)
-            break
-
-    return context_nodes
 
 
 @app.post("/save-canvas")
@@ -148,6 +83,9 @@ async def get_canvas(session: Session = Depends(get_session)):
     }
 
 
+print(get_canvas())
+
+
 @app.post("/run-node/{node_id}")
 async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
     # 1. Get the current node
@@ -169,7 +107,6 @@ async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
     # Add the current prompt
     messages.append(f"user: {node.prompt}")
 
-
     # 4. Call LLM
     client = genai.Client()
     response = client.models.generate_content(
@@ -186,48 +123,5 @@ async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
 
     return {"id": node.id, "response": node.response}
 
-
-# @app.post("/run-node/{node_id}")
-# async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
-#     # 1. Get the current node
-#     print(f"AI Endpoint hit for node: {node_id}") # Add this to debug!
-#     node = session.get(Node, node_id)
-#     if not node:
-#         raise HTTPException(status_code=404, detail="Node not found")
-#
-#     # 2. Trace history
-#     history = get_node_context(node_id, session)
-#
-#
-#     # 3. Format messages for the LLM
-#     messages = [{"role": "system", "content": "You are a helpful assistant. You're current conversation consists"
-#                                               " of the following (if there is nothing, than the conversation "
-#                                               "just started) USE THEM AS YOUR CONTEXT WHEN IT MAKES SENSE: "}]
-#     for h_node in history:
-#         messages.append({"role": "user", "content": h_node.prompt})
-#         if h_node.response:
-#             messages.append({"role": "assistant", "content": h_node.response})
-#
-#     messages.append({"role": "system", "content": "This is the current prompt: "})
-#
-#     # Add the current prompt
-#     messages.append({"role": "user", "content": node.prompt})
-#
-#
-#     # 4. Call LLM
-#     client = OpenAI()
-#     response = client.chat.completions.create(model="gpt-5-mini",
-#     messages=messages)
-#
-#     print(response.choices[0].message.content)
-#
-#     # 5. Save the result back to the database
-#     node.response = response.choices[0].message.content
-#     session.add(node)
-#     session.commit()
-#     session.refresh(node)
-#
-#     return {"id": node.id, "response": node.response}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

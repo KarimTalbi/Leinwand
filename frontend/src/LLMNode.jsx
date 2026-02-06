@@ -58,23 +58,22 @@ export default function LLMNode({ id, data }) {
 
   // 4. The Visuals (UI)
   return (
-    <div style={{ background: '#fff', border: '2px solid #222', borderRadius: '8px', padding: '10px', width: '220px' }}>
+    <div style={{ background: '#fff', border: '2px solid #222', borderRadius: '8px', padding: '10px', width: '300px' }}>
       <Handle
         type="target"
         position={Position.Left}
         style={{
-          width: '16px',
-          height: '16px',
+          width: '14px',
+          height: '14px',
           background: '#555',
           backgroundClip: 'content-box',
-          padding: '4px',
           borderRadius: '50%',
-          left: '-8px'
+          left: '-7px'
         }}
       />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
-        <div style={{ fontWeight: 'bold', fontSize: '11px' }}>PROMPT</div>
+        <div style={{ fontWeight: 'bold', fontSize: '11px' }}>{id}</div>
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
@@ -158,13 +157,12 @@ export default function LLMNode({ id, data }) {
         type="source"
         position={Position.Right}
         style={{
-          width: '16px',
-          height: '16px',
+          width: '14px',
+          height: '14px',
           background: '#555',
           backgroundClip: 'content-box',
-          padding: '4px',
           borderRadius: '50%',
-          right: '-8px'
+          right: '-7px'
         }}
       />
     </div>

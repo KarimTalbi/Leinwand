@@ -11,6 +11,10 @@ import LLMNode from './LLMNode';
 
 const nodeTypes = { llmNode: LLMNode };
 
+const defaultEdgeOptions = {
+  style: { strokeWidth: 3 },
+};
+
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -141,6 +145,7 @@ useEffect(() => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
         fitView
       >
         <Background />

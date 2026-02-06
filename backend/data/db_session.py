@@ -19,8 +19,8 @@ def get_session():
     with Session(engine) as session:
         yield session
 
-#def get_db():
-#    return Session(engine)
+def get_db():
+   return Session(engine)
 
 #def init_db():
 #    SQLModel.metadata.drop_all(bind=engine)
