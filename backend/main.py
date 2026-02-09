@@ -1,16 +1,10 @@
-from dotenv import load_dotenv
-from collections import defaultdict, deque
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import delete, select, Session, text
+from sqlmodel import delete, Session
 
-from google import genai
-
-from data.db_models import Node, Edge, CanvasState
-from data.db_session import get_session, get_db
-from data.crud import get_canvas_data, get_node
-
-load_dotenv()
+from data import Node, Edge, CanvasState, get_session, get_canvas_data, get_node
+from llm_logic import get_response
 
 app = FastAPI()
 
@@ -25,11 +19,9 @@ app.add_middleware(
 
 @app.post("/save-canvas")
 async def save_canvas(state: CanvasState, session: Session = Depends(get_session)):
-    # 1. DELETE EVERYTHING (Edges first to avoid breaking constraints!)
     session.exec(delete(Edge))
     session.exec(delete(Node))
 
-    # 2. INSERT ALL NODES FIRST
     for n in state.nodes:
         db_node = Node(
             id=n['id'],
@@ -42,12 +34,8 @@ async def save_canvas(state: CanvasState, session: Session = Depends(get_session
         )
         session.add(db_node)
 
-    # --- CRITICAL STEP ---
-    # We "flush" the nodes to the DB so Postgres knows they exist,
-    # but we haven't finished the transaction yet.
     session.flush()
 
-    # 3. NOW INSERT THE EDGES
     for e in state.edges:
         db_edge = Edge(
             id=e['id'],
@@ -57,7 +45,6 @@ async def save_canvas(state: CanvasState, session: Session = Depends(get_session
         )
         session.add(db_edge)
 
-    # 4. FINALLY COMMIT EVERYTHING
     session.commit()
     return {"status": "synced"}
 
@@ -69,38 +56,18 @@ async def get_canvas(session: Session = Depends(get_session)):
 
 @app.post("/run-node/{node_id}")
 async def run_llm_node(node_id: str, session: Session = Depends(get_session)):
-    # 1. Get the current node
     node = get_node(node_id, session)
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
 
-    # 2. Trace history
-    history = get_node_context(node_id, session)
-
-    # 3. Format messages for the LLM
-    messages = []
-
-    for h_node in history:
-        messages.append(f"user: {h_node.prompt}")
-        if h_node.response:
-            messages.append(f"assistant: {h_node.response}")
-
-    # Add the current prompt
-    messages.append(f"user: {node.prompt}")
-
-    # 4. Call LLM
-    client = genai.Client()
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview", contents=messages
-    )
-
-    print(response.text)
-
-    # 5. Save the result back to the database
-    node.response = response.text
+    response = get_response(node.prompt, node_id)
+    node.response = response
     session.add(node)
     session.commit()
     session.refresh(node)
 
     return {"id": node.id, "response": node.response}
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

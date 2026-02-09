@@ -1,8 +1,7 @@
 from sqlmodel import Session, select
 
-from data.db_models import Node, Edge
-from data.schemas import ReactFlowNode, ReactFlowEdge, CanvasResponse
-from db_session import get_db
+from data import Node, Edge, get_db
+from data import ReactFlowNode, ReactFlowEdge, CanvasResponse
 
 
 def get_nodes(session: Session = get_db()):
