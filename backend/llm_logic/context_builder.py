@@ -3,10 +3,8 @@ from collections import defaultdict
 from typing import List, Dict
 
 from pydantic import BaseModel, PrivateAttr
-from sqlmodel import Session, select
 
-from data.db_session import get_db
-from data.db_models import Node, Edge
+from data import Node, Edge
 
 
 class GraphContext(BaseModel):
@@ -85,37 +83,3 @@ class GraphContext(BaseModel):
         context_str += self._context_end
 
         return context_str
-
-
-def get_graph_data(current_node_id: str, session: Session = get_db()):
-    base = (
-        select(*Node.__table__.columns)
-        .where(Node.id == current_node_id)
-        .cte(recursive=True, name="ancestor_nodes")
-    )
-
-    recursion = (
-        select(*Node.__table__.columns)
-        .join(Edge, Node.id == Edge.source)
-        .join(base, Edge.target == base.c.id)
-    )
-
-    ancestor_cte = base.union(recursion)
-
-    stmt = select(ancestor_cte)
-    results = session.execute(stmt).mappings().all()
-
-    nodes = [Node.model_validate(row) for row in results]
-
-    if not nodes:
-        return [], []
-
-    node_ids = [n.id for n in nodes]
-
-    edge_stmt = select(Edge).where(
-        Edge.source.in_(node_ids),
-        Edge.target.in_(node_ids)
-    )
-    edges = session.exec(edge_stmt).all()
-
-    return nodes, edges

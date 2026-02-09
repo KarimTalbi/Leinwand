@@ -4,8 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import delete, Session
 
 from data import Node, Edge, CanvasState, get_session, get_canvas_data, get_node
-from llm_logic import get_response
-
 app = FastAPI()
 
 app.add_middleware(
