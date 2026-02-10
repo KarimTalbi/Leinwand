@@ -1,27 +1,48 @@
-from typing import List, Optional, Dict, Text
-from sqlmodel import Field, SQLModel
+import uuid
+from typing import Optional
+from sqlalchemy import ForeignKey, Float, String, Text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import UUID
 
 
-class Node(SQLModel, table=True):
+class Base(DeclarativeBase):
+    pass
+
+
+class Node(Base):
     __tablename__ = "nodes"
-    id: str = Field(primary_key=True)
-    type: str
-    pos_x: float
-    pos_y: float
-    label: str
 
-    prompt: Optional[str] = None
-    response: Optional[str] = None
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        index=True
+    )
+
+    type: Mapped[str] = mapped_column(String(255))
+    pos_x: Mapped[float] = mapped_column(Float)
+    pos_y: Mapped[float] = mapped_column(Float)
+    label: Mapped[str] = mapped_column(String(255))
+    prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    response: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
 
-class Edge(SQLModel, table=True):
+class Edge(Base):
     __tablename__ = "edges"
-    id: str = Field(primary_key=True)
-    source: str = Field(foreign_key="nodes.id", ondelete="CASCADE")
-    target: str = Field(foreign_key="nodes.id", ondelete="CASCADE")
-    animated: bool = False
 
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        index=True
+    )
 
-class CanvasState(SQLModel):
-    nodes: List[Dict]
-    edges: List[Dict]
+    source: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("nodes.id", ondelete="CASCADE"),
+        index=True
+    )
+
+    target: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("nodes.id", ondelete="CASCADE"),
+        index=True
+    )
