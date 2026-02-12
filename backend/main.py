@@ -1,11 +1,17 @@
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import delete, Session
+from fastapi.responses import JSONResponse
 import asyncio
 from fastapi.responses import StreamingResponse
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import Text, text
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import Node, Edge, get_async_session
+from data.db_session import get_async_session
+from utils import logger, setup_logging, log_performance
+
+setup_logging()
 
 app = FastAPI()
 
@@ -17,6 +23,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def global_exception_handler(request: Request, call_next):
+    try:
+        return await call_next(request)
+
+    except Exception as e:
+
+        logger.error(f"Request failed: {type(e).__name__} - {e}", exc_info=True)
+
+        if isinstance(e, SQLAlchemyError):
+            return JSONResponse(
+                status_code=503, content={"detail": "Database error"}
+            )
+
+        return JSONResponse(
+            status_code=500, content={"detail": str(e)}
+        )
+
+
+@app.get("/health")
+@log_performance
+async def health_check(session: AsyncSession = Depends(get_async_session)):
+    """pings the DB with a minimal query"""
+    await session.execute(text("SELECT 1"))
+    return {"status": "ok"}
 
 
 
