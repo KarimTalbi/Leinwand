@@ -162,19 +162,6 @@ class EdgeUpdate(BaseModel):
     target: UUID
 
 class CanvasRead(BaseModel):
-    """
-    Represents a canvas containing nodes and edges.
-
-    This class is used as a data structure to store and manage a collection
-    of nodes and edges, which collectively form a graphical representation
-    of a canvas. It leverages Pydantic's BaseModel to ensure data validation
-    and serialization.
-
-    Attributes:
-        nodes (List[NodeRead]): A collection of nodes that exist on the canvas.
-        edges (List[EdgeRead]): A collection of edges that define the connections
-            between nodes on the canvas.
-    """
     nodes: List[NodeRead]
     edges: List[EdgeRead]
 
