@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional
 
-from sqlalchemy import ForeignKey, Float, String, Text
+from sqlalchemy import ForeignKey, Float, String, Text, DateTime, func, JSON
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -38,3 +38,13 @@ class Edge(Base):
         ForeignKey("nodes.id", ondelete="CASCADE"),
         index=True
     )
+
+class CanvasHistory(Base):
+    __tablename__ = "canvas_history"
+
+    timestamp: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        index=True
+    )
+    snapshot: Mapped[JSON] = mapped_column(JSON, nullable=False)

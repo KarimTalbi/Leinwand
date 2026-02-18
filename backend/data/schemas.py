@@ -1,8 +1,7 @@
 from uuid import UUID
 from typing import Optional, List, Union, Dict
 
-from pydantic import BaseModel, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NodeBase(BaseModel):
@@ -11,15 +10,25 @@ class NodeBase(BaseModel):
     pos_y: float
     label: str
 
-class NodeCreate(NodeBase):
-    pass
 
-class NodeRead(NodeBase):
+class NodeCreate(BaseModel):
+    type: str
+    pos_x: float
+    pos_y: float
+    label: str
+
+
+class NodeRead(BaseModel):
     id: Union[UUID, str]
+    type: str
+    pos_x: float
+    pos_y: float
+    label: str
     prompt: Optional[str] = None
     response: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class NodeUpdate(BaseModel):
     pos_x: Optional[float] = None
@@ -27,6 +36,7 @@ class NodeUpdate(BaseModel):
     label: Optional[str] = None
     prompt: Optional[str] = None
     response: Optional[str] = None
+
 
 class NodeMap(BaseModel):
     nodes: Dict[str, NodeRead]
@@ -50,17 +60,24 @@ class EdgeBase(BaseModel):
     source: UUID
     target: UUID
 
-class EdgeCreate(EdgeBase):
-    pass
 
-class EdgeRead(EdgeBase):
+class EdgeCreate(BaseModel):
+    source: UUID
+    target: UUID
+
+
+class EdgeRead(BaseModel):
     id: Union[UUID, str]
+    source: UUID
+    target: UUID
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class EdgeUpdate(BaseModel):
     source: UUID
     target: UUID
+
 
 class EdgeMap(BaseModel):
     edges: Dict[str, EdgeRead]
@@ -85,7 +102,18 @@ class EdgeMap(BaseModel):
 
 
 class CanvasRead(BaseModel):
-    nodes: List[NodeRead]
-    edges: List[EdgeRead]
+    nodes: List[NodeRead] = Field(default_factory=list)
+    edges: List[EdgeRead] = Field(default_factory=list)
+
+    @property
+    def node_map(self):
+        return NodeMap.from_list(self.nodes)
+
+    @property
+    def edge_map(self):
+        return EdgeMap.from_list(self.edges)
 
     model_config = ConfigDict(from_attributes=True)
+
+class CanvasUpdate(CanvasRead):
+    pass

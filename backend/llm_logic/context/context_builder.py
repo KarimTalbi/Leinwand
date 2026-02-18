@@ -8,7 +8,7 @@ from typing import List
 from data import NodeMap, EdgeMap, NodeRead
 
 
-@dataclass
+@dataclass(frozen=True)
 class ContextNode:
     node: NodeRead
     alias: str
@@ -17,8 +17,7 @@ class ContextNode:
     depth: int
     is_target: bool
 
-    @property
-    def format(self):
+    def __format__(self, _) -> str:
         prereqs = ", ".join(self.parents) if self.parents else 'None'
         streams = ", ".join(self.branches)
         tag = " [!!! Target !!!]" if self.is_target else ""
@@ -32,16 +31,18 @@ class ContextNode:
             f"{'-' * 50}\n"
         )
 
+    def __str__(self):
+        return self.__format__("")
 
-@dataclass
+
+@dataclass(frozen=True)
 class ContextSummary:
     total_nodes: int
     total_streams: int
     max_depth: int
     target_alias: str
 
-    @property
-    def format(self):
+    def __format__(self, _):
         return (
             f"### Summary\n"
             f"Target Node: {self.target_alias}\n"
@@ -51,6 +52,9 @@ class ContextSummary:
             f"Structure: {'Linear' if self.total_streams == 1 else 'Branching/Parallel'}"
             f"{'-' * 50}\n"
         )
+
+    def __str__(self):
+        return self.__format__("")
 
 
 class Context:
@@ -97,37 +101,24 @@ class Context:
                 path_counter += 1
 
     def build_prompt(self) -> str:
-        meta_instructions = (
-            "SYSTEM INSTRUCTIONS:\n"
-            "You are analyzing a Directed Acyclic Graph (DAG) representing a logic workflow.\n"
-            "- NODES are provided in TOPOLOGICAL ORDER (logical sequence).\n"
-            "- PREREQUISITES: Requirements that must be satisfied before the current node.\n"
-            "- LOGIC STREAMS: Parallel paths; nodes in the same stream are part of a specific flow.\n"
-            "- TARGET NODE: The specific node we are currently evaluating. Use its lineage to provide context.\n"
-            "If a node has 'No previous response', it has not yet been executed in the workflow.\n"
-            "- DO NOT apologize for \"inconsistencies\" or \"memory errors\" occurring across different branches. "
-            "Understand that they were parallel paths.\n"
-            f"{'=' * 50}\n\n"
-        )
 
         summary = ContextSummary(
             total_nodes=len(self._order),
             total_streams=len({branch for streams in self._branches.values() for branch in streams}),
             max_depth=max(self._depths.values()) if self._depths else 0,
             target_alias=self._aliases[self.target_id]
-        ).format
+        )
 
-        sections = []
+        sections = [f"{summary}"]
         for nid in self._order:
-            sections.append(
-                ContextNode(
+            node_data = ContextNode(
                     node=self.node_map[nid],
                     alias=self._aliases[nid],
                     branches=sorted(list(self._branches[nid])),
                     parents=[self._aliases[p] for p in self.graph.predecessors(nid)],
                     depth=self._depths[nid],
                     is_target=(nid == self.target_id)
-                ).format
-            )
+                )
+            sections.append(f"{node_data}")
 
-        return meta_instructions + summary + "\n".join(sections)
+        return "\n".join(sections)

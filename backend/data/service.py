@@ -5,6 +5,7 @@ from typing import Generic, List, Optional, Type, Tuple, Set
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 
+from data.db_models import CanvasHistory
 from utils import is_valid_uuid, log_performance
 from data import (
     Node, NodeRead, NodeCreate, NodeUpdate,
@@ -130,8 +131,8 @@ class CanvasService:
         nodes, edges = await self.get()
 
         return CanvasRead(
-            nodes=[NodeRead.model_validate(nodes)],
-            edges=[EdgeRead.model_validate(edges)]
+            nodes=[NodeRead.model_validate(n, from_attributes=True) for n in nodes],
+            edges=[EdgeRead.model_validate(e, from_attributes=True) for e in edges]
         )
 
     @staticmethod
@@ -190,3 +191,24 @@ class CanvasService:
                 await self.session.flush()
 
             return await self.read()
+
+    @log_performance
+    async def create_snapshot(self) -> UUID:
+        current_canvas = await self.read()
+
+        history_entry = CanvasHistory(snapshot=current_canvas.model_dump(mode='json'))
+
+        self.session.add(history_entry)
+        await self.session.flush()
+
+        return history_entry.id
+
+    @log_performance
+    async def restore_snapshot(self, snapshot_id: UUID) -> CanvasRead:
+        result = await self.session.get(CanvasHistory, snapshot_id)
+        if not result:
+            raise ValueError("Snapshot not found")
+
+        snapshot = CanvasRead.model_validate(result.snapshot, from_attributes=True)
+        return await self.save(snapshot)
+
