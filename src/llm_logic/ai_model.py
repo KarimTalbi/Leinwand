@@ -5,7 +5,7 @@ from langchain.chat_models import init_chat_model
 from pydantic import BaseModel, PrivateAttr, Field
 
 from llm_logic.prompts import SYSTEM_PROMPT
-from llm_logic.types import ModelProvider, GoogleAiModel, OpenAiModel
+from llm_logic._types import ModelProvider, GoogleAiModel, OpenAiModel
 
 load_dotenv()
 

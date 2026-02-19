@@ -18,7 +18,7 @@ class ContextNode:
     is_target: bool
 
     def __format__(self, _) -> str:
-        prereqs = ", ".join(self.parents) if self.parents else 'None'
+        prereqs = ", ".join(self.parents) if self.parents else "None"
         streams = ", ".join(self.branches)
         tag = " [!!! Target !!!]" if self.is_target else ""
         return (
@@ -74,7 +74,9 @@ class Context:
 
         # Sort and Alias
         self._order: list[str] = list(nx.topological_sort(self.graph))
-        self._aliases: dict[str, str] = {nid: f"Node {i + 1}" for i, nid in enumerate(self._order)}
+        self._aliases: dict[str, str] = {
+            nid: f"Node {i + 1}" for i, nid in enumerate(self._order)
+        }
 
         # Metrics
         self._branches: dict[str, set[str]] = defaultdict(set)
@@ -104,21 +106,23 @@ class Context:
 
         summary = ContextSummary(
             total_nodes=len(self._order),
-            total_streams=len({branch for streams in self._branches.values() for branch in streams}),
+            total_streams=len(
+                {branch for streams in self._branches.values() for branch in streams}
+            ),
             max_depth=max(self._depths.values()) if self._depths else 0,
-            target_alias=self._aliases[self.target_id]
+            target_alias=self._aliases[self.target_id],
         )
 
         sections = [f"{summary}"]
         for nid in self._order:
             node_data = ContextNode(
-                    node=self.node_map[nid],
-                    alias=self._aliases[nid],
-                    branches=sorted(list(self._branches[nid])),
-                    parents=[self._aliases[p] for p in self.graph.predecessors(nid)],
-                    depth=self._depths[nid],
-                    is_target=(nid == self.target_id)
-                )
+                node=self.node_map[nid],
+                alias=self._aliases[nid],
+                branches=sorted(list(self._branches[nid])),
+                parents=[self._aliases[p] for p in self.graph.predecessors(nid)],
+                depth=self._depths[nid],
+                is_target=(nid == self.target_id),
+            )
             sections.append(f"{node_data}")
 
         return "\n".join(sections)

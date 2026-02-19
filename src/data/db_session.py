@@ -18,9 +18,7 @@ HOST = os.getenv("DB_HOST")
 PORT = os.getenv("DB_PORT")
 
 DATABASE_URL = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
-engine = create_async_engine(
-    DATABASE_URL, echo=True, connect_args={"ssl": ssl_context}
-)
+engine = create_async_engine(DATABASE_URL, echo=True, connect_args={"ssl": ssl_context})
 
 # noinspection PyTypeChecker
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

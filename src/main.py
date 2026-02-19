@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.logic import get_ai_response
 from data import CanvasRead, CanvasService, CanvasUpdate
 from data.db_session import get_async_session
 from llm_logic.ai_model import Prompt
@@ -36,13 +37,9 @@ async def global_exception_handler(request: Request, call_next):
         logger.error(f"Request failed: {type(e).__name__} - {e}", exc_info=True)
 
         if isinstance(e, SQLAlchemyError):
-            return JSONResponse(
-                status_code=503, content={"detail": "Database error"}
-            )
+            return JSONResponse(status_code=503, content={"detail": "Database error"})
 
-        return JSONResponse(
-            status_code=500, content={"detail": str(e)}
-        )
+        return JSONResponse(status_code=500, content={"detail": str(e)})
 
 
 @app.get("/health")
@@ -55,37 +52,32 @@ async def health_check(session: AsyncSession = Depends(get_async_session)):
 
 @app.post("/generate")
 async def generate_response(
-        target_id: str,
-        context: str = Depends(get_current_context),
-        ai_model: AiModel = Depends(get_ai_model)
+    target_id: str,
+    response = Depends(get_ai_response),
 ):
-    prompt = Prompt(context=context)
-    return ai_model.run(prompt)
+    return response
 
 
-@app.post("/steam-completion/")
-async def steam_completion(
-        target_id: str,
-        contex: str = Depends(get_current_context),
-        ai_model: AiModel = Depends(get_ai_model),
-):
-    prompt = Prompt(context=contex)
-
-    return StreamingResponse(
-        ai_model.stream(prompt), media_type="text/plain"
-    )
+# @app.post("/steam-completion/")
+# async def steam_completion(
+#     target_id: str,
+#     contex: str = Depends(get_current_context),
+#     ai_model: AiModel = Depends(get_ai_model),
+# ):
+#     prompt = Prompt(context=contex)
+#
+#     return StreamingResponse(ai_model.stream(prompt), media_type="text/plain")
 
 
 @app.get("/canvas", response_model=CanvasRead)
 async def load_canvas(session: AsyncSession = Depends(get_async_session)):
     canvas_service = CanvasService(session)
-    return await canvas_service.read()
+    return await canvas_service.read() # TODO: add reactflow option
 
 
 @app.post("/canvas/save", response_model=CanvasUpdate)
 async def save_canvas(
-        canvas_service: CanvasUpdate,
-        session: AsyncSession = Depends(get_async_session)
+    canvas_service: CanvasUpdate, session: AsyncSession = Depends(get_async_session)
 ):
     service = CanvasService(session)
     try:

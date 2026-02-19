@@ -8,10 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 class Base(DeclarativeBase):
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        index=True
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
 
 
@@ -30,21 +27,20 @@ class Edge(Base):
     __tablename__ = "edges"
 
     source: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("nodes.id", ondelete="CASCADE"),
-        index=True
+        ForeignKey("nodes.id", ondelete="CASCADE"), index=True
     )
 
     target: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("nodes.id", ondelete="CASCADE"),
-        index=True
+        ForeignKey("nodes.id", ondelete="CASCADE"), index=True
     )
 
-class CanvasHistory(Base):
-    __tablename__ = "canvas_history"
 
-    timestamp: Mapped[DateTime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        index=True
-    )
-    snapshot: Mapped[JSON] = mapped_column(JSON, nullable=False)
+# class CanvasHistory(Base):
+#     __tablename__ = "canvas_history"
+#
+#     timestamp: Mapped[DateTime] = mapped_column(
+#         DateTime(timezone=True),
+#         server_default=func.now(),
+#         index=True
+#     )
+#     snapshot: Mapped[JSON] = mapped_column(JSON, nullable=False)
