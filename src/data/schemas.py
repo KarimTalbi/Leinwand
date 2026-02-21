@@ -3,6 +3,11 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 
+class ReadBase(BaseModel):
+    id: UUID
+
+    model_config = ConfigDict(from_attributes=True)
+
 class NodeBase(BaseModel):
     type: str
     pos_x: float
@@ -13,12 +18,9 @@ class NodeBase(BaseModel):
 class NodeCreate(NodeBase): ...
 
 
-class NodeRead(NodeBase):
-    id: UUID
+class NodeRead(NodeBase, ReadBase):
     prompt: str | None = None
     response: str | None = None
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class NodeUpdate(BaseModel):
@@ -38,10 +40,7 @@ class EdgeBase(BaseModel):
 class EdgeCreate(EdgeBase): ...
 
 
-class EdgeRead(EdgeBase):
-    id: UUID
-
-    model_config = ConfigDict(from_attributes=True)
+class EdgeRead(EdgeBase, ReadBase): ...
 
 
 class EdgeUpdate(BaseModel):
