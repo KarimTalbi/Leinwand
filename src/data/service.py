@@ -1,169 +1,143 @@
 import asyncio
+from collections.abc import Sequence
 from uuid import UUID
-from typing import Generic, List, Type, Set, overload, Literal
+from typing import Generic, List, Type, Set, overload, Literal, TypeVar, TypedDict, Any
+
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
+from sqlalchemy.dialects.postgresql import insert
 
-from utils import is_valid_uuid, log_performance, extract_ids, to_read_model
+from utils import is_valid_uuid
 from data import (
     Node,
     NodeRead,
     NodeCreate,
     NodeUpdate,
-    NodeMap,
     Edge,
     EdgeRead,
     EdgeCreate,
     EdgeUpdate,
-    EdgeMap,
-    CanvasRead,
-    SyncTask,
-    T,
-    C,
-    R,
-    U,
-    M,
+    Base,
 )
 
-ServiceMode = Literal["default", "id", "read", "mapped"]
-CanvasMode = ServiceMode | Literal["canvas"]
-CanvasResult = CanvasRead | tuple[list[NodeRead], list[EdgeRead]] | tuple[list[Node], list[Edge]] | tuple[NodeMap, EdgeMap] | tuple[str, str]
 
-class BaseService(Generic[T, C, U, R, M]):
-    model: Type[T]
-    read_schema: Type[R]
-    map_schema: Type[M]
+class DomainError(Exception): ...
+
+
+class ResourceNotFoundError(DomainError):
+    def __init__(self, service: object, ids: list[UUID]):
+        service_name = service.__class__.__name__.replace("Service", "")
+        self.message = f"{service_name} not found: {ids}"
+        super().__init__(self.message)
+
+
+_DBModelT = TypeVar("_DBModelT", bound=Base)
+_CreateT = TypeVar("_CreateT", bound=BaseModel)
+_UpdateT = TypeVar("_UpdateT", bound=BaseModel)
+_ReadT = TypeVar("_ReadT", bound=BaseModel)
+
+
+class _SyncTask(TypedDict):
+    items: List[BaseModel]
+    db_ids: Set[UUID]
+    service: Any
+    create_schema: Type[BaseModel]
+    update_schema: Type[BaseModel]
+
+
+class BaseService(Generic[_DBModelT, _CreateT, _UpdateT, _ReadT]):
+    model: Type[_DBModelT]
+    read_schema: Type[_ReadT]
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    @overload
-    async def all(
-        self, offset: int = ..., limit: int = ..., mode: Literal["default"] = ...
-    ) -> list[T]: ...
+    def _to_read(self, item: _DBModelT | None) -> _ReadT | None:
+        return self.read_schema.model_validate(item) if item else None
 
-    @overload
-    async def all(
-        self, offset: int = ..., limit: int = ..., mode: Literal["id"] = ...
-    ) -> list[str]: ...
+    def _to_read_seq(self, items: Sequence[_DBModelT] | None) -> list[_ReadT] | None:
+        return [self._to_read(i) for i in items] if items else None
 
-    @overload
-    async def all(
-        self, offset: int = ..., limit: int = ..., mode: Literal["read"] = ...
-    ) -> list[R]: ...
-
-    @overload
-    async def all(
-        self, offset: int = ..., limit: int = ..., mode: Literal["mapped"] = ...
-    ) -> list[M]: ...
-
-    @log_performance
     async def all(
         self,
         offset: int = 0,
         limit: int = 1000,
-        mode: ServiceMode = "default",
-    ) -> list[T] | list[str] | list[R] | list[M]:
-
+        return_type: Literal[
+            "DBModel", "ReadModel", "ID", "MappedDB", "MappedRead"
+        ] = "DBModel",
+    ) -> (
+        list[_DBModelT]
+        | list[_ReadT]
+        | list[UUID]
+        | dict[UUID, _DBModelT]
+        | dict[UUID, _ReadT]
+    ):
         result = await self.session.execute(
             select(self.model).offset(offset).limit(limit)
         )
-        result_ = list(result.scalars().all())
 
-        if mode == "id":
-            return extract_ids(result_)
-        if mode == "read":
-            return to_read_model(self.read_schema, result_)
-        if mode == "mapped":
-            return self.map_schema.from_list(to_read_model(self.read_schema, result_))
-        return result_
+        if return_type in ["DBModel", "MappedDB", "ID"]:
+            return result.scalars().all()
 
-    @log_performance
-    async def add(self, create_schemas: C | list[C]) -> None:
-        if isinstance(create_schemas, list):
-            instances = [self.model(**c.model_dump()) for c in create_schemas]
-            self.session.add_all(instances)
 
-        else:
-            instance = self.model(**create_schemas.model_dump())
-            self.session.add(instance)
 
-    @overload
-    async def get(self, instance_ids: list[UUID], mode: None = ...) -> list[T]: ...
+        return list(result.scalars().all())
 
-    @overload
-    async def get(
-        self, instance_id: list[UUID], mode: Literal["read"] = ...
-    ) -> list[R]: ...
+    async def add(self, create_schema: _CreateT) -> _ReadT:
+        instance = self.model(**create_schema.model_dump())
 
-    @overload
-    async def get(
-        self, instance_id: list[UUID], mode: Literal["mapped"] = ...
-    ) -> list[M]: ...
+        self.session.add(instance)
+        await self.session.flush()
+        await self.session.refresh(instance)
 
-    @overload
-    async def get(self, instance_id: UUID, mode: None = ...) -> T: ...
+        return self._to_read(instance)
 
-    @overload
-    async def get(self, instance_ids: UUID, mode: Literal["read"] = ...) -> R: ...
+    async def add_many(self, create_schemas: list[_CreateT]) -> list[_ReadT]:
+        data = [c.model_dump() for c in create_schemas]
 
-    @overload
-    async def get(self, instance_ids: UUID, mode: Literal["mapped"] = ...) -> M: ...
+        result = await self.session.execute(
+            insert(self.model).values(data).returning(self.model)
+        )
 
-    @log_performance
-    async def get(
-        self,
-        instance_ids: UUID | list[UUID],
-        mode: Literal["read", "mapped"] | None = None,
-    ) -> T | list[T]:
+        return self._to_read_seq(result.scalars().all())
 
-        if isinstance(instance_ids, list):
-            query = select(self.model).where(self.model.id.in_(instance_ids))
-            result = await self.session.execute(query)
-            nodes = list(result.scalars().all())
+    async def get(self, instance_id: UUID) -> _ReadT:
+        result = await self.session.get(self.model, instance_id)
 
-            node_ids = {node.id for node in nodes}
-            missing_ids = set(instance_ids) - node_ids
+        if not result:
+            raise ResourceNotFoundError(service=self, ids=[instance_id])
 
-            if missing_ids:
-                raise ValueError(f"Some instances not found: {missing_ids}")
+        return self._to_read(result)
 
-            if mode:
-                read_ = to_read_model(self.read_schema, nodes)
+    async def get_many(self, instance_ids: list[UUID]) -> list[_ReadT]:
+        result = await self.session.execute(
+            select(self.model).where(self.model.id.in_(instance_ids))
+        )
 
-                if mode == "read":
-                    return read_
-                if mode == "mapped":
-                    return self.map_schema.from_list(read_)
+        nodes = result.scalars().all()
 
-            return nodes
+        node_ids = {node.id for node in nodes}
+        missing_ids = set(instance_ids) - node_ids
 
-        instance = await self.session.get(self.model, instance_ids)
+        if missing_ids:
+            raise ResourceNotFoundError(service=self, ids=list(missing_ids))
 
-        if not instance:
-            raise ValueError(f"Instance not found: {instance_ids}")
+        return self._to_read_seq(nodes)
 
-        if mode == "read":
-            return to_read_model(self.read_schema, [instance])
-        if mode == "mapped":
-            return self.map_schema.from_list([instance])
-
-        return instance
-
-    @log_performance
-    async def update(self, instance_id: UUID, update_instance: U) -> None:
+    async def update(self, instance_id: UUID, update_instance: _UpdateT) -> None:
         instance = await self.get(instance_id)
 
-        if instance:
-            instance_data = update_instance.model_dump(exclude_unset=True)
+        instance_data = update_instance.model_dump(exclude_unset=True)
 
-            for key, value in instance_data.items():
-                setattr(instance, key, value)
+        for key, value in instance_data.items():
+            setattr(instance, key, value)
 
-        else:
-            raise ValueError(f"Instance not found: {instance_id}")
+        await self.session.flush()
+        await self.session.refresh(instance)
 
-    @log_performance
+        return self._to_read(instance)
+
     async def delete(self, instance_ids: UUID | list[UUID]) -> None:
         if isinstance(instance_ids, list):
             await self.session.execute(
@@ -220,12 +194,18 @@ class CanvasService:
     @overload
     async def get(self, mode: Literal["mapped"] = ...) -> tuple[NodeMap, EdgeMap]: ...
 
-    @log_performance
-    async def get(self, mode: CanvasMode = "default") -> CanvasResult:
+    async def get(
+        self, mode: Literal["default", "id", "read", "mapped", "canvas"] = "default"
+    ) -> (
+        CanvasRead
+        | tuple[list[NodeRead], list[EdgeRead]]
+        | tuple[list[Node], list[Edge]]
+        | tuple[NodeMap, EdgeMap]
+        | tuple[str, str]
+    ):
         m = mode if mode != "canvas" else "read"
         result = await asyncio.gather(
-            self.node_service.all(mode=m),
-            self.edge_service.all(mode=m)
+            self.node_service.all(mode=m), self.edge_service.all(mode=m)
         )
 
         return (
@@ -234,11 +214,11 @@ class CanvasService:
 
     @staticmethod
     async def _sync_entities(
-        items: List[R],
+        items: List[_ReadT],
         db_ids: Set[UUID],
         service: BaseService,
-        create_schema: Type[C],
-        update_schema: Type[U],
+        create_schema: Type[_CreateT],
+        update_schema: Type[_UpdateT],
     ):
         await service.delete(list(db_ids - {i.id for i in items if i.id}))
 
@@ -255,20 +235,19 @@ class CanvasService:
         if to_create:
             await service.add(to_create)
 
-    @log_performance
     async def save(self, canvas: CanvasRead):
         async with self.session.begin():
             db_nodes_ids, db_edges_ids = [set(res) for res in await self.get(mode="id")]
 
-            sync_plan: List[SyncTask] = [
-                SyncTask(
+            sync_plan: List[_SyncTask] = [
+                _SyncTask(
                     items=canvas.nodes,
                     db_ids=db_nodes_ids,
                     service=self.node_service,
                     create_schema=NodeCreate,
                     update_schema=NodeUpdate,
                 ),
-                SyncTask(
+                _SyncTask(
                     items=canvas.edges,
                     db_ids=db_edges_ids,
                     service=self.edge_service,

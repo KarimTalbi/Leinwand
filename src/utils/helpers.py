@@ -1,6 +1,10 @@
 from uuid import UUID
-from typing import Any, Type
-from data import T, S
+from typing import Any, Type, TypeVar, Sequence
+from pydantic import BaseModel
+from sqlalchemy.orm import DeclarativeBase
+
+_T = TypeVar("_T", bound=DeclarativeBase)
+_S = TypeVar("_S", bound=BaseModel)
 
 
 def is_valid_uuid(val: Any) -> bool:
@@ -20,7 +24,3 @@ def extract_id(obj: Any) -> str:
 
 def extract_ids(objs: list[Any]) -> list[str]:
     return list(map(extract_id, objs))
-
-
-def to_read_model(schema: Type[S], db_models: list[T]) -> list[S]:
-    return [schema.model_validate(m) for m in db_models]

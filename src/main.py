@@ -7,7 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.logic import get_ai_response
-from data import CanvasRead, CanvasService, CanvasUpdate
+from data import CanvasRead, CanvasService
 from data.db_session import get_async_session
 from llm_logic.ai_model import Prompt
 from utils import logger, setup_logging, log_performance
@@ -56,17 +56,6 @@ async def generate_response(
     response = Depends(get_ai_response),
 ):
     return response
-
-
-# @app.post("/steam-completion/")
-# async def steam_completion(
-#     target_id: str,
-#     contex: str = Depends(get_current_context),
-#     ai_model: AiModel = Depends(get_ai_model),
-# ):
-#     prompt = Prompt(context=contex)
-#
-#     return StreamingResponse(ai_model.stream(prompt), media_type="text/plain")
 
 
 @app.get("/canvas", response_model=CanvasRead)
