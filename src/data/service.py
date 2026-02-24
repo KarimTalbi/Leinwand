@@ -252,7 +252,7 @@ class BaseService(Generic[_T, _C, _U, _R]):
         if not ids:
             return []
         result: Result[tuple[UUID]] = await self.session.execute(
-            delete(self.model).where(self.model.id.in_(ids).returning(self.model.id))
+            delete(self.model).where(self.model.id.in_(ids)).returning(self.model.id)
         )
         await self.session.flush()
         return list(result.scalars().all())
@@ -336,4 +336,4 @@ class CanvasService:
                 return await self.get()
 
             else:
-                raise SyncError
+                raise SyncError()
