@@ -1,18 +1,36 @@
-from data import get_async_session, CanvasService, NodeService, EdgeService
-from llm_logic import AiModel, ConfigBuilder
+from uuid import UUID
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from data import CanvasService, EdgeService, NodeService, get_async_session
+from llm_logic import AiConfig, AiModel, Context
 
 
-def get_canvas_service():
-    return CanvasService(get_async_session())
+def get_canvas_service(
+    session: AsyncSession = Depends(get_async_session),
+) -> CanvasService:
+    return CanvasService(session=session)
 
 
-def get_node_service():
-    return NodeService(get_async_session())
+def get_node_service(session: AsyncSession = Depends(get_async_session)) -> NodeService:
+    return NodeService(session=session)
 
 
-def get_edge_service():
-    return EdgeService(get_async_session())
+def get_edge_service(session: AsyncSession = Depends(get_async_session)) -> EdgeService:
+    return EdgeService(session=session)
 
 
-def get_ai_model(config: ConfigBuilder = ConfigBuilder(), echo: bool = False):
+def get_ai_model(config: AiConfig = AiConfig(), echo: bool = True) -> AiModel:
     return AiModel(config=config, echo=echo)
+
+
+async def get_context(
+    _target: UUID, service: CanvasService = Depends(get_canvas_service)
+) -> str:
+    db_data = await service.get()
+
+    return Context(
+        canvas=db_data,
+        target_id=_target,
+    ).build_prompt()

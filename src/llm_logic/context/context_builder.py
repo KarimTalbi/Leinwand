@@ -1,11 +1,12 @@
-from dataclasses import dataclass
-from uuid import UUID
 from collections import defaultdict
+from dataclasses import dataclass
+from typing import Any, List
+from uuid import UUID
 
 import networkx as nx
 from networkx import DiGraph
-from typing import List
-from data import NodeMap, EdgeMap, NodeRead
+
+from data.schemas import CanvasRead, EdgeRead, NodeRead
 
 
 @dataclass(frozen=True)
@@ -31,7 +32,7 @@ class ContextNode:
             f"{'-' * 50}\n"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__format__("")
 
 
@@ -53,34 +54,36 @@ class ContextSummary:
             f"{'-' * 50}\n"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.__format__("")
 
 
 class Context:
-    def __init__(self, nodes: NodeMap, edges: EdgeMap, target_id: str | UUID):
-        self.node_map: NodeMap = nodes
-        self.edge_map: EdgeMap = edges
-        self.target_id: str = str(target_id)
+    def __init__(self, canvas: CanvasRead, target_id: UUID):
+        self.node_map: dict[UUID, NodeRead] = canvas.mapped_nodes
+        self.edge_map: dict[UUID, EdgeRead] = canvas.mapped_edges
+        self.target_id: UUID = target_id
 
         # build Full Graph
-        self._full_graph: DiGraph = nx.DiGraph()
-        self._full_graph.add_nodes_from(self.node_map.ids)
-        self._full_graph.add_edges_from(self.edge_map.links)
+        self._full_graph: DiGraph[Any] = nx.DiGraph()
+        self._full_graph.add_nodes_from([node for node in self.node_map])
+        self._full_graph.add_edges_from(
+            [(edge.source, edge.target) for edge in self.edge_map.values()]
+        )
 
         # Slice Subgraph
         lineage = nx.ancestors(self._full_graph, self.target_id) | {self.target_id}
-        self.graph = nx.DiGraph(nx.subgraph(self._full_graph, lineage))
+        self.graph: DiGraph[Any] = nx.DiGraph(nx.subgraph(self._full_graph, lineage))
 
         # Sort and Alias
-        self._order: list[str] = list(nx.topological_sort(self.graph))
-        self._aliases: dict[str, str] = {
+        self._order: list[UUID] = list(nx.topological_sort(self.graph))
+        self._aliases: dict[UUID, str] = {
             nid: f"Node {i + 1}" for i, nid in enumerate(self._order)
         }
 
         # Metrics
-        self._branches: dict[str, set[str]] = defaultdict(set)
-        self._depths: dict[str, int] = defaultdict(int)
+        self._branches: dict[UUID, set[str]] = defaultdict(set)
+        self._depths: dict[UUID, int] = defaultdict(int)
 
         self._process_graph_metrics()
 

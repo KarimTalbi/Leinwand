@@ -1,25 +1,21 @@
+from uuid import UUID
+
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
-from sqlalchemy.exc import SQLAlchemyError
+from fastapi.responses import JSONResponse
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.logic import get_ai_response
-from data import CanvasRead, CanvasService
-from data.db_session import get_async_session
-from llm_logic.ai_model import Prompt
-from utils import logger, setup_logging, log_performance
-from llm_logic import AiModel, get_ai_model
-from core import get_current_context
+from core import get_ai_model, get_canvas_service, get_context
+from data import CanvasRead, CanvasService, CanvasUpdate, get_async_session
+from llm_logic import AiModel, Response
 
-setup_logging()
-
-app = FastAPI()
+app: FastAPI = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
+    middleware_class=CORSMiddleware,
     allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
@@ -27,15 +23,12 @@ app.add_middleware(
 )
 
 
-@app.middleware("http")
-async def global_exception_handler(request: Request, call_next):
+@app.middleware(middleware_type="http")
+async def global_exception_handler(request: Request, call_next) -> JSONResponse:  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
     try:
-        return await call_next(request)
+        return await call_next(request)  # pyright: ignore[reportUnknownVariableType]
 
     except Exception as e:
-
-        logger.error(f"Request failed: {type(e).__name__} - {e}", exc_info=True)
-
         if isinstance(e, SQLAlchemyError):
             return JSONResponse(status_code=503, content={"detail": "Database error"})
 
@@ -43,36 +36,32 @@ async def global_exception_handler(request: Request, call_next):
 
 
 @app.get("/health")
-@log_performance
 async def health_check(session: AsyncSession = Depends(get_async_session)):
-    """pings the DB with a minimal query"""
     await session.execute(text("SELECT 1"))
     return {"status": "ok"}
 
 
-@app.post("/generate")
+@app.post("/generate/{target}", response_model=Response)
 async def generate_response(
-    target_id: str,
-    response = Depends(get_ai_response),
-):
-    return response
+    _target: UUID,
+    model: AiModel = Depends(get_ai_model),
+    context: str = Depends(get_context),
+) -> Response:
+    return await model.run_structured(context)
 
 
 @app.get("/canvas", response_model=CanvasRead)
-async def load_canvas(session: AsyncSession = Depends(get_async_session)):
-    canvas_service = CanvasService(session)
-    return await canvas_service.read() # TODO: add reactflow option
+async def load_canvas(
+    service: CanvasService = Depends(get_canvas_service),
+) -> CanvasRead:
+    return await service.get()
 
 
-@app.post("/canvas/save", response_model=CanvasUpdate)
+@app.post("/canvas/save", response_model=CanvasRead)
 async def save_canvas(
-    canvas_service: CanvasUpdate, session: AsyncSession = Depends(get_async_session)
-):
-    service = CanvasService(session)
-    try:
-        return await service.save(canvas_service)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save canvas: {e}")
+    data: CanvasUpdate, service: CanvasService = Depends(get_canvas_service)
+) -> CanvasRead:
+    return await service.save(data)
 
 
 if __name__ == "__main__":

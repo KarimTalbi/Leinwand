@@ -18,4 +18,26 @@ dependencies = [
     "sqlalchemy==2.0.46",
     "networkx>=3.6.1",
     "black>=26.1.0",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
+    "basedpyright>=1.38.1",
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+reportExplicitAny = false
+reportUnusedParameter = false
+reportUnknownMemberType = false
+reportMissingTypeStubs = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
