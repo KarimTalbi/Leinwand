@@ -24,20 +24,9 @@ dependencies = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 100
 target-version = "py313"
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-
-[tool.pyright]
-include = ["src"]
-typeCheckingMode = "strict"
-pythonVersion = "3.13"
-reportExplicitAny = false
-reportUnusedParameter = false
-reportUnknownMemberType = false
-reportMissingTypeStubs = false
-reportUnknownArgumentType = false
-reportUnknownVariableType = false

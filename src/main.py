@@ -8,8 +8,8 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core import get_ai_model, get_canvas_service, get_context
-from data import CanvasRead, CanvasService, CanvasUpdate, get_async_session
+from core import get_ai_model, get_context, logic
+from data import CanvasRead, get_async_session, service
 from llm_logic import AiModel, Response
 
 app: FastAPI = FastAPI()
@@ -24,9 +24,9 @@ app.add_middleware(
 
 
 @app.middleware(middleware_type="http")
-async def global_exception_handler(request: Request, call_next) -> JSONResponse:  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
+async def global_exception_handler(request: Request, call_next) -> JSONResponse:
     try:
-        return await call_next(request)  # pyright: ignore[reportUnknownVariableType]
+        return await call_next(request)
 
     except Exception as e:
         if isinstance(e, SQLAlchemyError):
@@ -50,18 +50,14 @@ async def generate_response(
     return await model.run_structured(context)
 
 
-@app.get("/canvas", response_model=CanvasRead)
-async def load_canvas(
-    service: CanvasService = Depends(get_canvas_service),
-) -> CanvasRead:
-    return await service.get()
+@app.get("/canvas")
+async def load_canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRead:
+    return logic.load_canvas(session)
 
 
-@app.post("/canvas/save", response_model=CanvasRead)
-async def save_canvas(
-    data: CanvasUpdate, service: CanvasService = Depends(get_canvas_service)
-) -> CanvasRead:
-    return await service.save(data)
+# add endpoints
+# update endpoints
+# delete endpoints
 
 
 if __name__ == "__main__":

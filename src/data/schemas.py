@@ -1,7 +1,8 @@
+import uuid
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ReadBase(BaseModel):
@@ -11,11 +12,25 @@ class ReadBase(BaseModel):
 
 
 class UpdateBase(BaseModel):
-    id: UUID | str | None = None
+    id: UUID
 
-    def model_post_init(self, context: Any, /) -> None:
-        if not isinstance(self.id, UUID):
-            self.id = None
+
+class CreateBase(BaseModel):
+    id: UUID = Field(default_factory=uuid.uuid4)
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def prepare_id(cls, v: Any) -> UUID:
+        if isinstance(v, UUID):
+            return v
+
+        if isinstance(v, str) and v.strip():
+            try:
+                return UUID(v)
+            except ValueError:
+                return uuid.uuid4()
+
+        return uuid.uuid4()
 
 
 class NodeBase(BaseModel):
@@ -23,9 +38,6 @@ class NodeBase(BaseModel):
     pos_x: float
     pos_y: float
     label: str
-
-
-class NodeCreate(NodeBase): ...
 
 
 class NodeRead(NodeBase, ReadBase):
@@ -42,35 +54,27 @@ class NodeUpdate(UpdateBase):
     response: str | None = None
 
 
+class NodeCreate(NodeBase, CreateBase):
+    prompt: str | None = None
+    response: str | None = None
+
+
 class EdgeBase(BaseModel):
-    source: UUID
-    target: UUID
+    source_id: UUID
+    target_id: UUID
 
 
-class EdgeCreate(EdgeBase): ...
+class EdgeCreate(CreateBase, EdgeBase): ...
 
 
 class EdgeRead(EdgeBase, ReadBase): ...
 
 
 class EdgeUpdate(UpdateBase):
-    source: UUID | None = None
-    target: UUID | None = None
+    source_id: UUID | None = None
+    target_id: UUID | None = None
 
 
 class CanvasRead(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
-
-    @property
-    def mapped_nodes(self) -> dict[UUID, NodeRead]:
-        return {node.id: node for node in self.nodes}
-
-    @property
-    def mapped_edges(self) -> dict[UUID, EdgeRead]:
-        return {edge.id: edge for edge in self.edges}
-
-
-class CanvasUpdate(BaseModel):
-    nodes: list[NodeUpdate]
-    edges: list[EdgeUpdate]

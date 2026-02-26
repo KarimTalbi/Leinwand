@@ -1,24 +1,8 @@
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import CanvasService, EdgeService, NodeService, get_async_session
 from llm_logic import AiConfig, AiModel, Context
-
-
-def get_canvas_service(
-    session: AsyncSession = Depends(get_async_session),
-) -> CanvasService:
-    return CanvasService(session=session)
-
-
-def get_node_service(session: AsyncSession = Depends(get_async_session)) -> NodeService:
-    return NodeService(session=session)
-
-
-def get_edge_service(session: AsyncSession = Depends(get_async_session)) -> EdgeService:
-    return EdgeService(session=session)
 
 
 def get_ai_model(config: AiConfig = AiConfig(), echo: bool = True) -> AiModel:

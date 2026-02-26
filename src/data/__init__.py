@@ -6,7 +6,7 @@ from .exceptions import InvalidUUIDError as InvalidUUIDError
 from .exceptions import ResourceNotFoundError as ResourceNotFoundError
 from .exceptions import SyncError as SyncError
 from .schemas import CanvasRead as CanvasRead
-from .schemas import CanvasUpdate as CanvasUpdate
+from .schemas import CreateBase as CreateBase
 from .schemas import EdgeCreate as EdgeCreate
 from .schemas import EdgeRead as EdgeRead
 from .schemas import EdgeUpdate as EdgeUpdate
@@ -15,6 +15,3 @@ from .schemas import NodeRead as NodeRead
 from .schemas import NodeUpdate as NodeUpdate
 from .schemas import ReadBase as ReadBase
 from .schemas import UpdateBase as UpdateBase
-from .service import CanvasService as CanvasService
-from .service import EdgeService as EdgeService
-from .service import NodeService as NodeService
