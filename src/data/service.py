@@ -21,7 +21,9 @@ if TYPE_CHECKING:
     from sqlalchemy.engine import Result
 
 
-class ResourceNotFoundError(Exception): ...
+class ResourceNotFoundError(Exception):
+    """Exception raised when a requested resource is not found."""
+    ...
 
 
 _T = TypeVar("_T", bound=Base)
@@ -31,12 +33,23 @@ _U = TypeVar("_U", bound=UpdateBase)
 
 
 class BaseService[_T, _R, _C, _U]:
+    """
+    Base service for CRUD operations.
+
+    Attributes:
+        session: The database session.
+        _t: The database model type.
+        _r: The read schema type.
+        _c: The create schema type.
+        _u: The update schema type.
+    """
     _t: type[_T]
     _r: type[_R]
     _c: type[_C]
     _u: type[_U]
 
     def __init__(self, session: AsyncSession) -> None:
+        """Initializes the service with a database session."""
         self.session: AsyncSession = session
 
     def __init_subclass__(cls, **kwargs: Any):
@@ -58,6 +71,7 @@ class BaseService[_T, _R, _C, _U]:
     def _return(self, item: _T, raw: bool = ...) -> _T | _R | None: ...
 
     def _return(self, item: _T, raw: bool = False) -> _T | _R | None:
+        """Converts a database model to a schema or returns it raw."""
         if not item:
             return None
         return item if raw else self._r.model_validate(item)
@@ -72,6 +86,7 @@ class BaseService[_T, _R, _C, _U]:
     def _return_many(self, items: list[_T], raw: bool = ...) -> list[_T] | list[_R]: ...
 
     def _return_many(self, items: list[_T], raw: bool = False) -> list[_T] | list[_R]:
+        """Converts a list of database models to schemas or returns them raw."""
         if not items:
             return []
         return items if raw else [self._return(i) for i in items]
@@ -87,6 +102,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def add(self, payload: _C, raw: bool = False) -> _T | _R:
+        """Adds a new entity to the database."""
         entity: _T = self._t(**payload.model_dump(exclude_unset=True))
 
         self.session.add(entity)
@@ -106,6 +122,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def add_many(self, payloads: list[_C], raw: bool = False) -> list[_T] | list[_R]:
+        """Adds multiple entities to the database."""
         entities: list[_T] = [self._t(**p.model_dump()) for p in payloads]
 
         self.session.add_all(entities)
@@ -124,6 +141,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def get(self, id_: UUID, raw: bool = False) -> _T | _R:
+        """Retrieves an entity by its ID."""
         result: _T | None = await self.session.get(self._t, id_)
 
         if not result:
@@ -142,6 +160,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def get_many(self, ids: list[UUID], raw: bool = False) -> list[_T] | list[_R]:
+        """Retrieves multiple entities by their IDs."""
         result = await self.session.execute(select(self._t).where(self._t.id.in_(ids)))
 
         entities = list(result.scalars().all())
@@ -163,6 +182,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def get_all(self, raw: bool = False) -> list[_T] | list[_R]:
+        """Retrieves all entities of the model type."""
         result: Result[tuple[Any, ...]] = await self.session.execute(select(self._t))
         return self._return_many(list(result.scalars().all()), raw)
 
@@ -177,6 +197,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def update(self, payload: _U, raw: bool = False) -> _T | _R:
+        """Updates an existing entity."""
         entity: _T = await self.get(payload.id, raw=True)
         data: dict[str, Any] = payload.model_dump(exclude_unset=True)
 
@@ -199,6 +220,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def update_many(self, payloads: list[_U], raw: bool = False) -> list[_T] | list[_R]:
+        """Updates multiple existing entities."""
         if not payloads:
             return []
         ids = [payload.id for payload in payloads]
@@ -221,6 +243,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def delete(self, id_: UUID) -> UUID:
+        """Deletes an entity by its ID."""
         entity: _T = await self.get(id_, raw=True)
         await self.session.delete(entity)
         await self.session.flush()
@@ -228,6 +251,7 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def delete_many(self, ids: list[UUID]) -> list[UUID]:
+        """Deletes multiple entities by their IDs."""
         result: Result[tuple[Any, ...]] = await self.session.execute(
             delete_(self._t)
             .where(self._t.id.in_(ids))
@@ -238,25 +262,58 @@ class BaseService[_T, _R, _C, _U]:
 
     @service_monitor
     async def delete_all(self) -> list[UUID]:
+        """Deletes all entities of the model type."""
         result: Result[tuple[Any, ...]] = await self.session.execute(
             delete_(self._t).returning(self._t.id).execution_options(synchronize_session="fetch")
         )
         return list(result.scalars().all())
 
 
-class NodeService(BaseService[Node, NodeRead, NodeRead, NodeRead]): ...
+class NodeService(BaseService[Node, NodeRead, NodeRead, NodeRead]):
+    """
+    Service for Node operations.
+
+    Attributes:
+        session: The database session (inherited).
+        _t: Node model (inherited).
+        _r: NodeRead schema (inherited).
+        _c: NodeRead schema (inherited).
+        _u: NodeRead schema (inherited).
+    """
+    ...
 
 
-class EdgeService(BaseService[Edge, EdgeRead, EdgeRead, EdgeRead]): ...
+class EdgeService(BaseService[Edge, EdgeRead, EdgeRead, EdgeRead]):
+    """
+    Service for Edge operations.
+
+    Attributes:
+        session: The database session (inherited).
+        _t: Edge model (inherited).
+        _r: EdgeRead schema (inherited).
+        _c: EdgeRead schema (inherited).
+        _u: EdgeRead schema (inherited).
+    """
+    ...
 
 
 class CanvasService:
+    """
+    Service for managing the entire canvas.
+
+    Attributes:
+        session: The database session.
+        node_service: Service for node operations.
+        edge_service: Service for edge operations.
+    """
     def __init__(self, session: AsyncSession) -> None:
+        """Initializes the service with a database session and sub-services."""
         self.session: AsyncSession = session
         self.node_service: NodeService = NodeService(session)
         self.edge_service: EdgeService = EdgeService(session)
 
     async def load_canvas(self) -> CanvasRead:
+        """Loads all nodes and edges from the database."""
         async with asyncio.TaskGroup() as tg:
             node_task = tg.create_task(self.node_service.get_all(raw=False))
             edge_task = tg.create_task(self.edge_service.get_all(raw=False))
