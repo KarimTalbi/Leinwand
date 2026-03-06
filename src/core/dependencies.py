@@ -1,9 +1,5 @@
 """
-Provides dependency-injected service factories for use within the application.
-
-This module includes asynchronous functions to retrieve service instances for
-managing canvases, nodes, and edges. These services facilitate operations on
-respective database entities.
+Dependency injection providers for services and models.
 """
 
 from fastapi import Depends
@@ -15,42 +11,52 @@ from llm_logic import AiConfig, AiModel
 
 async def get_canvas_service(session: AsyncSession = Depends(get_async_session)) -> CanvasService:
     """
-    Asynchronously retrieves an instance of CanvasService.
+    Provides a CanvasService instance.
 
     Args:
-        session: The active database session provided via dependency injection.
+        session: The database session (injected).
 
     Returns:
-        CanvasService: A service instance initialized with the provided session.
+        The canvas service.
     """
     return CanvasService(session)
 
 
 async def get_node_service(session: AsyncSession = Depends(get_async_session)) -> NodeService:
     """
-    Asynchronously retrieves an instance of NodeService.
+    Provides a NodeService instance.
 
     Args:
-        session: The active database session provided via dependency injection.
+        session: The database session (injected).
 
     Returns:
-        NodeService: A service instance initialized with the provided session.
+        The node service.
     """
     return NodeService(session)
 
 
 async def get_edge_service(session: AsyncSession = Depends(get_async_session)) -> EdgeService:
     """
-    Asynchronously retrieves an instance of EdgeService.
+    Provides an EdgeService instance.
 
     Args:
-        session: The active database session provided via dependency injection.
+        session: The database session (injected).
 
     Returns:
-        EdgeService: A service instance initialized with the provided session.
+        The edge service.
     """
     return EdgeService(session)
 
 
 def get_ai_model(config: AiConfig = AiConfig(), echo: bool = True) -> AiModel:
+    """
+    Provides an AiModel instance.
+
+    Args:
+        config: The AI configuration.
+        echo: Whether to echo the output.
+
+    Returns:
+        The AI model.
+    """
     return AiModel(config=config, echo=echo)

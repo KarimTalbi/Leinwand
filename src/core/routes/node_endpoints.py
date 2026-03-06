@@ -1,9 +1,5 @@
 """
-Handles HTTP request routing and operations for node resources.
-
-This module defines endpoints to create, retrieve, update, and delete node
-resources in the system using a FastAPI APIRouter. Each endpoint delegates
-business logic to a dependency-injected `NodeService`.
+API endpoints for node-related operations.
 """
 from uuid import UUID
 
@@ -20,14 +16,14 @@ async def create_node(
     payload: NodeCreate, service: NodeService = Depends(get_node_service)
 ) -> NodeRead:
     """
-    Handles the creation of a new node resource.
+    Creates a new node.
 
     Args:
-        payload: The input data required to initialize a new node.
-        service: Dependency-injected service instance for managing node operations.
+        payload: The data for creating a node.
+        service: The node service (injected).
 
     Returns:
-        NodeRead: The data representation of the newly created node.
+        The created node.
     """
     return await service.add(payload)
 
@@ -35,14 +31,14 @@ async def create_node(
 @node_router.get("/{node_id}")
 async def get_node(node_id: UUID, service: NodeService = Depends(get_node_service)) -> NodeRead:
     """
-    Handles retrieval of a node by its ID.
+    Retrieves a node by its ID.
 
     Args:
         node_id: The unique identifier of the node.
-        service: Dependency-injected service instance for managing node operations.
+        service: The node service (injected).
 
     Returns:
-        NodeRead: Object containing details of the requested node.
+        The requested node.
     """
     return await service.get(node_id)
 
@@ -52,14 +48,14 @@ async def update_node(
     payload: NodeUpdate, service: NodeService = Depends(get_node_service)
 ) -> NodeRead:
     """
-    Updates an existing node's data based on the provided payload.
+    Updates an existing node.
 
     Args:
-        payload: The input data including the updated details of the node.
-        service: Dependency-injected service instance for managing node operations.
+        payload: The data for updating a node.
+        service: The node service (injected).
 
     Returns:
-        NodeRead: Object containing the updated details of the node.
+        The updated node.
     """
     return await service.update(payload)
 
@@ -69,14 +65,14 @@ async def delete_node(
     node_id: UUID, service: NodeService = Depends(get_node_service)
 ) -> DeleteResponse:
     """
-    Deletes a node from the system.
+    Deletes a node by its ID.
 
     Args:
         node_id: The unique identifier of the node.
-        service: Dependency-injected service instance for managing node operations.
+        service: The node service (injected).
 
     Returns:
-        DeleteResponse: Object containing a confirmation message and the ID of the deleted node.
+        A confirmation of the deletion.
     """
     deleted_id = await service.delete(node_id)
     return DeleteResponse(message="Node deleted successfully", id=deleted_id)
