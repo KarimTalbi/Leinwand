@@ -1,9 +1,16 @@
+"""Defines API endpoints for edge-related operations.
+
+This module provides functionalities to create and delete edges via a FastAPI
+router. The endpoints include the creation of new edges and the deletion of
+existing edges, using a dependency-injected service for processing the
+requests.
+"""
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from src.core.dependencies import get_edge_service
 from data import DeleteResponse, EdgeCreate, EdgeRead, EdgeService
+from src.core.dependencies import get_edge_service
 
 edge_router = APIRouter(prefix="/edges", tags=["Edges"])
 

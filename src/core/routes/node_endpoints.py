@@ -1,9 +1,16 @@
+"""
+Handles HTTP request routing and operations for node resources.
+
+This module defines endpoints to create, retrieve, update, and delete node
+resources in the system using a FastAPI APIRouter. Each endpoint delegates
+business logic to a dependency-injected `NodeService`.
+"""
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
+from data import DeleteResponse, NodeCreate, NodeRead, NodeService, NodeUpdate
 from src.core.dependencies import get_node_service
-from data import NodeCreate, NodeRead, NodeUpdate, NodeService, DeleteResponse
 
 node_router = APIRouter(prefix="/nodes", tags=["Nodes"])
 
