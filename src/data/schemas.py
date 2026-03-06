@@ -12,6 +12,7 @@ class ReadBase(BaseModel):
     Attributes:
         id: The unique identifier.
     """
+
     id: UUID
 
     model_config = ConfigDict(from_attributes=True)
@@ -24,6 +25,7 @@ class UpdateBase(BaseModel):
     Attributes:
         id: The unique identifier.
     """
+
     id: UUID
 
 
@@ -34,6 +36,7 @@ class CreateBase(BaseModel):
     Attributes:
         id: The unique identifier.
     """
+
     id: UUID = Field(default_factory=uuid.uuid4)
 
     @field_validator("id", mode="before")
@@ -61,6 +64,7 @@ class NodeBase(BaseModel):
         pos_y: The vertical position.
         label: The label of the node.
     """
+
     type: str
     pos_x: float
     pos_y: float
@@ -80,6 +84,7 @@ class NodeRead(NodeBase, ReadBase):
         prompt: The input prompt.
         response: The generated response.
     """
+
     prompt: str | None = None
     response: str | None = None
 
@@ -97,6 +102,7 @@ class NodeUpdate(UpdateBase):
         prompt: The input prompt.
         response: The generated response.
     """
+
     type: str | None = None
     pos_x: float | None = None
     pos_y: float | None = None
@@ -118,6 +124,7 @@ class NodeCreate(NodeBase, CreateBase):
         prompt: The input prompt.
         response: The generated response.
     """
+
     prompt: str | None = None
     response: str | None = None
 
@@ -127,11 +134,12 @@ class EdgeBase(BaseModel):
     Base structure for an edge.
 
     Attributes:
-        source_id: The identifier of the source node.
-        target_id: The identifier of the target node.
+        source: The identifier of the source node.
+        target: The identifier of the target node.
     """
-    source_id: UUID
-    target_id: UUID
+
+    source: UUID
+    target: UUID
 
 
 class EdgeCreate(CreateBase, EdgeBase):
@@ -140,9 +148,10 @@ class EdgeCreate(CreateBase, EdgeBase):
 
     Attributes:
         id: The unique identifier.
-        source_id: The identifier of the source node.
-        target_id: The identifier of the target node.
+        source: The identifier of the source node.
+        target: The identifier of the target node.
     """
+
     ...
 
 
@@ -152,9 +161,10 @@ class EdgeRead(EdgeBase, ReadBase):
 
     Attributes:
         id: The unique identifier.
-        source_id: The identifier of the source node.
-        target_id: The identifier of the target node.
+        source: The identifier of the source node.
+        target: The identifier of the target node.
     """
+
     ...
 
 
@@ -164,11 +174,12 @@ class EdgeUpdate(UpdateBase):
 
     Attributes:
         id: The unique identifier.
-        source_id: The identifier of the source node.
-        target_id: The identifier of the target node.
+        source: The identifier of the source node.
+        target: The identifier of the target node.
     """
-    source_id: UUID | None = None
-    target_id: UUID | None = None
+
+    source: UUID | None = None
+    target: UUID | None = None
 
 
 class CanvasRead(BaseModel):
@@ -179,6 +190,7 @@ class CanvasRead(BaseModel):
         nodes: The list of nodes on the canvas.
         edges: The list of edges on the canvas.
     """
+
     nodes: list[NodeRead]
     edges: list[EdgeRead]
 
@@ -191,5 +203,6 @@ class DeleteResponse(BaseModel):
         message: A message confirming deletion.
         id: The identifier of the deleted object.
     """
+
     message: str
     id: UUID

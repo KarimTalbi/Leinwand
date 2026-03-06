@@ -42,7 +42,7 @@ async def not_found(request: Request, exc: ResourceNotFoundError):
     Returns:
         A JSON response with a 404 status code.
     """
-    return JSONResponse(status_code=404, content={"detail": f"{exc.model.__name__} not found"})
+    return JSONResponse(status_code=404, content={"detail": "entity not found"})
 
 
 @app.middleware("http")

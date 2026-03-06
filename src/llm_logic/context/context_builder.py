@@ -11,6 +11,17 @@ from data import CanvasRead, EdgeRead, NodeRead
 
 @dataclass(frozen=True)
 class ContextNode:
+    """
+    Represents a node within the context of a graph lineage.
+
+    Attributes:
+        node: The underlying node data.
+        alias: A human-readable alias for the node.
+        branches: The logic streams this node belongs to.
+        parents: The aliases of the parent nodes.
+        depth: The depth of the node in the hierarchy.
+        is_target: Whether this node is the target of the context.
+    """
     node: NodeRead
     alias: str
     branches: List[str]
@@ -19,9 +30,9 @@ class ContextNode:
     is_target: bool
 
     def __format__(self, _) -> str:
-        prereqs = ", ".join(self.parents) if self.parents else "None"
-        streams = ", ".join(self.branches)
-        tag = " [!!! Target !!!]" if self.is_target else ""
+        prereqs: str = ", ".join(self.parents) if self.parents else "None"
+        streams: str = ", ".join(self.branches)
+        tag: str = " [!!! Target !!!]" if self.is_target else ""
         return (
             f"### Node: {self.alias}{tag} (Pos: x={self.node.pos_x}, y={self.node.pos_y})\n"
             f" - Prerequisites: {prereqs}\n"
@@ -38,6 +49,15 @@ class ContextNode:
 
 @dataclass(frozen=True)
 class ContextSummary:
+    """
+    Summary of the graph context lineage.
+
+    Attributes:
+        total_nodes: Total number of nodes in the lineage.
+        total_streams: Total number of parallel logic streams.
+        max_depth: Maximum depth of the hierarchy.
+        target_alias: Alias of the target node.
+    """
     total_nodes: int
     total_streams: int
     max_depth: int
@@ -59,9 +79,19 @@ class ContextSummary:
 
 
 class Context:
+    """
+    Builder for generating a textual prompt from a graph context.
+
+    Attributes:
+        node_map: Mapping of node IDs to node data.
+        edge_map: Mapping of edge IDs to edge data.
+        target_id: The ID of the target node.
+        graph: The subgraph representing the lineage of the target node.
+    """
     def __init__(self, canvas: CanvasRead, target_id: UUID):
-        self.node_map: dict[UUID, NodeRead] = canvas.mapped_nodes
-        self.edge_map: dict[UUID, EdgeRead] = canvas.mapped_edges
+        """Initializes the context builder with canvas data and a target node."""
+        self.node_map: dict[UUID, NodeRead] = {node.id: node for node in canvas.nodes}
+        self.edge_map: dict[UUID, EdgeRead] = {edge.id: edge for edge in canvas.edges}
         self.target_id: UUID = target_id
 
         # build Full Graph
@@ -72,7 +102,7 @@ class Context:
         )
 
         # Slice Subgraph
-        lineage = nx.ancestors(self._full_graph, self.target_id) | {self.target_id}
+        lineage: set[UUID] = nx.ancestors(self._full_graph, self.target_id) | {self.target_id}
         self.graph: DiGraph[Any] = nx.DiGraph(nx.subgraph(self._full_graph, lineage))
 
         # Sort and Alias
@@ -86,16 +116,17 @@ class Context:
         self._process_graph_metrics()
 
     def _process_graph_metrics(self):
-        roots = [n for n in self.graph.nodes if self.graph.in_degree(n) == 0]
-        path_counter = 1
+        """Calculates depths and logic streams for the subgraph."""
+        roots: list[UUID] = [n for n in self.graph.nodes if self.graph.in_degree(n) == 0]
+        path_counter: int = 1
 
         for root in roots:
             # Calculate Depths (Max distance from any root)
-            p_lengths = nx.shortest_path_length(self.graph, root)
+            p_lengths: dict[UUID, int] = nx.shortest_path_length(self.graph, root)
             for nid, dist in p_lengths.items():
                 self._depths[nid] = max(self._depths[nid], int(dist))
 
-            paths = list(nx.all_simple_paths(self.graph, root, self.target_id))
+            paths: list[list[UUID]] = list(nx.all_simple_paths(self.graph, root, self.target_id))
 
             for path in paths:
                 branch_name = f"Branch: {path_counter}"
@@ -104,8 +135,9 @@ class Context:
                 path_counter += 1
 
     def build_prompt(self) -> str:
+        """Generates the final textual prompt for the AI model."""
 
-        summary = ContextSummary(
+        summary: ContextSummary = ContextSummary(
             total_nodes=len(self._order),
             total_streams=len(
                 {branch for streams in self._branches.values() for branch in streams}
@@ -114,7 +146,7 @@ class Context:
             target_alias=self._aliases[self.target_id],
         )
 
-        sections = [f"{summary}"]
+        sections: list[str] = [f"{summary}"]
         for nid in self._order:
             node_data = ContextNode(
                 node=self.node_map[nid],
