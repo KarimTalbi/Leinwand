@@ -25,7 +25,7 @@ class AiModel:
         result = await structured_llm.ainvoke(prompt())
         if self._echo:
             print(f"Prompt:\n{prompt}\n\nResponse:\n{result}\n")
-        return result  # pyright: ignore[reportReturnType]
+        return result
 
     # async def stream(self, prompt: Prompt):
     #     async for chunk in self._model.astream(prompt()):

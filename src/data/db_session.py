@@ -1,6 +1,7 @@
 """
 Database connection and session management using SQLAlchemy Async API.
 """
+
 import os
 import ssl
 from collections.abc import AsyncGenerator
@@ -13,6 +14,8 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+
+from src.data.db_models import Base
 
 ssl_context: ssl.SSLContext = ssl.create_default_context()
 ssl_context.check_hostname = False
@@ -47,6 +50,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         async with session.begin():
             yield session
+
+
+async def init_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 get_session_ctx = asynccontextmanager(get_async_session)
