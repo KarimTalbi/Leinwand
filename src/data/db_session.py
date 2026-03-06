@@ -23,6 +23,7 @@ PASS: str | None = os.getenv("DB_PASS")
 HOST: str | None = os.getenv("DB_HOST")
 PORT: str | None = os.getenv("DB_PORT")
 
+
 DATABASE_URL: str = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL, echo=True, connect_args={"ssl": ssl_context}
@@ -35,14 +36,8 @@ async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
-        try:
+        async with session.begin():
             yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
 
 
 get_session_ctx = asynccontextmanager(get_async_session)

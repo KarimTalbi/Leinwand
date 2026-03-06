@@ -2,8 +2,8 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel, Field, PrivateAttr
 
-from .prompts import SYSTEM_PROMPT
-from .types import GoogleAiModel, ModelProvider, OpenAiModel
+from src.llm_logic.prompts import SYSTEM_PROMPT
+from src.llm_logic.types import GoogleAiModel, ModelProvider, OpenAiModel
 
 
 class AiConfig(BaseModel):
@@ -27,7 +27,7 @@ class Prompt(BaseModel):
 
     _prompt: str = PrivateAttr(default_factory=str)
 
-    def model_post_init(self, __context) -> None:  # pyright: ignore[reportUnknownParameterType, reportMissingParameterType]
+    def model_post_init(self, __context) -> None:
         self._prompt = self.system + self.context
 
     def __call__(self):

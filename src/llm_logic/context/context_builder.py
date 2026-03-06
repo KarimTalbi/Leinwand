@@ -6,7 +6,7 @@ from uuid import UUID
 import networkx as nx
 from networkx import DiGraph
 
-from data.schemas import CanvasRead, EdgeRead, NodeRead
+from data import CanvasRead, EdgeRead, NodeRead
 
 
 @dataclass(frozen=True)
@@ -77,9 +77,7 @@ class Context:
 
         # Sort and Alias
         self._order: list[UUID] = list(nx.topological_sort(self.graph))
-        self._aliases: dict[UUID, str] = {
-            nid: f"Node {i + 1}" for i, nid in enumerate(self._order)
-        }
+        self._aliases: dict[UUID, str] = {nid: f"Node {i + 1}" for i, nid in enumerate(self._order)}
 
         # Metrics
         self._branches: dict[UUID, set[str]] = defaultdict(set)

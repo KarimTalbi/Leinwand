@@ -78,3 +78,8 @@ class EdgeUpdate(UpdateBase):
 class CanvasRead(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
+
+
+class DeleteResponse(BaseModel):
+    message: str
+    id: UUID

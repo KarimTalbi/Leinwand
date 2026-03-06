@@ -1,5 +1,4 @@
 from .ai_model import AiModel as AiModel
-from .context import Context as Context
 from .prompts import SYSTEM_PROMPT as SYSTEM_PROMPT
 from .schemas import AiConfig as AiConfig
 from .schemas import Prompt as Prompt

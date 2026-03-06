@@ -2,16 +2,14 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models import BaseChatModel
 
-from .schemas import AiConfig, Prompt, Response
+from src.llm_logic.schemas import AiConfig, Prompt, Response
 
 load_dotenv()
 
 
 class AiModel:
     def __init__(self, config: AiConfig, echo: bool = False):
-        self._model: BaseChatModel = init_chat_model(
-            **config.model_dump(exclude_none=True)
-        )
+        self._model: BaseChatModel = init_chat_model(**config.model_dump(exclude_none=True))
         self._echo = echo
 
     async def run(self, context: str):
