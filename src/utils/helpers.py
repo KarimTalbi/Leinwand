@@ -1,45 +1,20 @@
 """
-Utility helper functions and decorators.
+helper functions.
 """
-import logging
-import time
-from functools import wraps
 
-logger = logging.getLogger("app.services")
+from typing import Iterable, overload
+from uuid import UUID
+
+from src.utils.types import T1, T2, Identifiable
 
 
-def service_monitor(func):
-    """
-    Decorator to monitor and log service method execution.
+@overload
+def map_items(c1: Iterable[T1]) -> tuple[dict[UUID, T1]]: ...
 
-    Args:
-        func: The service method to monitor.
 
-    Returns:
-        The wrapped method.
-    """
-    @wraps(func)
-    async def wrapper(self, *args, **kwargs):
-        class_name = self.__class__.__name__
-        func_name = func.__name__
+@overload
+def map_items(c1: Iterable[T1], c2: Iterable[T2]) -> tuple[dict[UUID, T1], dict[UUID, T2]]: ...
 
-        logger.debug(f"[{class_name}] Starting {func_name}")
 
-        start_time = time.perf_counter()
-        try:
-            result = await func(self, *args, **kwargs)
-            duration = time.perf_counter() - start_time
-
-            logger.info(f"[{class_name}] {func_name} completed in {duration:.4f}s")
-            return result
-
-        except Exception as e:
-            duration = time.perf_counter() - start_time
-
-            logger.error(
-                f"[{class_name}] {func_name} failed after {duration:.4f}s. Error: {type(e).__name__}: {e}",
-                exc_info=True,
-            )
-            raise
-
-    return wrapper
+def map_items(*collections: Iterable[Identifiable]) -> tuple[dict[UUID, Identifiable], ...]:
+    return tuple({item.id: item for item in collection} for collection in collections)

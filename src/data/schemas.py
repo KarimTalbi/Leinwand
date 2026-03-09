@@ -1,8 +1,11 @@
 import uuid
-from typing import Any
+from functools import cached_property
+from typing import Any, Iterable
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from src.data.db_models import Edge, Node
 
 
 class ReadBase(BaseModel):
@@ -193,6 +196,24 @@ class CanvasRead(BaseModel):
 
     nodes: list[NodeRead]
     edges: list[EdgeRead]
+
+    @classmethod
+    def from_db(cls, nodes: Iterable[Node], edges: Iterable[Edge]) -> "CanvasRead":
+        """
+        Factory method to create CanvasRead from raw SQLAlchemy models.
+        """
+        return cls(
+            nodes=[NodeRead.model_validate(node) for node in nodes],
+            edges=[EdgeRead.model_validate(edge) for edge in edges]
+        )
+
+    @cached_property
+    def node_map(self) -> dict[UUID, NodeRead]:
+        return {n.id: n for n in self.nodes}
+
+    @cached_property
+    def edge_links(self) -> list[tuple[UUID, UUID]]:
+        return [(e.source, e.target) for e in self.edges]
 
 
 class DeleteResponse(BaseModel):

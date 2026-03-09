@@ -131,7 +131,7 @@ class BaseService[_T, _R, _C, _U]:
         if not isinstance(id_, UUID):
             raise InvalidUUIDError(f"Invalid UUID format: {id_}. Expected a UUID or '*'.")
 
-        entity: _T = await self.get(id_, raw=True)
+        entity: _T = await self.get(id_)
         await self.session.delete(entity)
         await self.session.flush()
         return entity.id
@@ -197,7 +197,4 @@ class CanvasService:
             node_task = tg.create_task(self.node_service.get("*"))
             edge_task = tg.create_task(self.edge_service.get("*"))
 
-        nodes = [NodeRead.model_validate(node) for node in node_task.result()]
-        edges = [EdgeRead.model_validate(edge) for edge in edge_task.result()]
-
-        return CanvasRead(nodes=nodes, edges=edges)
+        return CanvasRead.from_db(nodes=node_task.result(), edges=edge_task.result())

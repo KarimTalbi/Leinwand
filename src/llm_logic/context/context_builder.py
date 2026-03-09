@@ -1,12 +1,13 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, Iterable, List
 from uuid import UUID
 
 import networkx as nx
 from networkx import DiGraph
 
 from data import CanvasRead, EdgeRead, NodeRead
+from utils import map_items
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class ContextNode:
         depth: The depth of the node in the hierarchy.
         is_target: Whether this node is the target of the context.
     """
+
     node: NodeRead
     alias: str
     branches: List[str]
@@ -58,6 +60,7 @@ class ContextSummary:
         max_depth: Maximum depth of the hierarchy.
         target_alias: Alias of the target node.
     """
+
     total_nodes: int
     total_streams: int
     max_depth: int
@@ -88,6 +91,7 @@ class Context:
         target_id: The ID of the target node.
         graph: The subgraph representing the lineage of the target node.
     """
+
     def __init__(self, canvas: CanvasRead, target_id: UUID):
         """Initializes the context builder with canvas data and a target node."""
         self.node_map: dict[UUID, NodeRead] = {node.id: node for node in canvas.nodes}
@@ -159,3 +163,37 @@ class Context:
             sections.append(f"{node_data}")
 
         return "\n".join(sections)
+
+
+def _get_full_graph(
+    nodes: Iterable[UUID], edge_links: Iterable[tuple[UUID, UUID]]
+) -> nx.DiGraph[UUID]:
+    graph: nx.DiGraph[Any] = nx.DiGraph()
+    graph.add_nodes_from(nodes)
+    graph.add_edges_from(edge_links)
+    return graph
+
+
+def _get_sub_graph(full_graph: nx.DiGraph[UUID], target_id: UUID) -> nx.Graph[UUID]:
+    lineage: set[UUID] = nx.ancestors(full_graph, target_id) | {target_id}
+    return full_graph.subgraph(lineage)
+
+
+def _get_order(graph: nx.Graph[UUID]) -> list[UUID]:
+    return list(nx.topological_sort(graph))
+
+
+def _get_aliases(order: list[UUID]) -> dict[UUID, str]:
+    return {nid: f"Node {i + 1}" for i, nid in enumerate(order)}
+
+
+def _get_depths(graph: nx.Graph[UUID], target_id: UUID) -> dict[UUID, int]:
+    depths: dict[UUID, int] = defaultdict(int)
+    roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
+
+
+def build_context(canvas: CanvasRead, target_id: UUID):
+    full_graph: nx.DiGraph[UUID] = _get_full_graph(canvas.node_map.keys(), canvas.edge_links)
+    graph: nx.Graph[UUID] = _get_sub_graph(full_graph, target_id)
+    order: list[UUID] = _get_order(graph)
+    aliases: dict[UUID, str] = _get_aliases(order)
