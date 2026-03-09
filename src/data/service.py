@@ -23,6 +23,13 @@ if TYPE_CHECKING:
 
 class ResourceNotFoundError(Exception):
     """Exception raised when a requested resource is not found."""
+
+    ...
+
+
+class InvalidUUIDError(Exception):
+    """Exception raised when an invalid UUID is provided."""
+
     ...
 
 
@@ -43,6 +50,7 @@ class BaseService[_T, _R, _C, _U]:
         _c: The create schema type.
         _u: The update schema type.
     """
+
     _t: type[_T]
     _r: type[_R]
     _c: type[_C]
@@ -61,144 +69,43 @@ class BaseService[_T, _R, _C, _U]:
                 cls._t, cls._r, cls._c, cls._u = args
                 break
 
-    @overload
-    def _return(self, item: _T, raw: Literal[False] = ...) -> _R | None: ...
-
-    @overload
-    def _return(self, item: _T, raw: Literal[True] = ...) -> _T | None: ...
-
-    @overload
-    def _return(self, item: _T, raw: bool = ...) -> _T | _R | None: ...
-
-    def _return(self, item: _T, raw: bool = False) -> _T | _R | None:
-        """Converts a database model to a schema or returns it raw."""
-        if not item:
-            return None
-        return item if raw else self._r.model_validate(item)
-
-    @overload
-    def _return_many(self, items: list[_T], raw: Literal[False] = ...) -> list[_R]: ...
-
-    @overload
-    def _return_many(self, items: list[_T], raw: Literal[True] = ...) -> list[_T]: ...
-
-    @overload
-    def _return_many(self, items: list[_T], raw: bool = ...) -> list[_T] | list[_R]: ...
-
-    def _return_many(self, items: list[_T], raw: bool = False) -> list[_T] | list[_R]:
-        """Converts a list of database models to schemas or returns them raw."""
-        if not items:
-            return []
-        return items if raw else [self._return(i) for i in items]
-
-    @overload
-    async def add(self, payload: _C, raw: Literal[True] = ...) -> _T: ...
-
-    @overload
-    async def add(self, payload: _C, raw: Literal[False] = ...) -> _R: ...
-
-    @overload
-    async def add(self, payload: _C, raw: bool = ...) -> _T | _R: ...
-
     @service_monitor
-    async def add(self, payload: _C, raw: bool = False) -> _T | _R:
+    async def add(self, payload: _C) -> _T:
         """Adds a new entity to the database."""
+
         entity: _T = self._t(**payload.model_dump(exclude_unset=True))
 
         self.session.add(entity)
         await self.session.flush()
         await self.session.refresh(entity)
 
-        return self._return(entity, raw)
+        return entity
 
     @overload
-    async def add_many(self, payloads: list[_C], raw: Literal[True] = ...) -> list[_T]: ...
+    async def get(self, id_: UUID) -> _T: ...
 
     @overload
-    async def add_many(self, payloads: list[_C], raw: Literal[False] = ...) -> list[_R]: ...
-
-    @overload
-    async def add_many(self, payloads: list[_C], raw: bool = False) -> list[_T] | list[_R]: ...
+    async def get(self, id_: Literal["*"]) -> list[_T]: ...
 
     @service_monitor
-    async def add_many(self, payloads: list[_C], raw: bool = False) -> list[_T] | list[_R]:
-        """Adds multiple entities to the database."""
-        entities: list[_T] = [self._t(**p.model_dump()) for p in payloads]
-
-        self.session.add_all(entities)
-        await self.session.flush()
-
-        return self._return_many(entities, raw)
-
-    @overload
-    async def get(self, id_: UUID, raw: Literal[False] = ...) -> _R: ...
-
-    @overload
-    async def get(self, id_: UUID, raw: Literal[True] = ...) -> _T: ...
-
-    @overload
-    async def get(self, id_: UUID, raw: bool = ...) -> _T | _R: ...
-
-    @service_monitor
-    async def get(self, id_: UUID, raw: bool = False) -> _T | _R:
+    async def get(self, id_: UUID | Literal["*"]) -> _T | list[_T]:
         """Retrieves an entity by its ID."""
+        if id_ == "*":
+            result: Result[tuple[Any, ...]] = await self.session.execute(select(self._t))
+            return list(result.scalars().all())
+
+        if not isinstance(id_, UUID):
+            raise InvalidUUIDError(f"Invalid UUID format: {id_}. Expected a UUID or '*'.")
+
         result: _T | None = await self.session.get(self._t, id_)
-
         if not result:
-            raise ResourceNotFoundError(self._t, id_)
-
-        return self._return(result, raw)
-
-    @overload
-    async def get_many(self, ids: list[UUID], raw: Literal[False] = ...) -> list[_R]: ...
-
-    @overload
-    async def get_many(self, ids: list[UUID], raw: Literal[True] = ...) -> list[_T]: ...
-
-    @overload
-    async def get_many(self, ids: list[UUID], raw: bool = ...) -> list[_T] | list[_R]: ...
+            raise ResourceNotFoundError
+        return result
 
     @service_monitor
-    async def get_many(self, ids: list[UUID], raw: bool = False) -> list[_T] | list[_R]:
-        """Retrieves multiple entities by their IDs."""
-        result = await self.session.execute(select(self._t).where(self._t.id.in_(ids)))
-
-        entities = list(result.scalars().all())
-        missing_ids = set(ids) - {e.id for e in entities}
-
-        if missing_ids:
-            raise ResourceNotFoundError(self._t, missing_ids)
-
-        return self._return_many(entities, raw)
-
-    @overload
-    async def get_all(self, raw: Literal[False] = ...) -> list[_R]: ...
-
-    @overload
-    async def get_all(self, raw: Literal[True] = ...) -> list[_T]: ...
-
-    @overload
-    async def get_all(self, raw: bool = ...) -> list[_T] | list[_R]: ...
-
-    @service_monitor
-    async def get_all(self, raw: bool = False) -> list[_T] | list[_R]:
-        """Retrieves all entities of the model type."""
-        result: Result[tuple[Any, ...]] = await self.session.execute(select(self._t))
-        return self._return_many(list(result.scalars().all()), raw)
-
-    @overload
-    async def update(self, payload: _U, raw: Literal[True] = ...) -> _T: ...
-
-    @overload
-    async def update(self, payload: _U, raw: Literal[False] = ...) -> _R: ...
-
-    @overload
-    async def update(self, payload: _U, raw: bool = ...) -> _T | _R: ...
-
-    @service_monitor
-    async def update(self, payload: _U, raw: bool = False) -> _T | _R:
+    async def update(self, payload: _U, raw: bool = False) -> _T:
         """Updates an existing entity."""
-        entity: _T = await self.get(payload.id, raw=True)
+        entity: _T = await self.get(payload.id)
         data: dict[str, Any] = payload.model_dump(exclude_unset=True)
 
         for key, value in data.items():
@@ -207,58 +114,27 @@ class BaseService[_T, _R, _C, _U]:
         await self.session.flush()
         await self.session.refresh(entity)
 
-        return self._return(entity, raw)
-
-    @overload
-    async def update_many(self, payloads: list[_U], raw: Literal[True] = ...) -> list[_T]: ...
-
-    @overload
-    async def update_many(self, payloads: list[_U], raw: Literal[False] = ...) -> list[_R]: ...
-
-    @overload
-    async def update_many(self, payloads: list[_U], raw: bool = ...) -> list[_T] | list[_R]: ...
+        return entity
 
     @service_monitor
-    async def update_many(self, payloads: list[_U], raw: bool = False) -> list[_T] | list[_R]:
-        """Updates multiple existing entities."""
-        if not payloads:
-            return []
-        ids = [payload.id for payload in payloads]
-        entities = await self.get_many(ids, raw=True)
-
-        entities_map = {entity.id: entity for entity in entities}
-
-        updated_entities: list[_T] = []
-        for payload in payloads:
-            entity: _T = entities_map[payload.id]
-            data = payload.model_dump(exclude_unset=True)
-
-            for key, value in data.items():
-                setattr(entity, key, value)
-
-            updated_entities.append(entity)
-
-        await self.session.flush()
-        return self._return_many(updated_entities, raw)
-
-    @service_monitor
-    async def delete(self, id_: UUID) -> UUID:
+    async def delete(self, id_: UUID | Literal["*"]) -> UUID:
         """Deletes an entity by its ID."""
+
+        if id_ == "*":
+            result: Result[tuple[Any, ...]] = await self.session.execute(
+                delete_(self._t)
+                .returning(self._t.id)
+                .execution_options(synchronize_session="fetch")
+            )
+            return list(result.scalars().all())
+
+        if not isinstance(id_, UUID):
+            raise InvalidUUIDError(f"Invalid UUID format: {id_}. Expected a UUID or '*'.")
+
         entity: _T = await self.get(id_, raw=True)
         await self.session.delete(entity)
         await self.session.flush()
         return entity.id
-
-    @service_monitor
-    async def delete_many(self, ids: list[UUID]) -> list[UUID]:
-        """Deletes multiple entities by their IDs."""
-        result: Result[tuple[Any, ...]] = await self.session.execute(
-            delete_(self._t)
-            .where(self._t.id.in_(ids))
-            .returning(self._t.id)
-            .execution_options(synchronize_session="fetch")
-        )
-        return list(result.scalars().all())
 
     @service_monitor
     async def delete_all(self) -> list[UUID]:
@@ -280,6 +156,7 @@ class NodeService(BaseService[Node, NodeRead, NodeRead, NodeRead]):
         _c: NodeRead schema (inherited).
         _u: NodeRead schema (inherited).
     """
+
     ...
 
 
@@ -294,6 +171,7 @@ class EdgeService(BaseService[Edge, EdgeRead, EdgeRead, EdgeRead]):
         _c: EdgeRead schema (inherited).
         _u: EdgeRead schema (inherited).
     """
+
     ...
 
 
@@ -306,6 +184,7 @@ class CanvasService:
         node_service: Service for node operations.
         edge_service: Service for edge operations.
     """
+
     def __init__(self, session: AsyncSession) -> None:
         """Initializes the service with a database session and sub-services."""
         self.session: AsyncSession = session
@@ -315,7 +194,10 @@ class CanvasService:
     async def load_canvas(self) -> CanvasRead:
         """Loads all nodes and edges from the database."""
         async with asyncio.TaskGroup() as tg:
-            node_task = tg.create_task(self.node_service.get_all(raw=False))
-            edge_task = tg.create_task(self.edge_service.get_all(raw=False))
+            node_task = tg.create_task(self.node_service.get("*"))
+            edge_task = tg.create_task(self.edge_service.get("*"))
 
-        return CanvasRead(nodes=node_task.result(), edges=edge_task.result())
+        nodes = [NodeRead.model_validate(node) for node in node_task.result()]
+        edges = [EdgeRead.model_validate(edge) for edge in edge_task.result()]
+
+        return CanvasRead(nodes=nodes, edges=edges)
