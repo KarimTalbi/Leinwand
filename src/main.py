@@ -5,13 +5,12 @@ Main entry point for the NodeLLM FastAPI application.
 import logging
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core import get_canvas_service
-from core.routes import edge_router, node_router
-from data import CanvasRead, CanvasService, ResourceNotFoundError
+from core.routes import edge_router, node_router, canvas_router
+from data import ResourceNotFoundError
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -19,6 +18,7 @@ app: FastAPI = FastAPI(title="NodeLLM")
 
 app.include_router(node_router)
 app.include_router(edge_router)
+app.include_router(canvas_router)
 
 
 app.add_middleware(
@@ -72,20 +72,6 @@ async def root():
         A message indicating the API is online.
     """
     return {"message": "API is online"}
-
-
-@app.get("/canvas")
-async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
-    """
-    Retrieves the entire canvas (nodes and edges).
-
-    Args:
-        service: The canvas service (injected).
-
-    Returns:
-        The current state of the canvas.
-    """
-    return await service.load_canvas()
 
 
 if __name__ == "__main__":
