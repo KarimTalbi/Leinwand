@@ -1,6 +1,7 @@
 """
 API endpoints for edge-related operations.
 """
+
 from uuid import UUID
 
 from fastapi import APIRouter, Depends

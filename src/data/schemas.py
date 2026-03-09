@@ -1,6 +1,6 @@
 import uuid
 from functools import cached_property
-from typing import Any, Iterable
+from typing import Any, Iterable, Self
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -198,13 +198,13 @@ class CanvasRead(BaseModel):
     edges: list[EdgeRead]
 
     @classmethod
-    def from_db(cls, nodes: Iterable[Node], edges: Iterable[Edge]) -> "CanvasRead":
+    def from_db(cls, nodes: Iterable[Node], edges: Iterable[Edge]) -> Self:
         """
         Factory method to create CanvasRead from raw SQLAlchemy models.
         """
         return cls(
             nodes=[NodeRead.model_validate(node) for node in nodes],
-            edges=[EdgeRead.model_validate(edge) for edge in edges]
+            edges=[EdgeRead.model_validate(edge) for edge in edges],
         )
 
     @cached_property

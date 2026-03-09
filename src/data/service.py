@@ -11,14 +11,21 @@ from uuid import UUID
 
 from sqlalchemy import delete as delete_
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.data.db_models import Base, Edge, Node
-from src.data.schemas import CanvasRead, CreateBase, EdgeRead, NodeRead, ReadBase, UpdateBase
+from src.data.schemas import (
+    CanvasRead,
+    CreateBase,
+    EdgeRead,
+    NodeRead,
+    ReadBase,
+    UpdateBase,
+)
 from utils import service_monitor
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Result
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ResourceNotFoundError(Exception):
@@ -91,11 +98,15 @@ class BaseService[_T, _R, _C, _U]:
     async def get(self, id_: UUID | Literal["*"]) -> _T | list[_T]:
         """Retrieves an entity by its ID."""
         if id_ == "*":
-            result: Result[tuple[Any, ...]] = await self.session.execute(select(self._t))
+            result: Result[tuple[Any, ...]] = await self.session.execute(
+                select(self._t)
+            )
             return list(result.scalars().all())
 
         if not isinstance(id_, UUID):
-            raise InvalidUUIDError(f"Invalid UUID format: {id_}. Expected a UUID or '*'.")
+            raise InvalidUUIDError(
+                f"Invalid UUID format: {id_}. Expected a UUID or '*'."
+            )
 
         result: _T | None = await self.session.get(self._t, id_)
         if not result:
@@ -103,7 +114,7 @@ class BaseService[_T, _R, _C, _U]:
         return result
 
     @service_monitor
-    async def update(self, payload: _U, raw: bool = False) -> _T:
+    async def update(self, payload: _U) -> _T:
         """Updates an existing entity."""
         entity: _T = await self.get(payload.id)
         data: dict[str, Any] = payload.model_dump(exclude_unset=True)
@@ -129,7 +140,9 @@ class BaseService[_T, _R, _C, _U]:
             return list(result.scalars().all())
 
         if not isinstance(id_, UUID):
-            raise InvalidUUIDError(f"Invalid UUID format: {id_}. Expected a UUID or '*'.")
+            raise InvalidUUIDError(
+                f"Invalid UUID format: {id_}. Expected a UUID or '*'."
+            )
 
         entity: _T = await self.get(id_)
         await self.session.delete(entity)
@@ -140,7 +153,9 @@ class BaseService[_T, _R, _C, _U]:
     async def delete_all(self) -> list[UUID]:
         """Deletes all entities of the model type."""
         result: Result[tuple[Any, ...]] = await self.session.execute(
-            delete_(self._t).returning(self._t.id).execution_options(synchronize_session="fetch")
+            delete_(self._t)
+            .returning(self._t.id)
+            .execution_options(synchronize_session="fetch")
         )
         return list(result.scalars().all())
 

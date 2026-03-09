@@ -1,6 +1,7 @@
 """
 Module for defining database models related to a graph structure.
 """
+
 import uuid
 from typing import Optional
 
@@ -16,6 +17,7 @@ class Base(DeclarativeBase):
     Attributes:
         id: The unique identifier (primary key).
     """
+
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True
     )
@@ -36,6 +38,7 @@ class Node(Base):
         outgoing_edges: Edges where this node is the source.
         incoming_edges: Edges where this node is the target.
     """
+
     __tablename__ = "nodes"
 
     type: Mapped[str] = mapped_column(String(255))
@@ -64,6 +67,7 @@ class Edge(Base):
         source_node: The source node object.
         target_node: The target node object.
     """
+
     __tablename__ = "edges"
 
     source: Mapped[uuid.UUID] = mapped_column(
