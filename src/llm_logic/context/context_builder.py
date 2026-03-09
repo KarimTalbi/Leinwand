@@ -1,199 +1,116 @@
 from collections import defaultdict
-from dataclasses import dataclass
-from typing import Any, Iterable, List
+from dataclasses import dataclass, field
 from uuid import UUID
 
 import networkx as nx
-from networkx import DiGraph
 
-from data import CanvasRead, EdgeRead, NodeRead
-from utils import map_items
+from data import NodeRead
 
 
-@dataclass(frozen=True)
-class ContextNode:
-    """
-    Represents a node within the context of a graph lineage.
-
-    Attributes:
-        node: The underlying node data.
-        alias: A human-readable alias for the node.
-        branches: The logic streams this node belongs to.
-        parents: The aliases of the parent nodes.
-        depth: The depth of the node in the hierarchy.
-        is_target: Whether this node is the target of the context.
-    """
-
-    node: NodeRead
-    alias: str
-    branches: List[str]
-    parents: List[str]
-    depth: int
-    is_target: bool
-
-    def __format__(self, _) -> str:
-        prereqs: str = ", ".join(self.parents) if self.parents else "None"
-        streams: str = ", ".join(self.branches)
-        tag: str = " [!!! Target !!!]" if self.is_target else ""
-        return (
-            f"### Node: {self.alias}{tag} (Pos: x={self.node.pos_x}, y={self.node.pos_y})\n"
-            f" - Prerequisites: {prereqs}\n"
-            f" - Logic Streams: {streams} | Level: {self.depth}\n"
-            f" - Content:\n"
-            f"   - User:\n{self.node.prompt}\n"
-            f"   - AI-Assistant:\n{self.node.response or 'No previous response'}\n"
-            f"{'-' * 50}\n"
-        )
-
-    def __str__(self) -> str:
-        return self.__format__("")
-
-
-@dataclass(frozen=True)
-class ContextSummary:
-    """
-    Summary of the graph context lineage.
-
-    Attributes:
-        total_nodes: Total number of nodes in the lineage.
-        total_streams: Total number of parallel logic streams.
-        max_depth: Maximum depth of the hierarchy.
-        target_alias: Alias of the target node.
-    """
-
-    total_nodes: int
-    total_streams: int
-    max_depth: int
-    target_alias: str
-
-    def __format__(self, _):
-        return (
-            f"### Summary\n"
-            f"Target Node: {self.target_alias}\n"
-            f"Total Nodes in Lineage: {self.total_nodes}\n"
-            f"Parallel Logic Streams: {self.total_streams}\n"
-            f"Max Hierarchy Depth: {self.max_depth}\n"
-            f"Structure: {'Linear' if self.total_streams == 1 else 'Branching/Parallel'}"
-            f"{'-' * 50}\n"
-        )
-
-    def __str__(self) -> str:
-        return self.__format__("")
-
-
+@dataclass
 class Context:
-    """
-    Builder for generating a textual prompt from a graph context.
+    target_id: UUID
+    node_map: dict[UUID, NodeRead]
+    edge_links: list[tuple[UUID, UUID]]
 
-    Attributes:
-        node_map: Mapping of node IDs to node data.
-        edge_map: Mapping of edge IDs to edge data.
-        target_id: The ID of the target node.
-        graph: The subgraph representing the lineage of the target node.
-    """
+    full_graph: nx.DiGraph[UUID] = field(init=False, default_factory=nx.DiGraph)
+    graph: nx.DiGraph[UUID] | None = field(init=False, default=None)
+    order: list[UUID] = field(init=False, default_factory=list)
+    aliases: dict[UUID, str] = field(init=False, default_factory=dict)
+    roots: list[UUID] = field(init=False, default_factory=list)
+    depths: dict[UUID, int] = field(init=False, default_factory=lambda: defaultdict(int))
+    branches: dict[UUID, list[str]] = field(init=False, default_factory=lambda: defaultdict(list))
+    summary: str = field(init=False, default_factory=str)
+    node_sections: list[str] = field(init=False, default_factory=list)
+    prompt: str = field(init=False, default_factory=str)
 
-    def __init__(self, canvas: CanvasRead, target_id: UUID):
-        """Initializes the context builder with canvas data and a target node."""
-        self.node_map: dict[UUID, NodeRead] = {node.id: node for node in canvas.nodes}
-        self.edge_map: dict[UUID, EdgeRead] = {edge.id: edge for edge in canvas.edges}
-        self.target_id: UUID = target_id
+    def __post_init__(self):
+        if not self.node_map:
+            raise ValueError("Cannot build context: node_map is empty")
 
-        # build Full Graph
-        self._full_graph: DiGraph[Any] = nx.DiGraph()
-        self._full_graph.add_nodes_from([node for node in self.node_map])
-        self._full_graph.add_edges_from(
-            [(edge.source, edge.target) for edge in self.edge_map.values()]
+        _get_full_graph(self)
+
+        if self.target_id not in self.full_graph:
+            raise KeyError(f"Target node {self.target_id} not found in the graph")
+
+        _get_sub_graph(self)
+
+        if self.graph is None or self.graph.number_of_nodes() == 0:
+            raise RuntimeError("Graph is empty after subgraph selection")
+
+        _get_order(self)
+        _get_aliases(self)
+        _get_roots(self)
+        _get_depths(self)
+        _get_branches(self)
+        _get_summary(self)
+        _get_node_sections(self)
+        _get_prompt(self)
+
+
+def _get_full_graph(ctx: Context) -> None:
+    ctx.full_graph.add_nodes_from(ctx.node_map.keys())
+    ctx.full_graph.add_edges_from(ctx.edge_links)
+
+
+def _get_sub_graph(ctx: Context) -> None:
+    lineage: set[UUID] = nx.ancestors(ctx.full_graph, ctx.target_id) | {ctx.target_id}
+    ctx.graph = nx.DiGraph(ctx.full_graph.subgraph(lineage))
+
+
+def _get_order(ctx: Context) -> None:
+    ctx.order = list(nx.topological_sort(ctx.graph))
+
+
+def _get_aliases(ctx: Context) -> None:
+    ctx.aliases = {nid: f"Node {i + 1}" for i, nid in enumerate(ctx.order)}
+
+
+def _get_roots(ctx: Context) -> None:
+    ctx.roots = [n for n in ctx.graph.nodes if ctx.graph.in_degree(n) == 0]
+
+
+def _get_depths(ctx: Context) -> None:
+    for root in ctx.roots:
+        p_lengths = nx.shortest_path_length(ctx.graph, root)
+        for nid, dist in p_lengths.items():
+            ctx.depths[nid] = max(ctx.depths[nid], int(dist))
+
+
+def _get_branches(ctx: Context) -> None:
+    for i, roots in enumerate(ctx.roots, 1):
+        tag: str = f"Stream {i}"
+        for nid in nx.descendants(ctx.graph, roots) | {roots}:
+            ctx.branches[nid].append(tag)
+
+
+def _get_summary(ctx: Context) -> None:
+    ctx.summary = (
+        f"### Summary\n"
+        f"Target Node: {ctx.aliases[ctx.target_id]}\n"
+        f"Total Nodes: {len(ctx.order)}\n"
+        f"Logic Streams: {len(set(sum(ctx.branches.values(), [])))}\n"
+        f"Max Depth: {max(ctx.depths.values()) if ctx.depths else 0}\n"
+        f"{'-' * 50}"
+    )
+
+
+def _get_node_sections(ctx: Context) -> None:
+    for nid in ctx.order:
+        node = ctx.node_map[nid]
+        parents = [ctx.aliases[p] for p in ctx.graph.predecessors(nid)]
+        tag = " [!!! Target !!!]" if nid == ctx.target_id else ""
+
+        ctx.node_sections.append(
+            f"### Node: {ctx.aliases[nid]}{tag} (Pos: x={node.pos_x}, y={node.pos_y})\n"
+            f" - Prerequisites: {', '.join(parents) if parents else 'None'}\n"
+            f" - Logic Streams: {', '.join(ctx.branches[nid])} | Level: {ctx.depths[nid]}\n"
+            f" - Content:\n"
+            f"   - User:\n{node.prompt}\n"
+            f"   - AI:\n{node.response if node.response else 'No response'}"
+            f"{'-' * 50}\n"
         )
 
-        # Slice Subgraph
-        lineage: set[UUID] = nx.ancestors(self._full_graph, self.target_id) | {self.target_id}
-        self.graph: DiGraph[Any] = nx.DiGraph(nx.subgraph(self._full_graph, lineage))
 
-        # Sort and Alias
-        self._order: list[UUID] = list(nx.topological_sort(self.graph))
-        self._aliases: dict[UUID, str] = {nid: f"Node {i + 1}" for i, nid in enumerate(self._order)}
-
-        # Metrics
-        self._branches: dict[UUID, set[str]] = defaultdict(set)
-        self._depths: dict[UUID, int] = defaultdict(int)
-
-        self._process_graph_metrics()
-
-    def _process_graph_metrics(self):
-        """Calculates depths and logic streams for the subgraph."""
-        roots: list[UUID] = [n for n in self.graph.nodes if self.graph.in_degree(n) == 0]
-        path_counter: int = 1
-
-        for root in roots:
-            # Calculate Depths (Max distance from any root)
-            p_lengths: dict[UUID, int] = nx.shortest_path_length(self.graph, root)
-            for nid, dist in p_lengths.items():
-                self._depths[nid] = max(self._depths[nid], int(dist))
-
-            paths: list[list[UUID]] = list(nx.all_simple_paths(self.graph, root, self.target_id))
-
-            for path in paths:
-                branch_name = f"Branch: {path_counter}"
-                for nid in path:
-                    self._branches[nid].add(branch_name)
-                path_counter += 1
-
-    def build_prompt(self) -> str:
-        """Generates the final textual prompt for the AI model."""
-
-        summary: ContextSummary = ContextSummary(
-            total_nodes=len(self._order),
-            total_streams=len(
-                {branch for streams in self._branches.values() for branch in streams}
-            ),
-            max_depth=max(self._depths.values()) if self._depths else 0,
-            target_alias=self._aliases[self.target_id],
-        )
-
-        sections: list[str] = [f"{summary}"]
-        for nid in self._order:
-            node_data = ContextNode(
-                node=self.node_map[nid],
-                alias=self._aliases[nid],
-                branches=sorted(list(self._branches[nid])),
-                parents=[self._aliases[p] for p in self.graph.predecessors(nid)],
-                depth=self._depths[nid],
-                is_target=(nid == self.target_id),
-            )
-            sections.append(f"{node_data}")
-
-        return "\n".join(sections)
-
-
-def _get_full_graph(
-    nodes: Iterable[UUID], edge_links: Iterable[tuple[UUID, UUID]]
-) -> nx.DiGraph[UUID]:
-    graph: nx.DiGraph[Any] = nx.DiGraph()
-    graph.add_nodes_from(nodes)
-    graph.add_edges_from(edge_links)
-    return graph
-
-
-def _get_sub_graph(full_graph: nx.DiGraph[UUID], target_id: UUID) -> nx.Graph[UUID]:
-    lineage: set[UUID] = nx.ancestors(full_graph, target_id) | {target_id}
-    return full_graph.subgraph(lineage)
-
-
-def _get_order(graph: nx.Graph[UUID]) -> list[UUID]:
-    return list(nx.topological_sort(graph))
-
-
-def _get_aliases(order: list[UUID]) -> dict[UUID, str]:
-    return {nid: f"Node {i + 1}" for i, nid in enumerate(order)}
-
-
-def _get_depths(graph: nx.Graph[UUID], target_id: UUID) -> dict[UUID, int]:
-    depths: dict[UUID, int] = defaultdict(int)
-    roots = [n for n in graph.nodes if graph.in_degree(n) == 0]
-
-
-def build_context(canvas: CanvasRead, target_id: UUID):
-    full_graph: nx.DiGraph[UUID] = _get_full_graph(canvas.node_map.keys(), canvas.edge_links)
-    graph: nx.Graph[UUID] = _get_sub_graph(full_graph, target_id)
-    order: list[UUID] = _get_order(graph)
-    aliases: dict[UUID, str] = _get_aliases(order)
+def _get_prompt(ctx: Context) -> None:
+    ctx.prompt = ctx.summary + "\n".join(ctx.node_sections)
