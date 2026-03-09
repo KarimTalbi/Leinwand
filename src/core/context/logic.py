@@ -67,12 +67,14 @@ def build_context(ctx: Context) -> None:
     for func in PIPELINE:
         func(ctx)
 
-        if step == _get_full_graph and (
-            not ctx.full_graph or ctx.full_graph.number_of_nodes() == 0
+        if func == _get_full_graph and (
+            not ctx.full_graph
+            or ctx.full_graph.number_of_nodes() == 0
+            or ctx.target_id not in ctx.full_graph
         ):
-            raise RuntimeError("Graph is empty")
+            raise RuntimeError("Graph data is missing")
 
-        if step == _get_sub_graph and (
+        if func == _get_sub_graph and (
             not ctx.graph or ctx.graph.number_of_nodes() == 0
         ):
             raise RuntimeError("Subgraph is empty")
