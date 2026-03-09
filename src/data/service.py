@@ -11,6 +11,7 @@ from uuid import UUID
 
 from sqlalchemy import delete as delete_
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.data.db_models import Base, Edge, Node
 from src.data.schemas import (
@@ -25,7 +26,6 @@ from utils import service_monitor
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Result
-    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ResourceNotFoundError(Exception):

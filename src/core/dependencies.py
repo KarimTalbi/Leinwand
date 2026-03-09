@@ -5,10 +5,10 @@ Dependency injection providers for services and models.
 from functools import lru_cache
 from uuid import UUID
 
-from context import Context, build_context, build_prompt
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.context import Context, build_context, build_prompt
 from data import CanvasService, EdgeService, NodeService, get_async_session
 from llm import AiModel, ModelConfig
 
