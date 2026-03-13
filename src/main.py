@@ -3,18 +3,33 @@ Main entry point for the NodeLLM FastAPI application.
 """
 
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.routes import edge_router, node_router, canvas_router
-from data import ResourceNotFoundError
+from core.routes import canvas_router, edge_router, node_router
+from data import ResourceNotFoundError, engine, init_db
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
-app: FastAPI = FastAPI(title="NodeLLM")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """App lifespan: init DB on startup, cleanup on shutdown."""
+    print("🚀 Initializing database...")
+    await init_db()
+    print("✅ Database ready")
+
+    yield
+
+    await engine.dispose()
+
+
+app: FastAPI = FastAPI(lifespan=lifespan)
 
 app.include_router(node_router)
 app.include_router(edge_router)
@@ -60,7 +75,9 @@ async def db_session_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
+        return JSONResponse(
+            status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
+        )
 
 
 @app.get("/")

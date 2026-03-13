@@ -88,8 +88,8 @@ class NodeRead(NodeBase, ReadBase):
         response: The generated response.
     """
 
-    prompt: str | None = None
-    response: str | None = None
+    prompt: str | None = Field(default=None)
+    response: str | None = Field(default=None)
 
 
 class NodeUpdate(UpdateBase):
@@ -106,12 +106,12 @@ class NodeUpdate(UpdateBase):
         response: The generated response.
     """
 
-    type: str | None = None
-    pos_x: float | None = None
-    pos_y: float | None = None
-    label: str | None = None
-    prompt: str | None = None
-    response: str | None = None
+    type: str | None = Field(default=None)
+    pos_x: float | None = Field(default=None)
+    pos_y: float | None = Field(default=None)
+    label: str | None = Field(default=None)
+    prompt: str | None = Field(default=None)
+    response: str | None = Field(default=None)
 
 
 class NodeCreate(NodeBase, CreateBase):
@@ -128,8 +128,8 @@ class NodeCreate(NodeBase, CreateBase):
         response: The generated response.
     """
 
-    prompt: str | None = None
-    response: str | None = None
+    prompt: str | None = Field(default=None)
+    response: str | None = Field(default=None)
 
 
 class EdgeBase(BaseModel):
@@ -181,8 +181,8 @@ class EdgeUpdate(UpdateBase):
         target: The identifier of the target node.
     """
 
-    source: UUID | None = None
-    target: UUID | None = None
+    source: UUID | None = Field(default=None)
+    target: UUID | None = Field(default=None)
 
 
 class CanvasRead(BaseModel):

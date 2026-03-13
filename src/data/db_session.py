@@ -1,13 +1,10 @@
-"""
-Database connection and session management using SQLAlchemy Async API.
-"""
-
 import os
-import ssl
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -17,23 +14,24 @@ from sqlalchemy.ext.asyncio import (
 
 from src.data.db_models import Base
 
-ssl_context: ssl.SSLContext = ssl.create_default_context()
-ssl_context.check_hostname = False
-ssl_context.verify_mode = ssl.CERT_NONE
-
 load_dotenv()
 
-USER: str | None = os.getenv("DB_USER")
-NAME: str | None = os.getenv("DB_NAME")
-PASS: str | None = os.getenv("DB_PASS")
-HOST: str | None = os.getenv("DB_HOST")
-PORT: str | None = os.getenv("DB_PORT")
+USER_DATA_PATH = os.getenv("USER_DATA_PATH", "./data")
+DB_PATH = Path(USER_DATA_PATH) / "db.sqlite"
+
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH.absolute()}"
 
 
-DATABASE_URL: str = f"postgresql+asyncpg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
 engine: AsyncEngine = create_async_engine(
-    DATABASE_URL, echo=True, connect_args={"ssl": ssl_context}
+    DATABASE_URL, echo=True, connect_args={"check_same_thread": False, "timeout": 30}
 )
+# pool_pre_ping=True
+# pool_recycle=3600
+# pool_size=5
+# max_overflow=10
+
 
 async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
     bind=engine, class_=AsyncSession, expire_on_commit=False
@@ -54,6 +52,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db():
     async with engine.begin() as conn:
+        await conn.execute(text("PRAGMA foreign_keys=ON"))
         await conn.run_sync(Base.metadata.create_all)
 
 
