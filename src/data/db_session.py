@@ -3,7 +3,6 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from dotenv import load_dotenv
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -13,8 +12,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.data.db_models import Base
-
-load_dotenv()
 
 USER_DATA_PATH = os.getenv("USER_DATA_PATH", "./data")
 DB_PATH = Path(USER_DATA_PATH) / "db.sqlite"
