@@ -3,7 +3,14 @@ from functools import cached_property
 from typing import Any, Iterable, Self
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
 
 from src.data.db_models import Edge, Node
 
@@ -74,7 +81,13 @@ class NodeBase(BaseModel):
     label: str
 
 
-class NodeRead(NodeBase, ReadBase):
+class NodeData(BaseModel):
+    label: str
+    prompt: str | None = Field(default=None)
+    response: str | None = Field(default=None)
+
+
+class NodeRead(ReadBase):
     """
     Model for reading node data.
 
@@ -83,13 +96,46 @@ class NodeRead(NodeBase, ReadBase):
         type: The type of the node.
         pos_x: The horizontal position.
         pos_y: The vertical position.
-        label: The label of the node.
-        prompt: The input prompt.
-        response: The generated response.
+        data: The node data.
     """
 
-    prompt: str | None = Field(default=None)
-    response: str | None = Field(default=None)
+    type: str
+    pos_x: float
+    pos_y: float
+
+    data: NodeData | None = Field(default=None)
+
+    @model_validator(mode="before")
+    @classmethod
+    def build_data_object(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if not data.get("data"):
+                data["data"] = {
+                    "label": data.get("label"),
+                    "prompt": data.get("prompt"),
+                    "response": data.get("response"),
+                }
+
+        else:
+            if not getattr(data, "data", None):
+                setattr(
+                    data,
+                    "data",
+                    {
+                        "label": data.label,
+                        "prompt": data.prompt,
+                        "response": data.response,
+                    },
+                )
+        return data
+
+    @computed_field
+    @property
+    def position(self) -> dict[str, float]:
+        return {"x": self.pos_x, "y": self.pos_y}
+
+    class Config:
+        from_attributes = True
 
 
 class NodeUpdate(UpdateBase):

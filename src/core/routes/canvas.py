@@ -17,4 +17,6 @@ async def canvas(service: CanvasService = Depends(get_canvas_service)) -> Canvas
     Returns:
         The current state of the canvas.
     """
-    return await service.load_canvas()
+    result = await service.load_canvas()
+    print(result)
+    return result
