@@ -10,7 +10,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.routes import canvas_router, edge_router, node_router
+from core.routes import canvas_router, edge_router, llm_router, node_router
 from data import ResourceNotFoundError, engine, init_db
 
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +34,7 @@ app: FastAPI = FastAPI(lifespan=lifespan)
 app.include_router(node_router)
 app.include_router(edge_router)
 app.include_router(canvas_router)
+app.include_router(llm_router)
 
 
 app.add_middleware(

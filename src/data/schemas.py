@@ -23,7 +23,7 @@ class ReadBase(BaseModel):
         id: The unique identifier.
     """
 
-    id: UUID
+    id: UUID | str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -273,3 +273,8 @@ class DeleteResponse(BaseModel):
 
     message: str
     id: UUID
+
+
+class PromptRequest(BaseModel):
+    prompt: str
+    target_id: UUID | str
