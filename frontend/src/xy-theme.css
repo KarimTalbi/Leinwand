@@ -1,5 +1,5 @@
 .react-flow {
-    --xy-background-color: #303030;
+    --xy-background-color: #fff4ea;
     /* Custom Variables */
     --xy-theme-selected: #f57dbd;
     --xy-theme-hover: #c5c5c5;
@@ -33,15 +33,13 @@
 
 .react-flow__node {
     box-shadow: var(--xy-node-boxshadow-default);
-    width: 300px;
-    height: 400px;
     border-radius: 10px;
-    background-color: #f9d679;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0;
+    background-color: #e10466;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
+    /*text-align: center;*/
+    padding: 15px;
     font-size: 12px;
     flex-direction: column;
     border: var(--xy-node-border-default);
@@ -122,7 +120,7 @@
 
 :root {
     --color-primary: #ff0073;
-    --color-background: #fefefe;
+    --color-background: #ffffff;
     --color-hover-bg: #f6f6f6;
     --color-disabled: #76797e;
 }
@@ -214,19 +212,19 @@
     box-shadow: 0 0 0 2px rgb(48, 48, 48);
 }
 
-.xy-theme__textarea:focus {
-    outline: none;
-}
+/*.xy-theme__textarea:focus {*/
+/*    outline: none;*/
+/*}*/
 
-.xy-theme__textarea {
-    border: none;
-    outline: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 7px;
-    background-color: #e7e7e7;
-    font-size: 12px;
-    color: inherit;
-}
+/*.xy-theme__textarea {*/
+/*    border: none;*/
+/*    outline: none;*/
+/*    padding: 0.5rem 0.75rem;*/
+/*    border-radius: 7px;*/
+/*    background-color: #e7e7e7;*/
+/*    font-size: 12px;*/
+/*    color: inherit;*/
+/*}*/
 
 
 

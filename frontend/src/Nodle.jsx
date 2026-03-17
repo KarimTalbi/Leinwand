@@ -1,5 +1,7 @@
 import {memo, useState} from 'react';
 import {Handle, Position, useReactFlow} from '@xyflow/react';
+import {Textarea, Field, Label, Description, Fieldset, Legend, Button} from "@headlessui/react";
+import clsx from "clsx";
 
 const Nodle = ({id, data}) => {
     const {setNodes} = useReactFlow();
@@ -39,46 +41,34 @@ const Nodle = ({id, data}) => {
     };
 
     return (
-        <div style={{
-            padding: '10px',
-            borderRadius: '10px',
-            background: '#ffffff',
-            height: '100%',
-            minWidth: '200px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-        }}>
-            <div style={{
-                fontSize: '12px',
-                fontWeight: 'bold'
-            }}>
-                {data.label}
-            </div>
-
-            <textarea
-                className="nodrag xy-theme__textarea"
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Enter prompt..."
-            />
-
-            <button
-                className="nodrag xy-theme__button"
-                onClick={handleSend}
-                disabled={Loading}
-            >
-                {Loading ? 'Sending...' : 'Send to Backend'}
-            </button>
-
-            {data.response && (
-                <div style={{fontSize: '11px', background: '#f0f0f0', padding: '5px'}}>
-                    {data.response}
+        <div className="w-100 max-w-lg bg-white border border-black/12  rounded-xl p-4 shadow-xl">
+            <Fieldset className="space-y-4">
+                <Legend className="text-lg font-bold text-black">{data.label}</Legend>
+                <Field>
+                    <Label className="text-sm font-medium text-black">Enter prompt</Label>
+                    <Textarea
+                        className={clsx(
+                            'mt-1 block w-full resize-none rounded-lg border-none bg-black/5 px-3 py-1.5 text-sm/6 text-black',
+                            'focus:bg-white/80 transition-all focus:ring-1 focus:ring-white/30'
+                        )}
+                        rows={2}
+                    />
+                </Field>
+                <Button
+                    className="inline-flex items-center gap-2 rounded-md bg-black/5  px-3 py-1.5 text-sm/6 font-semibold text-black shadow shadow-gray/5 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-gray-600 data-open:bg-gray-700"
+                    onClick={handleSend}
+                    disabled={Loading}
+                >
+                    {Loading ? 'Loading...' : 'Send'}
+                </Button>
+                <div className="text-sm/6 text-black bg-white/5 border border-white/10 p-3 rounded-lg mt-2 italic">
+                    {data.response ? data.response : 'No response yet'}
                 </div>
-            )}
+            </Fieldset>
 
-            <Handle type="target" position={Position.Left} />
-            <Handle type="source" position={Position.Right} />
+            <Handle type="target" position={Position.Left} className="bg-[#7dacb5]! w-3! h-3! border-none!" />
+            <Handle type="source" position={Position.Right} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+
         </div>
     );
 };

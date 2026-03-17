@@ -15,14 +15,12 @@ const initialNodes = [
         position: {x: 0, y: 0},
         data: {label: 'Node 1'},
         type: 'Nodle',
-        style: {backgroundColor: 'white', color: 'black'}
     },
     {
         id: 'n2',
         position: {x: 100, y: 100},
         data: {label: 'Node 2'},
         type: 'Nodle',
-        style: {backgroundColor: 'white', color: 'black'}
     }
 ];
 
@@ -64,20 +62,21 @@ function Flow() {
     );
 
     return (
-        <div style={{width: '100vw', height: '100vh'}}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                fitView
-                nodeTypes={nodeTypes}
-                fitViewOptions={{padding: 0.5}}
-            >
-                <Background/>
-                <Controls/>
-                <MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />
+
+    <div className="relative h-screen w-screen overflow-hidden">
+        <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
+            nodeTypes={nodeTypes}
+            fitViewOptions={{padding: 0.5}}
+        >
+            <Background />
+        <Controls/>
+            {/*<MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />*/}
             </ReactFlow>
         </div>
     );
