@@ -11,13 +11,17 @@ const nodeTypes = {
 
 const initialNodes = [
     {
-        id: 'n1',
+        id: '5e3be38bc1024aa892059d994c24f9a9',
         position: {x: 0, y: 0},
-        data: {label: 'Node 1'},
+        data: {
+            label: 'Adding Markdown to React Flow',
+            prompt: 'How do i add markdown to the response area?',
+            response: ``
+        },
         type: 'Nodle',
     },
     {
-        id: 'n2',
+        id: 'ea66cce1c0c04b308477b93ada616f48',
         position: {x: 100, y: 100},
         data: {label: 'Node 2'},
         type: 'Nodle',
@@ -32,17 +36,6 @@ const initialEdges = [
         type: 'default',
     },
 ];
-
-const nodeColor = (node) => {
-    switch (node.type) {
-        case 'input':
-            return '#6ede87';
-        case 'output':
-            return '#6865A5';
-        default:
-            return '#ff0072';
-    }
-};
 
 function Flow() {
     const [nodes, setNodes] = useState(initialNodes);
@@ -76,7 +69,6 @@ function Flow() {
         >
             <Background />
         <Controls/>
-            {/*<MiniMap nodeColor={nodeColor} nodeStrokeWidth={3} zoomable pannable />*/}
             </ReactFlow>
         </div>
     );
