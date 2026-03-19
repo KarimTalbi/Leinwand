@@ -12,7 +12,7 @@ from src.core.dependencies import get_edge_service
 edge_router = APIRouter(prefix="/edges", tags=["Edges"])
 
 
-@edge_router.post("/")
+@edge_router.post("")
 async def create_edge(
     payload: EdgeCreate, service: EdgeService = Depends(get_edge_service)
 ) -> EdgeRead:
@@ -29,7 +29,7 @@ async def create_edge(
     return await service.add(payload)
 
 
-@edge_router.delete("/")
+@edge_router.delete("")
 async def delete_edge(
     edge_id: UUID, service: EdgeService = Depends(get_edge_service)
 ) -> DeleteResponse:

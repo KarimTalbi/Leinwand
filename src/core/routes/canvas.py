@@ -6,7 +6,7 @@ from src.core.dependencies import get_canvas_service
 canvas_router = APIRouter(prefix="/canvas", tags=["Canvas"])
 
 
-@canvas_router.get("/")
+@canvas_router.get("")
 async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
     """
     Retrieves the entire canvas (nodes and edges).
@@ -18,5 +18,11 @@ async def canvas(service: CanvasService = Depends(get_canvas_service)) -> Canvas
         The current state of the canvas.
     """
     result = await service.load_canvas()
-    print(result)
     return result
+
+
+@canvas_router.post("")
+async def canvas_save(
+    data: CanvasRead, service: CanvasService = Depends(get_canvas_service)
+):
+    await service.save_canvas()

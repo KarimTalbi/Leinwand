@@ -160,22 +160,32 @@ class NodeUpdate(UpdateBase):
     response: str | None = Field(default=None)
 
 
-class NodeCreate(NodeBase, CreateBase):
-    """
-    Model for creating node data.
+class NodeCreate(CreateBase):
+    type: str
+    position: dict[str, float]
+    data: NodeData
 
-    Attributes:
-        id: The unique identifier.
-        type: The type of the node.
-        pos_x: The horizontal position.
-        pos_y: The vertical position.
-        label: The label of the node.
-        prompt: The input prompt.
-        response: The generated response.
-    """
+    @property
+    def pos_x(self) -> float:
+        return self.position.get("x", 0.0)
 
-    prompt: str | None = Field(default=None)
-    response: str | None = Field(default=None)
+    @property
+    def pos_y(self) -> float:
+        return self.position.get("y", 0.0)
+
+    @property
+    def label(self) -> str:
+        return self.data.label
+
+    @property
+    def prompt(self) -> str | None:
+        return self.data.prompt
+
+    @property
+    def response(self) -> str | None:
+        return self.data.response
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EdgeBase(BaseModel):
@@ -260,6 +270,11 @@ class CanvasRead(BaseModel):
     @cached_property
     def edge_links(self) -> list[tuple[UUID, UUID]]:
         return [(e.source, e.target) for e in self.edges]
+
+
+class CanvasCreate(BaseModel):
+    nodes: list[NodeCreate]
+    edges: list[EdgeCreate]
 
 
 class DeleteResponse(BaseModel):
