@@ -1,7 +1,3 @@
-"""
-Main entry point for the NodeLLM FastAPI application.
-"""
-
 import logging
 from contextlib import asynccontextmanager
 
@@ -19,7 +15,6 @@ logging.getLogger("app").setLevel(logging.DEBUG)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """App lifespan: init DB on startup, cleanup on shutdown."""
     print("🚀 Initializing database...")
     await init_db()
     print("✅ Database ready")
@@ -48,31 +43,11 @@ app.add_middleware(
 
 @app.exception_handler(ResourceNotFoundError)
 async def not_found(request: Request, exc: ResourceNotFoundError):
-    """
-    Handles ResourceNotFoundError by returning a 404 response.
-
-    Args:
-        request: The incoming request.
-        exc: The raised exception.
-
-    Returns:
-        A JSON response with a 404 status code.
-    """
     return JSONResponse(status_code=404, content={"detail": "entity not found"})
 
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
-    """
-    Middleware to handle global exceptions and return a 500 response.
-
-    Args:
-        request: The incoming request.
-        call_next: The next handler in the chain.
-
-    Returns:
-        The response from the next handler or a 500 JSON response.
-    """
     try:
         return await call_next(request)
     except Exception as e:
@@ -83,12 +58,6 @@ async def db_session_middleware(request: Request, call_next):
 
 @app.get("/")
 async def root():
-    """
-    Root endpoint to check API status.
-
-    Returns:
-        A message indicating the API is online.
-    """
     return {"message": "API is online"}
 
 

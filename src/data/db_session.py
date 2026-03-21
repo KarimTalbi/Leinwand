@@ -36,12 +36,6 @@ async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    """
-    Provides an asynchronous SQLAlchemy session generator.
-
-    Yields:
-        AsyncSession: An asynchronous database session.
-    """
     async with async_session() as session:
         async with session.begin():
             yield session
