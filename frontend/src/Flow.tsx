@@ -48,7 +48,7 @@ function Flow() {
         <div className="relative h-screen w-screen overflow-hidden">
 
             {/* Sync Indicator */}
-            <div className="absolute top-4 right-4 z-50 flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3 py-1 border border-white/20 shadow-lg">
+            <div className="absolute top-4 right-4 z-50 flex items-center gap-2 rounded-full bg-white backdrop-blur-md px-3 py-1 border border-white/20 shadow-lg">
                 <div className={`h-2.5 w-2.5 rounded-full ${syncing ? 'animate-pulse bg-yellow-400' : 'bg-green-500'}`} />
                 <span className="text-s font-medium text-black/80">
                     {syncing ? 'Syncing...' : 'Saved'}
