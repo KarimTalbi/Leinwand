@@ -84,7 +84,7 @@ const useStore = create<AppState>((set, get) => ({
     },
 
     onConnect: (connection) => {
-        set({edges: addEdge({id: uuid(), ...connection}, get().edges)});
+        set({edges: addEdge({...connection}, get().edges)});
         void get().saveCanvas()
     },
 
