@@ -26,12 +26,6 @@ if TYPE_CHECKING:
     from sqlalchemy.engine import Result
 
 
-class ResourceNotFoundError(Exception): ...
-
-
-class InvalidUUIDError(Exception): ...
-
-
 _T = TypeVar("_T", bound=ModelT)
 _R = TypeVar("_R", bound=SchemaT)
 _C = TypeVar("_C", bound=SchemaT)
@@ -66,6 +60,17 @@ class BaseService[_T, _R, _C]:
 class NodeService(BaseService[Node, NodeRead, NodeCreate]):
     def __init__(self, session: AsyncSession):
         super().__init__(session=session, model=Node, read_schema=NodeRead)
+
+    async def update(self, payload) -> NodeRead:
+        entity = self.session.get(self._t, payload.id)
+
+        for key, value in payload.model_dump(exclude_unset=True).items():
+            setattr(entity, key, value)
+
+        self.session.add(entity)
+        await self.session.flush()
+        await self.session.refresh(entity)
+        return self._r.model_validate(entity)
 
 
 class EdgeService(BaseService[Edge, EdgeRead, EdgeCreate]):
