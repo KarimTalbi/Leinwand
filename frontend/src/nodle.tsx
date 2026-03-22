@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
 import {Textarea, Field, Fieldset, Legend, Button} from "@headlessui/react";
 import clsx from "clsx";
@@ -9,8 +9,13 @@ import useStore from './store';
 import api from './api'
 import {AppNodeData} from "./types.ts";
 
-const Nodle = ({id, data} : {id: string, data: AppNodeData}) => {
+const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
     const [loading, setLoading] = useState(false);
+    const [hasResponse, setHasResponse] = useState(false);
+
+    useEffect(() => {
+        setHasResponse(!!data.response);
+    }, [data]);
 
     const updateNodeData = useStore((s) => s.updateNodeData);
     const saveCanvas = useStore((s) => s.saveCanvas);
@@ -28,8 +33,10 @@ const Nodle = ({id, data} : {id: string, data: AppNodeData}) => {
                 target_id: id,
             });
 
-            updateNodeData(id, {response: res.data.response});
+            updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.label});
             await saveCanvas();
+
+            setHasResponse(true);
 
         } catch (err) {
             console.error('Error sending prompt to LLM:', err);
@@ -45,23 +52,34 @@ const Nodle = ({id, data} : {id: string, data: AppNodeData}) => {
                 <Legend className="text-lg font-bold text-[#7dacb5]">{data.label}</Legend>
 
                 <Field>
-                    <Textarea
-                        value={data.prompt}
-                        onChange={handleTextChange}
-                        placeholder='Enter your prompt...'
-                        className={clsx(
-                            'nodrag mt-1 block w-full resize-none rounded-lg border-none bg-black/5 px-3 py-1.5 text-sm/6 text-black',
-                            'focus:bg-white/80 transition-all focus:ring-1 focus:ring-[#7dacb5]'
-                        )}
-                        rows={2}
-                    />
+                    {
+                        hasResponse
+                            ? (
+                                <div
+                                    className="text-sm/6 text-black bg-black/5 border border-black/5 p-3 rounded-lg mt-2 min-h-12.5">
+                                    {data.prompt}
+                                </div>
+                            ) : (
+
+                                <Textarea
+                                    value={data.prompt}
+                                    onChange={handleTextChange}
+                                    placeholder='Enter your prompt...'
+                                    className={clsx(
+                                        'nodrag mt-1 block w-full resize-none rounded-lg border-none bg-black/5 px-3 py-1.5 text-sm/6 text-black',
+                                        'focus:bg-white/80 transition-all focus:ring-1 focus:ring-[#7dacb5]'
+                                    )}
+                                    rows={2}
+                                />
+                            )
+                    }
                 </Field>
 
                 <div className="flex justify-end">
                     <Button
                         className="inline-flex items-center gap-2 rounded-md bg-[#7dacb5] px-5 py-1.5 text-sm/6 font-semibold text-white shadow hover:bg-[#6a99a1] disabled:opacity-50 transition-colors"
                         onClick={handleSend}
-                        disabled={loading || !data.prompt}
+                        disabled={loading || hasResponse}
                     >
                         {loading ? 'Thinking...' : 'Send'}
                     </Button>
@@ -81,8 +99,8 @@ const Nodle = ({id, data} : {id: string, data: AppNodeData}) => {
             </Fieldset>
 
             {/* Handles */}
-            <Handle type="target" position={Position.Left} className="bg-[#7dacb5]! w-3! h-3! border-none!" />
-            <Handle type="source" position={Position.Right} className="bg-[#7dacb5]! w-3! h-3! border-none!" />
+            <Handle type="target" position={Position.Left} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle type="source" position={Position.Right} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
         </div>
     );
 };
