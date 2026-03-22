@@ -22,5 +22,5 @@ class AiModel:
             self._model = self._model.with_structured_output(structure)
 
     async def run(self, prompt: Prompt) -> _Response:
-        result: AIMessage | _Response = await self._model.ainvoke(prompt.get)
+        result: AIMessage | _Response = await self._model.ainvoke(prompt)
         return result

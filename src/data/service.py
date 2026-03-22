@@ -79,34 +79,30 @@ class CanvasService:
         self.edge_service: EdgeService = EdgeService(session)
 
     async def load(self) -> CanvasRead:
-        async with asyncio.TaskGroup() as tg:
-            node_task = tg.create_task(self.node_service.get())
-            edge_task = tg.create_task(self.edge_service.get())
+        nodes = await self.node_service.get()
+        edges = await self.edge_service.get()
 
         return CanvasRead(
-            nodes=[NodeRead.model_validate(n) for n in node_task.result()],
-            edges=[EdgeRead.model_validate(e) for e in edge_task.result()],
+            nodes=[NodeRead.model_validate(n) for n in nodes],
+            edges=[EdgeRead.model_validate(e) for e in edges],
         )
 
     async def wipe(self):
-        async with asyncio.TaskGroup() as tg:
-            tg.create_task(self.edge_service.clear())
-            tg.create_task(self.node_service.clear())
+        await self.edge_service.clear()
+        await self.node_service.clear()
 
         return ConfRes(message="Wiped successfully", id="*")
 
     async def save(self, canvas: CanvasCreate) -> ConfRes:
-        async with asyncio.TaskGroup() as tg:
-            if canvas.nodes:
-                tg.create_task(self.node_service.create(canvas.nodes))
-            if canvas.edges:
-                tg.create_task(self.edge_service.create(canvas.edges))
+        if canvas.nodes:
+            await self.node_service.create(canvas.nodes)
+        if canvas.edges:
+            await self.edge_service.create(canvas.edges)
 
         return ConfRes(message="Saved successfully", id="*")
 
     async def sync(self, canvas: CanvasCreate) -> ConfRes:
-        async with asyncio.TaskGroup() as tg:
-            tg.create_task(self.wipe())
-            tg.create_task(self.save(canvas))
+        await self.wipe()
+        await self.save(canvas)
 
         return ConfRes(message="Synced successfully", id="*")

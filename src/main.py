@@ -44,6 +44,7 @@ async def db_session_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
+        print(e)
         return JSONResponse(
             status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
         )

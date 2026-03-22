@@ -17,7 +17,7 @@ class Context:
     node_map: dict[UUID, NodeRead]
     edge_links: list[tuple[UUID, UUID]]
 
-    full_graph: nx.DiGraph[UUID] = field(init=False, default_factory=nx.DiGraph)
+    full_graph: nx.DiGraph[UUID] | None = field(init=False, default=None)
     graph: nx.DiGraph[UUID] | None = field(init=False, default=None)
     order: list[UUID] = field(init=False, default_factory=list)
     aliases: dict[UUID, str] = field(init=False, default_factory=dict)
@@ -30,7 +30,7 @@ class Context:
     )
     summary: str = field(init=False, default_factory=str)
     node_sections: list[str] = field(init=False, default_factory=list)
-    prompt: str = field(init=False, default_factory=str)
+    prompt: str = field(default="")
 
     @classmethod
     def from_canvas(cls, target_id: UUID, canvas: CanvasRead) -> Self:

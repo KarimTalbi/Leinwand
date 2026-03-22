@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
-from uuid import UUID
 
 import networkx as nx
 
@@ -19,13 +18,14 @@ def step(func: Callable[[Context], None]) -> Callable[[Context], None]:
 
 @step
 def _get_full_graph(ctx: Context) -> None:
+    ctx.full_graph = nx.DiGraph()
     ctx.full_graph.add_nodes_from(ctx.node_map.keys())
     ctx.full_graph.add_edges_from(ctx.edge_links)
 
 
 @step
 def _get_sub_graph(ctx: Context) -> None:
-    lineage: set[UUID] = nx.ancestors(ctx.full_graph, ctx.target_id) | {ctx.target_id}
+    lineage = nx.ancestors(ctx.full_graph, ctx.target_id) | {ctx.target_id}
     ctx.graph = nx.DiGraph(ctx.full_graph.subgraph(lineage))
 
 
@@ -67,14 +67,15 @@ def build_context(ctx: Context) -> None:
     for func in PIPELINE:
         func(ctx)
 
-        if func == _get_full_graph and (
-            not ctx.full_graph
-            or ctx.full_graph.number_of_nodes() == 0
-            or ctx.target_id not in ctx.full_graph
-        ):
-            raise RuntimeError("Graph data is missing")
 
-        if func == _get_sub_graph and (
-            not ctx.graph or ctx.graph.number_of_nodes() == 0
-        ):
-            raise RuntimeError("Subgraph is empty")
+#        if func == _get_full_graph and (
+#            not ctx.full_graph
+#            or ctx.full_graph.number_of_nodes() == 0
+#            or ctx.target_id not in ctx.full_graph
+#        ):
+#            raise RuntimeError("Graph data is missing")
+
+#        if func == _get_sub_graph and (
+#            not ctx.graph or ctx.graph.number_of_nodes() == 0
+#        ):
+#            raise RuntimeError("Subgraph is empty")

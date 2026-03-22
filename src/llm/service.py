@@ -30,6 +30,6 @@ class PromptService:
     def __init__(self, model: AiModel) -> None:
         self.model = model
 
-    async def generate_graph_response(self, ctx: Context, prompt: str) -> AiResponse:
-        prompt = Prompt(system=SYSTEM_PROMPT, context=ctx.prompt, prompt=prompt)
-        return await self.model.run(prompt)
+    async def generate_graph_response(self, ctx: str, prompt: str) -> AiResponse:
+        txt = Prompt(system=SYSTEM_PROMPT, context=ctx, prompt=prompt)
+        return await self.model.run(txt.get)

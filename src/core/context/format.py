@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
 
+from data.schemas import NodeData
+
 if TYPE_CHECKING:
     from src.core.context.model import Context
 
@@ -39,7 +41,7 @@ def _get_node_sections(ctx: Context) -> None:
             f" - Logic Streams: {', '.join(ctx.branches[nid])} | Level: {ctx.depths[nid]}\n"
             f" - Content:\n"
             f"   - User:\n{node.data.prompt}\n"
-            f"   - AI:\n{node.data.response if node.data.response else 'No response'}"
+            f"   - AI:\n{node.data.response}"
             f"{'-' * 50}\n"
         )
 
