@@ -3,7 +3,6 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -39,9 +38,10 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
             yield session
 
 
-async def init_db():
+async def init_db(reset: bool = False):
     async with engine.begin() as conn:
-        await conn.execute(text("PRAGMA foreign_keys=ON"))
+        if reset:
+            await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
 

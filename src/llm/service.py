@@ -7,7 +7,7 @@ from src.llm.schemas import Prompt
 if TYPE_CHECKING:
     from core.context import Context
     from src.llm.model import AiModel
-    from src.llm.schemas import Response
+    from src.llm.schemas import AiResponse
 
 
 SYSTEM_PROMPT = (
@@ -30,6 +30,6 @@ class PromptService:
     def __init__(self, model: AiModel) -> None:
         self.model = model
 
-    async def generate_graph_response(self, ctx: Context) -> Response:
-        prompt = Prompt(system=SYSTEM_PROMPT, context=ctx.prompt)
+    async def generate_graph_response(self, ctx: Context, prompt: str) -> AiResponse:
+        prompt = Prompt(system=SYSTEM_PROMPT, context=ctx.prompt, prompt=prompt)
         return await self.model.run(prompt)

@@ -1,5 +1,4 @@
 from typing import Any, Protocol
-from uuid import UUID
 
 
 class ModelT(Protocol):

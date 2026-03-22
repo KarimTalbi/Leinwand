@@ -59,8 +59,3 @@ class CanvasCreate(BaseModel):
 class ConfRes(BaseModel):
     message: str
     id: Any
-
-
-class PromptRequest(BaseModel):
-    prompt: str
-    target_id: UUID | str

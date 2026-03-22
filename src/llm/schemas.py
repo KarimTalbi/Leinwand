@@ -14,15 +14,21 @@ class ModelConfig(BaseModel):
     model_kwargs: dict[str, Any] = Field(default_factory=dict)
 
 
-class Response(BaseModel):
+class AiResponse(BaseModel):
     label: str
-    response_text: str
+    response: str
+
+
+class PromptRequest(BaseModel):
+    prompt: str
+    target_id: str
 
 
 class Prompt(BaseModel):
     system: str
     context: str
+    prompt: str
 
     @cached_property
     def get(self) -> str:
-        return f"{self.system}\n\n{self.context}"
+        return {"system": self.system, "context": self.context, "prompt": self.prompt}

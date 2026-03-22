@@ -6,7 +6,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
-from src.llm.schemas import ModelConfig, Prompt, Response
+from src.llm.schemas import AiResponse, ModelConfig, Prompt
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ _Response = TypeVar("_Response", bound=BaseModel)
 
 
 class AiModel:
-    def __init__(self, config: ModelConfig, structure: _Response = Response) -> None:
+    def __init__(self, config: ModelConfig, structure: _Response) -> None:
         self._model: BaseChatModel = init_chat_model(
             **config.model_dump(exclude_none=True)
         )

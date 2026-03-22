@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from uuid import UUID
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request
@@ -11,7 +12,7 @@ from core.context import Context
 from core.dependencies import get_ai_model, get_context
 from data import CanvasRead, CanvasService, engine, init_db
 from data.schemas import CanvasCreate, ConfRes
-from llm import AiModel, PromptService, Response
+from llm import AiModelBase, AiResponse, PromptRequest, PromptService
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -20,7 +21,7 @@ logging.getLogger("app").setLevel(logging.DEBUG)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🚀 Initializing database...")
-    await init_db()
+    await init_db(reset=False)
     print("✅ Database ready")
 
     yield
@@ -38,6 +39,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
@@ -65,16 +67,17 @@ async def canvas(service: CanvasService = Depends(get_canvas_service)) -> Canvas
 async def canvas_save(
     data: CanvasCreate, service: CanvasService = Depends(get_canvas_service)
 ) -> ConfRes:
+    print(data)
     return await service.sync(data)
+
 
 # --- AI ---
 @app.post("/llm")
 async def generate_response(
-    ctx: Context = Depends(get_context),
-    ai_model: AiModel = Depends(get_ai_model),
-) -> Response:
-    service = PromptService(ai_model)
-    return await service.generate_graph_response(ctx)
+        data: PromptRequest
+) -> AiResponse:
+    print(data.target_id, data.prompt)
+    return AiResponse(label="test Node", response="### test\ntest")
 
 
 if __name__ == "__main__":

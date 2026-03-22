@@ -35,5 +35,7 @@ class Context:
     @classmethod
     def from_canvas(cls, target_id: UUID, canvas: CanvasRead) -> Self:
         return cls(
-            target_id=target_id, node_map=canvas.node_map, edge_links=canvas.edge_links
+            target_id=target_id,
+            node_map={n.id: n for n in canvas.nodes},
+            edge_links={(e.source, e.target) for e in canvas.edges},
         )

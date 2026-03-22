@@ -34,12 +34,12 @@ def _get_node_sections(ctx: Context) -> None:
         tag = " [!!! Target !!!]" if nid == ctx.target_id else ""
 
         ctx.node_sections.append(
-            f"### Node: {ctx.aliases[nid]}{tag} (Pos: x={node.pos_x}, y={node.pos_y})\n"
+            f"### Node: {ctx.aliases[nid]}{tag} (Pos: x={node.position.get('x')}, y={node.position.get('y')})\n"
             f" - Prerequisites: {', '.join(parents) if parents else 'None'}\n"
             f" - Logic Streams: {', '.join(ctx.branches[nid])} | Level: {ctx.depths[nid]}\n"
             f" - Content:\n"
-            f"   - User:\n{node.prompt}\n"
-            f"   - AI:\n{node.response if node.response else 'No response'}"
+            f"   - User:\n{node.data.prompt}\n"
+            f"   - AI:\n{node.data.response if node.data.response else 'No response'}"
             f"{'-' * 50}\n"
         )
 
