@@ -8,11 +8,6 @@ export type AppNodeData = {
 
 export type AppNode = Node<AppNodeData>;
 
-export interface CanvasWrite {
-    nodes?: AppNode[];
-    edges?: Edge[];
-}
-
 export interface AppState {
     nodes: AppNode[];
     edges: Edge[];
@@ -21,7 +16,7 @@ export interface AppState {
     // Actions
     fetchCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
-    addNode: (label: string) => void;
+    addNode: (position?: {x: number, y: number}) => void;
     updateNodeData: (id: string, data: Partial<AppNodeData>) => void;
 
     // React Flow Handlers

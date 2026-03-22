@@ -45,12 +45,12 @@ const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    addNode: (label) => {
+    addNode: (position?: {x: number, y: number}) => {
         const newNode: AppNode = {
             id: uuid(),
             type: 'nodle',
-            position: {x: Math.random() * 400, y: Math.random() * 400},
-            data: {label: label, prompt: '', response: ''}
+            position: position ?? {x: Math.random() * 400, y: Math.random() * 400},
+            data: {label: "New Node", prompt: '', response: ''}
         };
 
         set({nodes: [...get().nodes, newNode]});
