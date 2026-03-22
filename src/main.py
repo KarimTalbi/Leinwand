@@ -2,12 +2,16 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.routes import canvas_router, edge_router, llm_router, node_router
-from data import ResourceNotFoundError, engine, init_db
+from core import get_canvas_service
+from core.context import Context
+from core.dependencies import get_ai_model, get_context
+from data import CanvasRead, CanvasService, engine, init_db
+from data.schemas import CanvasCreate, ConfRes
+from llm import AiModel, PromptService, Response
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -26,11 +30,6 @@ async def lifespan(app: FastAPI):
 
 app: FastAPI = FastAPI(lifespan=lifespan)
 
-app.include_router(node_router)
-app.include_router(edge_router)
-app.include_router(canvas_router)
-app.include_router(llm_router)
-
 
 app.add_middleware(
     middleware_class=CORSMiddleware,
@@ -39,12 +38,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.exception_handler(ResourceNotFoundError)
-async def not_found(request: Request, exc: ResourceNotFoundError):
-    return JSONResponse(status_code=404, content={"detail": "entity not found"})
-
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
@@ -59,6 +52,29 @@ async def db_session_middleware(request: Request, call_next):
 @app.get("/")
 async def root():
     return {"message": "API is online"}
+
+
+# --- CANVAS DATA ---
+@app.get("/canvas")
+async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
+    result = await service.load()
+    return result
+
+
+@app.post("/canvas")
+async def canvas_save(
+    data: CanvasCreate, service: CanvasService = Depends(get_canvas_service)
+) -> ConfRes:
+    return await service.sync(data)
+
+# --- AI ---
+@app.post("/llm")
+async def generate_response(
+    ctx: Context = Depends(get_context),
+    ai_model: AiModel = Depends(get_ai_model),
+) -> Response:
+    service = PromptService(ai_model)
+    return await service.generate_graph_response(ctx)
 
 
 if __name__ == "__main__":
