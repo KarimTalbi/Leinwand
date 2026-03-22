@@ -10,7 +10,6 @@ from .schemas import EdgeUpdate as EdgeUpdate
 from .schemas import NodeCreate as NodeCreate
 from .schemas import NodeRead as NodeRead
 from .schemas import NodeUpdate as NodeUpdate
-from .schemas import PromptRequest as PromptRequest
 from .service import CanvasService as CanvasService
 from .service import EdgeService as EdgeService
 from .service import NodeService as NodeService

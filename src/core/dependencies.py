@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.context import Context, build_context, build_prompt
 from data import CanvasService, EdgeService, NodeService, get_async_session
-from llm import AiModel, AiResponse, ModelConfig
+from llm import AiModel, AiResponse, ModelConfig, PromptService
 
 
 async def get_canvas_service(
@@ -42,3 +42,7 @@ def get_ai_model() -> AiModel:
     return AiModel(config=ModelConfig(), structure=AiResponse)
 
 
+async def get_prompt_service(
+    model: AiModel = Depends(get_ai_model),
+) -> PromptService:
+    return PromptService(model)

@@ -1,6 +1,5 @@
 import logging
 from contextlib import asynccontextmanager
-from uuid import UUID
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request
@@ -8,11 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from core import get_canvas_service
-from core.context import Context
-from core.dependencies import get_ai_model, get_context
+from core.dependencies import get_context, get_prompt_service
 from data import CanvasRead, CanvasService, engine, init_db
 from data.schemas import CanvasCreate, ConfRes
-from llm import AiModelBase, AiResponse, PromptRequest, PromptService
+from llm import AiResponse, PromptRequest, PromptService
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -67,17 +65,18 @@ async def canvas(service: CanvasService = Depends(get_canvas_service)) -> Canvas
 async def canvas_save(
     data: CanvasCreate, service: CanvasService = Depends(get_canvas_service)
 ) -> ConfRes:
-    print(data)
     return await service.sync(data)
 
 
 # --- AI ---
 @app.post("/llm")
 async def generate_response(
-        data: PromptRequest
+    data: PromptRequest,
+    service: PromptService = Depends(get_prompt_service),
+    ctx: str = Depends(get_context),
 ) -> AiResponse:
-    print(data.target_id, data.prompt)
-    return AiResponse(label="test Node", response="### test\ntest")
+    result = await service.generate_graph_response(ctx, data.prompt)
+    return result
 
 
 if __name__ == "__main__":
