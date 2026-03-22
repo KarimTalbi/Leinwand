@@ -8,7 +8,7 @@ canvas_router = APIRouter(prefix="/canvas", tags=["Canvas"])
 
 @canvas_router.get("")
 async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
-    result = await service.load_canvas()
+    result = await service.load()
     return result
 
 

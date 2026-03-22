@@ -16,8 +16,6 @@ from src.data.db_models import Base
 USER_DATA_PATH = os.getenv("USER_DATA_PATH", "./data")
 DB_PATH = Path(USER_DATA_PATH) / "db.sqlite"
 
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-
 DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH.absolute()}"
 
 

@@ -30,7 +30,7 @@ async def get_edge_service(
 async def get_context(
     target_id: UUID, service: CanvasService = Depends(get_canvas_service)
 ) -> str:
-    canvas = await service.load_canvas()
+    canvas = await service.load()
     context = Context.from_canvas(target_id, canvas)
     build_context(context)
     build_prompt(context)

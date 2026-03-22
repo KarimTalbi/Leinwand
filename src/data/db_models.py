@@ -1,44 +1,25 @@
 import uuid
-from typing import Optional
 
-from sqlalchemy import Float, ForeignKey, String, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import JSON, ForeignKey, String
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-class Base(DeclarativeBase):
-    id: Mapped[uuid.UUID] = mapped_column(
-        primary_key=True, default=uuid.uuid4(), index=True
-    )
+class Base(DeclarativeBase): ...
 
 
 class Node(Base):
     __tablename__ = "nodes"
 
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
     type: Mapped[str] = mapped_column(String())
-    pos_x: Mapped[float] = mapped_column(Float)
-    pos_y: Mapped[float] = mapped_column(Float)
-    label: Mapped[str] = mapped_column(String())
-    prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    response: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-
-    outgoing_edges: Mapped[list["Edge"]] = relationship(
-        "Edge", foreign_keys="[Edge.source]", back_populates="source_node"
-    )
-    incoming_edges: Mapped[list["Edge"]] = relationship(
-        "Edge", foreign_keys="[Edge.target]", back_populates="target_node"
-    )
+    position: Mapped[dict[str, float]] = mapped_column(MutableDict.as_mutable(JSON))
+    data: Mapped[dict[str, str | None]] = mapped_column(MutableDict.as_mutable(JSON))
 
 
 class Edge(Base):
     __tablename__ = "edges"
 
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
     source: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id"), index=True)
-
     target: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id"), index=True)
-
-    source_node: Mapped["Node"] = relationship(
-        "Node", foreign_keys=[source], back_populates="outgoing_edges"
-    )
-    target_node: Mapped["Node"] = relationship(
-        "Node", foreign_keys=[target], back_populates="incoming_edges"
-    )
