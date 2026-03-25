@@ -58,8 +58,7 @@ async def root():
 # --- CANVAS DATA ---
 @app.get("/canvas")
 async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
-    result = await service.load()
-    return result
+    return await service.load()
 
 
 @app.post("/canvas")
@@ -76,8 +75,7 @@ async def generate_response(
     service: PromptService = Depends(get_prompt_service),
     ctx: str = Depends(get_context),
 ) -> AiResponse:
-    result = await service.generate_graph_response(ctx, data.prompt)
-    return result
+    return await service.generate_graph_response(ctx, data.prompt)
 
 
 if __name__ == "__main__":

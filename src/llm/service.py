@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from src.llm.schemas import Prompt
 
 if TYPE_CHECKING:
-    from core.context import Context
     from src.llm.model import AiModel
     from src.llm.schemas import AiResponse
 

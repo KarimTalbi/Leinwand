@@ -58,4 +58,4 @@ class CanvasCreate(BaseModel):
 
 class ConfRes(BaseModel):
     message: str
-    id: Any
+    id: Any | None = None

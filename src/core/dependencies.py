@@ -2,7 +2,6 @@ from functools import lru_cache
 from uuid import UUID
 
 from fastapi import Depends
-from langsmith import expect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.context import Context, build_context, build_prompt

@@ -1,4 +1,3 @@
-import asyncio
 from typing import TypeVar
 
 from sqlalchemy import delete, select
@@ -91,7 +90,7 @@ class CanvasService:
         await self.edge_service.clear()
         await self.node_service.clear()
 
-        return ConfRes(message="Wiped successfully", id="*")
+        return ConfRes(message="Wiped successfully")
 
     async def save(self, canvas: CanvasCreate) -> ConfRes:
         if canvas.nodes:
@@ -99,10 +98,10 @@ class CanvasService:
         if canvas.edges:
             await self.edge_service.create(canvas.edges)
 
-        return ConfRes(message="Saved successfully", id="*")
+        return ConfRes(message="Saved successfully")
 
     async def sync(self, canvas: CanvasCreate) -> ConfRes:
         await self.wipe()
         await self.save(canvas)
 
-        return ConfRes(message="Synced successfully", id="*")
+        return ConfRes(message="Synced successfully")

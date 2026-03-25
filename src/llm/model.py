@@ -6,7 +6,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
-from src.llm.schemas import AiResponse, ModelConfig, Prompt
+from src.llm.schemas import ModelConfig, Prompt
 
 load_dotenv()
 
