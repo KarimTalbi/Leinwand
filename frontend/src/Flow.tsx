@@ -11,6 +11,12 @@ import '@xyflow/react/dist/style.css';
 const nodeTypes: NodeTypes = {
     nodle: Nodle,
 };
+const defaultEdgeOptions = {
+    style: {strokeWidth: 4}
+};
+
+const gridSize = 20;
+
 
 const selector = (state: AppState) => ({
     nodes: state.nodes,
@@ -61,6 +67,9 @@ function Flow() {
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                snapToGrid={true}
+                snapGrid={[gridSize, gridSize]}
+                defaultEdgeOptions={defaultEdgeOptions}
                 onConnect={onConnect}
                 fitView
                 nodeTypes={nodeTypes}

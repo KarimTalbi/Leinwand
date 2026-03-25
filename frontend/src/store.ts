@@ -69,6 +69,7 @@ const useStore = create<AppState>((set, get) => ({
         });
 
         if (changes.some(c => (c.type === 'position' && !c.dragging) || c.type === 'remove')) {
+
             void get().saveCanvas()
         }
     },

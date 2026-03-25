@@ -6,6 +6,8 @@ export type AppNodeData = {
     response?: string;
 }
 
+
+
 export type AppNode = Node<AppNodeData>;
 
 export interface AppState {

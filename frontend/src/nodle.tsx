@@ -1,6 +1,6 @@
 import React, {memo, useEffect, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
-import {Textarea, Field, Fieldset, Legend, Button} from "@headlessui/react";
+import {Textarea, Field, Fieldset, Legend, Button, Label} from "@headlessui/react";
 import clsx from "clsx";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -33,7 +33,7 @@ const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
                 target_id: id,
             });
 
-            updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.label});
+            updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.title});
             await saveCanvas();
 
             setHasResponse(true);
@@ -47,10 +47,11 @@ const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
     };
 
     return (
-        <div className="w-80 max-w-lg bg-white border border-black/10 rounded-xl p-4 shadow-xl">
+        <div className="w-250  bg-white border border-black/10 rounded-xl p-4 shadow-xl">
             <Fieldset className="space-y-2">
-                <Legend className="text-lg font-bold text-[#7dacb5]">{data.label}</Legend>
+                <Legend className="text-lg font-bold text-[#7dacb5] pb-1">{data.label}</Legend>
 
+                <Label className="text-sm/6 font-bold text-black/80">Prompt:</Label>
                 <Field>
                     {
                         hasResponse
@@ -75,17 +76,8 @@ const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
                     }
                 </Field>
 
-                <div className="flex justify-end">
-                    <Button
-                        className="inline-flex items-center gap-2 rounded-md bg-[#7dacb5] px-5 py-1.5 text-sm/6 font-semibold text-white shadow hover:bg-[#6a99a1] disabled:opacity-50 transition-colors"
-                        onClick={handleSend}
-                        disabled={loading || hasResponse}
-                    >
-                        {loading ? 'Thinking...' : 'Send'}
-                    </Button>
-                </div>
-
-                <div className="text-sm/6 text-black bg-black/5 border border-black/5 p-3 rounded-lg mt-2 min-h-12.5">
+                <Label className="text-sm/6 font-bold text-black/80">Response:</Label>
+                <div className="text-sm/6 text-black bg-black/5 border border-black/5 p-3 rounded-lg mt-2 min-h-25 max-h-80 overflow-y-auto nowheel">
                     {data.response ? (
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
@@ -96,11 +88,22 @@ const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
                         <span className="text-gray-400 italic">No response yet</span>
                     )}
                 </div>
+
+
+                <div className="flex justify-end">
+                    <Button
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-[#7dacb5] mt-2 px-5 py-1.5 text-sm/6 font-semibold text-white shadow hover:bg-[#6a99a1] disabled:opacity-50 transition-colors"
+                        onClick={handleSend}
+                        disabled={loading || hasResponse}
+                    >
+                        {loading ? 'Thinking...' : 'Send'}
+                    </Button>
+                </div>
             </Fieldset>
 
             {/* Handles */}
-            <Handle type="target" position={Position.Left} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
-            <Handle type="source" position={Position.Right} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle type="target" position={Position.Top} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
         </div>
     );
 };
