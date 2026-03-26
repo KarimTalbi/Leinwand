@@ -2,21 +2,20 @@ import {useEffect} from "react";
 import {useShallow} from 'zustand/react/shallow'
 import {ReactFlow, Background, Controls, NodeTypes, Panel, useReactFlow} from '@xyflow/react';
 
-import Nodle from './nodle.tsx';
+import PromptNode from './nodetypes/promptnode.tsx';
+import TextNode from './nodetypes/textnode.tsx';
 import useStore from './store';
 import {AppState} from './types'
 
 import '@xyflow/react/dist/style.css';
 
 const nodeTypes: NodeTypes = {
-    nodle: Nodle,
+    promptNode: PromptNode,
+    textNode: TextNode,
 };
 const defaultEdgeOptions = {
     style: {strokeWidth: 4}
 };
-
-const gridSize = 20;
-
 
 const selector = (state: AppState) => ({
     nodes: state.nodes,
@@ -25,13 +24,14 @@ const selector = (state: AppState) => ({
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
     fetchCanvas: state.fetchCanvas,
-    addNode: state.addNode,
+    addPromptNode: state.addPromptNode,
+    addTextNode: state.addTextNode,
 });
 
 function Flow() {
     const {screenToFlowPosition} = useReactFlow()
     const syncing = useStore((state) => state.syncing);
-    const {nodes, edges, onNodesChange, onEdgesChange, onConnect, fetchCanvas, addNode} = useStore(
+    const {nodes, edges, onNodesChange, onEdgesChange, onConnect, fetchCanvas, addPromptNode, addTextNode} = useStore(
         useShallow(selector)
     );
 
@@ -39,7 +39,7 @@ function Flow() {
         void fetchCanvas();
     }, [fetchCanvas]);
 
-    const onCreateNode = () => {
+    const onCreatePromptNode = () => {
         const position = screenToFlowPosition(
             {
                 x: window.innerWidth / 2,
@@ -47,8 +47,20 @@ function Flow() {
             }
         );
 
-        addNode(position);
-    }
+        addPromptNode(position);
+    };
+
+    const onCreateTextNode = () => {
+        const position = screenToFlowPosition(
+            {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            }
+        );
+
+        addTextNode(position);
+    };
+
 
     return (
         <div className="relative h-screen w-screen overflow-hidden">
@@ -68,7 +80,7 @@ function Flow() {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 snapToGrid={true}
-                snapGrid={[gridSize, gridSize]}
+                snapGrid={[20, 20]}
                 defaultEdgeOptions={defaultEdgeOptions}
                 onConnect={onConnect}
                 fitView
@@ -78,10 +90,16 @@ function Flow() {
                 <Controls/>
                 <Panel position="top-left" className="flex gap-2">
                     <button
-                        onClick={onCreateNode}
+                        onClick={onCreatePromptNode}
                         className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
                     >
-                        Add Node
+                        PromptNode
+                    </button>
+                    <button
+                        onClick={onCreateTextNode}
+                        className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
+                    >
+                        TextNode
                     </button>
                 </Panel>
             </ReactFlow>

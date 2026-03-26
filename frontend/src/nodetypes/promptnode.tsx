@@ -5,11 +5,11 @@ import clsx from "clsx";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-import useStore from './store';
-import api from './api'
-import {AppNodeData} from "./types.ts";
+import useStore from '../store.ts';
+import api from '../api.ts'
+import {PromptNodeData} from "../types.ts";
 
-const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
+const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
     const [loading, setLoading] = useState(false);
     const [hasResponse, setHasResponse] = useState(false);
 
@@ -108,4 +108,4 @@ const Nodle = ({id, data}: { id: string, data: AppNodeData }) => {
     );
 };
 
-export default memo(Nodle);
+export default memo(PromptNode);

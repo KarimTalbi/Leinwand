@@ -3,7 +3,7 @@ import {v4 as uuid} from 'uuid';
 import {addEdge, applyNodeChanges, applyEdgeChanges} from "@xyflow/react";
 
 import api from './api'
-import {AppNode, AppState} from './types'
+import {PromptNode, TextNode, AppState, NodeTypes, NodeData, NodePosition} from './types'
 
 const useStore = create<AppState>((set, get) => ({
     nodes: [],
@@ -45,16 +45,24 @@ const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    addNode: (position?: {x: number, y: number}) => {
-        const newNode: AppNode = {
+    addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => {
+        const newNode: PromptNode | TextNode = {
             id: uuid(),
-            type: 'nodle',
+            type: type,
             position: position ?? {x: Math.random() * 400, y: Math.random() * 400},
-            data: {label: "New Node", prompt: '', response: ''}
+            data: data
         };
 
         set({nodes: [...get().nodes, newNode]});
         void get().saveCanvas()
+    },
+
+    addPromptNode: (position?: NodePosition) => {
+        get().addNode( 'promptNode', {label: "New Node", prompt: '', response: ''}, position)
+    },
+
+    addTextNode: (position?: NodePosition) => {
+        get().addNode( 'textNode', {label: "New Node", text: ''}, position)
     },
 
     updateNodeData: (id, data) => {
@@ -73,6 +81,7 @@ const useStore = create<AppState>((set, get) => ({
             void get().saveCanvas()
         }
     },
+
 
     onEdgesChange: (changes) => {
         set({
