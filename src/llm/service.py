@@ -21,6 +21,7 @@ SYSTEM_PROMPT = (
     "Understand that they were parallel paths.\n"
     "When there is only the Target Node provided, that means it is a new root node without any lineage\n"
     "Use Markdown for formatting\n"
+    "Additionaly return a short title that is descriptive of the content of the response"
     f"{'=' * 50}"
 )
 

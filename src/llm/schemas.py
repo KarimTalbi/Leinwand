@@ -15,7 +15,7 @@ class ModelConfig(BaseModel):
 
 
 class AiResponse(BaseModel):
-    label: str
+    title: str
     response: str
 
 
