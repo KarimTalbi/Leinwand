@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import JSON, ForeignKey, String
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase): ...
@@ -12,9 +12,16 @@ class Node(Base):
     __tablename__ = "nodes"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
-    type: Mapped[str] = mapped_column(String())
+    type: Mapped[str] = mapped_column(String)
     position: Mapped[dict[str, float]] = mapped_column(MutableDict.as_mutable(JSON))
     data: Mapped[dict[str, str | None]] = mapped_column(MutableDict.as_mutable(JSON))
+
+    outgoing_edges: Mapped[list["Edge"]] = relationship(
+        "Edge", foreign_keys="Edge.source", back_populates="source_node"
+    )
+    incoming_edges: Mapped[list["Edge"]] = relationship(
+        "Edge", foreign_keys="Edge.target", back_populates="target_node"
+    )
 
 
 class Edge(Base):
@@ -23,3 +30,12 @@ class Edge(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
     source: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id"), index=True)
     target: Mapped[uuid.UUID] = mapped_column(ForeignKey("nodes.id"), index=True)
+    source_handle: Mapped[str | None] = mapped_column(String, nullable=True)
+    target_handle: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    source_node: Mapped["Node"] = relationship(
+        "Node", foreign_keys=[source], back_populates="outgoing_edges"
+    )
+    target_node: Mapped["Node"] = relationship(
+        "Node", foreign_keys=[target], back_populates="incoming_edges"
+    )

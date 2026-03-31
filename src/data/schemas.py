@@ -4,17 +4,11 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class NodeData(BaseModel):
-    label: str | None = None
-    prompt: str | None = None
-    response: str | None = None
-
-
 class NodeRead(BaseModel):
     id: UUID
     type: str
     position: dict[str, float]
-    data: NodeData
+    data: dict[str, Any]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -26,15 +20,17 @@ class NodeUpdate(BaseModel):
     id: UUID
     type: str | None = Field(default=None)
     position: dict[str, float] | None = Field(default=None)
-    data: NodeData | None = Field(default=None)
+    data: dict[str, Any] | None = Field(default=None)
 
 
 class EdgeRead(BaseModel):
     id: UUID
     source: UUID
     target: UUID
+    source_handle: str | None = Field(default=None, alias="sourceHandle")
+    target_handle: str | None = Field(default=None, alias="targetHandle")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class EdgeCreate(EdgeRead): ...
@@ -44,6 +40,8 @@ class EdgeUpdate(BaseModel):
     id: UUID
     source: UUID | None = Field(default=None)
     target: UUID | None = Field(default=None)
+    source_handle: str | None = Field(default=None)
+    target_handle: str | None = Field(default=None)
 
 
 class CanvasRead(BaseModel):
@@ -58,4 +56,4 @@ class CanvasCreate(BaseModel):
 
 class ConfRes(BaseModel):
     message: str
-    id: Any | None = None
+    id: Any | None = Field(default=None)

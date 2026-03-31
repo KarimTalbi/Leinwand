@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
 
-from data.schemas import NodeData
-
 if TYPE_CHECKING:
     from src.core.context.model import Context
 
