@@ -2,7 +2,7 @@
 name = "nodellm"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "langchain[google-genai,openai]>=1.2.9",
     "langchain-google-genai>=4.2.0",
@@ -17,6 +17,7 @@ dependencies = [
     "networkx>=3.6.1",
     "fastapi>=0.135.1",
     "aiosqlite>=0.22.1",
+    "ruff>=0.15.5",
 ]
 
 [dependency-groups]
