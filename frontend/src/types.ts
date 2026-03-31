@@ -11,9 +11,14 @@ export type TextNodeData = {
     text: string;
 };
 
-export type NodeData = PromptNodeData | TextNodeData;
+export type MergeNodeData = {
+    label: string;
+};
 
-export type NodeTypes = 'promptNode' | 'textNode'
+
+export type NodeData = PromptNodeData | TextNodeData | MergeNodeData;
+
+export type NodeTypes = 'promptNode' | 'textNode' | 'mergeNode'
 
 export type NodePosition = {
     x: number;
@@ -24,8 +29,10 @@ export type TextNode = Node<TextNodeData>;
 
 export type PromptNode = Node<PromptNodeData>;
 
+export type MergeNode = Node<MergeNodeData>;
+
 export interface AppState {
-    nodes: PromptNode[] | TextNode[];
+    nodes: (PromptNode | TextNode | MergeNode)[];
     edges: Edge[];
     syncing: boolean;
 
@@ -35,6 +42,7 @@ export interface AppState {
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
     addPromptNode: (position?: NodePosition) => void;
     addTextNode: (position?: NodePosition) => void;
+    addMergeNode: (position?: NodePosition) => void;
     updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData>) => void;
 
     // React Flow Handlers

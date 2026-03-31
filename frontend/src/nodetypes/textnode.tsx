@@ -1,15 +1,16 @@
 import React, {memo, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
-import {Textarea, Field, Fieldset, Legend, Button} from "@headlessui/react";
+import {Textarea, Field, Fieldset, Button} from "@headlessui/react";
 import clsx from "clsx";
 
 import useStore from '../store.ts';
 import {TextNodeData} from "../types.ts";
+import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
 
 const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     const [loading, setLoading] = useState(false);
     const [hasText, setHasText] = useState(!!data.text);
-
 
     const updateNodeData = useStore((s) => s.updateNodeData);
     const saveCanvas = useStore((s) => s.saveCanvas);
@@ -38,15 +39,17 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     return (
         <div className="w-250  bg-white border border-black/10 rounded-xl p-4 shadow-xl">
             <Fieldset className="space-y-2">
-                <Legend className="text-lg font-bold text-[#7dacb5] pb-1">{data.label}</Legend>
-
                 <Field>
                     {
                         hasText
                             ? (
                                 <div
-                                    className="text-sm/6 text-black bg-black/5 border border-black/5 p-3 rounded-lg mt-2 min-h-12.5">
-                                    {data.text}
+                                    className="text-sm/6 text-black bg-black/5 border border-black/5 p-3 rounded-lg mt-2 min-h-25 max-h-80 overflow-y-auto nowheel">
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                    >
+                                        {data.text}
+                                    </ReactMarkdown>
                                 </div>
                             ) : (
 
@@ -70,13 +73,13 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
                         onClick={handleSave}
                         disabled={loading || hasText}
                     >
-                        {loading ? 'saving...' : 'saved'}
+                        {loading ? 'saving...' : 'save'}
                     </Button>
                 </div>
             </Fieldset>
 
             {/* Handles */}
-            <Handle type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle id="source-1" type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
         </div>
     );
 };

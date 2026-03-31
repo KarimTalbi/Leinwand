@@ -36,8 +36,6 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
             updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.title});
             await saveCanvas();
 
-            setHasResponse(true);
-
         } catch (err) {
             console.error('Error sending prompt to LLM:', err);
 
@@ -102,8 +100,8 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
             </Fieldset>
 
             {/* Handles */}
-            <Handle type="target" position={Position.Top} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
-            <Handle type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle id="target-1" type="target" position={Position.Top} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
+            <Handle id="source-1" type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
         </div>
     );
 };

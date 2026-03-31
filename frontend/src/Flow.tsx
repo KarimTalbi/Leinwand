@@ -4,6 +4,7 @@ import {ReactFlow, Background, Controls, NodeTypes, Panel, useReactFlow} from '@
 
 import PromptNode from './nodetypes/promptnode.tsx';
 import TextNode from './nodetypes/textnode.tsx';
+import MergeNode from './nodetypes/mergenode.tsx';
 import useStore from './store';
 import {AppState} from './types'
 
@@ -12,6 +13,7 @@ import '@xyflow/react/dist/style.css';
 const nodeTypes: NodeTypes = {
     promptNode: PromptNode,
     textNode: TextNode,
+    mergeNode: MergeNode,
 };
 const defaultEdgeOptions = {
     style: {strokeWidth: 4}
@@ -26,12 +28,24 @@ const selector = (state: AppState) => ({
     fetchCanvas: state.fetchCanvas,
     addPromptNode: state.addPromptNode,
     addTextNode: state.addTextNode,
+    addMergeNode: state.addMergeNode,
 });
 
 function Flow() {
     const {screenToFlowPosition} = useReactFlow()
     const syncing = useStore((state) => state.syncing);
-    const {nodes, edges, onNodesChange, onEdgesChange, onConnect, fetchCanvas, addPromptNode, addTextNode} = useStore(
+
+    const {
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        onConnect,
+        fetchCanvas,
+        addPromptNode,
+        addTextNode,
+        addMergeNode,
+    } = useStore(
         useShallow(selector)
     );
 
@@ -59,6 +73,17 @@ function Flow() {
         );
 
         addTextNode(position);
+    };
+
+    const onCreateMergeNode = () => {
+        const position = screenToFlowPosition(
+            {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2
+            }
+        );
+
+        addMergeNode(position);
     };
 
 
@@ -100,6 +125,12 @@ function Flow() {
                         className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
                     >
                         TextNode
+                    </button>
+                    <button
+                        onClick={onCreateMergeNode}
+                        className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
+                    >
+                        MergeNode
                     </button>
                 </Panel>
             </ReactFlow>

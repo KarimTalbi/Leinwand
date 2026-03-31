@@ -50,7 +50,7 @@ const useStore = create<AppState>((set, get) => ({
             id: uuid(),
             type: type,
             position: position ?? {x: Math.random() * 400, y: Math.random() * 400},
-            data: data
+            data: data,
         };
 
         set({nodes: [...get().nodes, newNode]});
@@ -62,7 +62,11 @@ const useStore = create<AppState>((set, get) => ({
     },
 
     addTextNode: (position?: NodePosition) => {
-        get().addNode( 'textNode', {label: "New Node", text: ''}, position)
+        get().addNode( 'textNode', {label: "TEXT", text: ''}, position)
+    },
+
+    addMergeNode: (position?: NodePosition) => {
+        get().addNode('mergeNode', {label: "MERGE"}, position)
     },
 
     updateNodeData: (id, data) => {
@@ -94,7 +98,18 @@ const useStore = create<AppState>((set, get) => ({
     },
 
     onConnect: (connection) => {
-        set({edges: addEdge({id: uuid(), ...connection}, get().edges)});
+        console.log("New Connection Data:", connection);
+        set({
+            edges: addEdge(
+                {
+                    id: uuid(),
+                    ...connection,
+                    sourceHandle: connection.sourceHandle ?? null,
+                    targetHandle: connection.targetHandle ?? null,
+                },
+                get().edges
+            )
+        });
         void get().saveCanvas()
     },
 
