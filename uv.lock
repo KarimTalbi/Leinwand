@@ -605,22 +605,22 @@ dev = [
 requires-dist = [
     { name = "aiosqlite", specifier = ">=0.22.1" },
     { name = "asyncpg", specifier = ">=0.31.0" },
-    { name = "fastapi", specifier = ">=0.135.1" },
-    { name = "greenlet", specifier = ">=3.3.1" },
-    { name = "langchain", extras = ["google-genai", "openai"], specifier = ">=1.2.9" },
-    { name = "langchain-google-genai", specifier = ">=4.2.0" },
-    { name = "langchain-openai", specifier = ">=1.1.7" },
+    { name = "fastapi", specifier = ">=0.135.2" },
+    { name = "greenlet", specifier = ">=3.3.2" },
+    { name = "langchain", extras = ["google-genai", "openai"], specifier = ">=1.2.14" },
+    { name = "langchain-google-genai", specifier = ">=4.2.1" },
+    { name = "langchain-openai", specifier = ">=1.1.12" },
     { name = "networkx", specifier = ">=3.6.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "ruff", specifier = ">=0.15.5" },
-    { name = "sqlalchemy", specifier = ">=2.0.46" },
-    { name = "uvicorn", specifier = ">=0.40.0" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "ruff", specifier = ">=0.15.8" },
+    { name = "sqlalchemy", specifier = ">=2.0.48" },
+    { name = "uvicorn", specifier = ">=0.42.0" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "ruff", specifier = ">=0.15.5" }]
+dev = [{ name = "ruff", specifier = ">=0.15.8" }]
 
 [[package]]
 name = "openai"
