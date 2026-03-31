@@ -38,8 +38,8 @@ def _get_node_sections(ctx: Context) -> None:
             f" - Prerequisites: {', '.join(parents) if parents else 'None'}\n"
             f" - Logic Streams: {', '.join(ctx.branches[nid])} | Level: {ctx.depths[nid]}\n"
             f" - Content:\n"
-            f"   - User:\n{node.data.prompt}\n"
-            f"   - AI:\n{node.data.response}"
+            f"   - User:\n{node.data.get('prompt', '')}\n"
+            f"   - AI:\n{node.data.get('response', '')}"
             f"{'-' * 50}\n"
         )
 

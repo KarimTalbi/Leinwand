@@ -18,6 +18,7 @@ dependencies = [
     "fastapi>=0.135.2",
     "aiosqlite>=0.22.1",
     "ruff>=0.15.8",
+    "langchain-core>=1.2.23",
 ]
 
 [dependency-groups]

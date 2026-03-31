@@ -17,8 +17,8 @@ class Context:
     node_map: dict[UUID, NodeRead]
     edge_links: list[tuple[UUID, UUID]]
 
-    full_graph: nx.DiGraph[UUID] | None = field(init=False, default=None)
-    graph: nx.DiGraph[UUID] | None = field(init=False, default=None)
+    full_graph: nx.DiGraph[UUID] = field(init=False, default_factory=nx.DiGraph)
+    graph: nx.DiGraph[UUID] = field(init=False, default=None)
     order: list[UUID] = field(init=False, default_factory=list)
     aliases: dict[UUID, str] = field(init=False, default_factory=dict)
     roots: list[UUID] = field(init=False, default_factory=list)
