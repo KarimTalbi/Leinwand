@@ -3,6 +3,8 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel, Field
 
+from src.llm.prompt import SYSTEM_PROMPT
+
 
 class ModelConfig(BaseModel):
     model: str = "gpt-4o-mini"
@@ -25,7 +27,7 @@ class PromptRequest(BaseModel):
 
 
 class Prompt(BaseModel):
-    system: str
+    system: str = SYSTEM_PROMPT
     context: str
     prompt: str
 

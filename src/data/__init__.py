@@ -3,6 +3,8 @@ from .db_models import Node as Node
 from .db_session import engine as engine
 from .db_session import get_async_session as get_async_session
 from .db_session import init_db as init_db
+from .schemas import AncestorNode as AncestorNode
+from .schemas import AncestorResponse as AncestorResponse
 from .schemas import CanvasRead as CanvasRead
 from .schemas import EdgeCreate as EdgeCreate
 from .schemas import EdgeRead as EdgeRead

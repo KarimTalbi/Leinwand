@@ -1,12 +1,10 @@
 from functools import lru_cache
-from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.context import Context, build_context, build_prompt
 from data import CanvasService, EdgeService, NodeService, get_async_session
-from llm import AiModel, AiResponse, ModelConfig, PromptRequest, PromptService
+from llm import AiModel, AiResponse, ModelConfig, PromptService
 
 
 async def get_canvas_service(
@@ -25,16 +23,6 @@ async def get_edge_service(
     session: AsyncSession = Depends(get_async_session),
 ) -> EdgeService:
     return EdgeService(session)
-
-
-async def get_context(
-    data: PromptRequest, service: CanvasService = Depends(get_canvas_service)
-) -> str:
-    canvas = await service.load()
-    context = Context.from_canvas(UUID(data.target_id), canvas)
-    build_context(context)
-    build_prompt(context)
-    return context.prompt
 
 
 @lru_cache

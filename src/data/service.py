@@ -45,6 +45,10 @@ class BaseService[_T, _R, _C]:
         return list(result.scalars().all())
 
     @service_monitor
+    async def get_by_id(self, id_: UUID) -> _T:
+        return await self.session.get(self._t, id_)
+
+    @service_monitor
     async def clear(self) -> ConfRes:
         result = await self.session.execute(delete(self._t).returning(self._t.id))
         return ConfRes(message="Deleted successfully", id=result.scalars().all())
@@ -71,11 +75,15 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         return self._r.model_validate(entity)
 
     async def ancestors(self, node_id: UUID, target_handle: str | None = None) -> AncestorResponse:
+        print("getting ancestors")
         query = get_text_clause(
-            QueryType.ANCESTORS, {"node_id": node_id, "target_handle": target_handle}
+            QueryType.ANCESTORS, {"node_id": str(node_id), "target_handle": target_handle}
         )
 
         result = await self.session.execute(query)
+        print(result)
+
+        print("got ancestors")
 
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
