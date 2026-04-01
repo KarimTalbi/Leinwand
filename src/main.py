@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from uuid import UUID
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request
@@ -7,8 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from core import get_canvas_service
-from core.dependencies import get_context, get_prompt_service
-from data import CanvasRead, CanvasService, engine, init_db
+from core.dependencies import get_context, get_node_service, get_prompt_service
+from data import CanvasRead, CanvasService, NodeService, engine, init_db
 from data.schemas import CanvasCreate, ConfRes
 from llm import AiResponse, PromptRequest, PromptService
 
@@ -45,9 +46,7 @@ async def db_session_middleware(request: Request, call_next):
         return await call_next(request)
     except Exception as e:
         print(e)
-        return JSONResponse(
-            status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
-        )
+        return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
 
 
 @app.get("/")
@@ -76,6 +75,11 @@ async def generate_response(
     ctx: str = Depends(get_context),
 ) -> AiResponse:
     return await service.generate_graph_response(ctx, data.prompt)
+
+
+@app.get("/test")
+async def test(service: NodeService = Depends(get_node_service)):
+    return await service.ancestors("91da5ab96de14d89b777162a4988d454")
 
 
 if __name__ == "__main__":

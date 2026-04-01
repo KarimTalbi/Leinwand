@@ -22,7 +22,7 @@ WITH RECURSIVE ancestors AS (
     FROM nodes n
              INNER JOIN edges e ON n.id = e.source
              INNER JOIN ancestors a ON e.target = a.id
-    WHERE a.type != 'merge')
+    WHERE a.type != 'mergeNode')
 SELECT id, type, position, data, MIN(depth) AS depth
 FROM ancestors
 GROUP BY id, type, position, data

@@ -2,13 +2,15 @@ import json
 from typing import Any, TypeVar
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, text
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.data.db_models import Edge, Node
-from src.data.queries.load_query import load_query
+from src.data.queries.load_query import get_text_clause
 from src.data.schemas import (
+    AncestorNode,
+    AncestorResponse,
     CanvasCreate,
     CanvasRead,
     ConfRes,
@@ -68,27 +70,28 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         await self.session.refresh(entity)
         return self._r.model_validate(entity)
 
-    async def ancestors(
-        self, node_id: UUID, source_handle: str | None = None
-    ) -> list[dict[str, Any]]:
-        result = await self.session.execute(
-            load_query(QueryType.ANCESTORS),
-            {
-                "node_id": node_id,
-                "source_handle": source_handle,
-            },
+    async def ancestors(self, node_id: UUID, source_handle: str | None = None) -> AncestorResponse:
+        query = get_text_clause(
+            QueryType.ANCESTORS, {"node_id": node_id, "source_handle": source_handle}
         )
 
-        rows = []
+        result = await self.session.execute(query)
+
+        nodes = []
         for row in result.mappings():
             r = dict(row)
             r["position"] = (
                 json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
             )
             r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
-            rows.append(r)
+            nodes.append(AncestorNode(**r))
 
-        return rows
+        return AncestorResponse(
+            node_id=node_id,
+            source_handle=source_handle,
+            total=len(nodes),
+            ancestors=nodes,
+        )
 
 
 class EdgeService(BaseService[Edge, EdgeRead, EdgeCreate]):
