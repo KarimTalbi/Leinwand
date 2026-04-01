@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any, Protocol
 
 
@@ -12,3 +13,13 @@ class SchemaT(Protocol):
 
     @classmethod
     def model_validate(cls, obj: Any, **kwargs) -> Any: ...
+
+
+class NodeType(str, Enum):
+    PROMPT = "prompt"
+    MERGE = "merge"
+    TEXT = "text"
+
+
+class QueryType(str, Enum):
+    ANCESTORS = "get_ancestors"

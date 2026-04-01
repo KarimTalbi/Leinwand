@@ -57,3 +57,18 @@ class CanvasCreate(BaseModel):
 class ConfRes(BaseModel):
     message: str
     id: Any | None = Field(default=None)
+
+class AncestorNode(BaseModel):
+    id: UUID
+    type: str
+    position: dict[str, float]
+    data: dict[str, Any]
+    depth: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class AncestorResponse(BaseModel):
+    node_id: UUID
+    source_handle: str | None = Field(default=None)
+    total: int
+    ancestors: list[AncestorNode]

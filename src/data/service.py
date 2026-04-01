@@ -1,4 +1,5 @@
-from typing import TypeVar
+from typing import Any, TypeVar
+from uuid import UUID
 
 from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
@@ -64,6 +65,9 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         await self.session.flush()
         await self.session.refresh(entity)
         return self._r.model_validate(entity)
+
+    async def ancestors(self, node_id: UUID) -> list[dict[str, Any]]:
+        ...
 
 
 class EdgeService(BaseService[Edge, EdgeRead, EdgeCreate]):
