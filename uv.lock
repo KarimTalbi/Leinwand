@@ -434,14 +434,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/4c/87/324ae5fd9993f024339a452fc89e3fd808bccde87ef95c8dafab3de023c0/langchain-1.2.14-py3-none-any.whl", hash = "sha256:96da6d7338d5a6fc41eb4ec0db83f7ef5d03bb5efd17bb269f34ba4378ebdb4d", size = 112715, upload-time = "2026-03-31T13:50:35.997Z" },
 ]
 
-[package.optional-dependencies]
-google-genai = [
-    { name = "langchain-google-genai" },
-]
-openai = [
-    { name = "langchain-openai" },
-]
-
 [[package]]
 name = "langchain-core"
 version = "1.2.23"
@@ -584,7 +576,7 @@ dependencies = [
     { name = "asyncpg" },
     { name = "fastapi" },
     { name = "greenlet" },
-    { name = "langchain", extra = ["google-genai", "openai"] },
+    { name = "langchain" },
     { name = "langchain-core" },
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
@@ -608,7 +600,7 @@ requires-dist = [
     { name = "asyncpg", specifier = ">=0.31.0" },
     { name = "fastapi", specifier = ">=0.135.2" },
     { name = "greenlet", specifier = ">=3.3.2" },
-    { name = "langchain", extras = ["google-genai", "openai"], specifier = ">=1.2.14" },
+    { name = "langchain", specifier = ">=1.2.14" },
     { name = "langchain-core", specifier = ">=1.2.23" },
     { name = "langchain-google-genai", specifier = ">=4.2.1" },
     { name = "langchain-openai", specifier = ">=1.1.12" },
