@@ -1,6 +1,5 @@
 import logging
 from contextlib import asynccontextmanager
-from uuid import UUID
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request
