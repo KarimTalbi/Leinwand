@@ -1,3 +1,4 @@
+import json
 from typing import Any, TypeVar
 from uuid import UUID
 
@@ -6,6 +7,7 @@ from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.data.db_models import Edge, Node
+from src.data.queries.load_query import load_query
 from src.data.schemas import (
     CanvasCreate,
     CanvasRead,
@@ -15,7 +17,7 @@ from src.data.schemas import (
     NodeCreate,
     NodeRead,
 )
-from src.data.types import ModelT, SchemaT
+from src.data.types import ModelT, QueryType, SchemaT
 from utils import service_monitor
 
 _T = TypeVar("_T", bound=ModelT)
@@ -66,8 +68,27 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         await self.session.refresh(entity)
         return self._r.model_validate(entity)
 
-    async def ancestors(self, node_id: UUID) -> list[dict[str, Any]]:
-        ...
+    async def ancestors(
+        self, node_id: UUID, source_handle: str | None = None
+    ) -> list[dict[str, Any]]:
+        result = await self.session.execute(
+            load_query(QueryType.ANCESTORS),
+            {
+                "node_id": node_id,
+                "source_handle": source_handle,
+            },
+        )
+
+        rows = []
+        for row in result.mappings():
+            r = dict(row)
+            r["position"] = (
+                json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
+            )
+            r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+            rows.append(r)
+
+        return rows
 
 
 class EdgeService(BaseService[Edge, EdgeRead, EdgeCreate]):
