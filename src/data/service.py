@@ -20,7 +20,7 @@ from src.data.schemas import (
     NodeRead,
 )
 from src.data.types import ModelT, QueryType, SchemaT
-from utils import service_monitor
+from utils import get_rows, service_monitor
 
 _T = TypeVar("_T", bound=ModelT)
 _R = TypeVar("_R", bound=SchemaT)
@@ -70,25 +70,19 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         await self.session.refresh(entity)
         return self._r.model_validate(entity)
 
-    async def ancestors(self, node_id: UUID, source_handle: str | None = None) -> AncestorResponse:
+    async def ancestors(self, node_id: UUID, target_handle: str | None = None) -> AncestorResponse:
         query = get_text_clause(
-            QueryType.ANCESTORS, {"node_id": node_id, "source_handle": source_handle}
+            QueryType.ANCESTORS, {"node_id": node_id, "target_handle": target_handle}
         )
 
         result = await self.session.execute(query)
 
-        nodes = []
-        for row in result.mappings():
-            r = dict(row)
-            r["position"] = (
-                json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
-            )
-            r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
-            nodes.append(AncestorNode(**r))
+        rows = get_rows(result)
+        nodes = [AncestorNode(**r) for r in rows]
 
         return AncestorResponse(
             node_id=node_id,
-            source_handle=source_handle,
+            target_handle=target_handle,
             total=len(nodes),
             ancestors=nodes,
         )

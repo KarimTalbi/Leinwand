@@ -79,7 +79,10 @@ async def generate_response(
 
 @app.get("/test")
 async def test(service: NodeService = Depends(get_node_service)):
-    return await service.ancestors("91da5ab96de14d89b777162a4988d454")
+    first = await service.ancestors("498da0f37f654a4b852f98b418dc5977", target_handle="target-1")
+    second = await service.ancestors("498da0f37f654a4b852f98b418dc5977", target_handle="target-2")
+    print(first, "\n", second, "\n")
+    return
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ WITH RECURSIVE ancestors AS (
     FROM nodes n
              INNER JOIN edges e ON n.id = e.source
     WHERE e.target = :node_id
-      AND (:source_handle IS NULL OR e.source_handle = :source_handle)
+      AND (:target_handle IS NULL OR e.target_handle = :target_handle)
 
     UNION ALL
 
