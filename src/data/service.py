@@ -5,7 +5,7 @@ from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.data.db_models import Edge, Node
-from src.data.queries.load_query import get_text_clause
+from src.data.queries.load_query import get_ancestors
 from src.data.schemas import (
     AncestorNode,
     AncestorResponse,
@@ -14,7 +14,7 @@ from src.data.schemas import (
     EdgeRead,
     NodeRead,
 )
-from src.data.types_ import ModelT, QueryType, SchemaT
+from src.data.types_ import ModelT, SchemaT
 from utils import get_rows, service_monitor
 
 _T = TypeVar("_T", bound=ModelT)
@@ -103,13 +103,8 @@ class NodeService(BaseService[Node, NodeRead]):
     async def ancestors(
         self, node_id: str, target_handle: str | None = None
     ) -> AncestorResponse:
-        query = get_text_clause(
-            QueryType.ANCESTORS,
-            {"node_id": str(node_id), "target_handle": target_handle},
-        )
-
+        query = get_ancestors(node_id, target_handle)
         result = await self.session.execute(query)
-
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
 

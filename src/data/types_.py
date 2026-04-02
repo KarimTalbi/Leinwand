@@ -15,11 +15,11 @@ class SchemaT(Protocol):
     def model_validate(cls, obj: Any, **kwargs) -> Any: ...
 
 
-class NodeType(str, Enum):
+class NodeType(Enum):
     PROMPT = "promptNode"
     MERGE = "mergeNode"
     TEXT = "textNode"
 
 
-class QueryType(str, Enum):
+class QueryType(Enum):
     ANCESTORS = "get_ancestors"
