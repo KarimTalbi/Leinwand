@@ -16,9 +16,9 @@ class SchemaT(Protocol):
 
 
 class NodeType(str, Enum):
-    PROMPT = "prompt"
-    MERGE = "merge"
-    TEXT = "text"
+    PROMPT = "promptNode"
+    MERGE = "mergeNode"
+    TEXT = "textNode"
 
 
 class QueryType(str, Enum):

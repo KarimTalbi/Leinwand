@@ -13,3 +13,4 @@ from .schemas import NodeUpdate as NodeUpdate
 from .service import CanvasService as CanvasService
 from .service import EdgeService as EdgeService
 from .service import NodeService as NodeService
+from .types_ import NodeType as NodeType

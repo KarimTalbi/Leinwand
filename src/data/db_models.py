@@ -1,5 +1,3 @@
-import uuid
-
 from sqlalchemy import JSON, ForeignKey, String
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship

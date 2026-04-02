@@ -35,10 +35,6 @@ class CanvasRead(BaseModel):
     edges: list[EdgeRead]
 
 
-class Confirmation(BaseModel):
-    message: str
-
-
 class AncestorNode(BaseModel):
     id: UUID
     type: str
@@ -54,3 +50,7 @@ class AncestorResponse(BaseModel):
     target_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]
+
+
+class Confirmation(BaseModel):
+    message: str

@@ -7,13 +7,23 @@ from src.llm.prompt import SYSTEM_PROMPT
 
 
 class ModelConfig(BaseModel):
-    model: str = "gpt-4o-mini"
-    model_provider: str = "openai"
-    temperature: Annotated[float, Field(ge=0.0, le=2.0)] = 0.7
-    max_tokens: Annotated[int, Field(ge=0)] = 1024
-    timeout: Annotated[int, Field(ge=0)] = 30
-    max_retries: Annotated[int, Field(ge=0)] = 2
+    model: str
+    model_provider: str
+    temperature: Annotated[float, Field(ge=0.0, le=2.0)]
+    max_tokens: Annotated[int, Field(ge=0)]
+    timeout: Annotated[int, Field(ge=0)]
+    max_retries: Annotated[int, Field(ge=0)]
     model_kwargs: dict[str, Any] = Field(default_factory=dict)
+
+
+prompt_node_config = ModelConfig(
+    model="gpt-4o-mini",
+    model_provider="openai",
+    temperature=0.7,
+    max_tokens=1024,
+    timeout=30,
+    max_retries=2,
+)
 
 
 class AiResponse(BaseModel):

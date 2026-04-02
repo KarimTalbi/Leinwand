@@ -1,4 +1,4 @@
-from data import AncestorNode, AncestorResponse
+from data import AncestorNode, AncestorResponse, NodeType
 
 
 def _prompt_node(node: AncestorNode) -> str:
@@ -28,10 +28,13 @@ def _merge_node(node: AncestorNode) -> str:
 
 
 def _node(node: AncestorNode) -> str:
-    if node.type == "textNode":
-        return _text_node(node)
+    funcs = {
+        NodeType.MERGE.value: _merge_node,
+        NodeType.PROMPT.value: _prompt_node,
+        NodeType.TEXT.value: _text_node,
+    }
 
-    return _prompt_node(node)
+    return funcs.get(node.type, _prompt_node)(node)
 
 
 def _stream(ancestry: AncestorResponse, stream_id: int) -> str:

@@ -9,9 +9,8 @@ from fastapi.responses import JSONResponse
 from core import get_canvas_service
 from core.dependencies import get_node_service, get_prompt_service
 from data import CanvasRead, CanvasService, NodeService, engine, init_db
-from data.schemas import CanvasCreate, ConfRes
+from data.schemas import CanvasRead, Confirmation
 from llm import AiResponse, Prompt, PromptRequest, PromptService, build_context
-from utils import service_monitor
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -64,8 +63,8 @@ async def canvas(service: CanvasService = Depends(get_canvas_service)) -> Canvas
 
 @app.post("/canvas")
 async def canvas_save(
-    data: CanvasCreate, service: CanvasService = Depends(get_canvas_service)
-) -> ConfRes:
+    data: CanvasRead, service: CanvasService = Depends(get_canvas_service)
+) -> Confirmation:
     return await service.sync(data)
 
 
