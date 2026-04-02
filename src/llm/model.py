@@ -1,42 +1,32 @@
-from typing import TypeVar
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from langchain.chat_models import init_chat_model
-from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import AIMessage
+from langchain.messages import SystemMessage, HumanMessage
+from pydantic import BaseModel
 
-from src.llm.schemas import ModelConfig, Prompt
+from prompts import SystemPrompts
+from src.llm.schemas import ModelConfig, AiResponse, AiModelConfigs
 
 load_dotenv()
 
-prompt_node_config = ModelConfig(
-    model="gpt-4o-mini",
-    model_provider="openai",
-    temperature=0.7,
-    max_tokens=1024,
-    timeout=30,
-    max_retries=2,
-)
 
-
-class AiBase[_C: BaseModel, _R: BaseModel]:
-    def __init__(self, config: _C, response: type[_R]) -> None:
-        self._config: _C = config
-        self._response: type[_R] = response
-
-        self._model = init_chat_model(
+class AiModelBase[_T: BaseModel]:
+    def __init__(self, config: ModelConfig, response: _T, system_prompt: str) -> None:
+        self.model = init_chat_model(
             **config.model_dump(exclude_none=True)
         ).with_structured_output(response)
 
-    async def run(self, p):
+        self.system = system_prompt
+
+    async def generate(self, context: str, prompt: str) -> _T:
+        return await self.model.ainvoke(
+            [SystemMessage(self.system + "\n" + context), HumanMessage(prompt)]
+        )
 
 
-class PromptNodeModel:
-    def __init__(self, config: ModelConfig, structure: _Response) -> None:
-        self._model: BaseChatModel = init_chat_model(**config.model_dump(exclude_none=True))
-        if structure:
-            self._model = self._model.with_structured_output(structure)
-
-    async def run(self, prompt: Prompt) -> _Response:
-        result: AIMessage | _Response = await self._model.ainvoke(prompt)
-        return result
+class PromptNodeModel(AiModelBase[AiResponse]):
+    def __init__(
+        self,
+        config: ModelConfig = AiModelConfigs.PROMPT_NODE,
+        system_prompt: str = SystemPrompts.PROMPT_NODE,
+    ) -> None:
+        super().__init__(config, AiResponse, system_prompt)

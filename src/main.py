@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from core import get_canvas_service
-from core.dependencies import get_node_service, get_prompt_service
-from data import CanvasRead, CanvasService, NodeService, engine, init_db
+from core.dependencies import get_node_service, get_ai_model
+from data import CanvasService, NodeService, engine, init_db
 from data.schemas import CanvasRead, Confirmation
-from llm import AiResponse, Prompt, PromptRequest, PromptService, build_context
+from llm import AiResponse, build_context, AiRequest, PromptNodeModel
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("app").setLevel(logging.DEBUG)
@@ -75,13 +75,15 @@ async def canvas_save(
 
 @app.post("/llm")
 async def generate_response(
-    data: PromptRequest,
-    prompt_service: PromptService = Depends(get_prompt_service),
+    data: AiRequest,
+    ai_model: PromptNodeModel = Depends(get_ai_model),
     service: NodeService = Depends(get_node_service),
 ) -> AiResponse:
+
     ancestors = await service.ancestors(data.target_id)
     context = build_context(ancestors)
-    return await prompt_service.generate_graph_response(context, data.prompt)
+
+    return await ai_model.generate(context, data.prompt)
 
 
 @app.get("/test")

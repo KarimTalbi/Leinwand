@@ -1,9 +1,6 @@
-from functools import cached_property
 from typing import Annotated, Any
 
 from pydantic import BaseModel, Field
-
-from src.llm.prompt import SYSTEM_PROMPT
 
 
 class ModelConfig(BaseModel):
@@ -16,14 +13,15 @@ class ModelConfig(BaseModel):
     model_kwargs: dict[str, Any] = Field(default_factory=dict)
 
 
-prompt_node_config = ModelConfig(
-    model="gpt-4o-mini",
-    model_provider="openai",
-    temperature=0.7,
-    max_tokens=1024,
-    timeout=30,
-    max_retries=2,
-)
+class AiModelConfigs:
+    PROMPT_NODE = ModelConfig(
+        model="gpt-4o-mini",
+        model_provider="openai",
+        temperature=0.7,
+        max_tokens=1024,
+        timeout=30,
+        max_retries=2,
+    )
 
 
 class AiResponse(BaseModel):
@@ -31,16 +29,6 @@ class AiResponse(BaseModel):
     response: str
 
 
-class PromptRequest(BaseModel):
+class AiRequest(BaseModel):
     prompt: str
     target_id: str
-
-
-class Prompt(BaseModel):
-    system: str = SYSTEM_PROMPT
-    context: str
-    prompt: str
-
-    @cached_property
-    def get(self) -> dict[str, str]:
-        return f"{self.system}\n{self.context}\n{self.prompt}"

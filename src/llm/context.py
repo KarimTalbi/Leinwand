@@ -71,5 +71,4 @@ def build_context(*ancestry: AncestorResponse) -> str:
         full = f"{stream_summary}{node_summaries}"
         summary += full
 
-    print(summary)
     return summary
