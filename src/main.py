@@ -45,7 +45,9 @@ async def db_session_middleware(request: Request, call_next):
         return await call_next(request)
     except Exception as e:
         print(e)
-        return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
+        return JSONResponse(
+            status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
+        )
 
 
 @app.get("/")
@@ -84,8 +86,12 @@ async def generate_response(
 
 @app.get("/test")
 async def test(service: NodeService = Depends(get_node_service)):
-    first = await service.ancestors("498da0f37f654a4b852f98b418dc5977", target_handle="target-1")
-    second = await service.ancestors("498da0f37f654a4b852f98b418dc5977", target_handle="target-2")
+    first = await service.ancestors(
+        "498da0f37f654a4b852f98b418dc5977", target_handle="target-1"
+    )
+    second = await service.ancestors(
+        "498da0f37f654a4b852f98b418dc5977", target_handle="target-2"
+    )
     print(first, "\n", second, "\n")
     return
 

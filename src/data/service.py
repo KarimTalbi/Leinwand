@@ -40,10 +40,14 @@ class BaseService[_T, _R]:
     async def get(self, id_: str = ..., raw: Literal[True] = ...) -> _T: ...
 
     @overload
-    async def get(self, id_: Literal["*"] = ..., raw: Literal[False] = ...) -> list[_R]: ...
+    async def get(
+        self, id_: Literal["*"] = ..., raw: Literal[False] = ...
+    ) -> list[_R]: ...
 
     @overload
-    async def get(self, id_: Literal["*"] = ..., raw: Literal[True] = ...) -> list[_T]: ...
+    async def get(
+        self, id_: Literal["*"] = ..., raw: Literal[True] = ...
+    ) -> list[_T]: ...
 
     @service_monitor
     async def get(
@@ -68,7 +72,9 @@ class BaseService[_T, _R]:
 
     @service_monitor
     async def write(self, payload: list[_R]) -> Confirmation:
-        await self.session.execute(insert(self._model), [p.model_dump() for p in payload])
+        await self.session.execute(
+            insert(self._model), [p.model_dump() for p in payload]
+        )
         return Confirmation(message="Created successfully")
 
 
@@ -94,7 +100,9 @@ class NodeService(BaseService[Node, NodeRead]):
 
         return entity if raw else self._read.model_validate(entity)
 
-    async def ancestors(self, node_id: str, target_handle: str | None = None) -> AncestorResponse:
+    async def ancestors(
+        self, node_id: str, target_handle: str | None = None
+    ) -> AncestorResponse:
         query = get_text_clause(
             QueryType.ANCESTORS,
             {"node_id": str(node_id), "target_handle": target_handle},

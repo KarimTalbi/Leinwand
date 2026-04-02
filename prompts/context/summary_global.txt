@@ -1,0 +1,3 @@
+### GLOBAL SUMMARY:
+Total Streams: {0}
+Total Nodes: {1}

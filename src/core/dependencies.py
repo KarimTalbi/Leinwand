@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import CanvasService, EdgeService, NodeService, get_async_session
-from llm import AiResponse, ModelConfig, PromptNodeModel, PromptService
+from llm import AiResponse, ModelConfig, PromptService
 
 
 async def get_canvas_service(

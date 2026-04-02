@@ -1,0 +1,5 @@
+### NODE: {0} (Pos: {1})
+Depth: {2} Type: {3}
+Content:
+User: {4}
+AI: {5}

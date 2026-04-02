@@ -1,30 +1,42 @@
 from data import AncestorNode, AncestorResponse, NodeType
+from prompts import prompt_format, ContextPrompts
 
 
 def _prompt_node(node: AncestorNode) -> str:
-    return (
-        f"### NODE: {node.data.get('label', 'Node')} (Pos: {node.position})\n"
-        f"Depth: {node.depth} Type: {node.type}\n"
-        f"Content:\n"
-        f"User: {node.data.get('prompt', '')}\n"
-        f"AI: {node.data.get('response', '')}\n"
+    params = (
+        node.data.get("label", "Node"),
+        node.position,
+        node.depth,
+        node.type,
+        node.data.get("prompt", ""),
+        node.data.get("response", ""),
     )
+
+    return prompt_format(ContextPrompts.SEC_PROMPT_NODE, params)
 
 
 def _text_node(node: AncestorNode) -> str:
-    return (
-        f"### NODE: {node.data.get('label', 'Node')} (Pos: {node.position})\n"
-        f"Depth: {node.depth} Type: {node.type}\n"
-        f"Content:\n"
-        f"Text: {node.data.get('text', '')}\n"
+    params = (
+        node.data.get("label", "Node"),
+        node.position,
+        node.depth,
+        node.type,
+        node.data.get("text", ""),
     )
+
+    return prompt_format(ContextPrompts.SEC_TEXT_NODE, params)
 
 
 def _merge_node(node: AncestorNode) -> str:
-    return (
-        f"### NODE: {node.data.get('label', 'Node')} (Pos: {node.position})\n"
-        f"Depth: {node.depth} Type: {node.type}\n"
+    params = (
+        node.data.get("label", "Node"),
+        node.position,
+        node.depth,
+        node.type,
+        node.data.get("context", ""),
     )
+
+    return prompt_format(ContextPrompts.SEC_MERGE_NODE, params)
 
 
 def _node(node: AncestorNode) -> str:
@@ -38,23 +50,19 @@ def _node(node: AncestorNode) -> str:
 
 
 def _stream(ancestry: AncestorResponse, stream_id: int) -> str:
-    return (
-        f"### STREAM {stream_id} SUMMARY:\nNode Count: {ancestry.total}\n"
-        f"Max Depth: {max([n.depth for n in ancestry.ancestors])}\n\n"
-    )
+    params = (stream_id, ancestry.total, max([n.depth for n in ancestry.ancestors]))
+    return prompt_format(ContextPrompts.SUMMARY_STREAM, params) + "\n\n"
 
 
 def _global(*ancestry: AncestorResponse) -> str:
-    return (
-        f"### GLOBAL SUMMARY:\n"
-        f"Total Streams: {len(ancestry)}\n"
-        f"Total Nodes: {sum([a.total for a in ancestry])}\n\n"
-    )
+    params = (len(ancestry), sum([a.total for a in ancestry]))
+    return prompt_format(ContextPrompts.SUMMARY_GLOBAL, params) + "\n\n"
 
 
 def build_context(*ancestry: AncestorResponse) -> str:
     if not ancestry[0].total:
-        return "NO PREVIOUS CONTEXT, ROOT NODE"
+        return ContextPrompts.NO_CONTEXT
+
     summary = _global(*ancestry)
 
     for i, a in enumerate(ancestry, 1):
