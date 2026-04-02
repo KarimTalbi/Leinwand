@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class NodeRead(BaseModel):
-    id: UUID
+    id: str
     type: str
     position: dict[str, float]
     data: dict[str, Any]
@@ -24,9 +24,9 @@ class NodeUpdate(BaseModel):
 
 
 class EdgeRead(BaseModel):
-    id: UUID
-    source: UUID
-    target: UUID
+    id: str
+    source: str
+    target: str
     source_handle: str | None = Field(default=None, alias="sourceHandle")
     target_handle: str | None = Field(default=None, alias="targetHandle")
 
@@ -37,9 +37,9 @@ class EdgeCreate(EdgeRead): ...
 
 
 class EdgeUpdate(BaseModel):
-    id: UUID
-    source: UUID | None = Field(default=None)
-    target: UUID | None = Field(default=None)
+    id: str
+    source: str | None = Field(default=None)
+    target: str | None = Field(default=None)
     source_handle: str | None = Field(default=None)
     target_handle: str | None = Field(default=None)
 
@@ -70,7 +70,7 @@ class AncestorNode(BaseModel):
 
 
 class AncestorResponse(BaseModel):
-    node_id: UUID
+    node_id: str
     target_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]

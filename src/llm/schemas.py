@@ -33,4 +33,4 @@ class Prompt(BaseModel):
 
     @cached_property
     def get(self) -> dict[str, str]:
-        return f"{self.system}\n\n{self.context}\n\n{self.prompt}"
+        return f"{self.system}\n{self.context}\n{self.prompt}"

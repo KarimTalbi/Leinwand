@@ -49,20 +49,19 @@ async def db_session_middleware(request: Request, call_next):
         return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
 
 
-@service_monitor
 @app.get("/")
 async def root():
     return {"message": "API is online"}
 
 
 # --- CANVAS DATA ---
-@service_monitor
+
+
 @app.get("/canvas")
 async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
     return await service.load()
 
 
-@service_monitor
 @app.post("/canvas")
 async def canvas_save(
     data: CanvasCreate, service: CanvasService = Depends(get_canvas_service)
@@ -71,7 +70,8 @@ async def canvas_save(
 
 
 # --- AI ---
-@service_monitor
+
+
 @app.post("/llm")
 async def generate_response(
     data: PromptRequest,
@@ -83,7 +83,6 @@ async def generate_response(
     return await prompt_service.generate_graph_response(context, data.prompt)
 
 
-@service_monitor
 @app.get("/test")
 async def test(service: NodeService = Depends(get_node_service)):
     first = await service.ancestors("498da0f37f654a4b852f98b418dc5977", target_handle="target-1")

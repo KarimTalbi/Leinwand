@@ -11,11 +11,9 @@ class Base(DeclarativeBase): ...
 class Node(Base):
     __tablename__ = "nodes"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
+    id: Mapped[str] = mapped_column(primary_key=True, index=True)
     type: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    position: Mapped[dict[str, float]] = mapped_column(
-        MutableDict.as_mutable(JSON), nullable=False
-    )
+    position: Mapped[dict[str, float]] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     data: Mapped[dict[str, str | None]] = mapped_column(MutableDict.as_mutable(JSON))
 
     outgoing_edges: Mapped[list["Edge"]] = relationship(
@@ -29,13 +27,9 @@ class Node(Base):
 class Edge(Base):
     __tablename__ = "edges"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, index=True)
-    source: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("nodes.id"), index=True, nullable=False
-    )
-    target: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("nodes.id"), index=True, nullable=False
-    )
+    id: Mapped[str] = mapped_column(primary_key=True, index=True)
+    source: Mapped[str] = mapped_column(ForeignKey("nodes.id"), index=True, nullable=False)
+    target: Mapped[str] = mapped_column(ForeignKey("nodes.id"), index=True, nullable=False)
     source_handle: Mapped[str | None] = mapped_column(String, nullable=True)
     target_handle: Mapped[str | None] = mapped_column(String, nullable=True)
 
