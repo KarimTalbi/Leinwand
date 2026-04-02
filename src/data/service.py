@@ -1,8 +1,6 @@
-import json
-from typing import Any, TypeVar
-from uuid import UUID
+from typing import Literal, TypeVar, overload
 
-from sqlalchemy import delete, select, text
+from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,23 +9,19 @@ from src.data.queries.load_query import get_text_clause
 from src.data.schemas import (
     AncestorNode,
     AncestorResponse,
-    CanvasCreate,
     CanvasRead,
-    ConfRes,
-    EdgeCreate,
+    Confirmation,
     EdgeRead,
-    NodeCreate,
     NodeRead,
 )
-from src.data.types import ModelT, QueryType, SchemaT
+from src.data.types_ import ModelT, QueryType, SchemaT
 from utils import get_rows, service_monitor
 
 _T = TypeVar("_T", bound=ModelT)
 _R = TypeVar("_R", bound=SchemaT)
-_C = TypeVar("_C", bound=SchemaT)
 
 
-class BaseService[_T, _R, _C]:
+class BaseService[_T, _R]:
     def __init__(
         self,
         session: AsyncSession,
@@ -36,35 +30,60 @@ class BaseService[_T, _R, _C]:
     ) -> None:
 
         self.session: AsyncSession = session
-        self._t: type[_T] = model
-        self._r: type[_R] = read_schema
+        self._model: type[_T] = model
+        self._read: type[_R] = read_schema
+
+    @overload
+    async def get(self, id_: str = ..., raw: Literal[False] = ...) -> _R: ...
+
+    @overload
+    async def get(self, id_: str = ..., raw: Literal[True] = ...) -> _T: ...
+
+    @overload
+    async def get(self, id_: Literal["*"] = ..., raw: Literal[False] = ...) -> list[_R]: ...
+
+    @overload
+    async def get(self, id_: Literal["*"] = ..., raw: Literal[True] = ...) -> list[_T]: ...
 
     @service_monitor
-    async def get(self) -> list[_T]:
-        result = await self.session.execute(select(self._t))
-        return list(result.scalars().all())
+    async def get(
+        self, id_: str | Literal["*"] = "*", raw: bool = False
+    ) -> _T | _R | list[_T] | list[_R]:
+
+        if id_ == "*":
+            result = await self.session.execute(select(self._model))
+            return (
+                list(result.scalars().all())
+                if raw
+                else [self._read.model_validate(r) for r in result.scalars().all()]
+            )
+
+        result = await self.session.get(self._model, id_)
+        return result if raw else self._read.model_validate(result)
 
     @service_monitor
-    async def get_by_id(self, id_: UUID) -> _T:
-        return await self.session.get(self._t, id_)
+    async def clear(self) -> Confirmation:
+        await self.session.execute(delete(self._model))
+        return Confirmation(message="Deleted successfully")
 
     @service_monitor
-    async def clear(self) -> ConfRes:
-        result = await self.session.execute(delete(self._t).returning(self._t.id))
-        return ConfRes(message="Deleted successfully", id=result.scalars().all())
-
-    @service_monitor
-    async def create(self, payload: list[_C]) -> ConfRes:
-        await self.session.execute(insert(self._t), [p.model_dump() for p in payload])
-        return ConfRes(message="Created successfully", id=[p.id for p in payload])
+    async def write(self, payload: list[_R]) -> Confirmation:
+        await self.session.execute(insert(self._model), [p.model_dump() for p in payload])
+        return Confirmation(message="Created successfully")
 
 
-class NodeService(BaseService[Node, NodeRead, NodeCreate]):
+class NodeService(BaseService[Node, NodeRead]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Node, NodeRead)
 
-    async def update(self, payload) -> NodeRead:
-        entity = self.session.get(self._t, payload.id)
+    @overload
+    async def update(self, payload: NodeRead, raw: Literal[False] = ...) -> Node: ...
+
+    @overload
+    async def update(self, payload: NodeRead, raw: Literal[True] = ...) -> NodeRead: ...
+
+    async def update(self, payload, raw: bool = False) -> Node | NodeRead:
+        entity = self.session.get(self._model, payload.id)
 
         for key, value in payload.model_dump(exclude_unset=True).items():
             setattr(entity, key, value)
@@ -72,18 +91,16 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         self.session.add(entity)
         await self.session.flush()
         await self.session.refresh(entity)
-        return self._r.model_validate(entity)
 
-    async def ancestors(self, node_id: UUID, target_handle: str | None = None) -> AncestorResponse:
-        print("getting ancestors")
+        return entity if raw else self._read.model_validate(entity)
+
+    async def ancestors(self, node_id: str, target_handle: str | None = None) -> AncestorResponse:
         query = get_text_clause(
-            QueryType.ANCESTORS, {"node_id": str(node_id), "target_handle": target_handle}
+            QueryType.ANCESTORS,
+            {"node_id": str(node_id), "target_handle": target_handle},
         )
 
         result = await self.session.execute(query)
-        print(result)
-
-        print("got ancestors")
 
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
@@ -96,7 +113,7 @@ class NodeService(BaseService[Node, NodeRead, NodeCreate]):
         )
 
 
-class EdgeService(BaseService[Edge, EdgeRead, EdgeCreate]):
+class EdgeService(BaseService[Edge, EdgeRead]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Edge, EdgeRead)
 
@@ -108,30 +125,27 @@ class CanvasService:
         self.edge_service: EdgeService = EdgeService(session)
 
     async def load(self) -> CanvasRead:
-        nodes = await self.node_service.get()
-        edges = await self.edge_service.get()
+        nodes = await self.node_service.get("*", raw=False)
+        edges = await self.edge_service.get("*", raw=False)
 
-        return CanvasRead(
-            nodes=[NodeRead.model_validate(n) for n in nodes],
-            edges=[EdgeRead.model_validate(e) for e in edges],
-        )
+        return CanvasRead(nodes=nodes, edges=edges)
 
-    async def wipe(self):
+    async def wipe(self) -> Confirmation:
         await self.edge_service.clear()
         await self.node_service.clear()
 
-        return ConfRes(message="Wiped successfully")
+        return Confirmation(message="Wiped successfully")
 
-    async def save(self, canvas: CanvasCreate) -> ConfRes:
+    async def save(self, canvas: CanvasRead) -> Confirmation:
         if canvas.nodes:
-            await self.node_service.create(canvas.nodes)
+            await self.node_service.write(canvas.nodes)
         if canvas.edges:
-            await self.edge_service.create(canvas.edges)
+            await self.edge_service.write(canvas.edges)
 
-        return ConfRes(message="Saved successfully")
+        return Confirmation(message="Saved successfully")
 
-    async def sync(self, canvas: CanvasCreate) -> ConfRes:
+    async def sync(self, canvas: CanvasRead) -> Confirmation:
         await self.wipe()
         await self.save(canvas)
 
-        return ConfRes(message="Synced successfully")
+        return Confirmation(message="Synced successfully")

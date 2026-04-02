@@ -6,10 +6,8 @@ from .db_session import init_db as init_db
 from .schemas import AncestorNode as AncestorNode
 from .schemas import AncestorResponse as AncestorResponse
 from .schemas import CanvasRead as CanvasRead
-from .schemas import EdgeCreate as EdgeCreate
+from .schemas import Confirmation as Confirmation
 from .schemas import EdgeRead as EdgeRead
-from .schemas import EdgeUpdate as EdgeUpdate
-from .schemas import NodeCreate as NodeCreate
 from .schemas import NodeRead as NodeRead
 from .schemas import NodeUpdate as NodeUpdate
 from .service import CanvasService as CanvasService

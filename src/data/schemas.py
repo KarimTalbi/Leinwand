@@ -13,11 +13,8 @@ class NodeRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class NodeCreate(NodeRead): ...
-
-
 class NodeUpdate(BaseModel):
-    id: UUID
+    id: str
     type: str | None = Field(default=None)
     position: dict[str, float] | None = Field(default=None)
     data: dict[str, Any] | None = Field(default=None)
@@ -33,30 +30,13 @@ class EdgeRead(BaseModel):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
-class EdgeCreate(EdgeRead): ...
-
-
-class EdgeUpdate(BaseModel):
-    id: str
-    source: str | None = Field(default=None)
-    target: str | None = Field(default=None)
-    source_handle: str | None = Field(default=None)
-    target_handle: str | None = Field(default=None)
-
-
 class CanvasRead(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
 
 
-class CanvasCreate(BaseModel):
-    nodes: list[NodeCreate]
-    edges: list[EdgeCreate]
-
-
-class ConfRes(BaseModel):
+class Confirmation(BaseModel):
     message: str
-    id: Any | None = Field(default=None)
 
 
 class AncestorNode(BaseModel):
