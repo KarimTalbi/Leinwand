@@ -14,7 +14,6 @@ const MergeNode = () => {
             <Handle id="target-1" type="target" position={Position.Top} style={{left: '25%'}} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
             <Handle id="target-2" type="target" position={Position.Top} style={{left: '75%'}} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
 
-
         </div>
     );
 };

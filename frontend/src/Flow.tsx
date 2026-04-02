@@ -9,6 +9,7 @@ import useStore from './store';
 import {AppState} from './types'
 
 import '@xyflow/react/dist/style.css';
+import api from "./api.ts";
 
 const nodeTypes: NodeTypes = {
     promptNode: PromptNode,
@@ -86,6 +87,16 @@ function Flow() {
         addMergeNode(position);
     };
 
+    const onTest = async () => {
+
+        try {
+            await api.get('/test');
+
+        } catch (err) {
+            console.error('Error testing:', err);
+        }
+    };
+
 
     return (
         <div className="relative h-screen w-screen overflow-hidden">
@@ -131,6 +142,12 @@ function Flow() {
                         className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
                     >
                         MergeNode
+                    </button>
+                    <button
+                        onClick={onTest}
+                        className="bg-[#7dacb5] hover:bg-[#6a99a1] text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors border border-white/20"
+                    >
+                        test
                     </button>
                 </Panel>
             </ReactFlow>
