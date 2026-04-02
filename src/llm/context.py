@@ -1,4 +1,4 @@
-from data import AncestorNode, AncestorResponse, NodeType
+from data import AncestorNode, AncestorResponse
 from prompts import prompt_format, ContextPrompts
 
 
@@ -41,9 +41,9 @@ def _merge_node(node: AncestorNode) -> str:
 
 def _node(node: AncestorNode) -> str:
     funcs = {
-        NodeType.MERGE.value: _merge_node,
-        NodeType.PROMPT.value: _prompt_node,
-        NodeType.TEXT.value: _text_node,
+        "mergeNode": _merge_node,
+        "promptNode": _prompt_node,
+        "textNode": _text_node,
     }
 
     return funcs.get(node.type, _prompt_node)(node)
