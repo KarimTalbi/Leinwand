@@ -1,10 +1,7 @@
-from functools import lru_cache
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import CanvasService, EdgeService, NodeService, get_async_session
-from llm import PromptNodeModel
 
 
 async def get_canvas_service(
@@ -23,8 +20,3 @@ async def get_edge_service(
     session: AsyncSession = Depends(get_async_session),
 ) -> EdgeService:
     return EdgeService(session)
-
-
-@lru_cache
-def get_ai_model() -> PromptNodeModel:
-    return PromptNodeModel()

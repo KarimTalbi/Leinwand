@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core import get_canvas_service, get_node_service, get_ai_model
+from core import get_canvas_service, get_node_service
 from data import CanvasService, NodeService, engine, init_db, CanvasRead, Confirmation
 from llm import AiResponse, build_context, AiRequest, PromptNodeModel
 
@@ -19,6 +19,8 @@ async def lifespan(app: FastAPI):
     print("🚀 Initializing database...")
     await init_db(reset=False)
     print("✅ Database ready")
+
+    app.state.ai_model = PromptNodeModel()
 
     yield
 
@@ -35,6 +37,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def get_ai_model(request: Request) -> PromptNodeModel:
+    return request.app.state.ai_model
 
 
 @app.middleware("http")
