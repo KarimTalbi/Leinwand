@@ -1,3 +1,0 @@
-### STREAM {0} SUMMARY:
-Node Count: {1}
-Max Depth: {2}

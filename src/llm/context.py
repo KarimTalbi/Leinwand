@@ -1,42 +1,50 @@
+import textwrap
+
 from data import AncestorNode, AncestorResponse
-from prompts import prompt_format, ContextPrompts
+from utils import extract_by_keys
 
 
 def _prompt_node(node: AncestorNode) -> str:
-    params = (
-        node.data.get("label", "Node"),
-        node.position,
-        node.depth,
-        node.type,
-        node.data.get("prompt", ""),
-        node.data.get("response", ""),
+    label, prompt, response = extract_by_keys(
+        node.data, ["label", "prompt", "response"]
     )
 
-    return prompt_format(ContextPrompts.SEC_PROMPT_NODE, params)
+    section = textwrap.dedent(f"""\
+    ### NODE: {label} (Pos: {node.position})
+    Depth: {node.depth} Type: {node.type}
+    Content:
+    User: {prompt}
+    AI: {response}
+    """)
+
+    return section
 
 
 def _text_node(node: AncestorNode) -> str:
-    params = (
-        node.data.get("label", "Node"),
-        node.position,
-        node.depth,
-        node.type,
-        node.data.get("text", ""),
-    )
+    label, text = extract_by_keys(node.data, ["label", "text"])
 
-    return prompt_format(ContextPrompts.SEC_TEXT_NODE, params)
+    section = textwrap.dedent(f"""\
+    ### NODE: {label} (Pos: {node.position})
+    Depth: {node.depth} Type: {node.type}
+    Content:
+    Text: {text}
+    """)
+
+    return section
 
 
 def _merge_node(node: AncestorNode) -> str:
-    params = (
-        node.data.get("label", "Node"),
-        node.position,
-        node.depth,
-        node.type,
-        node.data.get("context", ""),
-    )
+    label, context = extract_by_keys(node.data, ["label", "context"])
 
-    return prompt_format(ContextPrompts.SEC_MERGE_NODE, params)
+    section = textwrap.dedent(f"""\
+    ### NODE: {label} (Pos: {node.position})
+    Depth: {node.depth} Type: {node.type}
+    Content:
+    Pre-Merge-Context:
+    {context}
+    """)
+
+    return section
 
 
 def _node(node: AncestorNode) -> str:
@@ -50,18 +58,33 @@ def _node(node: AncestorNode) -> str:
 
 
 def _stream(ancestry: AncestorResponse, stream_id: int) -> str:
-    params = (stream_id, ancestry.total, max([n.depth for n in ancestry.ancestors]))
-    return prompt_format(ContextPrompts.SUMMARY_STREAM, params) + "\n\n"
+    max_depth = max([n.depth for n in ancestry.ancestors])
+
+    summary = textwrap.dedent(f"""\
+    ### STREAM {stream_id} SUMMARY:
+    Node Count: {ancestry.total}
+    Max Depth: {max_depth}
+    \n""")
+
+    return summary
 
 
 def _global(*ancestry: AncestorResponse) -> str:
-    params = (len(ancestry), sum([a.total for a in ancestry]))
-    return prompt_format(ContextPrompts.SUMMARY_GLOBAL, params) + "\n\n"
+    stream_count = len(ancestry)
+    node_count = sum([a.total for a in ancestry])
+
+    summary = textwrap.dedent(f"""\
+    ### GLOBAL SUMMARY:
+    Total Streams: {stream_count}
+    Total Nodes: {node_count}
+    \n""")
+
+    return summary
 
 
 def build_context(*ancestry: AncestorResponse) -> str:
     if not ancestry[0].total:
-        return ContextPrompts.NO_CONTEXT
+        return "NO PREVIOUS CONTEXT, THIS IS A ROOT NODE"
 
     summary = _global(*ancestry)
 

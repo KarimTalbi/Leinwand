@@ -1,4 +1,0 @@
-### NODE: {0} (Pos: {1})
-Depth: {2} Type: {3}
-Content:
-Text: {4}
