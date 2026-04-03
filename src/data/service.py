@@ -1,5 +1,3 @@
-from typing import Literal, overload
-
 from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,47 +16,24 @@ from utils import get_rows, service_monitor
 
 class BaseService[_T, _R]:
     def __init__(
-        self,
-        session: AsyncSession,
-        model: type[_T],
-        read_schema: type[_R],
+        self, session: AsyncSession, model: type[_T], schema: type[_R]
     ) -> None:
-
         self.session: AsyncSession = session
         self._model: type[_T] = model
-        self._read: type[_R] = read_schema
-
-    @overload
-    async def get(self, id_: str = ..., raw: Literal[False] = ...) -> _R: ...
-
-    @overload
-    async def get(self, id_: str = ..., raw: Literal[True] = ...) -> _T: ...
-
-    @overload
-    async def get(
-        self, id_: Literal["*"] = ..., raw: Literal[False] = ...
-    ) -> list[_R]: ...
-
-    @overload
-    async def get(
-        self, id_: Literal["*"] = ..., raw: Literal[True] = ...
-    ) -> list[_T]: ...
+        self._read: type[_R] = schema
 
     @service_monitor
-    async def get(
-        self, id_: str | Literal["*"] = "*", raw: bool = False
-    ) -> _T | _R | list[_T] | list[_R]:
+    async def get_by_id(self, id_: str) -> _T:
+        entity = await self.session.get(self._model, id_)
 
-        if id_ == "*":
-            result = await self.session.execute(select(self._model))
-            return (
-                list(result.scalars().all())
-                if raw
-                else [self._read.model_validate(r) for r in result.scalars().all()]
-            )
+        if not entity:
+            raise ValueError(f"Entity with id {id_} not found")
 
-        result = await self.session.get(self._model, id_)
-        return result if raw else self._read.model_validate(result)
+        return entity
+
+    @service_monitor
+    async def get(self) -> list[_T]:
+        return await self.session.execute(select(self._model))
 
     @service_monitor
     async def clear(self) -> Confirmation:
@@ -77,40 +52,24 @@ class NodeService(BaseService[Node, NodeRead]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Node, NodeRead)
 
-    @overload
-    async def update(self, payload: NodeRead, raw: Literal[True] = ...) -> Node: ...
-
-    @overload
-    async def update(
-        self, payload: NodeRead, raw: Literal[False] = ...
-    ) -> NodeRead: ...
-
-    async def update(self, payload, raw: bool = False) -> Node | NodeRead:
-        entity = await self.session.get(self._model, payload.id)
-
-        for key, value in payload.model_dump(exclude_unset=True).items():
-            setattr(entity, key, value)
-
-        self.session.add(entity)
-        await self.session.flush()
-        await self.session.refresh(entity)
-
-        return entity if raw else self._read.model_validate(entity)
-
+    @service_monitor
     async def ancestors(
-        self, node_id: str, source_handle: str | None = None
+        self, node_id: str, handle: str | None = None
     ) -> AncestorResponse:
-        query = get_ancestors(node_id, source_handle)
+
+        query = get_ancestors(node_id, handle)
         result = await self.session.execute(query)
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
 
-        return AncestorResponse(
+        ancestor_response = AncestorResponse(
             node_id=node_id,
-            source_handle=source_handle,
+            source_handle=handle,
             total=len(nodes),
             ancestors=nodes,
         )
+
+        return ancestor_response
 
 
 class EdgeService(BaseService[Edge, EdgeRead]):

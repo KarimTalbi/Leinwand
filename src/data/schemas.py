@@ -51,6 +51,15 @@ class AiRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 
+class MergeRequest(BaseModel):
+    target_id: str
+    has_conflicts: bool | None = Field(default=None, alias="hasConflicts")
+    conflicts: str | None = Field(default=None)
+    prompt: str | None = Field(default=None)
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+
 class AncestorNode(BaseModel):
     id: str
     type: str

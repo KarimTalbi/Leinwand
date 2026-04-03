@@ -5,8 +5,8 @@ async def load_canvas(
     node_service: NodeService, edge_service: EdgeService
 ) -> CanvasRead:
 
-    nodes = await node_service.get("*", raw=False)
-    edges = await edge_service.get("*", raw=False)
+    nodes = await node_service.get()
+    edges = await edge_service.get()
 
     return CanvasRead(nodes=nodes, edges=edges)
 

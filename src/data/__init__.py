@@ -10,6 +10,7 @@ from .schemas import AncestorResponse as AncestorResponse
 from .schemas import CanvasRead as CanvasRead
 from .schemas import Confirmation as Confirmation
 from .schemas import EdgeRead as EdgeRead
+from .schemas import MergeRequest as MergeRequest
 from .schemas import NodeRead as NodeRead
 from .schemas import NodeUpdate as NodeUpdate
 from .service import EdgeService as EdgeService

@@ -23,6 +23,7 @@ from data import (
     EdgeService,
     AiResponse,
     AiRequest,
+    MergeRequest,
 )
 from llm import PromptNodeModel
 
@@ -99,13 +100,20 @@ async def canvas_sync(
 
 
 # --- AI ---
-@app.post("/llm")
+@app.post("/llm/generate")
 async def get_response(
     data: AiRequest,
     ai_model: PromptNodeModel = Depends(get_ai_model),
     service: NodeService = Depends(get_node_service),
 ) -> AiResponse:
     return await generate_response(data, ai_model, service)
+
+
+@app.post("/llm/merge")
+async def merge_context(
+    data: MergeRequest,
+    service: NodeService = Depends(get_node_service),
+): ...
 
 
 # --- TEST ---
