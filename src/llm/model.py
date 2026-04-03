@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage, HumanMessage
-from pydantic import BaseModel
 
 from data import AiResponse
 from src.config import ModelConfig, AiModelConfigs
@@ -10,7 +9,7 @@ from src.llm.prompts.load_prompt import SystemPrompts
 load_dotenv()
 
 
-class AiModelBase[_T: BaseModel]:
+class AiModelBase[_T]:
     def __init__(self, config: ModelConfig, response: _T, system_prompt: str) -> None:
         self.model = init_chat_model(
             **config.model_dump(exclude_none=True)

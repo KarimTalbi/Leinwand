@@ -32,9 +32,9 @@ logger = logging.getLogger("app.http")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 Initializing database...")
+    logger.info("🚀 Initializing database...")
     await init_db(reset=False)
-    print("✅ Database ready")
+    logger.info("✅ Database ready")
 
     app.state.ai_model = PromptNodeModel()
 
@@ -110,15 +110,7 @@ async def get_response(
 
 # --- TEST ---
 @app.get("/test")
-async def test(service: NodeService = Depends(get_node_service)):
-    first = await service.ancestors(
-        "498da0f37f654a4b852f98b418dc5977", source_handle="target-1"
-    )
-    second = await service.ancestors(
-        "498da0f37f654a4b852f98b418dc5977", source_handle="target-2"
-    )
-    print(first, "\n", second, "\n")
-    return
+async def test(): ...
 
 
 if __name__ == "__main__":

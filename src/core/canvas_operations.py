@@ -2,8 +2,7 @@ from data import NodeService, EdgeService, CanvasRead, Confirmation
 
 
 async def load_canvas(
-    node_service: NodeService,
-    edge_service: EdgeService
+    node_service: NodeService, edge_service: EdgeService
 ) -> CanvasRead:
 
     nodes = await node_service.get("*", raw=False)
@@ -13,9 +12,8 @@ async def load_canvas(
 
 
 async def wipe_canvas(
-    node_service: NodeService,
-    edge_service: EdgeService
-) -> None:
+    node_service: NodeService, edge_service: EdgeService
+) -> Confirmation:
 
     await edge_service.clear()
     await node_service.clear()
@@ -24,9 +22,7 @@ async def wipe_canvas(
 
 
 async def write_canvas(
-    canvas: CanvasRead,
-    node_service: NodeService,
-    edge_service: EdgeService
+    canvas: CanvasRead, node_service: NodeService, edge_service: EdgeService
 ) -> Confirmation:
 
     if canvas.nodes:
@@ -38,9 +34,7 @@ async def write_canvas(
 
 
 async def sync_canvas(
-    canvas: CanvasRead,
-    node_service: NodeService,
-    edge_service: EdgeService
+    canvas: CanvasRead, node_service: NodeService, edge_service: EdgeService
 ) -> Confirmation:
 
     await wipe_canvas(node_service, edge_service)

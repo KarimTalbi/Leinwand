@@ -1,4 +1,4 @@
-from typing import Literal, TypeVar, overload, Protocol, Any
+from typing import Literal, overload
 
 from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
@@ -14,23 +14,6 @@ from src.data.schemas import (
     NodeRead,
 )
 from utils import get_rows, service_monitor
-
-
-class ModelT(Protocol):
-    id: Any
-
-
-class SchemaT(Protocol):
-    id: Any
-
-    def model_dump(self, *args, **kwargs) -> dict: ...
-
-    @classmethod
-    def model_validate(cls, obj: Any, **kwargs) -> Any: ...
-
-
-_T = TypeVar("_T", bound=ModelT)
-_R = TypeVar("_R", bound=SchemaT)
 
 
 class BaseService[_T, _R]:
@@ -95,10 +78,12 @@ class NodeService(BaseService[Node, NodeRead]):
         super().__init__(session, Node, NodeRead)
 
     @overload
-    async def update(self, payload: NodeRead, raw: Literal[False] = ...) -> Node: ...
+    async def update(self, payload: NodeRead, raw: Literal[True] = ...) -> Node: ...
 
     @overload
-    async def update(self, payload: NodeRead, raw: Literal[True] = ...) -> NodeRead: ...
+    async def update(
+        self, payload: NodeRead, raw: Literal[False] = ...
+    ) -> NodeRead: ...
 
     async def update(self, payload, raw: bool = False) -> Node | NodeRead:
         entity = await self.session.get(self._model, payload.id)

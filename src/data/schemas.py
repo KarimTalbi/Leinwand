@@ -1,5 +1,4 @@
 from typing import Any
-from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -53,7 +52,7 @@ class AiRequest(BaseModel):
 
 
 class AncestorNode(BaseModel):
-    id: UUID
+    id: str
     type: str
     position: dict[str, float]
     data: dict[str, Any]
