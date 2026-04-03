@@ -20,8 +20,10 @@ from data import (
     CanvasRead,
     Confirmation,
     EdgeService,
+    AiResponse,
+    AiRequest,
 )
-from llm import AiResponse, AiRequest, PromptNodeModel
+from llm import PromptNodeModel
 from logging_config import setup_logging
 
 setup_logging()

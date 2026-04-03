@@ -122,7 +122,7 @@ class NodeService(BaseService[Node, NodeRead]):
 
         return AncestorResponse(
             node_id=node_id,
-            target_handle=source_handle,
+            source_handle=source_handle,
             total=len(nodes),
             ancestors=nodes,
         )

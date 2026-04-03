@@ -35,6 +35,23 @@ class CanvasRead(BaseModel):
     edges: list[EdgeRead]
 
 
+class Confirmation(BaseModel):
+    message: str
+
+
+class AiResponse(BaseModel):
+    title: str
+    response: str
+
+
+class AiRequest(BaseModel):
+    prompt: str
+    target_id: str
+    source_handle: str | None = Field(default=None, alias="sourceHandle")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+
 class AncestorNode(BaseModel):
     id: UUID
     type: str
@@ -50,7 +67,3 @@ class AncestorResponse(BaseModel):
     source_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]
-
-
-class Confirmation(BaseModel):
-    message: str
