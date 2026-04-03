@@ -6,7 +6,13 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core import get_canvas_service, get_node_service, load_canvas
+from core import (
+    get_canvas_service,
+    get_node_service,
+    load_canvas,
+    sync_canvas,
+    generate_response,
+)
 from data import (
     NodeService,
     engine,
@@ -15,10 +21,11 @@ from data import (
     Confirmation,
     EdgeService,
 )
-from llm import AiResponse, build_context, AiRequest, PromptNodeModel
+from llm import AiResponse, AiRequest, PromptNodeModel
+from logging_config import setup_logging
 
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("app").setLevel(logging.DEBUG)
+setup_logging()
+logger = logging.getLogger("app.http")
 
 
 @asynccontextmanager
@@ -55,7 +62,12 @@ async def db_session_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as e:
-        print(e)
+        logger.error(
+            "Unhandled exception on %s %s",
+            request.method,
+            request.url.path,
+            exc_info=True,
+        )
         return JSONResponse(
             status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
         )
@@ -76,34 +88,32 @@ async def canvas(
 
 
 @app.post("/canvas")
-async def canvas_save(
-    data: CanvasRead, service: CanvasService = Depends(get_canvas_service)
+async def canvas_sync(
+    data: CanvasRead,
+    service: tuple[NodeService, EdgeService] = Depends(get_canvas_service),
 ) -> Confirmation:
-    return await service.sync(data)
+    node_service, edge_service = service
+    return await sync_canvas(data, node_service, edge_service)
 
 
 # --- AI ---
 @app.post("/llm")
-async def generate_response(
+async def get_response(
     data: AiRequest,
     ai_model: PromptNodeModel = Depends(get_ai_model),
     service: NodeService = Depends(get_node_service),
 ) -> AiResponse:
-
-    ancestors = await service.ancestors(data.target_id)
-    context = build_context(ancestors)
-
-    return await ai_model.generate(context, data.prompt)
+    return await generate_response(data, ai_model, service)
 
 
 # --- TEST ---
 @app.get("/test")
 async def test(service: NodeService = Depends(get_node_service)):
     first = await service.ancestors(
-        "498da0f37f654a4b852f98b418dc5977", target_handle="target-1"
+        "498da0f37f654a4b852f98b418dc5977", source_handle="target-1"
     )
     second = await service.ancestors(
-        "498da0f37f654a4b852f98b418dc5977", target_handle="target-2"
+        "498da0f37f654a4b852f98b418dc5977", source_handle="target-2"
     )
     print(first, "\n", second, "\n")
     return

@@ -1,22 +1,17 @@
 from data import NodeService
-from llm import build_context, PromptNodeModel, AiResponse
+from llm import build_context, PromptNodeModel, AiResponse, AiRequest
 
 
 async def get_context(
-    target_id: str,
+    data: AiRequest,
     node_service: NodeService,
-    target_handle: str | None = None,
 ) -> str:
-    ancestors = await node_service.ancestors(target_id, target_handle)
+    ancestors = await node_service.ancestors(data.target_id, data.source_handle)
     return build_context(ancestors)
 
 
 async def generate_response(
-    target_id: str,
-    prompt: str,
-    ai_model: PromptNodeModel,
-    node_service: NodeService,
-    target_handle: str | None = None,
+    data: AiRequest, ai_model: PromptNodeModel, node_service: NodeService
 ) -> AiResponse:
-    context = await get_context(target_id, node_service, target_handle)
-    return await ai_model.generate(context, prompt)
+    context = await get_context(data, node_service)
+    return await ai_model.generate(context, data.prompt)

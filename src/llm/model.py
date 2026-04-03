@@ -3,7 +3,7 @@ from typing import Annotated, Any
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage, HumanMessage
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from prompts import SystemPrompts
 
@@ -39,6 +39,9 @@ class AiResponse(BaseModel):
 class AiRequest(BaseModel):
     prompt: str
     target_id: str
+    source_handle: str | None = Field(default=None, alias="sourceHandle")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 
 class AiModelBase[_T: BaseModel]:

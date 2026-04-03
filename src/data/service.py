@@ -113,16 +113,16 @@ class NodeService(BaseService[Node, NodeRead]):
         return entity if raw else self._read.model_validate(entity)
 
     async def ancestors(
-        self, node_id: str, target_handle: str | None = None
+        self, node_id: str, source_handle: str | None = None
     ) -> AncestorResponse:
-        query = get_ancestors(node_id, target_handle)
+        query = get_ancestors(node_id, source_handle)
         result = await self.session.execute(query)
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
 
         return AncestorResponse(
             node_id=node_id,
-            target_handle=target_handle,
+            target_handle=source_handle,
             total=len(nodes),
             ancestors=nodes,
         )

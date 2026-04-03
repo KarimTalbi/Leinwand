@@ -47,7 +47,7 @@ class AncestorNode(BaseModel):
 
 class AncestorResponse(BaseModel):
     node_id: str
-    target_handle: str | None = Field(default=None)
+    source_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]
 
