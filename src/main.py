@@ -6,8 +6,15 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core import get_canvas_service, get_node_service
-from data import CanvasService, NodeService, engine, init_db, CanvasRead, Confirmation
+from core import get_canvas_service, get_node_service, load_canvas
+from data import (
+    NodeService,
+    engine,
+    init_db,
+    CanvasRead,
+    Confirmation,
+    EdgeService,
+)
 from llm import AiResponse, build_context, AiRequest, PromptNodeModel
 
 logging.basicConfig(level=logging.INFO)
@@ -61,8 +68,11 @@ async def root():
 
 # --- CANVAS DATA ---
 @app.get("/canvas")
-async def canvas(service: CanvasService = Depends(get_canvas_service)) -> CanvasRead:
-    return await service.load()
+async def canvas(
+    service: tuple[NodeService, EdgeService] = Depends(get_canvas_service),
+) -> CanvasRead:
+    node_service, edge_service = service
+    return await load_canvas(node_service, edge_service)
 
 
 @app.post("/canvas")

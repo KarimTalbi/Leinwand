@@ -9,7 +9,6 @@ from src.data.queries.load_query import get_ancestors
 from src.data.schemas import (
     AncestorNode,
     AncestorResponse,
-    CanvasRead,
     Confirmation,
     EdgeRead,
     NodeRead,
@@ -132,36 +131,3 @@ class NodeService(BaseService[Node, NodeRead]):
 class EdgeService(BaseService[Edge, EdgeRead]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Edge, EdgeRead)
-
-
-class CanvasService:
-    def __init__(self, session: AsyncSession) -> None:
-        self.session: AsyncSession = session
-        self.node_service: NodeService = NodeService(session)
-        self.edge_service: EdgeService = EdgeService(session)
-
-    async def load(self) -> CanvasRead:
-        nodes = await self.node_service.get("*", raw=False)
-        edges = await self.edge_service.get("*", raw=False)
-
-        return CanvasRead(nodes=nodes, edges=edges)
-
-    async def wipe(self) -> Confirmation:
-        await self.edge_service.clear()
-        await self.node_service.clear()
-
-        return Confirmation(message="Wiped successfully")
-
-    async def save(self, canvas: CanvasRead) -> Confirmation:
-        if canvas.nodes:
-            await self.node_service.write(canvas.nodes)
-        if canvas.edges:
-            await self.edge_service.write(canvas.edges)
-
-        return Confirmation(message="Saved successfully")
-
-    async def sync(self, canvas: CanvasRead) -> Confirmation:
-        await self.wipe()
-        await self.save(canvas)
-
-        return Confirmation(message="Synced successfully")
