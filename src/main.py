@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from config import setup_logging
 from core import (
     get_canvas_service,
     get_node_service,
@@ -24,7 +25,6 @@ from data import (
     AiRequest,
 )
 from llm import PromptNodeModel
-from logging_config import setup_logging
 
 setup_logging()
 logger = logging.getLogger("app.http")

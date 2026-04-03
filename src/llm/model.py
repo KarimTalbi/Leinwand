@@ -1,35 +1,13 @@
-from typing import Annotated, Any
-
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage, HumanMessage
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from data import AiResponse
+from src.config import ModelConfig, AiModelConfigs
 from src.llm.prompts.load_prompt import SystemPrompts
 
 load_dotenv()
-
-
-class ModelConfig(BaseModel):
-    model: str
-    model_provider: str
-    temperature: Annotated[float, Field(ge=0.0, le=2.0)]
-    max_tokens: Annotated[int, Field(ge=0)]
-    timeout: Annotated[int, Field(ge=0)]
-    max_retries: Annotated[int, Field(ge=0)]
-    model_kwargs: dict[str, Any] = Field(default_factory=dict)
-
-
-class AiModelConfigs:
-    PROMPT_NODE = ModelConfig(
-        model="gpt-4o-mini",
-        model_provider="openai",
-        temperature=0.7,
-        max_tokens=1024,
-        timeout=30,
-        max_retries=2,
-    )
 
 
 class AiModelBase[_T: BaseModel]:

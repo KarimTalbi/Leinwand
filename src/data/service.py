@@ -101,7 +101,7 @@ class NodeService(BaseService[Node, NodeRead]):
     async def update(self, payload: NodeRead, raw: Literal[True] = ...) -> NodeRead: ...
 
     async def update(self, payload, raw: bool = False) -> Node | NodeRead:
-        entity = self.session.get(self._model, payload.id)
+        entity = await self.session.get(self._model, payload.id)
 
         for key, value in payload.model_dump(exclude_unset=True).items():
             setattr(entity, key, value)
