@@ -1,4 +1,4 @@
-from typing import Literal, TypeVar, overload
+from typing import Literal, TypeVar, overload, Protocol, Any
 
 from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
@@ -14,8 +14,21 @@ from src.data.schemas import (
     EdgeRead,
     NodeRead,
 )
-from src.data.types_ import ModelT, SchemaT
 from utils import get_rows, service_monitor
+
+
+class ModelT(Protocol):
+    id: Any
+
+
+class SchemaT(Protocol):
+    id: Any
+
+    def model_dump(self, *args, **kwargs) -> dict: ...
+
+    @classmethod
+    def model_validate(cls, obj: Any, **kwargs) -> Any: ...
+
 
 _T = TypeVar("_T", bound=ModelT)
 _R = TypeVar("_R", bound=SchemaT)
