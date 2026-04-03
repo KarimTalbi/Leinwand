@@ -8,4 +8,4 @@ def _load(name: str, directory: str) -> str:
 
 
 class SystemPrompts:
-    PROMPT_NODE: str = _load("prompt_node.txt", "system")
+    PROMPT_NODE_SYSTEM: str = _load("prompt_node_system.txt", "prompts")

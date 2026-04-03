@@ -5,7 +5,7 @@ from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage, HumanMessage
 from pydantic import BaseModel, Field, ConfigDict
 
-from prompts import SystemPrompts
+from src.llm.prompts import SystemPrompts
 
 load_dotenv()
 
@@ -62,6 +62,6 @@ class PromptNodeModel(AiModelBase[AiResponse]):
     def __init__(
         self,
         config: ModelConfig = AiModelConfigs.PROMPT_NODE,
-        system_prompt: str = SystemPrompts.PROMPT_NODE,
+        system_prompt: str = SystemPrompts.PROMPT_NODE_SYSTEM,
     ) -> None:
         super().__init__(config, AiResponse, system_prompt)
