@@ -12,6 +12,4 @@ from .schemas import Confirmation as Confirmation
 from .schemas import EdgeRead as EdgeRead
 from .schemas import MergeRequest as MergeRequest
 from .schemas import NodeRead as NodeRead
-from .schemas import NodeUpdate as NodeUpdate
-from .service import EdgeService as EdgeService
-from .service import NodeService as NodeService
+from .service import CanvasService as CanvasService

@@ -12,13 +12,6 @@ class NodeRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class NodeUpdate(BaseModel):
-    id: str
-    type: str | None = Field(default=None)
-    position: dict[str, float] | None = Field(default=None)
-    data: dict[str, Any] | None = Field(default=None)
-
-
 class EdgeRead(BaseModel):
     id: str
     source: str
@@ -52,12 +45,28 @@ class AiRequest(BaseModel):
 
 
 class MergeRequest(BaseModel):
+    """Request to merge branches"""
+
     target_id: str
-    has_conflicts: bool | None = Field(default=None, alias="hasConflicts")
-    conflicts: str | None = Field(default=None)
-    prompt: str | None = Field(default=None)
+
+
+class MergeResponse(BaseModel):
+    conflicts: list[str] | None = Field(default=None)
+    has_conflicts: bool = Field(default=False, alias="hasConflicts")
+    options: list[str] | None = Field(default=None)
+    context: str
+    prompt: str = Field(default="")
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+
+class MergeResolveRequest(BaseModel):
+    target_id: str
+    conflicts: str
+    resolution: str
+    options: str
+    context: str
+    prompt: str | None = Field(default=None)
 
 
 class AncestorNode(BaseModel):

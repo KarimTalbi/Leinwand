@@ -2,63 +2,55 @@ from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.data.db_models import Edge, Node
+from src.data.db_models import Node, Edge
 from src.data.queries.load_query import get_ancestors
 from src.data.schemas import (
     AncestorNode,
     AncestorResponse,
-    Confirmation,
-    EdgeRead,
     NodeRead,
+    EdgeRead,
+    CanvasRead,
 )
-from utils import get_rows, service_monitor
+
+from utils import get_rows
 
 
-class BaseService[_T, _R]:
-    def __init__(
-        self, session: AsyncSession, model: type[_T], schema: type[_R]
-    ) -> None:
+class CanvasService:
+    def __init__(self, session: AsyncSession) -> None:
         self.session: AsyncSession = session
-        self._model: type[_T] = model
-        self._read: type[_R] = schema
 
-    @service_monitor
-    async def get_by_id(self, id_: str) -> _T:
-        entity = await self.session.get(self._model, id_)
+    # --- Nodes ---
 
-        if not entity:
-            raise ValueError(f"Entity with id {id_} not found")
+    async def get_nodes(self) -> list[Node]:
+        result = await self.session.execute(select(Node))
+        return list(result.scalars().all())
 
-        return entity
+    async def get_node_by_id(self, node_id: str) -> Node:
+        node = await self.session.get(Node, node_id)
 
-    @service_monitor
-    async def get(self) -> list[_T]:
-        return await self.session.execute(select(self._model))
+        if not node:
+            raise ValueError(f"Node with id {node_id} not found")
 
-    @service_monitor
-    async def clear(self) -> Confirmation:
-        await self.session.execute(delete(self._model))
-        return Confirmation(message="Deleted successfully")
+        return node
 
-    @service_monitor
-    async def write(self, payload: list[_R]) -> Confirmation:
+    async def write_nodes(self, nodes: list[NodeRead]) -> None:
+        if not nodes:
+            return
         await self.session.execute(
-            insert(self._model), [p.model_dump() for p in payload]
+            insert(Node),
+            [
+                n.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
+                for n in nodes
+            ],
         )
-        return Confirmation(message="Created successfully")
 
+    async def clear_nodes(self) -> None:
+        await self.session.execute(delete(Node))
 
-class NodeService(BaseService[Node, NodeRead]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(session, Node, NodeRead)
-
-    @service_monitor
-    async def ancestors(
+    async def get_ancestors(
         self, node_id: str, handle: str | None = None
-    ) -> AncestorResponse:
-
-        query = get_ancestors(node_id, handle)
-        result = await self.session.execute(query)
+    ) -> list[AncestorResponse]:
+        result = await self.session.execute(get_ancestors(node_id, handle))
         rows = get_rows(result)
         nodes = [AncestorNode(**r) for r in rows]
 
@@ -68,10 +60,49 @@ class NodeService(BaseService[Node, NodeRead]):
             total=len(nodes),
             ancestors=nodes,
         )
-
         return ancestor_response
 
+    # --- Edges ---
 
-class EdgeService(BaseService[Edge, EdgeRead]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(session, Edge, EdgeRead)
+    async def get_edges(self) -> list[Edge]:
+        result = await self.session.execute(select(Edge))
+        return list(result.scalars().all())
+
+    async def write_edges(self, edges: list[EdgeRead]) -> None:
+        if not edges:
+            return
+        await self.session.execute(
+            insert(Node),
+            [
+                n.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
+                for n in edges
+            ],
+        )
+
+    async def clear_edges(self) -> None:
+        await self.session.execute(delete(Edge))
+
+    # --- Canvas ---
+
+    async def load_canvas(self) -> CanvasRead:
+        nodes_db = await self.get_nodes()
+        edges_db = await self.get_edges()
+
+        nodes_read = [NodeRead.model_validate(node) for node in nodes_db]
+        edges_read = [EdgeRead.model_validate(edge) for edge in edges_db]
+
+        return CanvasRead(nodes=nodes_read, edges=edges_read)
+
+    async def wipe_canvas(self):
+        await self.clear_edges()
+        await self.clear_nodes()
+
+    async def write_canvas(self, canvas: CanvasRead):
+        if canvas.nodes:
+            await self.write_nodes(canvas.nodes)
+            if canvas.edges:
+                await self.write_edges(canvas.edges)
+
+    async def sync_canvas(self, canvas: CanvasRead):
+        await self.wipe_canvas()
+        await self.write_canvas(canvas)
