@@ -1,3 +1,4 @@
+import json
 import logging
 from contextlib import asynccontextmanager
 
@@ -5,27 +6,25 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import delete, select
+from sqlalchemy.dialects.sqlite import insert
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import setup_logging
-from core import (
-    get_canvas_service,
-    get_node_service,
-    load_canvas,
-    sync_canvas,
-    generate_response,
-)
 from data import (
-    NodeService,
-    engine,
-    init_db,
-    CanvasRead,
-    Confirmation,
-    EdgeService,
-    AiResponse,
     AiRequest,
-    MergeRequest,
+    AiResponse,
+    AncestorNode,
+    AncestorResponse,
+    CanvasRead,
+    Edge,
+    Node,
+    engine,
+    get_async_session,
+    init_db,
 )
-from llm import PromptNodeModel
+from data.queries.load_query import get_ancestors_recursive
+from llm import PromptNodeModel, build_context
 
 setup_logging()
 logger = logging.getLogger("app.http")
@@ -71,54 +70,63 @@ async def db_session_middleware(request: Request, call_next):
             request.url.path,
             exc_info=True,
         )
-        return JSONResponse(
-            status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
-        )
-
-
-@app.get("/")
-async def root():
-    return {"message": "API is online"}
+        return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
 
 
 # --- CANVAS DATA ---
 @app.get("/canvas")
-async def canvas(
-    service: tuple[NodeService, EdgeService] = Depends(get_canvas_service),
-) -> CanvasRead:
-    node_service, edge_service = service
-    return await load_canvas(node_service, edge_service)
+async def canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRead:
+    nodes = await session.execute(select(Node))
+    edges = await session.execute(select(Edge))
+    return nodes, edges
 
 
 @app.post("/canvas")
-async def canvas_sync(
-    data: CanvasRead,
-    service: tuple[NodeService, EdgeService] = Depends(get_canvas_service),
-) -> Confirmation:
-    node_service, edge_service = service
-    return await sync_canvas(data, node_service, edge_service)
+async def canvas_sync(data: CanvasRead, session: AsyncSession = Depends(get_async_session)) -> None:
+    await session.execute(delete(Edge))
+    await session.execute(delete(Node))
+
+    if data.nodes:
+        nodes = [
+            n.model_dump(by_alias=True, exclude_unset=True, exclude_none=True) for n in data.nodes
+        ]
+        await session.execute(insert(Node), nodes)
+
+    if data.edges:
+        edges = [
+            e.model_dump(by_alias=True, exclude_unset=True, exclude_none=True) for e in data.edges
+        ]
+        await session.execute(insert(Edge), edges)
 
 
 # --- AI ---
 @app.post("/llm/generate")
 async def get_response(
     data: AiRequest,
+    session: AsyncSession = Depends(get_async_session),
     ai_model: PromptNodeModel = Depends(get_ai_model),
-    service: NodeService = Depends(get_node_service),
 ) -> AiResponse:
-    return await generate_response(data, ai_model, service)
+    result = await session.execute(get_ancestors_recursive(data.target_id, data.source_handle))
 
+    rows = []
+    for row in result.mappings():
+        r = dict(row)
+        r["position"] = (
+            json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
+        )
+        r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+        rows.append(r)
 
-@app.post("/llm/merge")
-async def merge_context(
-    data: MergeRequest,
-    service: NodeService = Depends(get_node_service),
-): ...
+    nodes = [AncestorNode(**r) for r in rows]
 
-
-# --- TEST ---
-@app.get("/test")
-async def test(): ...
+    ancestor_response = AncestorResponse(
+        node_id=data.target_id,
+        source_handle=data.source_handle,
+        total=len(nodes),
+        ancestors=nodes,
+    )
+    context = build_context(ancestor_response)
+    return await ai_model.generate(context, data.prompt)
 
 
 if __name__ == "__main__":
