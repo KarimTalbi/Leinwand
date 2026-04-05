@@ -116,13 +116,15 @@ function Flow() {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 snapToGrid={true}
-                snapGrid={[30, 30]}
+                snapGrid={[20, 20]}
                 defaultEdgeOptions={defaultEdgeOptions}
                 onConnect={onConnect}
                 fitView
                 nodeTypes={nodeTypes}
+                minZoom={0.2}
+                maxZoom={2}
             >
-                <Background bgColor="#ebebeb" size={3} gap={30} color="#7dacb5"/>
+                <Background bgColor="#ebebeb" size={2} gap={20} color="#7dacb5"/>
                 <Controls/>
                 <Panel position="top-left" className="flex gap-2">
                     <button
