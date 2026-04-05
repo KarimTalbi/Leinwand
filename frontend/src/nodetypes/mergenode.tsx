@@ -52,11 +52,6 @@ const MergeNode = ({id, data}: {id: string, data: MergeNodeData}) => {
         try {
             const res = await api.post('/llm/merge/resolve', {
                 target_id: id,
-                conflicts: data.conflicts,
-                resolution: resolution,
-                options: data.options,
-                context: data.context,
-                prompt: data.prompt,
             });
 
             updateNodeData(id, {

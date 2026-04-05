@@ -61,7 +61,7 @@ const useStore = create<AppState>((set, get) => ({
         };
 
         set({nodes: [...get().nodes, newNode]});
-        void get().saveCanvas()
+        debouncedSave(get().saveCanvas);
     },
 
     addPromptNode: (position?: NodePosition) => {
@@ -116,7 +116,7 @@ const useStore = create<AppState>((set, get) => ({
                 get().edges
             )
         });
-        void get().saveCanvas()
+        debouncedSave(get().saveCanvas);
     },
 
     setSyncing: (status) => {
