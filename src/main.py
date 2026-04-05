@@ -20,7 +20,6 @@ from data import (
     Edge,
     MergeRequest,
     Node,
-    ResolveRequest,
     engine,
     get_async_session,
     init_db,
