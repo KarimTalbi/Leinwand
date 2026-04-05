@@ -28,7 +28,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
         setLoading(true);
 
         try {
-            const res = await api.post('/llm', {
+            const res = await api.post('/llm/generate', {
                 prompt: data.prompt,
                 target_id: id,
             });

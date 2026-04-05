@@ -5,6 +5,13 @@ import {addEdge, applyNodeChanges, applyEdgeChanges} from "@xyflow/react";
 import api from './api'
 import {PromptNode, TextNode, AppState, NodeTypes, NodeData, NodePosition} from './types'
 
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const debouncedSave = (saveCanvas: () => Promise<void>) => {
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => void saveCanvas(), 100);
+};
+
 const useStore = create<AppState>((set, get) => ({
     nodes: [],
     edges: [],
@@ -81,8 +88,7 @@ const useStore = create<AppState>((set, get) => ({
         });
 
         if (changes.some(c => (c.type === 'position' && !c.dragging) || c.type === 'remove')) {
-
-            void get().saveCanvas()
+            debouncedSave(get().saveCanvas);
         }
     },
 
@@ -93,7 +99,7 @@ const useStore = create<AppState>((set, get) => ({
         });
 
         if (changes.some(c => c.type === 'remove')) {
-            void get().saveCanvas()
+            debouncedSave(get().saveCanvas);
         }
     },
 

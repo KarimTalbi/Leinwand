@@ -13,6 +13,11 @@ export type TextNodeData = {
 
 export type MergeNodeData = {
     label: string;
+    context?: string;
+    hasConflicts?: boolean;
+    conflicts?: string[];
+    options?: string[];
+    prompt?: string;
 };
 
 
@@ -43,10 +48,10 @@ export interface AppState {
     addPromptNode: (position?: NodePosition) => void;
     addTextNode: (position?: NodePosition) => void;
     addMergeNode: (position?: NodePosition) => void;
-    updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData>) => void;
+    updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData>) => void;
 
     // React Flow Handlers
-    onNodesChange: OnNodesChange<PromptNode | TextNode>;
+    onNodesChange: OnNodesChange<PromptNode | TextNode | MergeNode>;
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
     setSyncing: (status: boolean) => void;

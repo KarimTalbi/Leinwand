@@ -52,7 +52,7 @@ function Flow() {
 
     useEffect(() => {
         void fetchCanvas();
-    }, [fetchCanvas]);
+    }, []);
 
     const onCreatePromptNode = () => {
         const position = screenToFlowPosition(
