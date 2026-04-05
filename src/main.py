@@ -18,7 +18,9 @@ from data import (
     AncestorResponse,
     CanvasRead,
     Edge,
+    MergeRequest,
     Node,
+    ResolveRequest,
     engine,
     get_async_session,
     init_db,
@@ -74,29 +76,60 @@ async def db_session_middleware(request: Request, call_next):
 
 
 # --- CANVAS DATA ---
+
+
 @app.get("/canvas")
 async def canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRead:
+
+    logger.info("Loading canvas data...")
+
     nodes = await session.execute(select(Node))
     edges = await session.execute(select(Edge))
-    return nodes, edges
+
+    logger.info("Canvas data loaded successfully.")
+
+    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
 
 
 @app.post("/canvas")
 async def canvas_sync(data: CanvasRead, session: AsyncSession = Depends(get_async_session)) -> None:
-    await session.execute(delete(Edge))
-    await session.execute(delete(Node))
+
+    node_ids = [n.id for n in data.nodes]
+    edge_ids = [e.id for e in data.edges]
+
+    await session.execute(delete(Edge).where(Edge.id.notin_(edge_ids)))
+    await session.execute(delete(Node).where(Node.id.notin_(node_ids)))
 
     if data.nodes:
-        nodes = [
-            n.model_dump(by_alias=True, exclude_unset=True, exclude_none=True) for n in data.nodes
-        ]
-        await session.execute(insert(Node), nodes)
+        await session.execute(
+            insert(Node)
+            .values([n.model_dump(exclude_unset=True, exclude_none=True) for n in data.nodes])
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={
+                    "type": insert(Node).excluded.type,
+                    "position": insert(Node).excluded.position,
+                    "data": insert(Node).excluded.data,
+                },
+            )
+        )
 
     if data.edges:
-        edges = [
-            e.model_dump(by_alias=True, exclude_unset=True, exclude_none=True) for e in data.edges
-        ]
-        await session.execute(insert(Edge), edges)
+        await session.execute(
+            insert(Edge)
+            .values([e.model_dump(exclude_unset=True, exclude_none=True) for e in data.edges])
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={
+                    "source": insert(Edge).excluded.source,
+                    "target": insert(Edge).excluded.target,
+                    "source_handle": insert(Edge).excluded.source_handle,
+                    "target_handle": insert(Edge).excluded.target_handle,
+                },
+            )
+        )
+
+    logger.info("Canvas data synced successfully.")
 
 
 # --- AI ---
@@ -106,6 +139,9 @@ async def get_response(
     session: AsyncSession = Depends(get_async_session),
     ai_model: PromptNodeModel = Depends(get_ai_model),
 ) -> AiResponse:
+
+    logger.info("Generating response...")
+
     result = await session.execute(get_ancestors_recursive(data.target_id, data.source_handle))
 
     rows = []
@@ -126,7 +162,31 @@ async def get_response(
         ancestors=nodes,
     )
     context = build_context(ancestor_response)
+
+    logger.info("Response generated successfully.")
+    logger.info(f"Context: {context}")
+    logger.info(f"Prompt: {data.prompt}")
+
     return await ai_model.generate(context, data.prompt)
+
+
+@app.post("/llm/merge")
+async def merge_streams(data: MergeRequest, session: AsyncSession = Depends(get_async_session)):
+    logger.info(data)
+    return {
+        "conflicts": ["1. Conflict 1", "2. Conflict 2", "3. Conflict 3"],
+        "hasConflicts": True,
+        "options": ["1. Option 1", "2. Option 2"],
+        "context": "Context for the merge prompt.",
+    }
+
+
+@app.post("/llm/merge/resolve")
+async def resolve_conflicts(data: MergeRequest, session: AsyncSession = Depends(get_async_session)):
+    logger.info(data)
+    return {
+        "context": "Context for the merge prompt.",
+    }
 
 
 if __name__ == "__main__":

@@ -12,3 +12,4 @@ from .schemas import Confirmation as Confirmation
 from .schemas import EdgeRead as EdgeRead
 from .schemas import MergeRequest as MergeRequest
 from .schemas import NodeRead as NodeRead
+from .schemas import ResolveRequest as ResolveRequest

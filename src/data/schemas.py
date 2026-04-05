@@ -1,6 +1,7 @@
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 
 class NodeRead(BaseModel):
@@ -16,10 +17,12 @@ class EdgeRead(BaseModel):
     id: str
     source: str
     target: str
-    source_handle: str | None = Field(default=None, alias="sourceHandle")
-    target_handle: str | None = Field(default=None, alias="targetHandle")
+    source_handle: str | None = None
+    target_handle: str | None = None
 
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(
+        from_attributes=True, populate_by_name=True, alias_generator=to_camel, extra="ignore"
+    )
 
 
 class CanvasRead(BaseModel):
@@ -50,23 +53,15 @@ class MergeRequest(BaseModel):
     target_id: str
 
 
-class MergeResponse(BaseModel):
-    conflicts: list[str] | None = Field(default=None)
-    has_conflicts: bool = Field(default=False, alias="hasConflicts")
-    options: list[str] | None = Field(default=None)
-    context: str
-    prompt: str = Field(default="")
+class ResolveRequest(BaseModel):
+    """Request to resolve a merge conflict"""
 
-    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
-
-
-class MergeResolveRequest(BaseModel):
     target_id: str
-    conflicts: str
-    resolution: str
-    options: str
+    conflicts: list[str]
+    resolution: list[str]
+    options: list[str]
     context: str
-    prompt: str | None = Field(default=None)
+    prompt: str | None = None
 
 
 class AncestorNode(BaseModel):
