@@ -113,8 +113,8 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
             </Fieldset>
 
             {/* Handles */}
-            <Handle id="target-1" type="target" position={Position.Left} className="!w-4 !h-8 !rounded-l-full !rounded-r-none !border-none !bg-[#ec4899] !translate-y-10 !-translate-x-2 !z-[-1]"/>
-            <Handle id="source-1" type="source" position={Position.Right} className="!w-4 !h-8 !rounded-l-none !rounded-r-full !border-none !bg-[#ec4899] !translate-y-10 !translate-x-2 !z-[-1]"/>
+            <Handle id="target-1" type="target" position={Position.Left} className="w-4! h-8! rounded-l-full! rounded-r-none! border-none! bg-[#ec4899]! translate-y-10! -translate-x-2! z-[-1]!"/>
+            <Handle id="source-1" type="source" position={Position.Right} className="w-4! h-8! rounded-l-none! rounded-r-full! border-none! bg-[#ec4899]! translate-y-10! translate-x-2! z-[-1]!"/>
         </div>
         </div>
     );
