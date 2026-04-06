@@ -92,16 +92,6 @@ function Flow() {
     return (
         <div className="relative h-screen w-screen overflow-hidden">
 
-            {/* Sync Indicator */}
-            <div className="absolute top-4 right-4 z-50 flex items-center gap-2 rounded-full bg-white backdrop-blur-md px-3 py-1 border border-white/20 shadow-lg">
-
-                <div className={`h-2.5 w-2.5 rounded-full ${syncing ? 'animate-pulse bg-yellow-400' : 'bg-green-500'}`}/>
-                <span className="text-s font-medium text-black/80">
-                    {syncing ? 'Syncing...' : 'Saved'}
-                </span>
-
-            </div>
-
             {/* React Flow */}
             <ReactFlow
                 nodes={nodes}
@@ -119,15 +109,18 @@ function Flow() {
             >
                 <Background bgColor="#ebebeb" size={2} gap={20} color="#CCCCCC"/>
 
+                {/* Control Panel bottom left */}
                 <Controls/>
 
-                <Panel position="top-left" className="flex gap-2">
+                {/* Top Panel */}
+                <Panel position="top-left" className="flex flex-row justify-between w-full pr-8">
 
                     <Menu>
 
-                        <MenuButton className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-sm/6 font-semibold text-gray-600  shadow-xl focus:not-data-focus:outline-none data-focus:outline data-focus:outline-gray-600 data-hover:bg-gray-100 data-open:bg-gray-100">
+                        <MenuButton
+                            className="w-40 inline-flex items-center justify-between rounded-md bg-white px-3 py-1.5 text-sm/6 font-semibold text-gray-600  shadow-xl focus:not-data-focus:outline-none data-focus:outline data-focus:outline-gray-600 data-hover:bg-gray-100 data-open:bg-gray-100">
                             Add Node
-                            <ChevronDownIcon className="size-4 fill-gray-600" />
+                            <ChevronDownIcon className="size-4 fill-gray-600"/>
                         </MenuButton>
 
                         <MenuItems
@@ -137,33 +130,44 @@ function Flow() {
                         >
 
                             <MenuItem>
-                                <button onClick={onCreatePromptNode} className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
+                                <button onClick={onCreatePromptNode}
+                                        className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                                     Prompt Node
-                                    <PlusIcon className="size-4 fill-black/40" />
+                                    <PlusIcon className="size-4 fill-black/40"/>
                                 </button>
                             </MenuItem>
 
-                            <div className="my-0 h-px bg-black/5" />
+                            <div className="my-0 h-px bg-black/5"/>
 
                             <MenuItem>
-                                <button onClick={onCreateTextNode} className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
+                                <button onClick={onCreateTextNode}
+                                        className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                                     Text Node
-                                    <PlusIcon className="size-4 fill-black/40" />
+                                    <PlusIcon className="size-4 fill-black/40"/>
                                 </button>
                             </MenuItem>
 
-                            <div className="my-0 h-px bg-black/5" />
+                            <div className="my-0 h-px bg-black/5"/>
 
                             <MenuItem>
-                                <button onClick={onCreateMergeNode} className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
+                                <button onClick={onCreateMergeNode}
+                                        className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                                     Merge Node
-                                    <PlusIcon className="size-4 fill-black/40" />
+                                    <PlusIcon className="size-4 fill-black/40"/>
                                 </button>
                             </MenuItem>
 
                         </MenuItems>
 
                     </Menu>
+
+                    <div
+                        className="z-50 flex items-center gap-2 rounded-full bg-white backdrop-blur-md px-3 py-1 border border-white/20 shadow-lg">
+
+                        <div
+                            className={`h-2.5 w-2.5 rounded-full ${syncing ? 'animate-pulse bg-yellow-400' : 'bg-green-500'}`}/>
+                        <span className="text-s font-medium text-black/80">{syncing ? 'Syncing...' : 'Saved'}</span>
+                    </div>
 
                 </Panel>
 
