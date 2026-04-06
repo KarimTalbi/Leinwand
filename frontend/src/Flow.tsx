@@ -18,7 +18,7 @@ const nodeTypes: NodeTypes = {
     mergeNode: MergeNode,
 };
 const defaultEdgeOptions = {
-    style: {strokeWidth: 4}
+    style: {strokeWidth: 6}
 };
 
 const selector = (state: AppState) => ({
