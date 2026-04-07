@@ -48,9 +48,11 @@ class AiRequest(BaseModel):
 
 
 class MergeRequest(BaseModel):
-    """Request to merge branches"""
-
     target_id: str
+
+
+class MergeResponse(BaseModel):
+    text: str
 
 
 class ResolveRequest(BaseModel):
@@ -76,6 +78,6 @@ class AncestorNode(BaseModel):
 
 class AncestorResponse(BaseModel):
     node_id: str
-    source_handle: str | None = Field(default=None)
+    target_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]

@@ -25,6 +25,7 @@ from data import (
     init_db,
 )
 from data.queries.load_query import get_ancestors_recursive
+from data.schemas import MergeResponse
 from llm import PromptNodeModel, build_context
 
 setup_logging()
@@ -170,14 +171,35 @@ async def get_response(
 
 
 @app.post("/llm/merge")
-async def merge_streams(data: MergeRequest, session: AsyncSession = Depends(get_async_session)):
-    logger.info(data)
-    return {
-        "conflicts": ["1. Conflict 1", "2. Conflict 2", "3. Conflict 3"],
-        "hasConflicts": True,
-        "options": ["1. Option 1", "2. Option 2"],
-        "context": "Context for the merge prompt.",
-    }
+async def merge_streams(
+    data: MergeRequest, session: AsyncSession = Depends(get_async_session)
+) -> MergeResponse:
+    contexts = []
+
+    for handle in ["target-1", "target-2"]:
+        result = await session.execute(get_ancestors_recursive(data.target_id, handle))
+
+        rows = []
+        for row in result.mappings():
+            r = dict(row)
+            r["position"] = (
+                json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
+            )
+            r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+            rows.append(r)
+
+        nodes = [AncestorNode(**r) for r in rows]
+
+        ancestor_response = AncestorResponse(
+            node_id=data.target_id,
+            target_handle=handle,
+            total=len(nodes),
+            ancestors=nodes,
+        )
+        contexts.append(ancestor_response)
+    context = build_context(contexts[0], contexts[1])
+    logger.info(f"Context: {context}")
+    return MergeResponse(text=context)
 
 
 @app.post("/llm/merge/resolve")

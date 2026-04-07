@@ -17,8 +17,8 @@ class ModelConfig(BaseModel):
 
 class AiModelConfigs:
     PROMPT_NODE = ModelConfig(
-        model="gpt-4o-mini",
-        model_provider="openai",
+        model="gemini-2.5-flash",
+        model_provider="google_genai",
         temperature=0.7,
         max_tokens=1024,
         timeout=30,
