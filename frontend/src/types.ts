@@ -17,7 +17,7 @@ export type MergeNodeData = {
     hasConflicts?: boolean;
     conflicts?: string[];
     options?: string[];
-    prompt?: string;
+    choices?: string[];
 };
 
 
@@ -46,7 +46,7 @@ export interface AppState {
     saveCanvas: () => Promise<void>;
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
     addPromptNode: (position?: NodePosition) => void;
-    addTextNode: (position?: NodePosition) => void;
+    addTextNode: (position?: NodePosition, text?: string) => void;
     addMergeNode: (position?: NodePosition) => void;
     updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData>) => void;
 

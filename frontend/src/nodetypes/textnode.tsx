@@ -38,7 +38,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     };
 
     return (
-        <div className="w-130 h-170 flex flex-col bg-[#309898] rounded-3xl p-0 shadow-2xl">
+        <div className="w-130 h-130 flex flex-col bg-[#309898] rounded-3xl p-0 shadow-2xl">
             <div className="flex items-center justify-between px-6 pt-3 shrink-0">
                 <div className="text-base font-bold text-white ">Text Node</div>
 
@@ -82,7 +82,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
                     {hasText && (
                         <>
                             <Field
-                                className="flex-1 w-full text-black p-3 rounded-xl min-h-16 overflow-y-auto nowheel">
+                                className="flex-1 text-black p-3 rounded-xl min-h-0 overflow-y-auto nowheel">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{

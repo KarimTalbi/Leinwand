@@ -68,8 +68,8 @@ const useStore = create<AppState>((set, get) => ({
         get().addNode( 'promptNode', {label: "New Node", prompt: '', response: ''}, position)
     },
 
-    addTextNode: (position?: NodePosition) => {
-        get().addNode( 'textNode', {label: "TEXT", text: ''}, position)
+    addTextNode: (position?: NodePosition, text?: string) => {
+        get().addNode( 'textNode', {label: "TEXT", text: text ? text : ''}, position)
     },
 
     addMergeNode: (position?: NodePosition) => {

@@ -1,160 +1,82 @@
-import {memo, useEffect, useState} from 'react';
+import {memo, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
-import {Button, Field, Fieldset, Legend, Textarea} from "@headlessui/react";
+import {Button} from "@headlessui/react";
+import {XMarkIcon, PlayIcon} from '@heroicons/react/16/solid'
 
-import {MergeNodeData} from "../types.ts";
-import useStore from "../store.ts";
-import api from "../api.ts";
-import clsx from "clsx";
+import useStore from '../store.ts';
+import api from '../api.ts'
 
-const MergeNode = ({id, data}: {id: string, data: MergeNodeData}) => {
-    const [loading, setLoading] = useState(false);
-    const [hasContext, setHasContext] = useState(false);
-    const [hasConflicts, setHasConflicts] = useState(false);
-    const [customResolution, setCustomResolution] = useState('');
+const MergeNode = ({id}: {id: string}) => {
+  const [loading, setLoading] = useState(false);
 
-    const updateNodeData = useStore((s) => s.updateNodeData);
-    const saveCanvas = useStore((s) => s.saveCanvas);
+  const saveCanvas = useStore((s) => s.saveCanvas);
+  const setSyncing = useStore((s) => s.setSyncing);
+  const addTextNode = useStore((s) => s.addTextNode);
+  const position = useStore(s => s.nodes.find(n => n.id === id)?.position)
 
-    useEffect(() => {
-        setHasContext(!!data.context);
-        setHasConflicts(!!data.conflicts);
-    }, [data]);
 
-    // First request: analyze branches for conflicts
-    const handleMerge = async () => {
-        setLoading(true);
-        try {
-            const res = await api.post('/llm/merge', {
-                target_id: id,
-            });
+  const handleGet = async () => {
+    setSyncing(true);
+    setLoading(true);
 
-            updateNodeData(id, {
-                conflicts: res.data.conflicts,
-                hasConflicts: res.data.hasConflicts,
-                options: res.data.options,       // string[] from LLM e.g. ["Use Branch A: ...", "Use Branch B: ..."]
-                context: res.data.context,        // set directly if no conflicts
-                prompt: '',
-            });
+    console.log(id)
 
-            await saveCanvas();
-        } catch (err) {
-            console.error('Error merging:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const res = await api.post('/llm/merge', {
+        target_id: id,
+      });
 
-    // Second request: resolve with chosen or custom resolution
-    const handleResolve = async (resolution: string) => {
-        if (!resolution.trim()) return;
-        setLoading(true);
-        try {
-            const res = await api.post('/llm/merge/resolve', {
-                target_id: id,
-            });
+      // @ts-ignore
+      const pos = {
+        x: position.x + 200,
+        y: position.y
+      }
 
-            updateNodeData(id, {
-                context: res.data.context,
-                conflicts: [],
-                hasConflicts: false,
-                options: [],
-                prompt: '',
-            });
+      console.log(res.data.text)
 
-            setCustomResolution('');
-            await saveCanvas();
-        } catch (err) {
-            console.error('Error resolving conflict:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+      addTextNode(pos, res.data.text)
+      await saveCanvas();
 
-    return (
-        <div className="w-100 flex items-center justify-center bg-white border border-black/10 rounded-xl p-4 shadow-xl">
-            <Fieldset className="space-y-2 w-full">
+    } catch (err) {
+      console.error('Error getting context:', err);
 
-                {/* Header */}
-                <Field className="flex items-center justify-between">
-                    <Legend className="text-lg font-bold text-[#7dacb5]">MERGE</Legend>
-                    {hasContext && (
-                        <span className="text-xs text-green-500 font-medium">✓ Merged</span>
-                    )}
-                </Field>
+    } finally {
+      setSyncing(false);
+      setLoading(false);
+    }
+  };
 
-                {/* Initial state: Merge button */}
-                {!hasContext && !hasConflicts && (
-                    <Button
-                        className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-[#7dacb5] px-5 py-1.5 text-sm/6 font-semibold text-white shadow hover:bg-[#6a99a1] disabled:opacity-50 transition-colors"
-                        onClick={handleMerge}
-                        disabled={loading}
-                    >
-                        {loading ? 'Analyzing...' : 'Merge'}
-                    </Button>
-                )}
+  return (
+    <div className="flex flex-row items-center justify-center">
+    <div className="w-80 h-40 flex flex-col bg-[#f5c45e] rounded-3xl p-0 shadow-2xl">
+      <div className="flex items-center justify-between px-6 h-full">
 
-                {/* Conflict state */}
-                {hasConflicts && (
-                    <div className="space-y-2">
+        <div className="text-xl font-bold text-white">MERGE NODE</div>
+        <div className="flex items-center gap-3 mr-2">
 
-                        {/* Conflict description from LLM */}
-                        <div className="text-sm text-black bg-amber-50 border border-amber-200 p-3 rounded-lg">
-                            {data.conflicts}
-                        </div>
 
-                        {/* Quick-select buttons from LLM-provided options */}
-                        {data.options && data.options.length > 0 && (
-                            <div className="flex flex-col gap-1.5">
-                                {data.options.map((option: string, i: number) => (
-                                    <Button
-                                        key={i}
-                                        className="w-full text-left px-3 py-2 text-sm rounded-md bg-[#7dacb5]/10 border border-[#7dacb5]/30 hover:bg-[#7dacb5]/20 hover:border-[#7dacb5] transition-colors disabled:opacity-50"
-                                        onClick={() => handleResolve(option)}
-                                        disabled={loading}
-                                    >
-                                        {option}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
+          <Button
+            className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
+            <XMarkIcon className="size-10 text-white"/>
+          </Button>
 
-                        {/* Divider */}
-                        <div className="flex items-center gap-2 text-xs text-black/30">
-                            <div className="flex-1 h-px bg-black/10"/>
-                            or describe your own resolution
-                            <div className="flex-1 h-px bg-black/10"/>
-                        </div>
+          <Button onClick={handleGet} disabled={loading}
+                  className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
+            <PlayIcon className="size-8 text-white"/>
+          </Button>
 
-                        {/* Custom resolution textarea */}
-                        <Textarea
-                            value={customResolution}
-                            onChange={(e) => setCustomResolution(e.target.value)}
-                            placeholder="Explain how to resolve the conflict..."
-                            className={clsx(
-                                'nodrag block w-full resize-none rounded-lg border-none bg-black/5 px-3 py-1.5 text-sm/6 text-black',
-                                'focus:bg-white/80 transition-all focus:ring-1 focus:ring-[#7dacb5]'
-                            )}
-                            rows={2}
-                        />
-
-                        <Button
-                            className="w-full inline-flex items-center justify-center rounded-md bg-[#7dacb5] px-5 py-1.5 text-sm/6 font-semibold text-white shadow hover:bg-[#6a99a1] disabled:opacity-50 transition-colors"
-                            onClick={() => handleResolve(customResolution)}
-                            disabled={loading || !customResolution.trim()}
-                        >
-                            {loading ? 'Resolving...' : 'Resolve'}
-                        </Button>
-                    </div>
-                )}
-
-            </Fieldset>
-
-            <Handle id="source-1" type="source" position={Position.Bottom} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
-            <Handle id="target-1" type="target" position={Position.Top} style={{left: '25%'}} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
-            <Handle id="target-2" type="target" position={Position.Top} style={{left: '75%'}} className="bg-[#7dacb5]! w-3! h-3! border-none!"/>
         </div>
-    );
+      </div>
+
+        <Handle id="target-1" type="target" position={Position.Left}
+                className="w-2! h-4! rounded-l-full! rounded-r-none! border-none! bg-[#f5c45e]! translate-y-10! -translate-x-1! z-[-1]!"/>
+        <Handle id="target-2" type="target" position={Position.Left}
+                className="w-2! h-4! rounded-l-full! rounded-r-none! border-none! bg-[#f5c45e]! -translate-y-10! -translate-x-1! z-[-1]!"/>
+        <Handle id="source-1" type="source" position={Position.Right}
+                className="w-2! h-4! rounded-l-none! rounded-r-full! border-none! bg-[#f5c45e]! translate-x-1! z-[-1]!"/>
+      </div>
+    </div>
+  );
 };
 
 export default memo(MergeNode);
