@@ -11,10 +11,9 @@ import {PencilIcon, PlayIcon, XMarkIcon} from "@heroicons/react/16/solid";
 
 const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     const [loading, setLoading] = useState(false);
-    const [hasText, setHasText] = useState(!!data.text);
-
     const updateNodeData = useStore((s) => s.updateNodeData);
     const saveCanvas = useStore((s) => s.saveCanvas);
+    const deleteNode = useStore((s) => s.deleteNode);
 
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         updateNodeData(id, {text: e.target.value});
@@ -24,10 +23,9 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
         setLoading(true);
 
         try {
-            updateNodeData(id, {label: data.label, text: data.text});
+            updateNodeData(id, {label: data.label, text: data.text, closed: true});
             await saveCanvas();
 
-            setHasText(true);
 
         } catch (err) {
             console.error('Error saving Text:', err);
@@ -37,6 +35,10 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
         }
     };
 
+    const setClosed = (closed: boolean) => {
+        updateNodeData(id, {closed: closed});
+    }
+
     return (
         <div className="w-130 h-130 flex flex-col bg-[#309898] rounded-3xl p-0 shadow-2xl">
             <div className="flex items-center justify-between px-6 pt-3 shrink-0">
@@ -44,17 +46,17 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
 
                 <div className="flex items-center gap-6 mr-2">
 
-                    <Button
+                    <Button onClick={() => setClosed(false)} disabled={loading}
                         className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
                         <PencilIcon className="size-6 text-white"/>
                     </Button>
 
-                    <Button
+                    <Button onClick={() => deleteNode(id)} disabled={loading}
                         className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
                         <XMarkIcon className="size-8 text-white"/>
                     </Button>
 
-                    <Button onClick={handleSave} disabled={loading || hasText}
+                    <Button onClick={handleSave} disabled={loading || data.closed}
                             className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
                         <PlayIcon className="size-6 text-white"/>
                     </Button>
@@ -65,7 +67,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
             <div className="flex flex-col flex-1 min-h-0 mt-2 bg-white rounded-3xl">
                 <Fieldset className="flex flex-col flex-1 min-h-0 space-y-2 rounded-t-2xl p-6">
 
-                    {!hasText && (
+                    {!data.closed && (
                         <Field className="flex flex-col flex-1 min-h-0">
                             <Textarea
                                 value={data.text}
@@ -79,7 +81,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
                         </Field>
                     )}
 
-                    {hasText && (
+                    {data.closed && (
                         <>
                             <Field
                                 className="flex-1 text-black p-3 rounded-xl min-h-0 overflow-y-auto nowheel">

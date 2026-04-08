@@ -1,6 +1,5 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
-import {useShallow} from 'zustand/react/shallow'
 import {Textarea, Field, Button} from "@headlessui/react";
 import clsx from "clsx";
 import ReactMarkdown from 'react-markdown'
@@ -9,23 +8,14 @@ import {AdjustmentsHorizontalIcon, XMarkIcon, PlayIcon} from '@heroicons/react/1
 
 import useStore from '../store.ts';
 import api from '../api.ts'
-import {AppState, PromptNodeData} from "../types.ts";
-
-const selector = (state: AppState) => ({
-  setSyncing: state.setSyncing
-});
+import {PromptNodeData} from "../types.ts";
 
 const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
   const [loading, setLoading] = useState(false);
-  const [hasResponse, setHasResponse] = useState(false);
-  const {setSyncing} = useStore(useShallow(selector));
-
-  useEffect(() => {
-    setHasResponse(!!data.response);
-  }, [data]);
-
+  const setSyncing = useStore((s) => s.setSyncing);
   const updateNodeData = useStore((s) => s.updateNodeData);
   const saveCanvas = useStore((s) => s.saveCanvas);
+  const deleteNode = useStore((s) => s.deleteNode);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(id, {prompt: e.target.value});
@@ -43,7 +33,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
 
       console.log(res.data.response.slice(0, 200))
 
-      updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.title});
+      updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.title, closed: true});
       await saveCanvas();
 
     } catch (err) {
@@ -67,12 +57,12 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
             <AdjustmentsHorizontalIcon className="size-6 text-white"/>
           </Button>
 
-          <Button
+          <Button onClick={() => deleteNode(id)} disabled={loading}
             className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
             <XMarkIcon className="size-8 text-white"/>
           </Button>
 
-          <Button onClick={handleSend} disabled={loading || hasResponse}
+          <Button onClick={handleSend} disabled={loading || data.closed}
                   className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
             <PlayIcon className="size-6 text-white"/>
           </Button>
@@ -83,7 +73,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
 
       <div className="flex flex-col flex-1 min-h-0 mt-2 p-6 bg-white rounded-3xl">
 
-        {!hasResponse && (
+        {!data.closed && (
           <Field className="flex flex-col flex-1 min-h-0">
             <Textarea
               value={data.prompt}
@@ -97,7 +87,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
           </Field>
         )}
 
-        {hasResponse && (
+        {data.closed && (
           <>
             <Field
               className="flex-1 w-full text-black p-3 rounded-xl min-h-16 overflow-y-auto nowheel">
