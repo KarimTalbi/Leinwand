@@ -183,13 +183,16 @@ async def merge_streams(
         for row in result.mappings():
             r = dict(row)
             r["position"] = (
-                json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
+                json.loads(r["position"])
+                if isinstance(r["position"], str)
+                else r["position"]
             )
-            r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+            r["data"] = (
+                json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+            )
             rows.append(r)
 
         nodes = [AncestorNode(**r) for r in rows]
-        nodes.reverse()
 
         ancestor_response = AncestorResponse(
             node_id=data.target_id,
@@ -198,8 +201,9 @@ async def merge_streams(
             ancestors=nodes,
         )
         contexts.append(ancestor_response)
+
     context = build_context_sectioned(contexts)
-    logger.info(f"Context: {context}")
+
     return MergeResponse(data=context)
 
 

@@ -21,7 +21,10 @@ class EdgeRead(BaseModel):
     target_handle: str | None = None
 
     model_config = ConfigDict(
-        from_attributes=True, populate_by_name=True, alias_generator=to_camel, extra="ignore"
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        extra="ignore",
     )
 
 
@@ -81,3 +84,11 @@ class AncestorResponse(BaseModel):
     target_handle: str | None = Field(default=None)
     total: int
     ancestors: list[AncestorNode]
+
+
+class MergeNodeRead(NodeRead):
+    depth: int
+    branch: str
+
+
+class MergeNodeResponse(MergeNodeRead): ...

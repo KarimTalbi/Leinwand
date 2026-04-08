@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 from data import AncestorNode, AncestorResponse
@@ -59,11 +60,15 @@ def _stream(ancestry: AncestorResponse, stream_id: int) -> str:
     }
 
 
-def _global(ancestry: AncestorResponse) -> str:
+def _global(ancestry: list[AncestorResponse]):
     stream_count = len(ancestry)
     node_count = sum([a.total for a in ancestry])
 
-    return {"total_streams": stream_count, "total_nodes": node_count, "type": "global summary"}
+    return {
+        "total_streams": stream_count,
+        "total_nodes": node_count,
+        "type": "global summary",
+    }
 
 
 def build_context_sectioned(ancestry: list[AncestorResponse]) -> str:
@@ -77,3 +82,19 @@ def build_context_sectioned(ancestry: list[AncestorResponse]) -> str:
         summary.extend([_node(n, i) for n in a.ancestors])
 
     return summary
+
+
+def get_rows(result, handle: str):
+    rows = []
+    for row in result.mappings():
+        r = dict(row)
+        r["position"] = (
+            json.loads(r["position"])
+            if isinstance(r["position"], str)
+            else r["position"]
+        )
+        r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
+        rows.append(r)
+        r["branch"] = "A" if handle == "target-1" else "B"
+
+    return rows
