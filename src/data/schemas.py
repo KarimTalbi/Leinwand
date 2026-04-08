@@ -52,7 +52,7 @@ class MergeRequest(BaseModel):
 
 
 class MergeResponse(BaseModel):
-    text: str
+    data: list[dict[str, Any]]
 
 
 class ResolveRequest(BaseModel):

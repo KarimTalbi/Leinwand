@@ -26,7 +26,7 @@ from data import (
 )
 from data.queries.load_query import get_ancestors_recursive
 from data.schemas import MergeResponse
-from llm import PromptNodeModel, build_context
+from llm import PromptNodeModel, build_context, build_context_sectioned
 
 setup_logging()
 logger = logging.getLogger("app.http")
@@ -157,7 +157,7 @@ async def get_response(
 
     ancestor_response = AncestorResponse(
         node_id=data.target_id,
-        source_handle=data.source_handle,
+        target_handle=data.source_handle,
         total=len(nodes),
         ancestors=nodes,
     )
@@ -189,6 +189,7 @@ async def merge_streams(
             rows.append(r)
 
         nodes = [AncestorNode(**r) for r in rows]
+        nodes.reverse()
 
         ancestor_response = AncestorResponse(
             node_id=data.target_id,
@@ -197,9 +198,9 @@ async def merge_streams(
             ancestors=nodes,
         )
         contexts.append(ancestor_response)
-    context = build_context(contexts[0], contexts[1])
+    context = build_context_sectioned(contexts)
     logger.info(f"Context: {context}")
-    return MergeResponse(text=context)
+    return MergeResponse(data=context)
 
 
 @app.post("/llm/merge/resolve")
