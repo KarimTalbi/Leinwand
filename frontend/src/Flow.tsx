@@ -1,6 +1,6 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useShallow} from 'zustand/react/shallow'
-import {ReactFlow, Background, Controls, NodeTypes, Panel, useReactFlow, MiniMap} from '@xyflow/react';
+import {ReactFlow, Background, NodeTypes, Panel, useReactFlow, MiniMap} from '@xyflow/react';
 import {Button, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react';
 import {
   ChevronDownIcon,
@@ -43,14 +43,17 @@ const selector = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   fetchCanvas: state.fetchCanvas,
+  revertCanvas: state.revertCanvas,
   addPromptNode: state.addPromptNode,
   addTextNode: state.addTextNode,
   addMergeNode: state.addMergeNode,
 });
 
 function Flow() {
-  const {screenToFlowPosition} = useReactFlow()
+  const {screenToFlowPosition, zoomIn, zoomOut, zoomTo} = useReactFlow()
   const syncing = useStore((state) => state.syncing);
+  const [isMapOpen, setIsMapOpen] = useState(true);
+  const [locked, setLocked] = useState(false);
 
   const {
     nodes,
@@ -59,6 +62,7 @@ function Flow() {
     onEdgesChange,
     onConnect,
     fetchCanvas,
+    revertCanvas,
     addPromptNode,
     addTextNode,
     addMergeNode,
@@ -114,33 +118,50 @@ function Flow() {
         onConnect={onConnect}
         fitView
         nodeTypes={nodeTypes}
-        minZoom={0.2}
+        minZoom={0.1}
         maxZoom={2}
+        nodesDraggable={!locked}
+        nodesConnectable={!locked}
+        elementsSelectable={!locked}
       >
 
         <Panel position="top-left"
                className="flex flex-row items-center justify-between w-98/100 gap-4 rounded-full  bg-white/50 p-2 shadow-lg backdrop-blur-xs">
 
           <div className="flex flex-row items-center justify-between gap-4 pl-3">
-            <Button>
+
+            <Button onClick={() => zoomIn()}
+                    className="w-8 h-8 pl-1.5 text-center transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <MagnifyingGlassPlusIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
+
+            <Button onClick={() => zoomOut()}
+                    className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <MagnifyingGlassMinusIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
-              <ArrowsPointingInIcon className="size-4 fill-black/80"/>
+
+            <Button onClick={() => zoomTo(1)}
+                    className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
+              <ArrowsPointingInIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
-              <LockClosedIcon className="size-4 fill-black/80"/>
+
+            <Button onClick={() => setLocked(!locked)}
+                    className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
+              <LockClosedIcon className="size-5 fill-black/80"/>
             </Button>
+
             <div className="border-r border-gray-400">&nbsp;</div>
-            <Button>
+
+            <Button onClick={() => setIsMapOpen(!isMapOpen)}
+                    className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <MapIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
-              <MoonIcon className="size-4.5 fill-black/80"/>
+
+            <Button
+              className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
+              <MoonIcon className="size-5 fill-black/80"/>
             </Button>
+
           </div>
 
           <Menu>
@@ -191,21 +212,32 @@ function Flow() {
           </Menu>
 
           <div className="flex flex-row items-center justify-between gap-4">
-            <Button>
+
+            <Button onClick={() => revertCanvas()}
+              className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowUturnLeftIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
+
+            <Button
+              className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowUturnRightIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
+
+            <Button onClick={() => fetchCanvas()}
+                    className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowPathIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
+
+            <Button
+              className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <UserIcon className="size-5 fill-black/80"/>
             </Button>
-            <Button>
+
+            <Button
+              className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <Bars3Icon className="size-5 fill-black/80"/>
             </Button>
+
             <div
               className="z-50 flex items-center gap-2 rounded-full px-3 py-1">
               <span className="text-s font-medium text-black/80">Sync</span>
@@ -218,8 +250,10 @@ function Flow() {
         </Panel>
 
         <Background bgColor="#ebebeb" size={2} gap={20} color="#CCCCCC"/>
-        <Controls/>
-        <MiniMap nodeColor="gray"/>
+
+        {isMapOpen && (
+          <MiniMap nodeColor="gray"/>
+        )}
 
       </ReactFlow>
     </div>

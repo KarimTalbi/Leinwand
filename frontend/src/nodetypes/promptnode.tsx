@@ -58,12 +58,12 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
           </Button>
 
           <Button onClick={() => deleteNode(id)} disabled={loading}
-            className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
+                  className="w-10 h-10 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
             <XMarkIcon className="size-8 text-white"/>
           </Button>
 
           <Button onClick={handleSend} disabled={loading || data.closed}
-                  className="transition-opacity duration-200 hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed">
+                  className="w-10 h-10 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
             <PlayIcon className="size-6 text-white"/>
           </Button>
 

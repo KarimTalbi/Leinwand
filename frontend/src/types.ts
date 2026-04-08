@@ -42,6 +42,7 @@ export interface AppState {
 
     // Actions
     fetchCanvas: () => Promise<void>;
+    revertCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
     deleteNode: (id: string) => void;
