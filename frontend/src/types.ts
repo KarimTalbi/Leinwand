@@ -35,15 +35,24 @@ export type PromptNode = Node<PromptNodeData>;
 
 export type MergeNode = Node<MergeNodeData>;
 
+export type HistorySnapshot = {
+    id: string;
+    timestamp: string;
+};
+
 export interface AppState {
     nodes: (PromptNode | TextNode | MergeNode)[];
     edges: Edge[];
     syncing: boolean;
+    historyList: HistorySnapshot[];
+    historyIndex: number | null;
 
     // Actions
     fetchCanvas: () => Promise<void>;
-    revertCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
+    fetchHistory: () => Promise<void>;
+    revertBack: () => Promise<void>;
+    revertForward: () => Promise<void>;
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
     deleteNode: (id: string) => void;
     addPromptNode: (position?: NodePosition) => void;

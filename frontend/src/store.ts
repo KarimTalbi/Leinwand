@@ -3,7 +3,7 @@ import {v4 as uuid} from 'uuid';
 import {addEdge, applyNodeChanges, applyEdgeChanges} from "@xyflow/react";
 
 import api from './api'
-import {PromptNode, TextNode, AppState, NodeTypes, NodeData, NodePosition} from './types'
+import {PromptNode, TextNode, AppState, NodeTypes, NodeData, NodePosition, HistorySnapshot} from './types'
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -16,6 +16,8 @@ const useStore = create<AppState>((set, get) => ({
     nodes: [],
     edges: [],
     syncing: false,
+    historyList: [] as HistorySnapshot[],
+    historyIndex: null,
 
     fetchCanvas: async () => {
         set({syncing: true})
@@ -35,33 +37,86 @@ const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    revertCanvas: async () => {
-        set({syncing: true})
-
+    fetchHistory: async () => {
         try {
-            const res = await api.get("/canvas/revert");
+            const res = await api.get("/canvas/history");
+            set({historyList: res.data || []});
+        } catch (err) {
+            console.error("Error fetching history:", err);
+        }
+    },
 
+    revertBack: async () => {
+        const {historyList, historyIndex, fetchHistory} = get();
+
+        let list = historyList;
+        if (list.length === 0) {
+            await fetchHistory();
+            list = get().historyList;
+        }
+
+        const nextIndex = historyIndex === null ? 0 : historyIndex + 1;
+        if (nextIndex >= list.length) return;
+
+        set({syncing: true});
+        try {
+            const res = await api.post(`/canvas/revert/${list[nextIndex].id}`);
             set({
                 nodes: res.data.nodes || [],
                 edges: res.data.edges || [],
+                historyIndex: nextIndex,
             });
-
         } catch (err) {
-            console.error("Error reverting data", err);
-
+            console.error("Error reverting canvas:", err);
         } finally {
-            set({syncing: false})
+            set({syncing: false});
+        }
+    },
+
+    revertForward: async () => {
+        const {historyList, historyIndex} = get();
+        if (historyIndex === null) return;
+
+        set({syncing: true});
+        try {
+            if (historyIndex === 0) {
+                const res = await api.get("/canvas");
+                set({
+                    nodes: res.data.nodes || [],
+                    edges: res.data.edges || [],
+                    historyIndex: null,
+                });
+            } else {
+                const res = await api.post(`/canvas/revert/${historyList[historyIndex - 1].id}`);
+                set({
+                    nodes: res.data.nodes || [],
+                    edges: res.data.edges || [],
+                    historyIndex: historyIndex - 1,
+                });
+            }
+        } catch (err) {
+            console.error("Error going forward:", err);
+        } finally {
+            set({syncing: false});
         }
     },
 
     saveCanvas: async () => {
         set({syncing: true});
 
+        const {historyList, historyIndex} = get();
+        const currentHistoryId = historyIndex !== null ? historyList[historyIndex]?.id : undefined;
+
         try {
             await api.post("/canvas", {
                 nodes: get().nodes,
                 edges: get().edges,
+                ...(currentHistoryId && {currentHistoryId}),
             });
+
+            if (historyIndex !== null) {
+                set({historyIndex: null, historyList: []});
+            }
 
         } catch (err) {
             console.error("Error saving canvas:", err);

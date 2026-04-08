@@ -1,9 +1,10 @@
 import json
 import logging
+import uuid
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import delete, select, desc
@@ -120,6 +121,14 @@ async def canvas_sync(
     dump_edges = [
         e.model_dump(exclude_unset=True, exclude_none=True) for e in edges_read
     ]
+
+    if data.current_history_id:
+        ref = await session.execute(
+            select(History.timestamp).where(History.id == data.current_history_id)
+        )
+        ref_ts = ref.scalar_one_or_none()
+        if ref_ts:
+            await session.execute(delete(History).where(History.timestamp > ref_ts))
 
     history = {"nodes": dump_nodes, "edges": dump_edges}
 
@@ -265,14 +274,41 @@ async def resolve_conflicts(
 
 
 @app.get("/canvas/history")
-async def revert_canvas(session: AsyncSession = Depends(get_async_session)):
+async def canvas_history(session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
         select(History).order_by(desc(History.timestamp)).limit(50)
     )
-
     snapshots = result.scalars().all()
+    return [{"id": str(s.id), "timestamp": s.timestamp} for s in snapshots]
 
-    return [{"id": str(h.id), "timestamp": h.timestamp} for h in snapshots]
+
+@app.post("/canvas/revert/{history_id}")
+async def revert_canvas(
+    history_id: uuid.UUID, session: AsyncSession = Depends(get_async_session)
+):
+    result = await session.execute(select(History).where(History.id == history_id))
+    snapshot = result.scalar_one_or_none()
+
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found")
+
+    h_nodes = snapshot.data["nodes"]
+    h_edges = snapshot.data["edges"]
+
+    await session.execute(delete(Node))
+    await session.execute(delete(Edge))
+
+    if h_nodes:
+        await session.execute(insert(Node).values(h_nodes))
+    if h_edges:
+        await session.execute(insert(Edge).values(h_edges))
+
+    nodes = await session.execute(select(Node))
+    edges = await session.execute(select(Edge))
+
+    logger.info("Canvas reverted to snapshot %s", history_id)
+
+    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
 
 
 if __name__ == "__main__":

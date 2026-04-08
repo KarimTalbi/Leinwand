@@ -43,7 +43,10 @@ const selector = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   fetchCanvas: state.fetchCanvas,
-  revertCanvas: state.revertCanvas,
+  revertBack: state.revertBack,
+  revertForward: state.revertForward,
+  historyIndex: state.historyIndex,
+  historyList: state.historyList,
   addPromptNode: state.addPromptNode,
   addTextNode: state.addTextNode,
   addMergeNode: state.addMergeNode,
@@ -62,13 +65,19 @@ function Flow() {
     onEdgesChange,
     onConnect,
     fetchCanvas,
-    revertCanvas,
+    revertBack,
+    revertForward,
+    historyIndex,
+    historyList,
     addPromptNode,
     addTextNode,
     addMergeNode,
   } = useStore(
     useShallow(selector)
   );
+
+  const canGoBack = historyIndex === null || historyIndex < historyList.length - 1;
+  const canGoForward = historyIndex !== null;
 
   useEffect(() => {
     void fetchCanvas();
@@ -213,12 +222,12 @@ function Flow() {
 
           <div className="flex flex-row items-center justify-between gap-4">
 
-            <Button onClick={() => revertCanvas()}
+            <Button onClick={() => revertBack()} disabled={!canGoBack}
               className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowUturnLeftIcon className="size-5 fill-black/80"/>
             </Button>
 
-            <Button
+            <Button onClick={() => revertForward()} disabled={!canGoForward}
               className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowUturnRightIcon className="size-5 fill-black/80"/>
             </Button>
