@@ -264,36 +264,15 @@ async def resolve_conflicts(
     }
 
 
-@app.get("/canvas/revert")
+@app.get("/canvas/history")
 async def revert_canvas(session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
-        select(History).order_by(desc(History.timestamp)).limit(1)
+        select(History).order_by(desc(History.timestamp)).limit(50)
     )
 
-    newest = result.scalar_one_or_none()
+    snapshots = result.scalars().all()
 
-    data = dict(newest)["data"]
-
-    h_nodes = json.loads(data["nodes"])
-    h_edges = json.loads(data["edges"])
-
-    logger.info(h_nodes)
-
-    db_nodes = [Node(**n) for n in h_nodes]
-    db_edges = [Edge(**e) for e in h_edges]
-
-    await session.execute(delete(Node))
-    await session.execute(delete(Edge))
-
-    await session.execute(insert(Node).values(db_nodes))
-    await session.execute(insert(Edge).values(db_edges))
-
-    nodes = await session.execute(select(Node))
-    edges = await session.execute(select(Edge))
-
-    logger.info("Canvas data loaded successfully.")
-
-    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
+    return [{"id": str(h.id), "timestamp": h.timestamp} for h in snapshots]
 
 
 if __name__ == "__main__":
