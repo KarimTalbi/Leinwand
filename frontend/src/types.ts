@@ -4,20 +4,19 @@ export type PromptNodeData = {
     label: string;
     prompt?: string;
     response?: string;
+    closed: boolean;
 }
 
 export type TextNodeData = {
     label: string;
     text: string;
+    closed: boolean;
 };
 
 export type MergeNodeData = {
     label: string;
-    context?: string;
-    hasConflicts?: boolean;
-    conflicts?: string[];
-    options?: string[];
-    choices?: string[];
+    context?: string[];
+    closed: boolean;
 };
 
 
@@ -45,6 +44,7 @@ export interface AppState {
     fetchCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
+    deleteNode: (id: string) => void;
     addPromptNode: (position?: NodePosition) => void;
     addTextNode: (position?: NodePosition, text?: string) => void;
     addMergeNode: (position?: NodePosition) => void;

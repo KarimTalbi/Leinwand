@@ -64,16 +64,24 @@ const useStore = create<AppState>((set, get) => ({
         debouncedSave(get().saveCanvas);
     },
 
+    deleteNode: (id: string) => {
+        set({
+            nodes: get().nodes.filter((n) => n.id !== id),
+            edges: get().edges.filter((e) => e.source !== id && e.target !== id),
+        });
+        debouncedSave(get().saveCanvas);
+    },
+
     addPromptNode: (position?: NodePosition) => {
-        get().addNode( 'promptNode', {label: "New Node", prompt: '', response: ''}, position)
+        get().addNode( 'promptNode', {label: "New Node", prompt: '', response: '', closed: false}, position)
     },
 
     addTextNode: (position?: NodePosition, text?: string) => {
-        get().addNode( 'textNode', {label: "TEXT", text: text ? text : ''}, position)
+        get().addNode( 'textNode', {label: "TEXT", text: text ? text : '', closed: false}, position)
     },
 
     addMergeNode: (position?: NodePosition) => {
-        get().addNode('mergeNode', {label: "MERGE"}, position)
+        get().addNode('mergeNode', {label: "MERGE", closed: false}, position)
     },
 
     updateNodeData: (id, data) => {

@@ -119,7 +119,7 @@ function Flow() {
       >
 
         <Panel position="top-left"
-               className="flex flex-row items-center justify-between w-98/100 p-1.5 bg-white/80 rounded-full shadow-lg backdrop-blur-xs">
+               className="flex flex-row items-center justify-between w-98/100 gap-4 rounded-full  bg-white/50 p-2 shadow-lg backdrop-blur-xs">
 
           <div className="flex flex-row items-center justify-between gap-4 pl-3">
             <Button>
