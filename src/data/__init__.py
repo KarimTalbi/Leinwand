@@ -1,4 +1,5 @@
 from .db_models import Edge as Edge
+from .db_models import History as History
 from .db_models import Node as Node
 from .db_session import engine as engine
 from .db_session import get_async_session as get_async_session

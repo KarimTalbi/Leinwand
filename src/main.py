@@ -6,7 +6,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, desc
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,6 +23,9 @@ from data import (
     engine,
     get_async_session,
     init_db,
+    NodeRead,
+    EdgeRead,
+    History,
 )
 from data.queries.load_query import get_ancestors_recursive
 from data.schemas import MergeResponse
@@ -72,7 +75,9 @@ async def db_session_middleware(request: Request, call_next):
             request.url.path,
             exc_info=True,
         )
-        return JSONResponse(status_code=500, content={"detail": f"{type(e).__name__}: {e}"})
+        return JSONResponse(
+            status_code=500, content={"detail": f"{type(e).__name__}: {e}"}
+        )
 
 
 # --- CANVAS DATA ---
@@ -92,7 +97,36 @@ async def canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRe
 
 
 @app.post("/canvas")
-async def canvas_sync(data: CanvasRead, session: AsyncSession = Depends(get_async_session)) -> None:
+async def canvas_sync(
+    data: CanvasRead, session: AsyncSession = Depends(get_async_session)
+) -> None:
+
+    db_nodes = await session.execute(select(Node))
+    db_edges = await session.execute(select(Edge))
+
+    db_nodes_all = db_nodes.scalars().all()
+    db_edges_all = db_edges.scalars().all()
+
+    logger.info(db_nodes_all)
+
+    nodes_read = [NodeRead.model_validate(n) for n in db_nodes_all]
+    edges_read = [EdgeRead.model_validate(e) for e in db_edges_all]
+
+    logger.info(nodes_read)
+
+    dump_nodes = [
+        n.model_dump(exclude_unset=True, exclude_none=True) for n in nodes_read
+    ]
+    dump_edges = [
+        e.model_dump(exclude_unset=True, exclude_none=True) for e in edges_read
+    ]
+
+    history = {"nodes": dump_nodes, "edges": dump_edges}
+
+    db_history = History(data=history)
+
+    session.add(db_history)
+    await session.flush()
 
     node_ids = [n.id for n in data.nodes]
     edge_ids = [e.id for e in data.edges]
@@ -103,7 +137,12 @@ async def canvas_sync(data: CanvasRead, session: AsyncSession = Depends(get_asyn
     if data.nodes:
         await session.execute(
             insert(Node)
-            .values([n.model_dump(exclude_unset=True, exclude_none=True) for n in data.nodes])
+            .values(
+                [
+                    n.model_dump(exclude_unset=True, exclude_none=True)
+                    for n in data.nodes
+                ]
+            )
             .on_conflict_do_update(
                 index_elements=["id"],
                 set_={
@@ -117,7 +156,12 @@ async def canvas_sync(data: CanvasRead, session: AsyncSession = Depends(get_asyn
     if data.edges:
         await session.execute(
             insert(Edge)
-            .values([e.model_dump(exclude_unset=True, exclude_none=True) for e in data.edges])
+            .values(
+                [
+                    e.model_dump(exclude_unset=True, exclude_none=True)
+                    for e in data.edges
+                ]
+            )
             .on_conflict_do_update(
                 index_elements=["id"],
                 set_={
@@ -142,13 +186,17 @@ async def get_response(
 
     logger.info("Generating response...")
 
-    result = await session.execute(get_ancestors_recursive(data.target_id, data.source_handle))
+    result = await session.execute(
+        get_ancestors_recursive(data.target_id, data.source_handle)
+    )
 
     rows = []
     for row in result.mappings():
         r = dict(row)
         r["position"] = (
-            json.loads(r["position"]) if isinstance(r["position"], str) else r["position"]
+            json.loads(r["position"])
+            if isinstance(r["position"], str)
+            else r["position"]
         )
         r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
         rows.append(r)
@@ -203,16 +251,49 @@ async def merge_streams(
         contexts.append(ancestor_response)
 
     context = build_context_sectioned(contexts)
-
     return MergeResponse(data=context)
 
 
 @app.post("/llm/merge/resolve")
-async def resolve_conflicts(data: MergeRequest, session: AsyncSession = Depends(get_async_session)):
+async def resolve_conflicts(
+    data: MergeRequest, session: AsyncSession = Depends(get_async_session)
+):
     logger.info(data)
     return {
         "context": "Context for the merge prompt.",
     }
+
+
+@app.get("/canvas/revert")
+async def revert_canvas(session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(
+        select(History).order_by(desc(History.timestamp)).limit(1)
+    )
+
+    newest = result.scalar_one_or_none()
+
+    data = dict(newest)["data"]
+
+    h_nodes = json.loads(data["nodes"])
+    h_edges = json.loads(data["edges"])
+
+    logger.info(h_nodes)
+
+    db_nodes = [Node(**n) for n in h_nodes]
+    db_edges = [Edge(**e) for e in h_edges]
+
+    await session.execute(delete(Node))
+    await session.execute(delete(Edge))
+
+    await session.execute(insert(Node).values(db_nodes))
+    await session.execute(insert(Edge).values(db_edges))
+
+    nodes = await session.execute(select(Node))
+    edges = await session.execute(select(Edge))
+
+    logger.info("Canvas data loaded successfully.")
+
+    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
 
 
 if __name__ == "__main__":

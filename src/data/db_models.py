@@ -1,4 +1,7 @@
-from sqlalchemy import JSON, ForeignKey, String
+import uuid
+
+from sqlalchemy import JSON, ForeignKey, String, func
+from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -43,3 +46,13 @@ class Edge(Base):
     target_node: Mapped["Node"] = relationship(
         "Node", foreign_keys=[target], back_populates="incoming_edges"
     )
+
+
+class History(Base):
+    __tablename__ = "history"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        primary_key=True, index=True, default=uuid.uuid4
+    )
+    data: Mapped[dict[str, str | None]] = mapped_column(MutableDict.as_mutable(JSON))
+    timestamp: Mapped[str] = mapped_column(DATETIME, default=func.now(), index=True)
