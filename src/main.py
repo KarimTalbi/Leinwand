@@ -6,27 +6,24 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import delete, select
-from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import setup_logging
+from core import CanvasService, get_canvas_service, build_context
 from data import (
     AiRequest,
     AiResponse,
     AncestorNode,
     AncestorResponse,
     CanvasRead,
-    Edge,
     MergeRequest,
-    Node,
     engine,
     get_async_session,
     init_db,
 )
 from data.queries.load_query import get_ancestors_recursive
 from data.schemas import MergeResponse
-from llm import PromptNodeModel, build_context, build_context_sectioned
+from llm import PromptNodeModel, build_context_sectioned
 
 setup_logging()
 logger = logging.getLogger("app.http")
@@ -81,110 +78,27 @@ async def db_session_middleware(request: Request, call_next):
 
 
 @app.get("/canvas")
-async def canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRead:
-
-    logger.info("Loading canvas data...")
-
-    nodes = await session.execute(select(Node))
-    edges = await session.execute(select(Edge))
-
-    logger.info("Canvas data loaded successfully.")
-
-    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
+async def canvas(
+    service: CanvasService = Depends(get_canvas_service),
+) -> CanvasRead:
+    return await service.list()
 
 
 @app.post("/canvas")
 async def canvas_sync(
-    data: CanvasRead, session: AsyncSession = Depends(get_async_session)
+    data: CanvasRead, service: CanvasService = Depends(get_canvas_service)
 ) -> None:
-
-    node_ids = [n.id for n in data.nodes]
-    edge_ids = [e.id for e in data.edges]
-
-    await session.execute(delete(Edge).where(Edge.id.notin_(edge_ids)))
-    await session.execute(delete(Node).where(Node.id.notin_(node_ids)))
-
-    if data.nodes:
-        await session.execute(
-            insert(Node)
-            .values(
-                [
-                    n.model_dump(exclude_unset=True, exclude_none=True)
-                    for n in data.nodes
-                ]
-            )
-            .on_conflict_do_update(
-                index_elements=["id"],
-                set_={
-                    "type": insert(Node).excluded.type,
-                    "position": insert(Node).excluded.position,
-                    "data": insert(Node).excluded.data,
-                },
-            )
-        )
-
-    if data.edges:
-        await session.execute(
-            insert(Edge)
-            .values(
-                [
-                    e.model_dump(exclude_unset=True, exclude_none=True)
-                    for e in data.edges
-                ]
-            )
-            .on_conflict_do_update(
-                index_elements=["id"],
-                set_={
-                    "source": insert(Edge).excluded.source,
-                    "target": insert(Edge).excluded.target,
-                    "source_handle": insert(Edge).excluded.source_handle,
-                    "target_handle": insert(Edge).excluded.target_handle,
-                },
-            )
-        )
-
-    logger.info("Canvas data synced successfully.")
+    await service.sync(data)
 
 
 # --- AI ---
 @app.post("/llm/generate")
 async def get_response(
     data: AiRequest,
-    session: AsyncSession = Depends(get_async_session),
+    service: CanvasService = Depends(get_canvas_service),
     ai_model: PromptNodeModel = Depends(get_ai_model),
 ) -> AiResponse:
-
-    logger.info("Generating response...")
-
-    result = await session.execute(
-        get_ancestors_recursive(data.target_id, data.source_handle)
-    )
-
-    rows = []
-    for row in result.mappings():
-        r = dict(row)
-        r["position"] = (
-            json.loads(r["position"])
-            if isinstance(r["position"], str)
-            else r["position"]
-        )
-        r["data"] = json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
-        rows.append(r)
-
-    nodes = [AncestorNode(**r) for r in rows]
-
-    ancestor_response = AncestorResponse(
-        node_id=data.target_id,
-        target_handle=data.source_handle,
-        total=len(nodes),
-        ancestors=nodes,
-    )
-    context = build_context(ancestor_response)
-
-    logger.info("Response generated successfully.")
-    logger.info(f"Context: {context}")
-    logger.info(f"Prompt: {data.prompt}")
-
+    context = await build_context(service, [data.target_id])
     return await ai_model.generate(context, data.prompt)
 
 

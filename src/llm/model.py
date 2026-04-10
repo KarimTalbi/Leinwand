@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
@@ -21,11 +22,10 @@ class AiModelBase[_T]:
 
         self.system = system_prompt
 
-    async def generate(self, context: str, prompt: str) -> _T:
+    async def generate(self, context: Any, prompt: str) -> _T:
         result = await self.model.ainvoke(
             [SystemMessage(f"{self.system}\n\n{context}"), HumanMessage(prompt)]
         )
-        print(repr(result.response[:200]))
 
         return result
 

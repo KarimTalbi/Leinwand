@@ -26,4 +26,4 @@ WITH RECURSIVE ancestors AS (
 SELECT id, type, position, data, MIN(depth) AS depth
 FROM ancestors
 GROUP BY id, type, position, data
-ORDER BY depth;
+ORDER BY depth DESC;
