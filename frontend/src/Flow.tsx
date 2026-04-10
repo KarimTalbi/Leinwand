@@ -207,6 +207,14 @@ function Flow() {
                 </button>
               </MenuItem>
 
+              <MenuItem>
+                <button
+                        className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
+                  Code Node
+                  <PlusIcon className="size-4 fill-black/40"/>
+                </button>
+              </MenuItem>
+
             </MenuItems>
 
           </Menu>

@@ -22,7 +22,7 @@ export type MergeNodeData = {
 
 export type NodeData = PromptNodeData | TextNodeData | MergeNodeData;
 
-export type NodeTypes = 'promptNode' | 'textNode' | 'mergeNode'
+export type NodeTypes = 'promptNode' | 'textNode' | 'mergeNode';
 
 export type NodePosition = {
     x: number;
@@ -42,7 +42,6 @@ export interface AppState {
 
     // Actions
     fetchCanvas: () => Promise<void>;
-    revertCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
     addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
     deleteNode: (id: string) => void;

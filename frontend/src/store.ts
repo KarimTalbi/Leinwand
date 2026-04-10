@@ -35,25 +35,6 @@ const useStore = create<AppState>((set, get) => ({
         }
     },
 
-    revertCanvas: async () => {
-        set({syncing: true})
-
-        try {
-            const res = await api.get("/canvas/revert");
-
-            set({
-                nodes: res.data.nodes || [],
-                edges: res.data.edges || [],
-            });
-
-        } catch (err) {
-            console.error("Error reverting data", err);
-
-        } finally {
-            set({syncing: false})
-        }
-    },
-
     saveCanvas: async () => {
         set({syncing: true});
 
