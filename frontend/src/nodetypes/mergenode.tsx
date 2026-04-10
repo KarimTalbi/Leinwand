@@ -1,7 +1,7 @@
 import {memo, useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
 import {Button, Field, Fieldset, Legend, Label} from "@headlessui/react";
-import {XMarkIcon, PlayIcon} from '@heroicons/react/16/solid'
+import {XMarkIcon, PlayIcon, ArrowPathIcon} from '@heroicons/react/16/solid'
 
 import useStore from '../store.ts';
 import api from '../api.ts'
@@ -21,7 +21,7 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
     setLoading(true);
 
     try {
-      const res = await api.post('/llm/merge', {
+      const res = await api.post('/context/merge', {
         target_id: id,
       });
 
@@ -54,7 +54,7 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
 
 
               <Button onClick={() => deleteNode(id)} disabled={loading}
-                className="w-10 h-10 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
+                      className="w-10 h-10 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
                 <XMarkIcon className="size-10 text-white"/>
               </Button>
 
@@ -77,14 +77,15 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
             <div className="flex items-center gap-6 mr-2">
 
               <Button onClick={() => deleteNode(id)} disabled={loading}
-                className="transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:cursor-not-allowed">
+                      className="transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:cursor-not-allowed">
                 <XMarkIcon className="size-8 text-white"/>
               </Button>
 
-              <Button onClick={handleGet} disabled={loading || isClosed}
+              <Button onClick={handleGet} disabled={loading}
                       className="transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
-                <PlayIcon className="size-6 text-white"/>
+                <ArrowPathIcon className="size-6 text-white"/>
               </Button>
+
 
             </div>
           </div>
@@ -97,89 +98,113 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
 
                 {data.context.map((section: any) => {
 
-                  if (section.type === 'promptNode') {
+                  if (section.type === 'global_summary') {
+                    return (
+                      <Fieldset className="bg-white px-2 my-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <Legend className="text-lg">Total Streams:</Legend>
+                          <Legend className="text-lg font-bold">{section.total_streams}</Legend>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3">
+                          <Legend className="text-lg">Total Nodes:</Legend>
+                          <Legend className="text-lg font-bold">{section.total_nodes}</Legend>
+                        </div>
+                      </Fieldset>
+                    );
+                  }
+
+                  if (section.type === 'stream_summary') {
+                    return (
+                      <Fieldset className="bg-white pt-4 px-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center justify-between gap-1">
+
+                            <Legend className="text-base">Stream:</Legend>
+                            <Legend className="text-base font-bold">{section.stream_id}</Legend>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-1">
+                            <Legend className="text-base">Nodes:</Legend>
+                            <Legend className="text-base font-bold">{section.total_nodes}</Legend>
+                          </div>
+
+                        </div>
+                      </Fieldset>
+                    );
+                  }
+
+                  else if (section.type === 'promptNode') {
                     return (
                       <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
 
                         <div className="flex items-center justify-between">
 
-                          <Legend className="text-lg font-bold mb-2">{section.label}</Legend>
+                          <div className="flex items-center justify-between gap-3">
+
+                            <Label className="text-xs">DEPTH:</Label>
+                            <Field className="text-xs font-bold">{section.depth}</Field>
+                          </div>
                           <Label className="text-xs mb-2">PROMPT NODE</Label>
-
-                        </div>
-
-                        <div className="flex items-center justify-between">
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">BRANCH / DEPTH:</Label>
-                            <Field className="text-xs font-bold">{section.branch} / {section.depth}</Field>
-                          </div>
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">POSITION</Label>
-                            <Field className="text-xs font-bold">
-                              [ x: {section.position.x} ][ y: {section.position.y} ]
-                            </Field>
-
-                          </div>
 
                         </div>
 
                         <div className="my-4 h-px mx-2 bg-black/10"/>
 
                         <Legend className="text-base font-bold">User</Legend>
-                        <Field>{section.prompt}</Field>
+                        <Field className="text-xs">{section.prompt}</Field>
 
                         <div className="my-4 h-px mx-2 bg-black/10"/>
 
                         <Legend className="text-base font-bold">AI</Legend>
-                        <Field>{section.response}</Field>
+                        <Field className="text-xs">{section.response}</Field>
 
                       </Fieldset>
 
                     );
                   }
 
-                  if (section.type === 'textNode') {
+                  else if (section.type === 'textNode') {
                     return (
                       <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
-
-                        <div className="flex items-center justify-between">
-
-                          <Legend className="text-lg font-bold mb-2">{section.label}</Legend>
-                          <Label className="text-xs mb-2">TEXT NODE</Label>
-
-                        </div>
 
                         <div className="flex items-center justify-between">
 
                           <div className="flex items-center justify-between gap-3">
 
                             <Label className="text-xs">BRANCH / DEPTH:</Label>
-                            <Field className="text-xs font-bold">{section.branch} / {section.depth}</Field>
+                            <Field className="text-xs font-bold">{section.depth}</Field>
                           </div>
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">POSITION</Label>
-                            <Field className="text-xs font-bold">
-                              [ x: {section.position.x} ][ y: {section.position.y} ]
-                            </Field>
-
-                          </div>
+                          <Label className="text-xs">TEXT NODE</Label>
 
                         </div>
 
                         <div className="my-4 h-px mx-2 bg-black/10"/>
 
-                        <Legend className="text-base font-bold">Content:</Legend>
-                        <Field>{section.text}</Field>
+                        <Field className="text-xs">{section.text}</Field>
 
                       </Fieldset>
 
                     );
+                  }
+
+                  else if (section.type === 'mergeNode') {
+                    return (
+                      <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
+
+                        <div className="flex items-center justify-between">
+
+                          <div className="flex items-center justify-between gap-3">
+
+                            <Label className="text-xs">BRANCH / DEPTH:</Label>
+                            <Field className="text-xs font-bold">{section.depth}</Field>
+                          </div>
+                          <Label className="text-xs">MERGE NODE</Label>
+
+                        </div>
+
+                      </Fieldset>
+                    )
                   }
 
                   return null;
