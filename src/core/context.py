@@ -35,9 +35,10 @@ def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str,
     return [summary] + ancestry_a
 
 
-async def build_context(service: CanvasService, node_ids: list[str]):
+async def build_context(service: CanvasService, node_id: str, targets: int = 1):
+
     results = []
-    for id_ in node_ids:
-        results.append(await service.nodes.get_ancestors(id_))
+    for i in range(targets):
+        results.append(await service.nodes.get_ancestors(node_id, f"target-{i+1}"))
 
     return global_summary(tuple(results))
