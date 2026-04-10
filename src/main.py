@@ -7,7 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from config import setup_logging
-from core import CanvasService, get_canvas_service, build_context
+from core import (
+    CanvasService,
+    get_canvas_service,
+    build_context,
+    NodeService,
+    get_node_service,
+)
 from data import (
     AiRequest,
     AiResponse,
@@ -89,7 +95,7 @@ async def canvas_sync(
 @app.post("/llm/generate")
 async def get_response(
     data: AiRequest,
-    service: CanvasService = Depends(get_canvas_service),
+    service: NodeService = Depends(get_node_service),
     ai_model: PromptNodeModel = Depends(get_ai_model),
 ) -> AiResponse:
     context = await build_context(service, data.target_id)
@@ -98,7 +104,7 @@ async def get_response(
 
 @app.post("/llm/merge")
 async def merge_streams(
-    data: MergeRequest, service: CanvasService = Depends(get_canvas_service)
+    data: MergeRequest, service: NodeService = Depends(get_node_service)
 ) -> MergeResponse:
     context = await build_context(service, data.target_id, targets=2)
     return MergeResponse(data=context)

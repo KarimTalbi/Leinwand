@@ -9,7 +9,7 @@ retrieving ancestor-related information in a structured format.
 
 from typing import Any
 
-from src.core.service import CanvasService
+from src.core.service import NodeService
 
 
 def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str, Any]]:
@@ -52,7 +52,7 @@ def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str,
 
 
 async def build_context(
-    service: CanvasService, node_id: str, targets: int = 1
+    service: NodeService, node_id: str, targets: int = 1
 ) -> list[dict[str, Any]]:
     """
     Builds a context containing ancestor nodes for specified targets.
@@ -72,6 +72,6 @@ async def build_context(
 
     results = []
     for i in range(targets):
-        results.append(await service.nodes.get_ancestors(node_id, f"target-{i+1}"))
+        results.append(await service.get_ancestors(node_id, f"target-{i+1}"))
 
     return global_summary(tuple(results))
