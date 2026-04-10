@@ -72,6 +72,6 @@ async def build_context(
 
     results = []
     for i in range(targets):
-        results.append(await service.get_ancestors(node_id, f"target-{i+1}"))
+        results.append(await service.get_ancestors(node_id, f"target-{i + 1}"))
 
     return global_summary(tuple(results))
