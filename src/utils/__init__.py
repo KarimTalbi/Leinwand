@@ -1,1 +1,1 @@
-from .logger import service_monitor as service_monitor
+from .logger import service_monitor

@@ -23,6 +23,7 @@ class BaseService[T, R]:
         session (AsyncSession): The asynchronous session for interacting with the database.
         read_model (type[R]): The data transfer object (DTO) model class for read operations.
     """
+
     def __init__(self, session: AsyncSession, model: type[T], read_model: type[R]):
         self.model = model
         self.session = session
@@ -125,6 +126,7 @@ class NodeService(BaseService[Node, NodeRead]):
             for inserting or updating nodes, specifying how to handle conflicts with
             properties such as `type`, `position`, and `data`.
     """
+
     def __init__(self, session: AsyncSession):
         """
         Initializes a new instance of the class, setting up the conflict resolution set for database insert operations.
@@ -189,6 +191,7 @@ class EdgeService(BaseService[Edge, EdgeRead]):
         session (AsyncSession): The asynchronous database session used for interactions
             with the database.
     """
+
     def __init__(self, session: AsyncSession):
         super().__init__(session, Edge, EdgeRead)
         self.conflict_set_ = {
@@ -212,6 +215,7 @@ class CanvasService:
         nodes (NodeService): Service instance for managing node-related operations.
         edges (EdgeService): Service instance for managing edge-related operations.
     """
+
     def __init__(self, session: AsyncSession):
         self.nodes = NodeService(session)
         self.edges = EdgeService(session)
