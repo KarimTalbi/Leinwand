@@ -43,7 +43,6 @@ const selector = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   fetchCanvas: state.fetchCanvas,
-  revertCanvas: state.revertCanvas,
   addPromptNode: state.addPromptNode,
   addTextNode: state.addTextNode,
   addMergeNode: state.addMergeNode,
@@ -62,7 +61,6 @@ function Flow() {
     onEdgesChange,
     onConnect,
     fetchCanvas,
-    revertCanvas,
     addPromptNode,
     addTextNode,
     addMergeNode,
@@ -221,7 +219,7 @@ function Flow() {
 
           <div className="flex flex-row items-center justify-between gap-4">
 
-            <Button onClick={() => revertCanvas()}
+            <Button
               className="w-8 h-8 pl-1.5 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
               <ArrowUturnLeftIcon className="size-5 fill-black/80"/>
             </Button>
