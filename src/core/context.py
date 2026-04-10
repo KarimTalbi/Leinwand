@@ -3,39 +3,33 @@ from typing import Any
 from src.core.service import CanvasService
 
 
-def _add_stream_id(ancestry: list[dict], stream_id: str):
-    for a in ancestry:
-        a["stream_id"] = stream_id
-    return ancestry
-
-
 def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str, Any]]:
-
-    if len(ancestry) > 1:
-        ancestry_a, ancestry_b = ancestry
-        ancestry_a = _add_stream_id(ancestry_a, "A")
-        ancestry_b = _add_stream_id(ancestry_b, "B")
-
-        summary = {
+    summary = [
+        {
             "type": "global_summary",
-            "total_streams": 2,
-            "total_nodes": len(ancestry_a) + len(ancestry_b),
+            "total_streams": len(ancestry),
+            "total_nodes": sum(len(a) for a in ancestry),
         }
+    ]
 
-        return [summary] + ancestry_a + ancestry_b
+    for i, a in enumerate(ancestry):
+        summary.append(
+            {
+                "type": "stream_summary",
+                "stream_id": str(i + 1),
+                "total_nodes": len(a),
+            }
+        )
+        summary.extend(a)
 
-    ancestry_a = ancestry[0]
+        print(summary)
 
-    summary = {
-        "type": "global_summary",
-        "total_streams": 1,
-        "total_nodes": len(ancestry_a),
-    }
-
-    return [summary] + ancestry_a
+    return summary
 
 
-async def build_context(service: CanvasService, node_id: str, targets: int = 1):
+async def build_context(
+    service: CanvasService, node_id: str, targets: int = 1
+) -> list[dict[str, Any]]:
 
     results = []
     for i in range(targets):

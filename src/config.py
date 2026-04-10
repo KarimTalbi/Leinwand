@@ -20,7 +20,7 @@ class AiModelConfigs:
         model="gpt-5-mini",
         model_provider="openai",
         temperature=0.7,
-        max_tokens=1024,
+        max_tokens=2048,
         timeout=30,
         max_retries=2,
     )

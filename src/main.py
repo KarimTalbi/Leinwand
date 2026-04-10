@@ -1,4 +1,3 @@
-import json
 import logging
 from contextlib import asynccontextmanager
 
@@ -6,24 +5,19 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import setup_logging
 from core import CanvasService, get_canvas_service, build_context
 from data import (
     AiRequest,
     AiResponse,
-    AncestorNode,
-    AncestorResponse,
     CanvasRead,
     MergeRequest,
     engine,
-    get_async_session,
     init_db,
 )
-from data.queries.load_query import get_ancestors_recursive
 from data.schemas import MergeResponse
-from llm import PromptNodeModel, build_context_sectioned
+from llm import PromptNodeModel
 
 setup_logging()
 logger = logging.getLogger("app.http")
@@ -98,54 +92,16 @@ async def get_response(
     service: CanvasService = Depends(get_canvas_service),
     ai_model: PromptNodeModel = Depends(get_ai_model),
 ) -> AiResponse:
-    context = await build_context(service, [data.target_id])
+    context = await build_context(service, data.target_id)
     return await ai_model.generate(context, data.prompt)
 
 
 @app.post("/llm/merge")
 async def merge_streams(
-    data: MergeRequest, session: AsyncSession = Depends(get_async_session)
+    data: MergeRequest, service: CanvasService = Depends(get_canvas_service)
 ) -> MergeResponse:
-    contexts = []
-
-    for handle in ["target-1", "target-2"]:
-        result = await session.execute(get_ancestors_recursive(data.target_id, handle))
-
-        rows = []
-        for row in result.mappings():
-            r = dict(row)
-            r["position"] = (
-                json.loads(r["position"])
-                if isinstance(r["position"], str)
-                else r["position"]
-            )
-            r["data"] = (
-                json.loads(r["data"]) if isinstance(r["data"], str) else r["data"]
-            )
-            rows.append(r)
-
-        nodes = [AncestorNode(**r) for r in rows]
-
-        ancestor_response = AncestorResponse(
-            node_id=data.target_id,
-            target_handle=handle,
-            total=len(nodes),
-            ancestors=nodes,
-        )
-        contexts.append(ancestor_response)
-
-    context = build_context_sectioned(contexts)
+    context = await build_context(service, data.target_id, targets=2)
     return MergeResponse(data=context)
-
-
-@app.post("/llm/merge/resolve")
-async def resolve_conflicts(
-    data: MergeRequest, session: AsyncSession = Depends(get_async_session)
-):
-    logger.info(data)
-    return {
-        "context": "Context for the merge prompt.",
-    }
 
 
 if __name__ == "__main__":
