@@ -7,6 +7,7 @@ from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import Node, NodeRead, Edge, EdgeRead, CanvasRead, get_ancestors_recursive
+from utils import service_monitor
 
 
 class BaseService[T, R]:
@@ -28,6 +29,7 @@ class BaseService[T, R]:
         self.read_model = read_model
         self.conflict_set_ = {}
 
+    @service_monitor
     async def list(self) -> Sequence[T]:
         """
         Asynchronously retrieves a list of all records from the database corresponding
@@ -41,6 +43,7 @@ class BaseService[T, R]:
         result = await self.session.execute(select(self.model))
         return result.scalars().all()
 
+    @service_monitor
     async def get(self, ids: Sequence[str]) -> Sequence[T]:
         """
         Fetches a sequence of records from the database by their IDs.
@@ -62,6 +65,7 @@ class BaseService[T, R]:
         )
         return result.scalars().all()
 
+    @service_monitor
     async def delete_not_in(self, ids: Sequence[str]) -> None:
         """
         Deletes all records from the database table that do not have their IDs in the provided sequence.
@@ -78,6 +82,7 @@ class BaseService[T, R]:
         """
         await self.session.execute(delete(self.model).where(self.model.id.notin_(ids)))
 
+    @service_monitor
     async def update(self, items: Sequence[R]):
         """
         Updates the database with the provided sequence of items. Performs an upsert
@@ -134,6 +139,7 @@ class NodeService(BaseService[Node, NodeRead]):
             "data": insert(Node).excluded.data,
         }
 
+    @service_monitor
     async def get_ancestors(
         self, node_id: str, target_handle: str | None = None
     ) -> list[dict[str, Any]]:

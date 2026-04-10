@@ -6,6 +6,20 @@ logger = logging.getLogger("app.services")
 
 
 def service_monitor(func):
+    """
+    Decorator for monitoring the execution of asynchronous methods in a class.
+
+    This decorator logs the start and completion of the decorated method, along with the
+    execution time. If the decorated method raises an exception, it logs the error type,
+    message, and traceback, as well as the time elapsed before the exception occurred.
+
+    Args:
+        func (Callable): The asynchronous method to be wrapped and monitored.
+
+    Returns:
+        Callable: The wrapped asynchronous method with added monitoring functionality.
+    """
+
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
         class_name = self.__class__.__name__
