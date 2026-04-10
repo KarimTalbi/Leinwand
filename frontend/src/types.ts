@@ -22,7 +22,7 @@ export type MergeNodeData = {
 
 export type NodeData = PromptNodeData | TextNodeData | MergeNodeData;
 
-export type NodeTypes = 'promptNode' | 'textNode' | 'mergeNode';
+export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode';
 
 export type NodePosition = {
     x: number;
@@ -39,15 +39,13 @@ export interface AppState {
     nodes: (PromptNode | TextNode | MergeNode)[];
     edges: Edge[];
     syncing: boolean;
+    locked: boolean;
 
     // Actions
     fetchCanvas: () => Promise<void>;
     saveCanvas: () => Promise<void>;
-    addNode: (type: NodeTypes, data: NodeData, position?: NodePosition) => void;
+    addNode: (type: NodeTypeNames, position?: NodePosition) => void;
     deleteNode: (id: string) => void;
-    addPromptNode: (position?: NodePosition) => void;
-    addTextNode: (position?: NodePosition, text?: string) => void;
-    addMergeNode: (position?: NodePosition) => void;
     updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData>) => void;
 
     // React Flow Handlers
@@ -55,4 +53,5 @@ export interface AppState {
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
     setSyncing: (status: boolean) => void;
+    setLocked: (status: boolean) => void;
 }

@@ -22,7 +22,7 @@ import PromptNode from './nodetypes/promptnode.tsx';
 import TextNode from './nodetypes/textnode.tsx';
 import MergeNode from './nodetypes/mergenode.tsx';
 import useStore from './store';
-import {AppState} from './types'
+import {AppState, NodeTypeNames} from './types'
 
 import '@xyflow/react/dist/style.css';
 
@@ -43,16 +43,15 @@ const selector = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   fetchCanvas: state.fetchCanvas,
-  addPromptNode: state.addPromptNode,
-  addTextNode: state.addTextNode,
-  addMergeNode: state.addMergeNode,
+  addNode: state.addNode,
+  setLocked: state.setLocked,
 });
 
 function Flow() {
   const {screenToFlowPosition, zoomIn, zoomOut, zoomTo} = useReactFlow()
   const syncing = useStore((state) => state.syncing);
+  const locked = useStore((state) => state.locked);
   const [isMapOpen, setIsMapOpen] = useState(true);
-  const [locked, setLocked] = useState(false);
 
   const {
     nodes,
@@ -61,46 +60,26 @@ function Flow() {
     onEdgesChange,
     onConnect,
     fetchCanvas,
-    addPromptNode,
-    addTextNode,
-    addMergeNode,
+    addNode,
+    setLocked,
   } = useStore(
     useShallow(selector)
   );
 
   useEffect(() => {
     void fetchCanvas();
-  }, []);
+  }, [fetchCanvas]);
 
-  const onCreatePromptNode = () => {
+  const onCreateNode = (type: NodeTypeNames) => {
     const position = screenToFlowPosition(
       {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2
       }
     );
-    addPromptNode(position);
-  };
+    addNode(type, position);
+    };
 
-  const onCreateTextNode = () => {
-    const position = screenToFlowPosition(
-      {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2
-      }
-    );
-    addTextNode(position);
-  };
-
-  const onCreateMergeNode = () => {
-    const position = screenToFlowPosition(
-      {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2
-      }
-    );
-    addMergeNode(position);
-  };
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -178,7 +157,7 @@ function Flow() {
 
 
               <MenuItem>
-                <button onClick={onCreatePromptNode}
+                <button onClick={() => onCreateNode('promptNode')}
                         className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                   Prompt Node
                   <PlusIcon className="size-4 fill-black/40"/>
@@ -188,7 +167,7 @@ function Flow() {
               <div className="my-0 h-px bg-black/5"/>
 
               <MenuItem>
-                <button onClick={onCreateTextNode}
+                <button onClick={() => onCreateNode('textNode')}
                         className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                   Text Node
                   <PlusIcon className="size-4 fill-black/40"/>
@@ -198,17 +177,9 @@ function Flow() {
               <div className="my-0 h-px bg-black/5"/>
 
               <MenuItem>
-                <button onClick={onCreateMergeNode}
+                <button onClick={() => onCreateNode('mergeNode')}
                         className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
                   Merge Node
-                  <PlusIcon className="size-4 fill-black/40"/>
-                </button>
-              </MenuItem>
-
-              <MenuItem>
-                <button
-                        className="group flex w-full items-center justify-between rounded-lg px-3 py-1.5 data-focus:bg-black/10">
-                  Code Node
                   <PlusIcon className="size-4 fill-black/40"/>
                 </button>
               </MenuItem>
