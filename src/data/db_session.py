@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from backend.data.db_models import Base
+from src.data.db_models import Base
 
 USER_DATA_PATH = os.getenv("USER_DATA_PATH", "./data")
 DB_PATH = Path(USER_DATA_PATH) / "db.sqlite"

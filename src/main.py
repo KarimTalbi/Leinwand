@@ -1,13 +1,12 @@
 import json
 import logging
-import uuid
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy import delete, select, desc
+from sqlalchemy import delete, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,9 +23,6 @@ from data import (
     engine,
     get_async_session,
     init_db,
-    NodeRead,
-    EdgeRead,
-    History,
 )
 from data.queries.load_query import get_ancestors_recursive
 from data.schemas import MergeResponse
@@ -101,41 +97,6 @@ async def canvas(session: AsyncSession = Depends(get_async_session)) -> CanvasRe
 async def canvas_sync(
     data: CanvasRead, session: AsyncSession = Depends(get_async_session)
 ) -> None:
-
-    db_nodes = await session.execute(select(Node))
-    db_edges = await session.execute(select(Edge))
-
-    db_nodes_all = db_nodes.scalars().all()
-    db_edges_all = db_edges.scalars().all()
-
-    logger.info(db_nodes_all)
-
-    nodes_read = [NodeRead.model_validate(n) for n in db_nodes_all]
-    edges_read = [EdgeRead.model_validate(e) for e in db_edges_all]
-
-    logger.info(nodes_read)
-
-    dump_nodes = [
-        n.model_dump(exclude_unset=True, exclude_none=True) for n in nodes_read
-    ]
-    dump_edges = [
-        e.model_dump(exclude_unset=True, exclude_none=True) for e in edges_read
-    ]
-
-    if data.current_history_id:
-        ref = await session.execute(
-            select(History.timestamp).where(History.id == data.current_history_id)
-        )
-        ref_ts = ref.scalar_one_or_none()
-        if ref_ts:
-            await session.execute(delete(History).where(History.timestamp > ref_ts))
-
-    history = {"nodes": dump_nodes, "edges": dump_edges}
-
-    db_history = History(data=history)
-
-    session.add(db_history)
-    await session.flush()
 
     node_ids = [n.id for n in data.nodes]
     edge_ids = [e.id for e in data.edges]
@@ -271,44 +232,6 @@ async def resolve_conflicts(
     return {
         "context": "Context for the merge prompt.",
     }
-
-
-@app.get("/canvas/history")
-async def canvas_history(session: AsyncSession = Depends(get_async_session)):
-    result = await session.execute(
-        select(History).order_by(desc(History.timestamp)).limit(50)
-    )
-    snapshots = result.scalars().all()
-    return [{"id": str(s.id), "timestamp": s.timestamp} for s in snapshots]
-
-
-@app.post("/canvas/revert/{history_id}")
-async def revert_canvas(
-    history_id: uuid.UUID, session: AsyncSession = Depends(get_async_session)
-):
-    result = await session.execute(select(History).where(History.id == history_id))
-    snapshot = result.scalar_one_or_none()
-
-    if snapshot is None:
-        raise HTTPException(status_code=404, detail="Snapshot not found")
-
-    h_nodes = snapshot.data["nodes"]
-    h_edges = snapshot.data["edges"]
-
-    await session.execute(delete(Node))
-    await session.execute(delete(Edge))
-
-    if h_nodes:
-        await session.execute(insert(Node).values(h_nodes))
-    if h_edges:
-        await session.execute(insert(Edge).values(h_edges))
-
-    nodes = await session.execute(select(Node))
-    edges = await session.execute(select(Edge))
-
-    logger.info("Canvas reverted to snapshot %s", history_id)
-
-    return {"nodes": list(nodes.scalars().all()), "edges": list(edges.scalars().all())}
 
 
 if __name__ == "__main__":
