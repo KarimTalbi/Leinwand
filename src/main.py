@@ -21,10 +21,11 @@ from data import (
     MergeRequest,
     engine,
     init_db,
+    MergeResponse,
 )
-from data.schemas import MergeResponse
 from llm import PromptNodeModel
 
+# initialize logging
 setup_logging()
 logger = logging.getLogger("app.http")
 
@@ -56,6 +57,7 @@ async def lifespan(app: FastAPI):
     await engine.dispose()
 
 
+# FastAPI app setup
 app: FastAPI = FastAPI(lifespan=lifespan)
 
 
@@ -119,8 +121,6 @@ async def db_session_middleware(request: Request, call_next):
 
 
 # --- CANVAS DATA ---
-
-
 @app.get("/canvas")
 async def canvas(
     service: CanvasService = Depends(get_canvas_service),
@@ -190,7 +190,8 @@ async def get_response(
     return await ai_model.generate(context, data.prompt)
 
 
-@app.post("/llm/merge")
+# --- CONTEXT ---
+@app.post("/context/merge")
 async def merge_streams(
     data: MergeRequest, service: NodeService = Depends(get_node_service)
 ) -> MergeResponse:
@@ -218,4 +219,5 @@ async def merge_streams(
 
 
 if __name__ == "__main__":
+    # Run the FastAPI app
     uvicorn.run(app, host="0.0.0.0", port=8000)
