@@ -68,7 +68,7 @@ class NodeService(BaseService[Node, NodeRead]):
 
         for row in rows:
             row.update(json.loads(row["data"]))
-            for key in ["data", "id", "position", "closed"]:
+            for key in ["data", "id", "position", "closed", "label"]:
                 row.pop(key)
 
         return rows
