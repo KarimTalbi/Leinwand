@@ -1,7 +1,7 @@
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
 
-const NodeMarkdown = ({children}: { children: string }) => {
+const NodeMarkdown = ({children}: { children?: string }) => {
   return (
     <div
       className="flex-1 text-black p-3 rounded-xl min-h-0 overflow-y-auto nowheel">

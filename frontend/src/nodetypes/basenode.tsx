@@ -6,7 +6,6 @@ import {X} from "lucide-react";
 interface BaseNodeProps {
   id: string;
   title: string;
-  color: string;
   loading?: boolean;
   onDelete: () => void;
   style?: React.CSSProperties;
@@ -14,10 +13,10 @@ interface BaseNodeProps {
   children: React.ReactNode;
 }
 
-const BaseNode = ({title, color, loading, onDelete, headerActions, children, style}: BaseNodeProps) => {
+const BaseNode = ({title, loading, onDelete, headerActions, children, style}: BaseNodeProps) => {
   return (
-    <div className={`w-150 h-150 flex flex-col ${color}/80 rounded-3xl backdrop-blur-xs shadow-xl`}
-    style={style}>
+    <div className={`w-150 h-150 flex flex-col rounded-3xl shadow-xl`}
+    style={{...style, backdropFilter: 'blur(8px)', backgroundColor: `color-mix(in srgb, var(--node-color) 80%, transparent)`, opacity: 0.98}}>
 
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3 shrink-0">

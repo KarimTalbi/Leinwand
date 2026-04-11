@@ -4,7 +4,7 @@ import React from "react";
 
 interface NodeTextareaProps {
   placeholder?: string;
-  value: string;
+  value?: string;
   handleTextChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 

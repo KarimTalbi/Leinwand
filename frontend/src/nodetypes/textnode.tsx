@@ -67,7 +67,6 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     <BaseNode
       id={id}
       title="Text Node"
-      color="bg-[#309898]"
       loading={loading}
       onDelete={() => deleteNode(id)}
       style={{'--node-color': '#309898'} as React.CSSProperties}
