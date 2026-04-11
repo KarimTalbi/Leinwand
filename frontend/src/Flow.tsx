@@ -39,6 +39,8 @@ const defaultEdgeOptions = {
 const selector = (state: AppState) => ({
   nodes: state.nodes,
   edges: state.edges,
+  syncing: state.syncing,
+  locked: state.locked,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
@@ -49,13 +51,13 @@ const selector = (state: AppState) => ({
 
 function Flow() {
   const {screenToFlowPosition, zoomIn, zoomOut, zoomTo} = useReactFlow()
-  const syncing = useStore((state) => state.syncing);
-  const locked = useStore((state) => state.locked);
   const [isMapOpen, setIsMapOpen] = useState(true);
 
   const {
     nodes,
     edges,
+    syncing,
+    locked,
     onNodesChange,
     onEdgesChange,
     onConnect,

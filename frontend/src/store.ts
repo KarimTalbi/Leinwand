@@ -128,7 +128,7 @@ const useStore = create<AppState>((set, get) => ({
 
   setLocked: (status) => {
     set({locked: status})
-  }
+  },
 }));
 
 export default useStore;
