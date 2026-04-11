@@ -1,14 +1,14 @@
 import React, {memo, useState} from 'react';
-import {cn} from "@/lib/utils";
-
-import useStore from '../store.ts';
-import {AppState, TextNodeData} from "../types.ts";
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
 import {useShallow} from "zustand/react/shallow";
-import BaseNode from "./basenode.tsx"
 import {Lock, LockOpen} from "lucide-react";
+
+import useStore from '@/store.ts';
+import {AppState, TextNodeData} from "@/types.ts";
+
+import BaseNode from "@/nodetypes/basenode.tsx"
+import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
 import NodeMarkdown from "@/components/nodecontent/nodemarkdown.tsx";
+import NodeTextarea from "@/components/nodecontent/nodetextarea.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -16,17 +16,35 @@ const selector = (state: AppState) => ({
   saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
+  updateNodeClosed: state.updateNodeClosed,
 });
 
 const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
   const [loading, setLoading] = useState(false);
-  const {updateNodeData, saveCanvas, deleteNode, setSyncing,} = useStore(useShallow(selector));
-
+  const isClosed = data.closed;
+  const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(id, {text: e.target.value});
   };
 
+  const lockIcon = () => {
+    return isClosed
+      ? <LockOpen className="size-5 text-white"/>
+      : <Lock className="size-5 text-white"/>
+  }
+
+  const handleClick = () => {
+    isClosed
+      ? updateNodeClosed(id, false)
+      : void handleSave();
+  }
+
+  const content = () => {
+    return isClosed
+      ? <NodeMarkdown children={data.text}/>
+      : <NodeTextarea value={data.text} handleTextChange={handleTextChange} placeholder='Enter your text...'/>
+  }
 
   const handleSave = async () => {
     setLoading(true);
@@ -45,55 +63,22 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     }
   };
 
-
-  const setClosed = (closed: boolean) => {
-    updateNodeData(id, {closed: closed});
-  }
-
-
   return (
     <BaseNode
       id={id}
-      title="TEXT NODE"
-      color="bg-[#309898]/80 backdrop-blur-xs"
+      title="Text Node"
+      color="bg-[#309898]"
       loading={loading}
       onDelete={() => deleteNode(id)}
-      style={{'--node-color': 'black'} as React.CSSProperties}
+      style={{'--node-color': '#309898'} as React.CSSProperties}
       headerActions={
-        <Button onClick={data.closed ? () => setClosed(false) : handleSave} disabled={loading}
-                className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed">
 
-          {data.closed
-            ? <LockOpen className="size-5 text-white"/>
-            : <Lock className="size-5 text-white"/>
-          }
-        </Button>
+        <NodeHeaderButton onClick={handleClick} icon={lockIcon} disabled={loading}/>
 
-      }
-    >
+      }>
 
-      {!data.closed && (
-        <div className="flex flex-col flex-1 min-h-0">
-          <Textarea
-            aria-label="Textarea"
-            value={data.text}
-            onChange={handleTextChange}
-            placeholder='Enter your text...'
-            className={cn(
-              'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-base text-black',
-              'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
-            )}
-          />
-        </div>
-      )}
+      {content()}
 
-      {data.closed && (
-        <>
-          <NodeMarkdown>
-            {data.text}
-          </NodeMarkdown>
-        </>
-      )}
     </BaseNode>
   );
 };

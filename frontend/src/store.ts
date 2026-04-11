@@ -85,6 +85,10 @@ const useStore = create<AppState>((set, get) => ({
     });
   },
 
+  updateNodeClosed: (id, closed) => {
+    get().updateNodeData(id, {closed: closed})
+  },
+
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes)
@@ -129,6 +133,7 @@ const useStore = create<AppState>((set, get) => ({
   setLocked: (status) => {
     set({locked: status})
   },
+
 }));
 
 export default useStore;

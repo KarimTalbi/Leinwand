@@ -47,6 +47,7 @@ export interface AppState {
     addNode: (type: NodeTypeNames, position?: NodePosition) => void;
     deleteNode: (id: string) => void;
     updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData>) => void;
+    updateNodeClosed: (id: string, status: boolean) => void;
 
     // React Flow Handlers
     onNodesChange: OnNodesChange<PromptNode | TextNode | MergeNode>;

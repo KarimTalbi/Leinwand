@@ -16,12 +16,15 @@ interface BaseNodeProps {
 
 const BaseNode = ({title, color, loading, onDelete, headerActions, children, style}: BaseNodeProps) => {
   return (
-    <div className={`w-150 h-150 flex flex-col ${color} rounded-3xl shadow-md`}
+    <div className={`w-150 h-150 flex flex-col ${color}/80 rounded-3xl backdrop-blur-xs shadow-xl`}
     style={style}>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-1 shrink-0">
+      <div className="flex items-center justify-between px-5 pt-4 pb-3 shrink-0">
+        <div className="text-base font-bold text-white h-fit">{title}</div>
         <div className="flex items-center gap-3">
+
+          {headerActions}
 
           <Button
             onClick={onDelete}
@@ -31,14 +34,13 @@ const BaseNode = ({title, color, loading, onDelete, headerActions, children, sty
             <X className="size-7 text-white"/>
           </Button>
 
-          {headerActions}
 
         </div>
-        <div className="text-xl text-white">{title}</div>
+
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 min-h-0 m-1 p-3 bg-white rounded-2xl">
+      <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
         {children}
       </div>
 
