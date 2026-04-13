@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button} from "@/components/ui/button";
-import {Handle, Position} from "@xyflow/react";
 import {X} from "lucide-react";
 
 interface BaseNodeProps {
@@ -42,14 +41,6 @@ const BaseNode = ({title, loading, onDelete, headerActions, children, style}: Ba
       <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
         {children}
       </div>
-
-      {/* Handles */}
-      <Handle id="target-1" type="target" position={Position.Left}
-              className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!"
-              style={{backgroundColor: 'var(--node-color)'}}/>
-      <Handle id="source-1" type="source" position={Position.Right}
-              className="w-3! h-6! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!"
-              style={{backgroundColor: 'var(--node-color)'}}/>
     </div>
   );
 };

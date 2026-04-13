@@ -91,7 +91,7 @@ function Flow() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        snapToGrid={true}
+        snapToGrid={false}
         snapGrid={[20, 20]}
         defaultEdgeOptions={defaultEdgeOptions}
         onConnect={onConnect}

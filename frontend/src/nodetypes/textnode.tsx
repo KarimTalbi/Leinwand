@@ -9,6 +9,7 @@ import BaseNode from "@/nodetypes/basenode.tsx"
 import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
 import NodeMarkdown from "@/components/nodecontent/nodemarkdown.tsx";
 import NodeTextarea from "@/components/nodecontent/nodetextarea.tsx";
+import {DefaultHandles} from "@/components/nodecontent/nodehandles.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -77,6 +78,8 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
       }>
 
       {content()}
+
+      <DefaultHandles style={{'--node-color': '#309898'} as React.CSSProperties} />
 
     </BaseNode>
   );

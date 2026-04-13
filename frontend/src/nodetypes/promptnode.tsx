@@ -8,6 +8,7 @@ import NodeMarkdown from "@/components/nodecontent/nodemarkdown.tsx";
 import NodeTextarea from "@/components/nodecontent/nodetextarea.tsx";
 import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
 import BaseNode from "@/nodetypes/basenode.tsx";
+import {DefaultHandles} from "@/components/nodecontent/nodehandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 
 const selector = (state: AppState) => ({
@@ -90,6 +91,8 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
           <p className="text-xs mb-3">{data.prompt}</p>
         </div>
       )}
+
+      <DefaultHandles style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
 
 
     </BaseNode>

@@ -1,20 +1,42 @@
-import {memo, useState} from 'react';
-import {Handle, Position} from '@xyflow/react';
-import {Button, Field, Fieldset, Legend, Label} from "@headlessui/react";
-import {XMarkIcon, PlayIcon, ArrowPathIcon} from '@heroicons/react/16/solid'
+import React, {memo, useState} from 'react';
 
 import useStore from '../store.ts';
 import api from '../api.ts'
-import {MergeNodeData} from "../types.ts";
+import {AppState, MergeNodeData} from "../types.ts";
+import MergeContent from "@/components/nodecontent/mergenodesections.tsx";
+import {MergeHandles} from "@/components/nodecontent/nodehandles.tsx";
+import {useShallow} from "zustand/react/shallow";
+import {Play, RefreshCcw} from "lucide-react";
+import BaseNode from "@/nodetypes/basenode.tsx";
+import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
+
+const selector = (state: AppState) => ({
+  updateNodeData: state.updateNodeData,
+  saveCanvas: state.saveCanvas,
+  deleteNode: state.deleteNode,
+  setSyncing: state.setSyncing,
+});
 
 const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
+  const {updateNodeData, saveCanvas, deleteNode, setSyncing} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
-  const [isClosed, setIsClosed] = useState(data.closed);
+  const isClosed = data.closed;
 
-  const saveCanvas = useStore((s) => s.saveCanvas);
-  const setSyncing = useStore((s) => s.setSyncing);
-  const updateNodeData = useStore((s) => s.updateNodeData);
-  const deleteNode = useStore((s) => s.deleteNode);
+  const playIcon = () => {
+    return data.context
+      ? <RefreshCcw className="size-6 text-white"/>
+      : <Play className="size-6 text-white"/>
+  }
+
+  const content = () => {
+    return isClosed && data.context
+    ? <MergeContent sections={data.context}/>
+    : <div className="flex justify-center items-center h-full">
+        <div className="flex flex-col justify-center align-middle">
+          <p className="text-xl font-bold mb-15">Connect 2 Streams and Press Run!</p>
+        </div>
+      </div>
+  }
 
   const handleGet = async () => {
     setSyncing(true);
@@ -36,196 +58,25 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
     } finally {
       setSyncing(false);
       setLoading(false);
-      setIsClosed(true);
     }
   };
 
 
   return (
-    <div className="flex flex-row items-center justify-center">
+    <BaseNode
+    id={id}
+    title="Merge Node"
+    loading={loading}
+    onDelete={(() => deleteNode(id))}
+    style={{'--node-color': '#f5c45e'} as React.CSSProperties}
+    headerActions={
+      <NodeHeaderButton onClick={handleGet} icon={playIcon} disabled={loading}/>
+    }
+    >
+      {content()}
 
-      {!isClosed ? (
-
-        <div className="w-80 h-40 flex flex-col bg-[#f5c45e] rounded-3xl p-0 shadow-2xl">
-          <div className="flex items-center justify-between px-6 h-full">
-
-            <div className="text-xl font-bold text-white">MERGE NODE</div>
-            <div className="flex items-center gap-3 mr-2">
-
-
-              <Button onClick={() => deleteNode(id)} disabled={loading}
-                      className="w-10 h-10 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
-                <XMarkIcon className="size-10 text-white"/>
-              </Button>
-
-              <Button onClick={handleGet} disabled={loading || isClosed}
-                      className="w-10 h-10 pl-1 transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
-                <PlayIcon className="size-8 text-white"/>
-              </Button>
-
-            </div>
-          </div>
-
-        </div>
-
-      ) : data.context ? (
-
-        <div className="w-130 h-130 flex flex-col bg-[#f5c45e] rounded-3xl p-0 shadow-2xl">
-          <div className="flex items-center justify-between px-6 pt-3 shrink-0">
-
-            <div className="text-base font-bold text-white ">MERGE NODE</div>
-            <div className="flex items-center gap-6 mr-2">
-
-              <Button onClick={() => deleteNode(id)} disabled={loading}
-                      className="transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:cursor-not-allowed">
-                <XMarkIcon className="size-8 text-white"/>
-              </Button>
-
-              <Button onClick={handleGet} disabled={loading}
-                      className="transition-opacity duration-200 hover:opacity-70 hover:bg-black/10 hover:rounded-full disabled:opacity-30 disabled:cursor-not-allowed">
-                <ArrowPathIcon className="size-6 text-white"/>
-              </Button>
-
-
-            </div>
-          </div>
-
-          <div className="flex flex-col flex-1 min-h-0 mt-2 bg-white rounded-3xl">
-
-            <Fieldset className="flex flex-col flex-1 min-h-0 space-y-2 rounded-t-2xl p-2">
-              <Field
-                className="flex-1 w-full text-black p-2 py-0 rounded-xl min-h-16 overflow-y-auto nowheel">
-
-                {data.context.map((section: any) => {
-
-                  if (section.type === 'global_summary') {
-                    return (
-                      <Fieldset className="bg-white px-2 my-4">
-                        <div className="flex items-center justify-between gap-3">
-                          <Legend className="text-lg">Total Streams:</Legend>
-                          <Legend className="text-lg font-bold">{section.total_streams}</Legend>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-3">
-                          <Legend className="text-lg">Total Nodes:</Legend>
-                          <Legend className="text-lg font-bold">{section.total_nodes}</Legend>
-                        </div>
-                      </Fieldset>
-                    );
-                  }
-
-                  if (section.type === 'stream_summary') {
-                    return (
-                      <Fieldset className="bg-white pt-4 px-2">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center justify-between gap-1">
-
-                            <Legend className="text-base">Stream:</Legend>
-                            <Legend className="text-base font-bold">{section.stream_id}</Legend>
-                          </div>
-
-                          <div className="flex items-center justify-between gap-1">
-                            <Legend className="text-base">Nodes:</Legend>
-                            <Legend className="text-base font-bold">{section.total_nodes}</Legend>
-                          </div>
-
-                        </div>
-                      </Fieldset>
-                    );
-                  }
-
-                  else if (section.type === 'promptNode') {
-                    return (
-                      <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
-
-                        <div className="flex items-center justify-between">
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">DEPTH:</Label>
-                            <Field className="text-xs font-bold">{section.depth}</Field>
-                          </div>
-                          <Label className="text-xs mb-2">PROMPT NODE</Label>
-
-                        </div>
-
-                        <div className="my-4 h-px mx-2 bg-black/10"/>
-
-                        <Legend className="text-base font-bold">User</Legend>
-                        <Field className="text-xs">{section.prompt}</Field>
-
-                        <div className="my-4 h-px mx-2 bg-black/10"/>
-
-                        <Legend className="text-base font-bold">AI</Legend>
-                        <Field className="text-xs">{section.response}</Field>
-
-                      </Fieldset>
-
-                    );
-                  }
-
-                  else if (section.type === 'textNode') {
-                    return (
-                      <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
-
-                        <div className="flex items-center justify-between">
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">BRANCH / DEPTH:</Label>
-                            <Field className="text-xs font-bold">{section.depth}</Field>
-                          </div>
-                          <Label className="text-xs">TEXT NODE</Label>
-
-                        </div>
-
-                        <div className="my-4 h-px mx-2 bg-black/10"/>
-
-                        <Field className="text-xs">{section.text}</Field>
-
-                      </Fieldset>
-
-                    );
-                  }
-
-                  else if (section.type === 'mergeNode') {
-                    return (
-                      <Fieldset className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
-
-                        <div className="flex items-center justify-between">
-
-                          <div className="flex items-center justify-between gap-3">
-
-                            <Label className="text-xs">BRANCH / DEPTH:</Label>
-                            <Field className="text-xs font-bold">{section.depth}</Field>
-                          </div>
-                          <Label className="text-xs">MERGE NODE</Label>
-
-                        </div>
-
-                      </Fieldset>
-                    )
-                  }
-
-                  return null;
-                })}
-              </Field>
-
-            </Fieldset>
-          </div>
-
-        </div>
-
-      ) : null}
-
-      <Handle id="target-1" type="target" position={Position.Left}
-              className="w-2! h-4! rounded-l-full! rounded-r-none! border-none! bg-[#f5c45e]! translate-y-10! -translate-x-1! z-[-1]!"/>
-      <Handle id="target-2" type="target" position={Position.Left}
-              className="w-2! h-4! rounded-l-full! rounded-r-none! border-none! bg-[#f5c45e]! -translate-y-10! -translate-x-1! z-[-1]!"/>
-      <Handle id="source-1" type="source" position={Position.Right}
-              className="w-2! h-4! rounded-l-none! rounded-r-full! border-none! bg-[#f5c45e]! translate-x-1! z-[-1]!"/>
-
-    </div>
+      <MergeHandles style={{'--node-color': '#f5c45e'} as React.CSSProperties} />
+    </BaseNode>
   );
 };
 
