@@ -1,14 +1,14 @@
 import React, {memo, useState} from 'react';
+import {useShallow} from "zustand/react/shallow";
+import {Play, RefreshCcw} from "lucide-react";
 
 import useStore from '../store.ts';
 import api from '../api.ts'
-import {AppState, MergeNodeData} from "../types.ts";
-import MergeContent from "@/components/nodecontent/mergenodesections.tsx";
-import {MergeHandles} from "@/components/nodecontent/nodehandles.tsx";
-import {useShallow} from "zustand/react/shallow";
-import {Play, RefreshCcw} from "lucide-react";
-import BaseNode from "@/nodetypes/basenode.tsx";
-import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
+import {AppState, MergeNodeData} from '../types.ts';
+
+import BaseNode from '@/components/nodes/basenode.tsx';
+import MergeContent from '@/components/nodes/mergenodesections.tsx';
+import {MergeHandles, NodeHeaderButton} from '@/components/nodes/nodeelements.tsx'
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
@@ -30,8 +30,8 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
 
   const content = () => {
     return isClosed && data.context
-    ? <MergeContent sections={data.context}/>
-    : <div className="flex justify-center items-center h-full">
+      ? <MergeContent sections={data.context}/>
+      : <div className="flex justify-center items-center h-full">
         <div className="flex flex-col justify-center align-middle">
           <p className="text-xl font-bold mb-15">Connect 2 Streams and Press Run!</p>
         </div>
@@ -64,18 +64,18 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
 
   return (
     <BaseNode
-    id={id}
-    title="Merge Node"
-    loading={loading}
-    onDelete={(() => deleteNode(id))}
-    style={{'--node-color': '#f5c45e'} as React.CSSProperties}
-    headerActions={
-      <NodeHeaderButton onClick={handleGet} icon={playIcon} disabled={loading}/>
-    }
+      id={id}
+      title="Merge Node"
+      loading={loading}
+      onDelete={(() => deleteNode(id))}
+      style={{'--node-color': '#f5c45e'} as React.CSSProperties}
+      headerActions={
+        <NodeHeaderButton onClick={handleGet} icon={playIcon} disabled={loading}/>
+      }
     >
       {content()}
 
-      <MergeHandles style={{'--node-color': '#f5c45e'} as React.CSSProperties} />
+      <MergeHandles style={{'--node-color': '#f5c45e'} as React.CSSProperties}/>
     </BaseNode>
   );
 };

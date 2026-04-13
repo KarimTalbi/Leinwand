@@ -1,15 +1,14 @@
 import React, {memo, useState} from 'react';
 import {Undo2, Play} from "lucide-react";
+import {useShallow} from "zustand/react/shallow";
 
 import useStore from '../store.ts';
 import api from '../api.ts'
 import {AppState, PromptNodeData} from "../types.ts";
-import NodeMarkdown from "@/components/nodecontent/nodemarkdown.tsx";
-import NodeTextarea from "@/components/nodecontent/nodetextarea.tsx";
-import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
-import BaseNode from "@/nodetypes/basenode.tsx";
-import {DefaultHandles} from "@/components/nodecontent/nodehandles.tsx";
-import {useShallow} from "zustand/react/shallow";
+
+import {NodeMarkdown, NodeTextarea, NodeHeaderButton, DefaultHandles} from "@/components/nodes/nodeelements.tsx";
+import BaseNode from "@/components/nodes/basenode.tsx";
+
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,

@@ -5,11 +5,8 @@ import {Lock, LockOpen} from "lucide-react";
 import useStore from '@/store.ts';
 import {AppState, TextNodeData} from "@/types.ts";
 
-import BaseNode from "@/nodetypes/basenode.tsx"
-import NodeHeaderButton from "@/components/nodecontent/nodeheaderbutton.tsx";
-import NodeMarkdown from "@/components/nodecontent/nodemarkdown.tsx";
-import NodeTextarea from "@/components/nodecontent/nodetextarea.tsx";
-import {DefaultHandles} from "@/components/nodecontent/nodehandles.tsx";
+import BaseNode from "@/components/nodes/basenode.tsx"
+import {NodeHeaderButton, NodeMarkdown, NodeTextarea, DefaultHandles} from "@/components/nodes/nodeelements.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -79,7 +76,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
 
       {content()}
 
-      <DefaultHandles style={{'--node-color': '#309898'} as React.CSSProperties} />
+      <DefaultHandles style={{'--node-color': '#309898'} as React.CSSProperties}/>
 
     </BaseNode>
   );
