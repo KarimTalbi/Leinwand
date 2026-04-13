@@ -49,7 +49,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     setSyncing(true);
 
     try {
-      updateNodeData(id, {label: data.label, text: data.text, closed: true});
+      updateNodeData(id, {text: data.text, closed: true});
       await saveCanvas();
 
     } catch (err) {

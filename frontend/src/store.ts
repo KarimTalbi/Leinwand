@@ -3,7 +3,7 @@ import {v4 as uuid} from 'uuid';
 import {addEdge, applyNodeChanges, applyEdgeChanges} from "@xyflow/react";
 
 import api from './api'
-import {PromptNode, TextNode, AppState, NodeTypeNames, NodePosition, MergeNode} from './types'
+import {PromptNode, TextNode, AppState, NodeTypeNames, NodePosition, MergeNode, SummaryNode} from './types'
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -13,9 +13,10 @@ const debouncedSave = (saveCanvas: () => Promise<void>) => {
 };
 
 const nodeInitData = {
-  promptNode: {label: "New Node", prompt: '', response: '', closed: false},
-  textNode: {label: "TEXT", text: '', closed: false},
-  mergeNode: {label: "MERGE", closed: false},
+  promptNode: { prompt: '', response: '', closed: false},
+  textNode: { text: '', closed: false},
+  mergeNode: { context: '', closed: false},
+  summaryNode: { summary: '', closed: false},
 }
 
 const useStore = create<AppState>((set, get) => ({
@@ -57,7 +58,7 @@ const useStore = create<AppState>((set, get) => ({
 
 
   addNode: (type: NodeTypeNames, position?: NodePosition) => {
-    const newNode: PromptNode | TextNode | MergeNode = {
+    const newNode: PromptNode | TextNode | MergeNode | SummaryNode = {
       id: uuid(),
       type: type,
       position: position ?? {x: Math.random() * 400, y: Math.random() * 400},

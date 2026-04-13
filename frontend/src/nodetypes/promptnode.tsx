@@ -57,7 +57,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
 
       console.log(res.data.response.slice(0, 200))
 
-      updateNodeData(id, {prompt: data.prompt, response: res.data.response, label: res.data.title, closed: true});
+      updateNodeData(id, {prompt: data.prompt, response: res.data.response, closed: true});
       await saveCanvas();
 
     } catch (err) {

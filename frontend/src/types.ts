@@ -1,19 +1,21 @@
 import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect} from "@xyflow/react";
 
 
-export type PromptNodeData = { label: string; prompt?: string; response?: string; closed: boolean; }
-export type TextNodeData = { label: string; text: string; closed: boolean; };
-export type MergeNodeData = { label: string; context?: string[]; closed: boolean; };
+export type PromptNodeData = { prompt?: string; response?: string; closed: boolean; }
+export type TextNodeData = { text: string; closed: boolean; };
+export type MergeNodeData = { context?: string[]; closed: boolean; };
+export type SummaryNodeData = {summary: string, closed: boolean};
 export type NodePosition = { x: number; y: number; };
 
 export type TextNode = Node<TextNodeData>;
 export type PromptNode = Node<PromptNodeData>;
 export type MergeNode = Node<MergeNodeData>;
-export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode';
+export type SummaryNode = Node<SummaryNodeData>;
+export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
 
 export interface AppState {
-  nodes: (PromptNode | TextNode | MergeNode)[];
+  nodes: (PromptNode | TextNode | MergeNode | SummaryNode)[];
   edges: Edge[];
   syncing: boolean;
   locked: boolean;
@@ -22,7 +24,7 @@ export interface AppState {
   saveCanvas: () => Promise<void>;
   addNode: (type: NodeTypeNames, position?: NodePosition) => void;
   deleteNode: (id: string) => void;
-  updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData>) => void;
+  updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
   onNodesChange: OnNodesChange<PromptNode | TextNode | MergeNode>;

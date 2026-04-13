@@ -32,7 +32,7 @@ const NavigationBar = ({controls, undoControls, addItem, syncing}: NavbarProps) 
           <Menu>
 
             <MenuButton
-              className="inline-flex items-center h-12 rounded-full px-3 py-1 data-hover:bg-black/10">
+              className="inline-flex items-center h-12 rounded-full px-3 py-1 data-hover:bg-black/10 data-focus:outline-none">
               <Plus className="size-6 text-black"/>
             </MenuButton>
 

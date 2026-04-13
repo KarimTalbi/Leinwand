@@ -6,6 +6,7 @@ import {ZoomInIcon, ZoomOutIcon, LucideScan, Lock, LockOpen, Map, Undo2, Redo2} 
 import PromptNode from './nodetypes/promptnode.tsx';
 import TextNode from './nodetypes/textnode.tsx';
 import MergeNode from './nodetypes/mergenode.tsx';
+import SummaryNode from './nodetypes/summarynode.tsx';
 
 import useStore from './store';
 import {AppState, NodeTypeNames} from './types'
@@ -19,6 +20,7 @@ const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
   textNode: TextNode,
   mergeNode: MergeNode,
+  summaryNode: SummaryNode,
 };
 
 
@@ -26,6 +28,7 @@ const nodeColors = {
   promptNode: '#ec4899',
   textNode: '#309898',
   mergeNode: '#f5c45e',
+  summaryNode: '#bf4546',
 };
 
 
@@ -90,6 +93,7 @@ function Flow() {
     {text: "Prompt Node", onClick: () => onCreateNode('promptNode')},
     {text: "Text Node", onClick: () => onCreateNode('textNode')},
     {text: "Merge Node", onClick: () => onCreateNode('mergeNode')},
+    {text: "Summary Node", onClick: () => onCreateNode('summaryNode')}
   ]
 
 
@@ -101,6 +105,8 @@ function Flow() {
         return nodeColors.textNode;
       case 'mergeNode':
         return nodeColors.mergeNode;
+      case 'summaryNode':
+        return nodeColors.summaryNode;
       default:
         return 'gray';
     }
