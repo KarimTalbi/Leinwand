@@ -55,7 +55,7 @@ const SummaryNode = ({id, data}: {id: string, data: SummaryNodeData}) => {
         target_id: id,
       })
 
-      updateNodeData(id, {summary: res.data.summary, closed: true});
+      updateNodeData(id, {summary: res.data.response, closed: true});
       await saveCanvas();
 
     } catch (err) {
