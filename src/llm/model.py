@@ -64,3 +64,12 @@ class PromptNodeModel(AiModelBase[AiResponse]):
         system_prompt: str = SystemPrompts.PROMPT_NODE_SYSTEM,
     ) -> None:
         super().__init__(config, AiResponse, system_prompt)
+
+
+class SummaryNodeModel(AiModelBase[AiResponse]):
+    def __init__(
+        self,
+        config: ModelConfig = AiModelConfigs.SUMMARY_NODE,
+        system_prompt: str = SystemPrompts.SUMMARY_NODE_SYSTEM,
+    ) -> None:
+        super().__init__(config, AiResponse, system_prompt)

@@ -29,3 +29,4 @@ class SystemPrompts:
     """
 
     PROMPT_NODE_SYSTEM: str = _load("prompt_node_system.txt")
+    SUMMARY_NODE_SYSTEM: str = _load("summary_node_system.txt")

@@ -9,4 +9,5 @@ from .schemas import (
     NodeRead,
     MergeResponse,
     MergeRequest,
+    SummaryRequest,
 )

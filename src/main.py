@@ -22,8 +22,9 @@ from data import (
     engine,
     init_db,
     MergeResponse,
+    SummaryRequest
 )
-from llm import PromptNodeModel
+from llm import PromptNodeModel, SummaryNodeModel
 
 # initialize logging
 setup_logging()
@@ -188,6 +189,16 @@ async def get_response(
     """
     context = await build_context(service, data.target_id)
     return await ai_model.generate(context, data.prompt)
+
+
+@app.post("/llm/summarize")
+async def summarize(
+    data: SummaryRequest,
+    service: NodeService = Depends(get_node_service),
+    ai_model: SummaryNodeModel = Depends(get_ai_model),
+) -> AiResponse:
+    context = await build_context(service, data.target_id)
+    return await ai_model.generate(context, "Summarize the content of the context")
 
 
 # --- CONTEXT ---

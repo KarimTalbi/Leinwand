@@ -1,1 +1,1 @@
-from .model import PromptNodeModel
+from .model import PromptNodeModel, SummaryNodeModel

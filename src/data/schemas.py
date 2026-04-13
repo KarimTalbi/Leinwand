@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 
@@ -86,12 +86,9 @@ class AiResponse(BaseModel):
     for the response.
 
     Attributes:
-        title (str): Title associated with the response, providing its context
-            or categorization.
         response (str): The content of the AI-generated response.
     """
 
-    title: str
     response: str
 
 
@@ -107,13 +104,18 @@ class AiRequest(BaseModel):
     Attributes:
         prompt (str): The text prompt intended for AI processing.
         target_id (str): The identifier specifying the target for the AI request.
-        source_handle (str | None): An optional handle for the request source,
-            provided via the alias `sourceHandle`.
     """
 
     prompt: str
     target_id: str
-    source_handle: str | None = Field(default=None, alias="sourceHandle")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+
+class SummaryRequest(BaseModel):
+    """Represents a request for summarization."""
+
+    target_id: str
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 

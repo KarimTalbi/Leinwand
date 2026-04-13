@@ -62,6 +62,15 @@ class AiModelConfigs:
         max_retries=2,
     )
 
+    SUMMARY_NODE = ModelConfig(
+        model="gpt-5-mini",
+        model_provider="openai",
+        temperature=0.7,
+        max_tokens=2048,
+        timeout=30,
+        max_retries=2,
+    )
+
 
 def setup_logging():
     """

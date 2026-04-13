@@ -12,7 +12,7 @@ You are provided with the conversation history that is relevant to the current n
 or more context streams, each representing a chain of connected nodes leading up to the current one.
 
 Guidelines:
-- Use the provided context to inform your response where relevant.
+- Use the provided context to generate a summary.
 - Do not reference the graph structure, nodes, streams, or any technical context metadata in your responses.
 - Since the user makes connections between nodes freely, treat gaps or inconsistencies in context as intentional.
 - If a stream includes a mergeNode, treat its content as the consolidated root context or that stream. Everything
@@ -28,4 +28,4 @@ You must respond with a JSON object in the following format:
 
 Do not include anything outside the JSON object.
 
-Context: 
+Context:
