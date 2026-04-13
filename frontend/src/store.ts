@@ -24,15 +24,13 @@ const useStore = create<AppState>((set, get) => ({
   syncing: false,
   locked: false,
 
+
   fetchCanvas: async () => {
     set({syncing: true})
 
     try {
       const res = await api.get("/canvas");
-      set({
-        nodes: res.data.nodes || [],
-        edges: res.data.edges || [],
-      });
+      set({nodes: res.data.nodes || [], edges: res.data.edges || [],});
 
     } catch (err) {
       console.error("Error loading canvas:", err);
@@ -42,14 +40,12 @@ const useStore = create<AppState>((set, get) => ({
     }
   },
 
+
   saveCanvas: async () => {
     set({syncing: true});
 
     try {
-      await api.post("/canvas", {
-        nodes: get().nodes,
-        edges: get().edges,
-      });
+      await api.post("/canvas", {nodes: get().nodes, edges: get().edges,});
 
     } catch (err) {
       console.error("Error saving canvas:", err);
@@ -58,6 +54,7 @@ const useStore = create<AppState>((set, get) => ({
       set({syncing: false});
     }
   },
+
 
   addNode: (type: NodeTypeNames, position?: NodePosition) => {
     const newNode: PromptNode | TextNode | MergeNode = {
@@ -71,6 +68,7 @@ const useStore = create<AppState>((set, get) => ({
     debouncedSave(get().saveCanvas);
   },
 
+
   deleteNode: (id: string) => {
     set({
       nodes: get().nodes.filter((n) => n.id !== id),
@@ -79,22 +77,27 @@ const useStore = create<AppState>((set, get) => ({
     debouncedSave(get().saveCanvas);
   },
 
+
   updateNodeData: (id, data) => {
     set({
       nodes: get().nodes.map((n) => n.id === id ? {...n, data: {...n.data, ...data}} : n)
     });
   },
 
+
   updateNodeClosed: (id, closed) => {
     get().updateNodeData(id, {closed: closed})
   },
+
 
   onNodesChange: (changes) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes)
     });
 
-    if (changes.some(c => (c.type === 'position' && !c.dragging) || c.type === 'remove')) {
+    if (changes.some(c => (
+      c.type === 'position' && !c.dragging) || c.type === 'remove'
+    )) {
       debouncedSave(get().saveCanvas);
     }
   },
@@ -109,6 +112,7 @@ const useStore = create<AppState>((set, get) => ({
       debouncedSave(get().saveCanvas);
     }
   },
+
 
   onConnect: (connection) => {
     console.log("New Connection Data:", connection);
@@ -126,14 +130,9 @@ const useStore = create<AppState>((set, get) => ({
     debouncedSave(get().saveCanvas);
   },
 
-  setSyncing: (status) => {
-    set({syncing: status})
-  },
 
-  setLocked: (status) => {
-    set({locked: status})
-  },
-
+  setSyncing: (status) => {set({syncing: status})},
+  setLocked: (status) => {set({locked: status})},
 }));
 
 export default useStore;
