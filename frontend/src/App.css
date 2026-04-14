@@ -5,4 +5,11 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 450;
+  font-style: normal;
+  font-variation-settings:
+          "wdth" 100;
 }
+

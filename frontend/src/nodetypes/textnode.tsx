@@ -6,7 +6,7 @@ import useStore from '@/store.ts';
 import {AppState, TextNodeData} from "@/types.ts";
 
 import BaseNode from "@/components/nodes/basenode.tsx"
-import {NodeHeaderButton, NodeMarkdown, NodeTextarea, DefaultHandles} from "@/components/nodes/nodeelements.tsx";
+import {NodeHeaderButton, NodeTextarea, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -40,7 +40,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
 
   const content = () => {
     return isClosed
-      ? <NodeMarkdown children={data.text}/>
+      ? <NodeDisplayText children={data.text}/>
       : <NodeTextarea value={data.text} handleTextChange={handleTextChange} placeholder='Enter your text...'/>
   }
 

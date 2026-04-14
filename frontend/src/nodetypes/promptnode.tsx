@@ -6,7 +6,8 @@ import useStore from '../store.ts';
 import api from '../api.ts'
 import {AppState, PromptNodeData} from "../types.ts";
 
-import {NodeMarkdown, NodeTextarea, NodeHeaderButton, DefaultHandles} from "@/components/nodes/nodeelements.tsx";
+import {NodeTextarea, NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
+import {Switch} from "@/components/ui/switch.tsx";
 import BaseNode from "@/components/nodes/basenode.tsx";
 
 
@@ -21,6 +22,7 @@ const selector = (state: AppState) => ({
 const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
   const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
+  const [includeContext, setIncludeContext] = useState(true);
   const isClosed = data.closed;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -29,7 +31,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
 
   const content = () => {
     return isClosed
-      ? <NodeMarkdown children={data.response}/>
+      ? <NodeDisplayText children={data.response}/>
       : <NodeTextarea value={data.prompt} handleTextChange={handleTextChange} placeholder='Enter your prompt...'/>
   }
 
@@ -53,6 +55,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
       const res = await api.post('/llm/generate', {
         prompt: data.prompt,
         target_id: id,
+        include_context: includeContext,
       });
 
       console.log(res.data.response.slice(0, 200))
@@ -77,19 +80,24 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
       onDelete={() => deleteNode(id)}
       style={{'--node-color': '#ec4899'} as React.CSSProperties}
       headerActions={
+        <div className="flex items-center gap-3">
 
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
-
+          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
+        </div>
       }>
 
       {content()}
 
-      {isClosed && (
-        <div className="p-5 bg-gray-100 rounded-xl">
-          <p className="text-xs font-bold mb-3">User Message:</p>
-          <p className="text-xs mb-3">{data.prompt}</p>
+      {isClosed
+        ? <div className="p-5 bg-gray-100 rounded-xl">
+           <p className="text-xs font-bold mb-3">User Message:</p>
+           <p className="text-xs mb-3">{data.prompt}</p>
+         </div>
+        : <div className="w-full flex items-center justify-end pt-3">
+          <p className="text-xs font-bold mr-2">Include Context</p>
+          <Switch checked={includeContext} onCheckedChange={() => setIncludeContext(!includeContext)} size="default"/>
         </div>
-      )}
+      }
 
       <DefaultHandles style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
 

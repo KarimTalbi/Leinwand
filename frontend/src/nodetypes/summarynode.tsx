@@ -5,7 +5,7 @@ import {AppState, SummaryNodeData} from "@/types.ts";
 import useStore from "@/store.ts";
 import api from "@/api.ts";
 import BaseNode from "@/components/nodes/basenode.tsx";
-import {NodeHeaderButton, NodeMarkdown, DefaultHandles} from "@/components/nodes/nodeelements.tsx";
+import {NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {Play, RefreshCcw} from "lucide-react";
 
 
@@ -32,7 +32,7 @@ const SummaryNode = ({id, data}: {id: string, data: SummaryNodeData}) => {
 
   const content = () => {
     return isClosed && data.summary
-      ? <NodeMarkdown children={data.summary}/>
+      ? <NodeDisplayText>{data.summary}</NodeDisplayText>
       : <div className="flex justify-center items-center h-full">
         <div className="flex flex-col justify-center align-middle">
           <p className="text-xl font-bold mb-15">Connect Nodes and run to Summarize!</p>

@@ -14,7 +14,7 @@ interface BaseNodeProps {
 
 const BaseNode = ({title, loading, onDelete, headerActions, children, style}: BaseNodeProps) => {
   return (
-    <div className={`w-150 h-150 flex flex-col rounded-3xl shadow-xl`}
+    <div className={`w-180 h-150 flex flex-col rounded-3xl shadow-xl`}
     style={{...style, backgroundColor: `var(--node-color)`}}>
 
       {/* Header */}
@@ -38,7 +38,7 @@ const BaseNode = ({title, loading, onDelete, headerActions, children, style}: Ba
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
+      <div className="flex flex-col flex-1 min-h-0 p-3 m-1 bg-white rounded-2xl">
         {children}
       </div>
     </div>
