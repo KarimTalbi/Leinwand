@@ -108,6 +108,7 @@ class AiRequest(BaseModel):
 
     prompt: str
     target_id: str
+    include_context: bool = True
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 

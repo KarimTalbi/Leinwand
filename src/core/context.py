@@ -46,8 +46,6 @@ def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str,
         )
         summary.extend(a)
 
-        print(summary)
-
     return summary
 
 

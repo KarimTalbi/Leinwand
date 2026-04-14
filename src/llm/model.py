@@ -4,6 +4,7 @@ from typing import Any
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
+from langfuse.langchain import CallbackHandler
 
 from data import AiResponse
 from src.config import AiModelConfigs, ModelConfig
@@ -12,6 +13,7 @@ from src.llm.prompts.load_prompt import SystemPrompts
 logger = logging.getLogger("app.ai_model")
 
 load_dotenv()
+langfuse_handler = CallbackHandler()
 
 
 class AiModelBase[_T]:
@@ -37,7 +39,16 @@ class AiModelBase[_T]:
 
     async def generate(self, context: Any, prompt: str) -> _T:
         result = await self.model.ainvoke(
-            [SystemMessage(f"{self.system}\n\n{context}"), HumanMessage(prompt)]
+            [SystemMessage(f"{self.system}\n\n{context}"), HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
+        )
+
+        return result
+
+    async def generate_without_context(self, prompt: str) -> _T:
+        result = await self.model.ainvoke(
+            [HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
         )
 
         return result
@@ -60,7 +71,7 @@ class PromptNodeModel(AiModelBase[AiResponse]):
 
     def __init__(
         self,
-        config: ModelConfig = AiModelConfigs.PROMPT_NODE,
+        config: ModelConfig = AiModelConfigs.GEMINI_FLASH_LITE_25,
         system_prompt: str = SystemPrompts.PROMPT_NODE_SYSTEM,
     ) -> None:
         super().__init__(config, AiResponse, system_prompt)
@@ -69,7 +80,7 @@ class PromptNodeModel(AiModelBase[AiResponse]):
 class SummaryNodeModel(AiModelBase[AiResponse]):
     def __init__(
         self,
-        config: ModelConfig = AiModelConfigs.SUMMARY_NODE,
+        config: ModelConfig = AiModelConfigs.GEMINI_FLASH_LITE_25,
         system_prompt: str = SystemPrompts.SUMMARY_NODE_SYSTEM,
     ) -> None:
         super().__init__(config, AiResponse, system_prompt)
