@@ -1,12 +1,13 @@
 import React, {memo, useState} from 'react';
 import {useShallow} from "zustand/react/shallow";
 
-import {AppState, SummaryNodeData} from "@/types.ts";
+import {AppState, SummaryNodeType} from "@/types.ts";
 import useStore from "@/store.ts";
 import api from "@/api.ts";
 import BaseNode from "@/components/nodes/basenode.tsx";
 import {NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {Play, RefreshCcw} from "lucide-react";
+import {NodeProps} from "@xyflow/react";
 
 
 const selector = (state: AppState) => ({
@@ -18,7 +19,7 @@ const selector = (state: AppState) => ({
 });
 
 
-const SummaryNode = ({id, data}: {id: string, data: SummaryNodeData}) => {
+const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<SummaryNodeType>) => {
   if (!data) return null;
   const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
@@ -67,6 +68,7 @@ const SummaryNode = ({id, data}: {id: string, data: SummaryNodeData}) => {
     }
   };
 
+
   return (
     <BaseNode
       id={id}
@@ -82,7 +84,7 @@ const SummaryNode = ({id, data}: {id: string, data: SummaryNodeData}) => {
 
       {content()}
 
-      <DefaultHandles style={{'--node-color': '#bf4546'} as React.CSSProperties}/>
+      <DefaultHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#bf4546'} as React.CSSProperties}/>
 
     </BaseNode>
   )

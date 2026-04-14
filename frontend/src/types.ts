@@ -1,33 +1,49 @@
-import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect} from "@xyflow/react";
+import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@xyflow/react";
 
 
-export type PromptNodeData = { prompt?: string; response?: string; closed: boolean; }
-export type TextNodeData = { text: string; closed: boolean; };
-export type MergeNodeData = { context?: string[]; closed: boolean; };
-export type SummaryNodeData = {summary: string, closed: boolean};
-export type NodePosition = { x: number; y: number; };
+export interface PromptNodeData extends Record<string, unknown> {
+  prompt?: string;
+  response?: string;
+  closed: boolean;
+}
 
-export type TextNode = Node<TextNodeData>;
-export type PromptNode = Node<PromptNodeData>;
-export type MergeNode = Node<MergeNodeData>;
-export type SummaryNode = Node<SummaryNodeData>;
+export interface TextNodeData extends Record<string, unknown> {
+  text: string;
+  closed: boolean;
+}
+
+export interface MergeNodeData extends Record<string, unknown> {
+  context?: string[];
+  closed: boolean;
+}
+
+export interface SummaryNodeData extends Record<string, unknown> {
+  summary: string,
+  closed: boolean
+}
+
+export type TextNodeType = Node<TextNodeData>;
+export type PromptNodeType = Node<PromptNodeData>;
+export type MergeNodeType = Node<MergeNodeData>;
+export type SummaryNodeType = Node<SummaryNodeData>;
 export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
 
 export interface AppState {
-  nodes: (PromptNode | TextNode | MergeNode | SummaryNode)[];
+  nodes: (PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType)[];
   edges: Edge[];
   syncing: boolean;
   locked: boolean;
 
   fetchCanvas: () => Promise<void>;
   saveCanvas: () => Promise<void>;
-  addNode: (type: NodeTypeNames, position?: NodePosition) => void;
+  addNode: (type: NodeTypeNames, position?: XYPosition) => string;
+  addEdge: (source: string, target: string) => string;
   deleteNode: (id: string) => void;
   updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
-  onNodesChange: OnNodesChange<PromptNode | TextNode | MergeNode>;
+  onNodesChange: OnNodesChange<PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   setSyncing: (status: boolean) => void;

@@ -5,6 +5,7 @@ import {Textarea} from "@/components/ui/textarea.tsx";
 import {cn} from "@/lib/utils.ts";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ConnectionHandle from "@/components/nodes/createconnected.tsx";
 
 
 interface NodeHeaderButtonProps {
@@ -21,32 +22,38 @@ interface NodeTextareaProps {
 }
 
 
-const DefaultHandles = ({style}: { style?: React.CSSProperties }) => {
+const DefaultHandles = ({style, sourceId, posX, posY}: {
+  style?: React.CSSProperties,
+  sourceId: string,
+  posX: number,
+  posY: number
+}) => {
   return (
     <div>
       <Handle id="target-1" type="target" position={Position.Left}
-              className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!"
+              className="w-4! h-8! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
-      <Handle id="source-1" type="source" position={Position.Right}
-              className="w-3! h-6! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!"
-              style={{...style, backgroundColor: 'var(--node-color)'}}/>
+      <ConnectionHandle sourceId={sourceId} posX={posX} posY={posY} style={style}/>
     </div>
   )
 };
 
 
-const MergeHandles = ({style}: { style?: React.CSSProperties }) => {
+const MergeHandles = ({style, sourceId, posX, posY}: {
+  style?: React.CSSProperties,
+  sourceId: string,
+  posX: number,
+  posY: number
+}) => {
   return (
     <div>
-      <Handle id="target-1" type="target" position={Position.Left}
+      <Handle id="target-2" type="target" position={Position.Left}
               className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! translate-y-20! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
-      <Handle id="target-2" type="target" position={Position.Left}
+      <Handle id="target-1" type="target" position={Position.Left}
               className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-y-20! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
-      <Handle id="source-1" type="source" position={Position.Right}
-              className="w-3! h-6! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!"
-              style={{...style, backgroundColor: 'var(--node-color)'}}/>
+      <ConnectionHandle sourceId={sourceId} posX={posX} posY={posY} style={style}/>
     </div>
   )
 }

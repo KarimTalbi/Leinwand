@@ -3,21 +3,23 @@ import {useShallow} from "zustand/react/shallow";
 import {Lock, LockOpen} from "lucide-react";
 
 import useStore from '@/store.ts';
-import {AppState, TextNodeData} from "@/types.ts";
+import {AppState, TextNodeType} from "@/types.ts";
 
 import BaseNode from "@/components/nodes/basenode.tsx"
 import {NodeHeaderButton, NodeTextarea, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
+import {NodeProps} from "@xyflow/react";
 
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
+  addNode: state.addNode,
   saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
 });
 
-const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
+const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<TextNodeType>) => {
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
   const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
@@ -61,6 +63,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
     }
   };
 
+
   return (
     <BaseNode
       id={id}
@@ -76,7 +79,7 @@ const TextNode = ({id, data}: { id: string, data: TextNodeData }) => {
 
       {content()}
 
-      <DefaultHandles style={{'--node-color': '#309898'} as React.CSSProperties}/>
+      <DefaultHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#309898'} as React.CSSProperties}/>
 
     </BaseNode>
   );

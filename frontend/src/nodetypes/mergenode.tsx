@@ -4,11 +4,12 @@ import {Play, RefreshCcw} from "lucide-react";
 
 import useStore from '../store.ts';
 import api from '../api.ts'
-import {AppState, MergeNodeData} from '../types.ts';
+import {AppState, MergeNodeType} from '../types.ts';
 
 import BaseNode from '@/components/nodes/basenode.tsx';
 import MergeContent from '@/components/nodes/mergenodesections.tsx';
 import {MergeHandles, NodeHeaderButton} from '@/components/nodes/nodeelements.tsx'
+import {NodeProps} from "@xyflow/react";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
@@ -17,7 +18,7 @@ const selector = (state: AppState) => ({
   setSyncing: state.setSyncing,
 });
 
-const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
+const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<MergeNodeType>) => {
   const {updateNodeData, saveCanvas, deleteNode, setSyncing} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
@@ -62,6 +63,7 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
   };
 
 
+
   return (
     <BaseNode
       id={id}
@@ -75,7 +77,7 @@ const MergeNode = ({id, data}: { id: string, data: MergeNodeData }) => {
     >
       {content()}
 
-      <MergeHandles style={{'--node-color': '#f5c45e'} as React.CSSProperties}/>
+      <MergeHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#f5c45e'} as React.CSSProperties}/>
     </BaseNode>
   );
 };

@@ -120,10 +120,7 @@ function Flow() {
 
   const onCreateNode = (type: NodeTypeNames) => {
     const position = screenToFlowPosition(
-      {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2
-      }
+      { x: window.innerWidth / 2, y: window.innerHeight / 2}
     );
     addNode(type, position);
   };

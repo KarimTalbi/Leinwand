@@ -1,10 +1,11 @@
 import React, {memo, useState} from 'react';
+import {NodeProps} from "@xyflow/react";
 import {Undo2, Play} from "lucide-react";
 import {useShallow} from "zustand/react/shallow";
 
 import useStore from '../store.ts';
 import api from '../api.ts'
-import {AppState, PromptNodeData} from "../types.ts";
+import {AppState, PromptNodeType} from "../types.ts";
 
 import {NodeTextarea, NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {Switch} from "@/components/ui/switch.tsx";
@@ -19,7 +20,7 @@ const selector = (state: AppState) => ({
   updateNodeClosed: state.updateNodeClosed,
 });
 
-const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
+const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<PromptNodeType>) => {
   const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const [includeContext, setIncludeContext] = useState(true);
@@ -99,7 +100,7 @@ const PromptNode = ({id, data}: { id: string, data: PromptNodeData }) => {
         </div>
       }
 
-      <DefaultHandles style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
+      <DefaultHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
 
 
     </BaseNode>

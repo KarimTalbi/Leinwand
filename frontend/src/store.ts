@@ -1,9 +1,9 @@
 import {create} from 'zustand';
 import {v4 as uuid} from 'uuid';
-import {addEdge, applyNodeChanges, applyEdgeChanges} from "@xyflow/react";
+import {addEdge, applyNodeChanges, applyEdgeChanges, XYPosition} from "@xyflow/react";
 
 import api from './api'
-import {PromptNode, TextNode, AppState, NodeTypeNames, NodePosition, MergeNode, SummaryNode} from './types'
+import {AppState, NodeTypeNames} from './types'
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -57,8 +57,8 @@ const useStore = create<AppState>((set, get) => ({
   },
 
 
-  addNode: (type: NodeTypeNames, position?: NodePosition) => {
-    const newNode: PromptNode | TextNode | MergeNode | SummaryNode = {
+  addNode: (type: NodeTypeNames, position?: XYPosition) => {
+    const newNode = {
       id: uuid(),
       type: type,
       position: position ?? {x: Math.random() * 400, y: Math.random() * 400},
@@ -67,8 +67,22 @@ const useStore = create<AppState>((set, get) => ({
 
     set({nodes: [...get().nodes, newNode]});
     debouncedSave(get().saveCanvas);
+    return newNode.id;
   },
 
+  addEdge: (source: string, target: string) => {
+    const newEdge = {
+      id: uuid(),
+      source: source,
+      target: target,
+      sourceHandle: "source-1",
+      targetHandle: "target-1"
+    };
+
+    set({edges: [...get().edges, newEdge]})
+    debouncedSave(get().saveCanvas);
+    return newEdge.id;
+  },
 
   deleteNode: (id: string) => {
     set({
