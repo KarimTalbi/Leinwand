@@ -1,29 +1,14 @@
-import os
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
 
-import dotenv
 import jwt
 from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
-from pwdlib import PasswordHash
 
 from core import get_user_service, UserService
 from data import User
 from src.authentification.schemas import TokenData
 from utils import CredentialsException, InactiveUserException
-
-dotenv.load_dotenv()
-
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-
-
-password_hash = PasswordHash.recommended()
-DUMMY_HASH = password_hash.hash("dummypassword")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

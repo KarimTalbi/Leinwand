@@ -23,4 +23,5 @@ dependencies = [
     "langfuse>=4.2.0",
     "pyjwt>=2.12.1",
     "pwdlib[argon2]>=0.3.0",
+    "pydantic-settings>=2.13.1",
 ]
