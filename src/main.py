@@ -1,12 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
 
-import uvicorn
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from config import setup_logging
 from core import (
     CanvasService,
     get_canvas_service,
@@ -25,6 +23,8 @@ from data import (
     SummaryRequest,
 )
 from llm import PromptNodeModel, SummaryNodeModel
+from routes import user_router
+from utils.config import setup_logging
 
 # initialize logging
 setup_logging()
@@ -60,6 +60,8 @@ async def lifespan(app: FastAPI):
 
 # FastAPI app setup
 app: FastAPI = FastAPI(lifespan=lifespan)
+
+app.include_router(user_router)
 
 
 app.add_middleware(
@@ -231,8 +233,3 @@ async def merge_streams(
     """
     context = await build_context(service, data.target_id, targets=2)
     return MergeResponse(data=context)
-
-
-if __name__ == "__main__":
-    # Run the FastAPI app
-    uvicorn.run(app, host="0.0.0.0", port=8000)

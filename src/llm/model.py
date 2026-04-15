@@ -7,8 +7,8 @@ from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
 
 from data import AiResponse
-from src.config import AiModelConfigs, ModelConfig
 from src.llm.prompts.load_prompt import SystemPrompts
+from utils.config import AiModelConfigs, ModelConfig
 
 logger = logging.getLogger("app.ai_model")
 
