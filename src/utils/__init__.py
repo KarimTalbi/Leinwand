@@ -4,4 +4,4 @@ from .exceptions import (
     UserAlreadyExists,
     InactiveUserException,
 )
-from .logger import service_monitor
+from .logger import service_monitor, setup_logging

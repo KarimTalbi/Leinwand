@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from data import engine, init_db
 from llm import PromptNodeModel
 from routes import user_router, canvas_router, llm_router, context_router
-from utils.config import setup_logging
+from utils import setup_logging
 
 setup_logging()
 logger = logging.getLogger("app.http")

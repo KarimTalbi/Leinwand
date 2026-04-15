@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from core import NodeService, get_node_service, get_ai_model, build_context
-from data import AiRequest, AiResponse, SummaryRequest
+from llm import AiRequest, AiResponse, SummaryRequest
 from llm import PromptNodeModel, SummaryNodeModel
 
 llm_router = APIRouter(prefix="/llm", tags=["llm"])

@@ -1,4 +1,5 @@
 import logging
+import sys
 import time
 from functools import wraps
 
@@ -45,3 +46,32 @@ def service_monitor(func):
             raise
 
     return wrapper
+
+
+def setup_logging():
+    """
+    Configures and sets up logging for the application, defining outputs and log levels
+    for multiple components, including the main application and specific libraries.
+
+    The function initializes logging with a specified format and routes log messages to both
+    stdout and a file. Additionally, it adjusts the logging levels for libraries and the application
+    logger to streamline output and separate log severity levels.
+
+    No arguments are required, and the function modifies logging configurations in place.
+
+    Raises:
+        ValueError: If there are invalid configurations used during logging setup.
+    """
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler("../app.log"),
+        ],
+    )
+
+    logging.getLogger("app").setLevel(logging.DEBUG)
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn").setLevel(logging.INFO)

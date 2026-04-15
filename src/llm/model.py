@@ -6,9 +6,9 @@ from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
 
-from data import AiResponse
+from src.llm.config import AiModelConfigs, ModelConfig
 from src.llm.prompts.load_prompt import SystemPrompts
-from utils.config import AiModelConfigs, ModelConfig
+from src.llm.schemas import AiResponse
 
 logger = logging.getLogger("app.ai_model")
 

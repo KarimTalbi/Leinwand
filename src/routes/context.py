@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from core import NodeService, get_node_service, build_context
-from data import MergeRequest, MergeResponse
+from llm import MergeRequest, MergeResponse
 
 context_router = APIRouter(prefix="/context", tags=["context"])
-
 
 
 @context_router.post("/context/merge")

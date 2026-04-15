@@ -9,21 +9,20 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 
-from authentification.schemas import TokenData
 from core import get_user_service, UserService
 from data import User
+from src.authentification.schemas import TokenData
 from utils import CredentialsException, InactiveUserException
 
 dotenv.load_dotenv()
 
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
 
 password_hash = PasswordHash.recommended()
-
 DUMMY_HASH = password_hash.hash("dummypassword")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
@@ -33,10 +32,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return password_hash.hash(password)
-
-
-async def get_user(username: str):
-    return {"username": username}
 
 
 def authenticate_user(user: User, password: str) -> bool:
