@@ -22,4 +22,5 @@ dist-ssr
 *.sln
 *.sw?
 .env
-.claude
+.claude__pycache__/
+*.pyc
