@@ -7,8 +7,11 @@ from jwt.exceptions import InvalidTokenError
 
 from core import get_user_service, UserService
 from data import User
+from src.authentification.config import password_hash, get_auth_settings, oauth2_scheme
 from src.authentification.schemas import TokenData
 from utils import CredentialsException, InactiveUserException
+
+settings = get_auth_settings()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -21,7 +24,7 @@ def get_password_hash(password: str) -> str:
 
 def authenticate_user(user: User, password: str) -> bool:
     if not user:
-        verify_password(password, DUMMY_HASH)
+        verify_password(password, settings.DUMMY_HASH)
         return False
 
     if not verify_password(password, user.hashed_password):
@@ -40,7 +43,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
 
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
 
     return encoded_jwt
 
@@ -51,7 +56,9 @@ async def get_current_user(
 ) -> User:
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
         username: str = payload.get("sub")
 
         if username is None:

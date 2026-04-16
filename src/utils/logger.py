@@ -7,19 +7,6 @@ logger = logging.getLogger("app.services")
 
 
 def service_monitor(func):
-    """
-    Decorator for monitoring the execution of asynchronous methods in a class.
-
-    This decorator logs the start and completion of the decorated method, along with the
-    execution time. If the decorated method raises an exception, it logs the error type,
-    message, and traceback, as well as the time elapsed before the exception occurred.
-
-    Args:
-        func (Callable): The asynchronous method to be wrapped and monitored.
-
-    Returns:
-        Callable: The wrapped asynchronous method with added monitoring functionality.
-    """
 
     @wraps(func)
     async def wrapper(self, *args, **kwargs):
@@ -49,19 +36,7 @@ def service_monitor(func):
 
 
 def setup_logging():
-    """
-    Configures and sets up logging for the application, defining outputs and log levels
-    for multiple components, including the main application and specific libraries.
 
-    The function initializes logging with a specified format and routes log messages to both
-    stdout and a file. Additionally, it adjusts the logging levels for libraries and the application
-    logger to streamline output and separate log severity levels.
-
-    No arguments are required, and the function modifies logging configurations in place.
-
-    Raises:
-        ValueError: If there are invalid configurations used during logging setup.
-    """
     logging.basicConfig(
         level=logging.WARNING,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",

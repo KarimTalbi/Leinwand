@@ -16,10 +16,6 @@ logger = logging.getLogger("app.http")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Manages the lifecycle for the application, including initializing required
-    resources and releasing them during shutdown.
-    """
     await init_db(reset=False)
 
     app.state.ai_model = PromptNodeModel()
@@ -49,9 +45,6 @@ app.add_middleware(
 
 @app.middleware("http")
 async def db_session_middleware(request: Request, call_next):
-    """
-    Middleware for handling the database session lifecycle during HTTP requests.
-    """
     try:
         return await call_next(request)
     except Exception as e:

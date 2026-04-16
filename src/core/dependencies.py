@@ -31,17 +31,4 @@ def get_user_service(
 
 
 def get_ai_model(request: Request) -> PromptNodeModel:
-    """
-    Retrieves the AI model instance from the application state.
-
-    This function accesses the `ai_model` stored in the application's state and
-    returns it as a `PromptNodeModel`. It assumes that the application structure
-    includes the `ai_model` in its state.
-
-    Args:
-        request (Request): The FastAPI request object containing the app state.
-
-    Returns:
-        PromptNodeModel: The AI model instance stored in the application's state.
-    """
     return request.app.state.ai_model

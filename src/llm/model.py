@@ -17,18 +17,6 @@ langfuse_handler = CallbackHandler()
 
 
 class AiModelBase[_T]:
-    """Base class for managing AI models with structured output and system prompts.
-
-    This class serves as a foundation for implementing AI models that generate
-    structured responses based on given system prompts and user input. It initializes
-    the AI model using a provided configuration and allows for asynchronous generation
-    of responses based on context and prompts.
-
-    Attributes:
-        model (Any): An instance of the AI chat model configured using the provided
-            `ModelConfig` and structured output type.
-        system (str): The system prompt used to guide the AI model in generating responses.
-    """
 
     def __init__(self, config: ModelConfig, response: _T, system_prompt: str) -> None:
         self.model = init_chat_model(
@@ -55,19 +43,6 @@ class AiModelBase[_T]:
 
 
 class PromptNodeModel(AiModelBase[AiResponse]):
-    """
-    Represents a prompt-based AI model node.
-
-    This class is designed to encapsulate the structure for a prompt-based AI model.
-    It serves as a specialized implementation of a base AI model focused on prompt
-    generation and response handling. This class is intended for scenarios where a
-    structured system prompt and model configuration are required to interact with
-    a prompt-based AI system.
-
-    Attributes:
-        config (ModelConfig): Configuration settings for the AI model.
-        system_prompt (str): System prompt used to align AI responses.
-    """
 
     def __init__(
         self,

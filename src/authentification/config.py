@@ -8,8 +8,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-print(BASE_DIR)
-
 
 class AuthSettings(BaseSettings):
     SECRET_KEY: SecretStr
