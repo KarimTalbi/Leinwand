@@ -5,4 +5,8 @@ from .schemas import (
     CanvasRead,
     EdgeRead,
     NodeRead,
+    NodeUpdate,
+    NodeCreate,
+    EdgeUpdate,
+    EdgeCreate,
 )

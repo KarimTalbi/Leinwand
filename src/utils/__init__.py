@@ -3,5 +3,7 @@ from .exceptions import (
     CredentialsException,
     UserAlreadyExists,
     InactiveUserException,
+    NodeNotFoundException,
+    EdgeNotFoundException,
 )
 from .logger import service_monitor, setup_logging
