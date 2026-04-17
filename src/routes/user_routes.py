@@ -56,7 +56,7 @@ async def read_users_me(
 @user_router.post("/create")
 async def create_user(
     user: UserCreate, service: UserService = Depends(get_user_service)
-):
+) -> UserRead:
 
     is_username_taken = await service.is_user(user.username)
 

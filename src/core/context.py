@@ -1,6 +1,6 @@
 from typing import Any
 
-from src.core.service import NodeService
+from core.service import NodeService
 
 
 def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str, Any]]:

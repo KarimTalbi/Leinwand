@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -11,10 +10,7 @@ from sqlalchemy.ext.asyncio import (
 
 from src.data.db_models import Base
 
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "db.sqlite"
-
-DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH.absolute()}"
+DATABASE_URL = "postgresql+psycopg://dev:dev@localhost:5432/canvas_db"
 
 
 engine: AsyncEngine = create_async_engine(
