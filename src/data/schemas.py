@@ -1,3 +1,4 @@
+import uuid
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict
@@ -8,38 +9,42 @@ class NodeBase(BaseModel):
     type: str
     position: dict[str, float]
     data: dict[str, Any]
+    canvas_id: uuid.UUID
 
-
-class NodeCreate(NodeBase): ...
+class NodeCreate(NodeBase):
+    user_id: uuid.UUID | None = None
 
 
 class NodeUpdate(BaseModel):
-    id: str
+    id: uuid.UUID
     position: dict[str, float] | None = None
     data: dict[str, Any] | None = None
 
 
 class NodeRead(NodeBase):
-    id: str
+    id: uuid.UUID
     model_config = ConfigDict(from_attributes=True)
 
 
 class EdgeBase(BaseModel):
-    source: str
-    target: str
+    source: uuid.UUID
+    target: uuid.UUID
     source_handle: str | None = None
     target_handle: str | None = None
+    canvas_id: uuid.UUID
 
 
-class EdgeCreate(EdgeBase): ...
+class EdgeCreate(EdgeBase):
+    user_id: uuid.UUID | None = None
 
 
 class EdgeRead(BaseModel):
-    id: str
-    source: str
-    target: str
+    id: uuid.UUID
+    source: uuid.UUID
+    target: uuid.UUID
     source_handle: str | None = None
     target_handle: str | None = None
+    canvas_id: uuid.UUID
 
     model_config = ConfigDict(
         from_attributes=True,

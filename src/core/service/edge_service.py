@@ -9,8 +9,9 @@ from utils import EdgeNotFoundException
 
 
 class EdgeService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, user_id: uuid.UUID):
         self.db = session
+        self.user_id = user_id
 
     async def create(self, edge: EdgeCreate) -> Edge:
         new_edge = Edge(**edge.model_dump())
