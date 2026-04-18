@@ -34,7 +34,6 @@ class EdgeBase(BaseModel):
     target: uuid.UUID
     source_handle: str | None = None
     target_handle: str | None = None
-    canvas_id: uuid.UUID
 
 
 class EdgeCreate(EdgeBase): ...
@@ -74,7 +73,6 @@ class CanvasRead(CanvasBase):
 
 
 class CanvasUpdate(BaseModel):
-    id: uuid.UUID
     name: str | None = None
     data: dict[str, Any] | None = None
 
