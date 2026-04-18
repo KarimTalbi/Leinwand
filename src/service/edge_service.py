@@ -1,5 +1,3 @@
-from typing import Sequence
-
 from sqlalchemy import UUID, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +7,13 @@ from data import EdgeCreate, Edge, Canvas
 async def create_edge(
     session: AsyncSession, edge_create: EdgeCreate, canvas_id: UUID, user_id: UUID
 ) -> Edge:
-    edge = Edge(**edge_create.model_dump())
+
+    canvas = await session.get(Canvas, canvas_id)
+
+    if not canvas or canvas.user_id != user_id:  # TODO: better exception
+        raise ValueError("Canvas not found or not owned by the user")
+
+    edge = Edge(**edge_create.model_dump(), canvas_id=canvas_id)
     session.add(edge)
 
     await session.flush()
@@ -20,13 +24,13 @@ async def create_edge(
 
 async def list_edges(
     session: AsyncSession, user_id: UUID, canvas_id: UUID
-) -> Sequence[Edge]:
+) -> list[Edge]:
     result = await session.execute(
         select(Edge)
         .join(Canvas)
         .where(Canvas.user_id == user_id, Edge.canvas_id == canvas_id)
     )
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 async def get_edge(session: AsyncSession, edge_id: UUID, user_id: UUID) -> Edge | None:

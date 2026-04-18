@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import UserAuth, get_async_session, EdgeReadList, EdgeRead, EdgeCreate
+from data import UserAuth, get_async_session, EdgeRead, EdgeCreate
 from service import get_current_active_user, edge_service as es
 
 edge_router = APIRouter(prefix="/edge", tags=["edge"])
@@ -15,7 +15,7 @@ async def get_edges(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     canvas_id: str,
     session: AsyncSession = Depends(get_async_session),
-) -> EdgeReadList:
+) -> list[EdgeRead]:
     return await es.list_edges(session, current_user.id, UUID(canvas_id))
 
 

@@ -1,4 +1,3 @@
-from typing import Sequence
 from uuid import UUID
 
 from sqlalchemy import select
@@ -26,13 +25,15 @@ async def create_node(
 
 async def list_nodes(
     session: AsyncSession, user_id: UUID, canvas_id: UUID
-) -> Sequence[Node]:
+) -> list[Node]:
     result = await session.execute(
         select(Node)
         .join(Canvas)
         .where(Canvas.user_id == user_id, Node.canvas_id == canvas_id)
     )
-    return result.scalars().all()
+    res = list(result.scalars().all())
+    print(res)
+    return res
 
 
 async def get_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> Node | None:

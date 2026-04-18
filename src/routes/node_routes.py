@@ -9,7 +9,6 @@ node_router = APIRouter(prefix="/node", tags=["node"])
 from service import node_service as ns, get_current_active_user
 from data import (
     get_async_session,
-    NodeReadList,
     UserAuth,
     NodeRead,
     NodeCreate,
@@ -22,7 +21,7 @@ async def get_nodes(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     canvas_id: str,
     session: AsyncSession = Depends(get_async_session),
-) -> NodeReadList:
+) -> list[NodeRead]:
     return await ns.list_nodes(session, current_user.id, UUID(canvas_id))
 
 
