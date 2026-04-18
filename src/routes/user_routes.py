@@ -1,27 +1,11 @@
-import os
-from datetime import timedelta
 from typing import Annotated
 
-import dotenv
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from authentification import (
-    Token,
-    authenticate_user,
-    create_access_token,
-    UserBase,
-    get_current_active_user,
-    get_password_hash,
-    UserCreate,
-    UserRead,
-)
-from core import get_user_service, UserService
-from utils import InvalidUserOrPassword, UserAlreadyExists
-
-dotenv.load_dotenv()
-
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+from data import Token, UserAuth, UserRead, UserCreate, get_async_session
+from service.user_service import get_current_active_user, create_user, get_access_token
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
@@ -29,42 +13,20 @@ user_router = APIRouter(prefix="/users", tags=["users"])
 @user_router.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    service: UserService = Depends(get_user_service),
+    session: AsyncSession = Depends(get_async_session),
 ) -> Token:
-
-    user = await service.get_user(username=form_data.username)
-
-    if not user or not authenticate_user(user, form_data.password):
-        raise InvalidUserOrPassword
-
-    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
-
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-
-    return Token(access_token=access_token, token_type="bearer")
+    return await get_access_token(session, form_data.username, form_data.password)
 
 
 @user_router.get("/me")
 async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_active_user)],
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
 ) -> UserRead:
     return current_user
 
 
 @user_router.post("/create")
-async def create_user(
-    user: UserCreate, service: UserService = Depends(get_user_service)
+async def create_users(
+    user: UserCreate, session: AsyncSession = Depends(get_async_session)
 ) -> UserRead:
-
-    is_username_taken = await service.is_user(user.username)
-
-    if is_username_taken:
-        raise UserAlreadyExists
-
-    hashed_password = get_password_hash(user.password)
-
-    user = await service.create_user(user.username, hashed_password)
-
-    return user
+    return await create_user(session, user)

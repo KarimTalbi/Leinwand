@@ -30,3 +30,7 @@ class NodeNotFoundException(HTTPException):
 class EdgeNotFoundException(HTTPException):
     status_code = status.HTTP_404_NOT_FOUND
     detail = "Edge not found"
+
+class CanvasNotFoundException(HTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Canvas not found"

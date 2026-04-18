@@ -8,18 +8,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.data.db_models import Base
-
 DATABASE_URL = "postgresql+psycopg://dev:dev@localhost:5432/canvas_db"
 
 
-engine: AsyncEngine = create_async_engine(
-    DATABASE_URL, echo=False, connect_args={"check_same_thread": False, "timeout": 30}
-)
-# pool_pre_ping=True
-# pool_recycle=3600
-# pool_size=5
-# max_overflow=10
+engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=False)
 
 
 async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
@@ -32,14 +24,6 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         async with session.begin():
             yield session
-
-
-async def init_db(reset: bool = False):
-
-    async with engine.begin() as conn:
-        if reset:
-            await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
 
 
 get_session_ctx = asynccontextmanager(get_async_session)

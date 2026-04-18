@@ -5,9 +5,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from data import engine, init_db
+from data import engine
 from llm import PromptNodeModel
-from routes import user_router, canvas_router, llm_router, context_router
+from routes import user_router, canvas_router, edge_router, node_router
 from utils import setup_logging
 
 setup_logging()
@@ -16,7 +16,6 @@ logger = logging.getLogger("app.http")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db(reset=False)
 
     app.state.ai_model = PromptNodeModel()
 
@@ -30,8 +29,8 @@ app: FastAPI = FastAPI(lifespan=lifespan)
 
 app.include_router(user_router)
 app.include_router(canvas_router)
-app.include_router(llm_router)
-app.include_router(context_router)
+app.include_router(node_router)
+app.include_router(edge_router)
 
 
 app.add_middleware(
@@ -60,3 +59,6 @@ async def db_session_middleware(request: Request, call_next):
 
 
 # PYTHONPATH=src fastapi dev src/main.py
+# docker compose up -d
+# .venv/bin/alembic revision --autogenerate -m "initial schema"
+# .venv/bin/alembic upgrade head

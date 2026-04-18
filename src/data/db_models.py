@@ -75,11 +75,3 @@ class Canvas(Base, AuditMixin, PrimaryKeyMixin):
     user: Mapped[User] = relationship(back_populates="canvases")
     nodes: Mapped[list["Node"]] = relationship(back_populates="canvas")
     edges: Mapped[list["Edge"]] = relationship(back_populates="canvas")
-    snapshots: Mapped[list["CanvasSnapshot"]] = relationship(back_populates="canvas")
-
-
-class CanvasSnapshot(Base, CreatedMixin, PrimaryKeyMixin):
-    __tablename__ = "canvas_snapshot"
-
-    canvas_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("canvas.id"), index=True)
-    data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
