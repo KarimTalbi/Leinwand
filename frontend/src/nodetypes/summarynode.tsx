@@ -12,7 +12,6 @@ import {NodeProps} from "@xyflow/react";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
@@ -21,7 +20,7 @@ const selector = (state: AppState) => ({
 
 const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<SummaryNodeType>) => {
   if (!data) return null;
-  const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
 
@@ -57,7 +56,6 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       })
 
       updateNodeData(id, {summary: res.data.response, closed: true});
-      await saveCanvas();
 
     } catch (err) {
       console.error('Error summarizing:', err);
@@ -74,7 +72,7 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       id={id}
       title="Summary Node"
       loading={loading}
-      onDelete={() => deleteNode(id)}
+      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#bf4546'} as React.CSSProperties}
       headerActions={
 

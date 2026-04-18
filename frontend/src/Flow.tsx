@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useShallow} from 'zustand/react/shallow'
 import {ReactFlow, Background, NodeTypes, useReactFlow, MiniMap, Node} from '@xyflow/react';
 import {ZoomInIcon, ZoomOutIcon, LucideScan, Lock, LockOpen, Map, Undo2, Redo2} from "lucide-react";
@@ -40,9 +40,9 @@ const selector = (state: AppState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
-  fetchCanvas: state.fetchCanvas,
   addNode: state.addNode,
   setLocked: state.setLocked,
+  exitCanvas: state.exitCanvas,
 });
 
 
@@ -59,9 +59,9 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    fetchCanvas,
     addNode,
     setLocked,
+    exitCanvas,
   } = useStore(
     useShallow(selector)
   );
@@ -113,16 +113,11 @@ function Flow() {
   };
 
 
-  useEffect(() => {
-    void fetchCanvas();
-  }, [fetchCanvas]);
-
-
   const onCreateNode = (type: NodeTypeNames) => {
     const position = screenToFlowPosition(
       { x: window.innerWidth / 2, y: window.innerHeight / 2}
     );
-    addNode(type, position);
+    void addNode(type, position);
   };
 
 
@@ -155,6 +150,7 @@ function Flow() {
           undoControls={undoControls}
           controls={controls}
           addItem={addItem}
+          onExit={exitCanvas}
         />
 
 
@@ -165,6 +161,7 @@ function Flow() {
           color="#CCCCCC"
         />
 
+        {isMapOpen && (
 
         <MiniMap
           nodeColor={nodeColor}
@@ -172,6 +169,7 @@ function Flow() {
           pannable
           zoomable
         />
+        )}
 
 
       </ReactFlow>

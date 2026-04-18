@@ -14,14 +14,13 @@ import BaseNode from "@/components/nodes/basenode.tsx";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
 });
 
 const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<PromptNodeType>) => {
-  const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const [includeContext, setIncludeContext] = useState(true);
   const isClosed = data.closed;
@@ -62,7 +61,6 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       console.log(res.data.response.slice(0, 200))
 
       updateNodeData(id, {prompt: data.prompt, response: res.data.response, closed: true});
-      await saveCanvas();
 
     } catch (err) {
       console.error('Error sending prompt to LLM:', err);
@@ -78,7 +76,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       id={id}
       title="Prompt Node"
       loading={loading}
-      onDelete={() => deleteNode(id)}
+      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#ec4899'} as React.CSSProperties}
       headerActions={
         <div className="flex items-center gap-3">

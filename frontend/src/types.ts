@@ -29,17 +29,51 @@ export type SummaryNodeType = Node<SummaryNodeData>;
 export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
 
+export interface UserRead {
+  username: string;
+  disabled: boolean;
+}
+
+export interface CanvasRead {
+  id: string;
+  name: string;
+  data: Record<string, unknown>;
+}
+
+
 export interface AppState {
+  // Auth
+  token: string | null;
+  user: UserRead | null;
+  authError: string | null;
+
+  // Canvas management
+  canvases: CanvasRead[];
+  currentCanvasId: string | null;
+
+  // Flow state
   nodes: (PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType)[];
   edges: Edge[];
   syncing: boolean;
   locked: boolean;
 
-  fetchCanvas: () => Promise<void>;
-  saveCanvas: () => Promise<void>;
-  addNode: (type: NodeTypeNames, position?: XYPosition) => string;
-  addEdge: (source: string, target: string) => string;
-  deleteNode: (id: string) => void;
+  // Auth actions
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => void;
+  register: (username: string, password: string) => Promise<void>;
+  clearAuthError: () => void;
+
+  // Canvas management actions
+  loadCanvases: () => Promise<void>;
+  selectCanvas: (canvasId: string) => Promise<void>;
+  createCanvas: (name: string) => Promise<void>;
+  deleteCanvas: (canvasId: string) => Promise<void>;
+  exitCanvas: () => void;
+
+  // Flow actions
+  addNode: (type: NodeTypeNames, position?: XYPosition) => Promise<void>;
+  addEdge: (source: string, target: string) => Promise<void>;
+  deleteNode: (id: string) => Promise<void>;
   updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 

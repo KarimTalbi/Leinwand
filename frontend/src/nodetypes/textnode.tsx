@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo} from 'react';
 import {useShallow} from "zustand/react/shallow";
 import {Lock, LockOpen} from "lucide-react";
 
@@ -12,17 +12,13 @@ import {NodeProps} from "@xyflow/react";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  addNode: state.addNode,
-  saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
-  setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
 });
 
 const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<TextNodeType>) => {
-  const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
-  const {updateNodeData, saveCanvas, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, updateNodeClosed} = useStore(useShallow(selector));
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(id, {text: e.target.value});
@@ -35,9 +31,7 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
   }
 
   const handleClick = () => {
-    isClosed
-      ? updateNodeClosed(id, false)
-      : void handleSave();
+    isClosed ? updateNodeClosed(id, false) : handleSave();
   }
 
   const content = () => {
@@ -46,21 +40,8 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
       : <NodeTextarea value={data.text} handleTextChange={handleTextChange} placeholder='Enter your text...'/>
   }
 
-  const handleSave = async () => {
-    setLoading(true);
-    setSyncing(true);
-
-    try {
-      updateNodeData(id, {text: data.text, closed: true});
-      await saveCanvas();
-
-    } catch (err) {
-      console.error('Error saving Text:', err);
-
-    } finally {
-      setLoading(false);
-      setSyncing(false);
-    }
+  const handleSave = () => {
+    updateNodeData(id, {text: data.text, closed: true});
   };
 
 
@@ -68,12 +49,11 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
     <BaseNode
       id={id}
       title="Text Node"
-      loading={loading}
-      onDelete={() => deleteNode(id)}
+      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#309898'} as React.CSSProperties}
       headerActions={
 
-        <NodeHeaderButton onClick={handleClick} icon={lockIcon} disabled={loading}/>
+        <NodeHeaderButton onClick={handleClick} icon={lockIcon}/>
 
       }>
 

@@ -13,13 +13,12 @@ import {NodeProps} from "@xyflow/react";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  saveCanvas: state.saveCanvas,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
 });
 
 const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<MergeNodeType>) => {
-  const {updateNodeData, saveCanvas, deleteNode, setSyncing} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, setSyncing} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
 
@@ -51,7 +50,6 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       console.log(res.data)
 
       updateNodeData(id, {context: res.data.data, closed: true});
-      await saveCanvas();
 
     } catch (err) {
       console.error('Error getting context:', err);
@@ -69,7 +67,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       id={id}
       title="Merge Node"
       loading={loading}
-      onDelete={(() => deleteNode(id))}
+      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
         <NodeHeaderButton onClick={handleGet} icon={playIcon} disabled={loading}/>
