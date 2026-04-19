@@ -103,3 +103,24 @@ class UserRead(UserBase):
 class UserCreate(UserBase):
     username: str
     password: str
+
+
+class ChatResponse(BaseModel):
+    response: str
+
+
+class SummaryResponse(BaseModel):
+    response: str
+
+
+class MergeResponse(BaseModel):
+    response: str
+    has_issues: bool
+
+
+class MergeResolveResponse(BaseModel):
+    response: str
+
+
+class MergeRequest(BaseModel):
+    check_consistency: bool

@@ -8,7 +8,7 @@ from langfuse.langchain import CallbackHandler
 from pydantic import BaseModel
 
 from core import LLMModelConfig, AiModel, settings
-from data import ChatResponse, SummaryResponse, MergeResponse
+from data import ChatResponse, SummaryResponse, MergeResponse, MergeResolveResponse
 from data.prompts import SystemPrompts
 
 logger = logging.getLogger(__name__)
@@ -94,4 +94,12 @@ def build_merge_validation_model():
     config = AiModel.GEMINI_2_5_FLASH.value
     response = MergeResponse
     system_prompt = SystemPrompts.MERGE_SYSTEM.value
+    return AiModelBase(config, response, system_prompt)
+
+
+@lru_cache
+def build_merge_resolution_model():
+    config = AiModel.GEMINI_2_5_FLASH.value
+    response = MergeResolveResponse
+    system_prompt = SystemPrompts.MERGE_RESOLVE_SYSTEM.value
     return AiModelBase(config, response, system_prompt)

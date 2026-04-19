@@ -4,7 +4,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from llm import build_chat_model, build_summary_model
+from llm import (
+    build_chat_model,
+    build_summary_model,
+    build_merge_resolution_model,
+    build_merge_validation_model,
+)
 
 node_router = APIRouter(prefix="/node", tags=["node"])
 
@@ -66,15 +71,53 @@ async def update_node(
 
 
 @node_router.get("/{node_id}/merge/")
-async def get_ancestors(
+async def get_context(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     node_id: str,
     session: AsyncSession = Depends(get_async_session),
 ) -> NodeRead:
-    result = await ns.get_ancestors(session, UUID(node_id), current_user.id)
+    node = await ns.get_node(session, UUID(node_id), current_user.id)
+
+    problems = node.data.get("problems")
+    solution = node.data.get("solution")
+
+    if problems and solution:
+        context = node.data.get("context")
+        context.extend([])
+
+        model = build_merge_resolution_model()
+        result = await model.generate_with_context(context, "write solution")
+
+        context.append(
+            {
+                "type": "problemResolution",
+                "ai": problems,
+                "user": solution,
+                "solution": result.response,
+            }
+        )
+
+        return await ns.update_node_data(
+            session,
+            node_id,
+            current_user.id,
+            {"context": context, "problems": "", "solution": ""},
+        )
+
+    ancestors = await ns.get_ancestors(session, node.id, current_user.id)
+    model = build_merge_validation_model()
+    result = await model.generate_with_context(ancestors, "validate context")
+
+    if result.has_issues:
+        return await ns.update_node_data(
+            session,
+            node_id,
+            current_user.id,
+            {"context": ancestors, "problems": result.response},
+        )
 
     return await ns.update_node_data(
-        session, node_id, current_user.id, {"context": result}
+        session, node_id, current_user.id, {"context": ancestors}
     )
 
 

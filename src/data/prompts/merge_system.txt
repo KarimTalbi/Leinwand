@@ -22,7 +22,8 @@ should be resolved.
 You must respond with a JSON object in the following format:
 
 {{
-    "response": "No contradictions found." or "Detailed explanation of the contradictions. + Question"
+    "response": "No contradictions found." or "Detailed explanation of the contradictions. + Question",
+    "has_issues": true or false
 }}
 
 Do not include anything outside the JSON object.
