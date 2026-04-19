@@ -37,17 +37,15 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-[#ebebeb] flex items-center justify-center">
-            <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-8">
-
-                <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">NodeLLM</h1>
+            <div className="bg-white rounded-3xl shadow-lg w-full max-w-sm p-8">
 
                 {/* Tabs */}
-                <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+                <div className="flex rounded-full bg-gray-100 p-1 mb-6">
                     {(['login', 'register'] as Tab[]).map((t) => (
                         <button
                             key={t}
                             onClick={() => switchTab(t)}
-                            className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${
+                            className={`flex-1 py-1.5 text-sm font-medium rounded-full transition-colors cursor-pointer ${
                                 tab === t
                                     ? 'bg-white text-gray-900 shadow-sm'
                                     : 'text-gray-500 hover:text-gray-700'
@@ -60,7 +58,7 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium px-1 text-gray-700 mb-1">
                             Username
                         </label>
                         <input
@@ -69,12 +67,12 @@ export default function LoginPage() {
                             onChange={(e) => setUsername(e.target.value)}
                             required
                             autoComplete="username"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium px-1 text-gray-700 mb-1">
                             Password
                         </label>
                         <input
@@ -83,7 +81,7 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
                     </div>
 
@@ -94,7 +92,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors cursor-pointer"
+                        className="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-700 disabled:opacity-50 transition-colors cursor-pointer"
                     >
                         {loading ? '...' : tab === 'login' ? 'Log in' : 'Create account'}
                     </button>

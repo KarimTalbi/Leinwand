@@ -67,8 +67,8 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
 
       {isClosed && (
         <div className="p-5 bg-gray-100 rounded-xl">
-          <p className="text-xs font-bold mb-3">User Message:</p>
-          <p className="text-xs mb-3">{data.prompt}</p>
+          <p className="text-base font-bold mb-3">User Message:</p>
+          <p className="text-base mb-3">{data.prompt}</p>
         </div>
       )}
 
