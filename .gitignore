@@ -10,6 +10,8 @@ lerna-debug.log*
 dist
 dist-ssr
 *.local
+alembic
+alembic.ini
 
 # Editor directories and files
 .vscode/*
