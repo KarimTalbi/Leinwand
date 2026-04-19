@@ -72,6 +72,7 @@ export interface AppState {
 
   // Flow actions
   addNode: (type: NodeTypeNames, position?: XYPosition) => Promise<void>;
+  promptNodeAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => Promise<void>;
   deleteNode: (id: string) => Promise<void>;
   updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;

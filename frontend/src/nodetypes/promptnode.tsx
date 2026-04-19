@@ -4,11 +4,9 @@ import {Undo2, Play} from "lucide-react";
 import {useShallow} from "zustand/react/shallow";
 
 import useStore from '../store.ts';
-import api from '../api.ts'
 import {AppState, PromptNodeType} from "../types.ts";
 
 import {NodeTextarea, NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
-import {Switch} from "@/components/ui/switch.tsx";
 import BaseNode from "@/components/nodes/basenode.tsx";
 
 
@@ -17,12 +15,12 @@ const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
+  promptNodeAction: state.promptNodeAction,
 });
 
 const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<PromptNodeType>) => {
-  const {updateNodeData, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, updateNodeClosed, promptNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
-  const [includeContext, setIncludeContext] = useState(true);
   const isClosed = data.closed;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -42,34 +40,14 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
   }
 
   const handleClick = () => {
-    isClosed
-      ? updateNodeClosed(id, false)
-      : void handleSend();
-  }
-
-  const handleSend = async () => {
-    setSyncing(true);
     setLoading(true);
 
-    try {
-      const res = await api.post('/llm/generate', {
-        prompt: data.prompt,
-        target_id: id,
-        include_context: includeContext,
-      });
+    isClosed
+      ? updateNodeClosed(id, false)
+      : promptNodeAction(id);
 
-      console.log(res.data.response.slice(0, 200))
-
-      updateNodeData(id, {prompt: data.prompt, response: res.data.response, closed: true});
-
-    } catch (err) {
-      console.error('Error sending prompt to LLM:', err);
-
-    } finally {
-      setSyncing(false);
-      setLoading(false);
-    }
-  };
+    setLoading(false);
+  }
 
   return (
     <BaseNode
@@ -87,18 +65,15 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
 
       {content()}
 
-      {isClosed
-        ? <div className="p-5 bg-gray-100 rounded-xl">
-           <p className="text-xs font-bold mb-3">User Message:</p>
-           <p className="text-xs mb-3">{data.prompt}</p>
-         </div>
-        : <div className="w-full flex items-center justify-end pt-3">
-          <p className="text-xs font-bold mr-2">Include Context</p>
-          <Switch checked={includeContext} onCheckedChange={() => setIncludeContext(!includeContext)} size="default"/>
+      {isClosed && (
+        <div className="p-5 bg-gray-100 rounded-xl">
+          <p className="text-xs font-bold mb-3">User Message:</p>
+          <p className="text-xs mb-3">{data.prompt}</p>
         </div>
-      }
+      )}
 
-      <DefaultHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
+      <DefaultHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}
+                      style={{'--node-color': '#ec4899'} as React.CSSProperties}/>
 
 
     </BaseNode>

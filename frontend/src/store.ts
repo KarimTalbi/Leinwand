@@ -106,7 +106,6 @@ const useStore = create<AppState>((set, get) => ({
                 api.get(`/node/list/${canvasId}/`),
                 api.get(`/edge/list/${canvasId}/`),
             ]);
-            console.log(nodesRes);
             set({
                 nodes: (nodesRes.data ?? []).map((n: { id: string; type: string; position: { x: number; y: number }; data: Record<string, unknown> }) => ({
                     id: String(n.id),
@@ -176,6 +175,26 @@ const useStore = create<AppState>((set, get) => ({
             });
         } catch (err) {
             console.error('Error creating node:', err);
+        }
+    },
+
+    promptNodeAction: async (nodeId) => {
+        set({syncing: true})
+
+        try {
+            const res = await api.get(`/node/${nodeId}/chat/`);
+            console.log(res.data)
+            set({
+                nodes: get().nodes.map((n) =>
+                n.id === nodeId
+                  ? { ...n, data: { ...n, response: res.data.data.response, prompt: res.data.data.prompt, closed: true}}
+                  : n
+                ),
+            });
+        } catch (err) {
+            console.error('Error prompting Node', err);
+        } finally {
+            set({syncing: false});
         }
     },
 
