@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
-
 from src.llm.config import AiModelConfigs, ModelConfig
+
 from src.llm.prompts.load_prompt import SystemPrompts
 from src.llm.schemas import AiResponse
 
@@ -20,7 +20,7 @@ class AiModelBase[_T]:
 
     def __init__(self, config: ModelConfig, response: _T, system_prompt: str) -> None:
         self.model = init_chat_model(
-            **config.model_dump(exclude_none=True)
+            **config.model_dump(exclude_none=True), api_key=""
         ).with_structured_output(response)
 
         self.system = system_prompt
