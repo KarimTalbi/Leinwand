@@ -1,18 +1,14 @@
 import logging
 from typing import Any
 
-from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
-from src.llm.config import AiModelConfigs, ModelConfig
 
 from src.llm.prompts.load_prompt import SystemPrompts
-from src.llm.schemas import AiResponse
 
-logger = logging.getLogger("app.ai_model")
+logger = logging.getLogger(__name__)
 
-load_dotenv()
 langfuse_handler = CallbackHandler()
 
 
@@ -42,8 +38,7 @@ class AiModelBase[_T]:
         return result
 
 
-class PromptNodeModel(AiModelBase[AiResponse]):
-
+class ChatModel(AiModelBase[AiResponse]):
     def __init__(
         self,
         config: ModelConfig = AiModelConfigs.GEMINI_FLASH_LITE_25,
@@ -52,7 +47,7 @@ class PromptNodeModel(AiModelBase[AiResponse]):
         super().__init__(config, AiResponse, system_prompt)
 
 
-class SummaryNodeModel(AiModelBase[AiResponse]):
+class SummaryModel(AiModelBase[AiResponse]):
     def __init__(
         self,
         config: ModelConfig = AiModelConfigs.GEMINI_FLASH_LITE_25,

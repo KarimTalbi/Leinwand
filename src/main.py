@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data import engine
 from exceptions import register_exception_handlers
-from llm import PromptNodeModel
 from routes import user_router, canvas_router, edge_router, node_router
 from utils import setup_logging
 
@@ -15,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.state.ai_model = PromptNodeModel()
+async def lifespan(_: FastAPI):
     yield
     await engine.dispose()
 
