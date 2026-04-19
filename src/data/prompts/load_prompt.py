@@ -10,5 +10,6 @@ def _load(name: str) -> str:
 
 class SystemPrompts(Enum):
 
-    PROMPT_NODE_SYSTEM = _load("prompt_node_system.txt")
-    SUMMARY_NODE_SYSTEM = _load("summary_node_system.txt")
+    CHAT_SYSTEM = _load("chat_system.txt")
+    SUMMARY_SYSTEM = _load("summary_system.txt")
+    MERGE_SYSTEM = _load("merge_system.txt")

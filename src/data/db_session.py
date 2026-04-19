@@ -1,14 +1,10 @@
 from collections.abc import AsyncGenerator
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core import settings
 
-DB_URL = settings.db.url
-engine = create_async_engine(DB_URL, echo=False)
+engine = create_async_engine(settings.db.url, echo=False)
 async_session = async_sessionmaker(
     bind=engine, class_=AsyncSession, expire_on_commit=False
 )

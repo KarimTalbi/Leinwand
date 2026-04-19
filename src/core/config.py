@@ -87,7 +87,7 @@ class LLMModelConfig(BaseModel):
     model_kwargs: dict[str, Any] | None = None
 
 
-class OpenAIModel(Enum):
+class AiModel(Enum):
     OPENAI_GPT5_MINI = LLMModelConfig(model="gpt-5-mini", model_provider="openai")
     OPENAI_GPT4_MINI = LLMModelConfig(
         model="gpt-4o-mini",
@@ -97,9 +97,6 @@ class OpenAIModel(Enum):
         model="gpt-4.1-mini",
         model_provider="openai",
     )
-
-
-class GoogleModel(Enum):
     GEMINI_2_FLASH = LLMModelConfig(
         model="gemini-2.0-flash",
         model_provider="google_genai",
@@ -132,9 +129,6 @@ class GoogleModel(Enum):
         model="gemini-3.1-pro-preview",
         model_provider="google_genai",
     )
-
-
-class AnthropicModel(Enum):
     OPUS_4_7 = LLMModelConfig(
         model="claude-opus-4-7",
         model_provider="anthropic",
@@ -147,9 +141,3 @@ class AnthropicModel(Enum):
         model="claude-haiku-4-5",
         model_provider="anthropic",
     )
-
-
-class AiModel(Enum):
-    OpenAI = OpenAIModel
-    Google = GoogleModel
-    Anthropic = AnthropicModel
