@@ -4,6 +4,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from llm import build_chat_model, build_summary_model
+
 node_router = APIRouter(prefix="/node", tags=["node"])
 
 from service import node_service as ns, get_current_active_user
@@ -13,7 +15,6 @@ from data import (
     NodeRead,
     NodeCreate,
     NodeUpdate,
-    MergeResponse,
 )
 
 
@@ -64,11 +65,54 @@ async def update_node(
     return await ns.update_node(session, node_id, node_update, current_user.id)
 
 
-@node_router.get("/{node_id}/ancestors/")
+@node_router.get("/{node_id}/merge/")
 async def get_ancestors(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     node_id: str,
     session: AsyncSession = Depends(get_async_session),
-) -> MergeResponse:
+) -> NodeRead:
     result = await ns.get_ancestors(session, UUID(node_id), current_user.id)
-    return MergeResponse(response=result)
+
+    return await ns.update_node_data(
+        session, node_id, current_user.id, {"context": result}
+    )
+
+
+@node_router.get("/{node_id}/chat/")
+async def get_chat_response(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> NodeRead:
+    node = await ns.get_node(session, UUID(node_id), current_user.id)
+    model = build_chat_model()
+
+    ancestors = await ns.get_ancestors(session, node.id, current_user.id)
+    response = await model.generate_with_context(ancestors, node.data.get("prompt"))
+
+    return await ns.update_node_data(
+        session,
+        node.id,
+        current_user.id,
+        {"response": response.response, "closed": True},
+    )
+
+
+@node_router.get("/{node_id}/summary")
+async def get_summary(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> NodeRead:
+    ancestors = await ns.get_ancestors(session, UUID(node_id), current_user.id)
+    model = build_summary_model()
+    response = await model.generate_with_context(
+        ancestors, "summarize content of context"
+    )
+
+    return await ns.update_node_data(
+        session,
+        node_id,
+        current_user.id,
+        {"summary": response.response, "closed": True},
+    )

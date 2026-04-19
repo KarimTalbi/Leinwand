@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import NodeCreate, Node, NodeUpdate, Canvas
@@ -62,6 +62,22 @@ async def update_node(
     return db_node
 
 
+async def update_node_data(
+    session: AsyncSession, node_id: UUID, user_id: UUID, node_data: dict
+) -> Node:
+    result = await session.execute(
+        update(Node)
+        .where(
+            Node.id == node_id, Node.canvas_id == Canvas.id, Canvas.user_id == user_id
+        )
+        .values(data=Node.data.op("||")(node_data))
+        .returning(Node)
+    )
+
+    await session.flush()
+    return result.scalar_one_or_none()
+
+
 async def delete_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> UUID:
     db_node = await get_node(session, node_id, user_id)
 
@@ -82,43 +98,3 @@ async def get_ancestors(session: AsyncSession, node_id: UUID, user_id: UUID):
         node.update(node.pop("data"))
 
     return nodes
-
-
-# from typing import Any
-
-# from service import NodeService
-
-
-# def global_summary(ancestry: tuple[list[dict[str, Any]], ...]) -> list[dict[str, Any]]:
-
-#    summary = [
-#        {
-#            "type": "global_summary",
-#            "total_streams": len(ancestry),
-#            "total_nodes": sum(len(a) for a in ancestry),
-#        }
-#    ]
-
-#    for i, a in enumerate(ancestry):
-#        summary.append(
-#            {
-#                "type": "stream_summary",
-#                "stream_id": str(i + 1),
-#                "total_nodes": len(a),
-#            }
-#        )
-#        summary.extend(a)
-
-#    return summary
-
-
-# async def build_context(
-#    service: NodeService, node_id: str, targets: int = 1
-# ) -> list[dict[str, Any]]:
-
-
-#    results = []
-#    for i in range(targets):
-#        results.append(await service.get_ancestors(node_id, f"target-{i + 1}"))
-
-#    return global_summary(tuple(results))

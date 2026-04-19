@@ -4,7 +4,7 @@ from .queries.load_query import get_ancestors_recursive
 from .schemas import CanvasUpdate, CanvasCreate, CanvasRead
 from .schemas import ChatRequest, ChatResponse
 from .schemas import EdgeCreate, EdgeRead
-from .schemas import MergeRequest, MergeResponse
+from .schemas import MergeResponse
 from .schemas import NodeCreate, NodeUpdate, NodeRead
 from .schemas import SummaryRequest, SummaryResponse
 from .schemas import Token, TokenData

@@ -103,28 +103,3 @@ class UserRead(UserBase):
 class UserCreate(UserBase):
     username: str
     password: str
-
-
-class ChatResponse(BaseModel):
-    response: str
-
-
-class ChatRequest(BaseModel):
-    prompt: str
-    target_id: str | None = None
-
-
-class SummaryResponse(BaseModel):
-    response: str
-
-
-class SummaryRequest(BaseModel):
-    target_id: str
-
-
-class MergeResponse(BaseModel):
-    response: list[dict[str, Any]]
-
-
-class MergeRequest(BaseModel):
-    target_id: str
