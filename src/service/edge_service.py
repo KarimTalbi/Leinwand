@@ -2,6 +2,7 @@ from sqlalchemy import UUID, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import EdgeCreate, Edge, Canvas
+from exceptions import CanvasNotFoundException, EdgeNotFoundException
 
 
 async def create_edge(
@@ -10,8 +11,8 @@ async def create_edge(
 
     canvas = await session.get(Canvas, canvas_id)
 
-    if not canvas or canvas.user_id != user_id:  # TODO: better exception
-        raise ValueError("Canvas not found or not owned by the user")
+    if not canvas or canvas.user_id != user_id:
+        raise CanvasNotFoundException
 
     edge = Edge(**edge_create.model_dump(), canvas_id=canvas_id)
     session.add(edge)
@@ -33,11 +34,16 @@ async def list_edges(
     return list(result.scalars().all())
 
 
-async def get_edge(session: AsyncSession, edge_id: UUID, user_id: UUID) -> Edge | None:
+async def get_edge(session: AsyncSession, edge_id: UUID, user_id: UUID) -> Edge:
     result = await session.execute(
         select(Edge).join(Canvas).where(Edge.id == edge_id, Canvas.user_id == user_id)
     )
-    return result.scalar_one_or_none()
+    edge = result.scalar_one_or_none()
+
+    if not edge:
+        raise EdgeNotFoundException
+
+    return edge
 
 
 async def delete_edge(session: AsyncSession, edge_id: UUID, user_id: UUID) -> UUID:

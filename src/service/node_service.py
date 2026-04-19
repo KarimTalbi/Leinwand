@@ -4,15 +4,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import NodeCreate, Node, NodeUpdate, Canvas
-
+from exceptions import NodeNotFoundException, CanvasNotFoundException
 
 async def create_node(
     session: AsyncSession, node: NodeCreate, canvas_id: UUID, user_id: UUID
 ) -> Node:
     canvas = await session.get(Canvas, canvas_id)
 
-    if not canvas or canvas.user_id != user_id:  # TODO: better exception
-        raise ValueError("Canvas not found or not owned by the user")
+    if not canvas or canvas.user_id != user_id:
+        raise CanvasNotFoundException
 
     new_node = Node(**node.model_dump(), canvas_id=canvas_id)
     session.add(new_node)
@@ -31,16 +31,19 @@ async def list_nodes(
         .join(Canvas)
         .where(Canvas.user_id == user_id, Node.canvas_id == canvas_id)
     )
-    res = list(result.scalars().all())
-    print(res)
-    return res
+    return list(result.scalars().all())
 
 
-async def get_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> Node | None:
+async def get_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> Node:
     result = await session.execute(
         select(Node).join(Canvas).where(Node.id == node_id, Canvas.user_id == user_id)
     )
-    return result.scalar_one_or_none()
+    node = result.scalar_one_or_none()
+
+    if not node:
+        raise NodeNotFoundException
+
+    return node
 
 
 async def update_node(

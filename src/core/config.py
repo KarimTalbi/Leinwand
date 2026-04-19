@@ -29,6 +29,7 @@ class AuthSettings(BaseModel):
     secret_key: SecretStr
     algorithm: str
     access_token_expire_minutes: int
+    dummy_hash: str
 
 
 class DBSettings(BaseModel):

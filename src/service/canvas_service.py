@@ -1,12 +1,11 @@
-from typing import Sequence
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
 
 from data import CanvasCreate, CanvasUpdate
+from exceptions import CanvasNotFoundException
 from src.data.db_models import Canvas
-from utils.exceptions import CanvasNotFoundException
 
 
 async def get_canvas(session: AsyncSession, canvas_id: UUID, user_id: UUID) -> Canvas:
@@ -33,9 +32,9 @@ async def create_canvas(
     return new_canvas
 
 
-async def list_canvases(session: AsyncSession, user_id: UUID) -> Sequence[Canvas]:
+async def list_canvases(session: AsyncSession, user_id: UUID) -> list[Canvas]:
     result = await session.execute(select(Canvas).where(Canvas.user_id == user_id))
-    return result.scalars().all()
+    return list(result.scalars().all())
 
 
 async def update_canvas(

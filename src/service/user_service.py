@@ -1,8 +1,6 @@
-import os
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
 
-import dotenv
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -11,23 +9,22 @@ from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core import settings
 from data import User, UserCreate, TokenData, get_async_session, Token
-from utils.exceptions import (
+from exceptions import (
     CredentialsException,
     InactiveUserException,
-    UserAlreadyExists,
-    InvalidUserOrPassword,
+    UserAlreadyExistsException,
+    InvalidUserOrPasswordException,
 )
-
-dotenv.load_dotenv()
 
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
-DUMMY_HASH: str = "dummypassword"
-SECRET_KEY: str = os.getenv("SECRET_KEY")
-ALGORITHM: str = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+DUMMY_HASH: str = settings.auth.dummy_hash
+SECRET_KEY: str = settings.auth.secret_key.get_secret_value()
+ALGORITHM: str = settings.auth.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES: int = settings.auth.access_token_expire_minutes
 
 
 def get_password_hash(password: str) -> str:
@@ -62,7 +59,7 @@ async def create_user(session: AsyncSession, user: UserCreate) -> User:
     is_user_taken = await get_user(session, user.username)
 
     if is_user_taken:
-        raise UserAlreadyExists
+        raise UserAlreadyExistsException
 
     hashed_password = get_password_hash(user.password)
     new_user = User(username=user.username, hashed_password=hashed_password)
@@ -94,7 +91,7 @@ async def get_access_token(session: AsyncSession, username: str, password: str) 
     user = await authenticate_user(session, username, password)
 
     if not user:
-        raise InvalidUserOrPassword
+        raise InvalidUserOrPasswordException
 
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
 
