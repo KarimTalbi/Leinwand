@@ -51,6 +51,9 @@ class AiModelBase:
         return model.with_structured_output(self.response_model)
 
     async def generate_with_context(self, context: Any, prompt: str) -> BaseModel:
+
+        logger.info("invoking model with context")
+
         result = await self.model.ainvoke(
             [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
             config={"callbacks": [langfuse_handler]},
@@ -59,6 +62,9 @@ class AiModelBase:
         return result
 
     async def generate(self, prompt: str) -> BaseModel:
+
+        logger.info("invoking model without context")
+
         result = await self.model.ainvoke(
             [HumanMessage(prompt)],
             config={"callbacks": [langfuse_handler]},

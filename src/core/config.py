@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
@@ -5,6 +6,11 @@ from typing import Any, Annotated
 
 from pydantic import BaseModel, computed_field, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+logger.info("Loading Config...")
 
 _DIR = Path(__file__).parent.parent.parent
 _FILE = _DIR / ".env"
@@ -142,3 +148,6 @@ class AiModel(Enum):
         model="claude-haiku-4-5",
         model_provider="anthropic",
     )
+
+
+logger.info("Config Loaded!")

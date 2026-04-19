@@ -13,3 +13,4 @@ class SystemPrompts(Enum):
     CHAT_SYSTEM = _load("chat_system.txt")
     SUMMARY_SYSTEM = _load("summary_system.txt")
     MERGE_SYSTEM = _load("merge_system.txt")
+    MERGE_RESOLVE_SYSTEM = _load("merge_resolve_system.txt")
