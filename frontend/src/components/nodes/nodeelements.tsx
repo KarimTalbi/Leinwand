@@ -73,14 +73,14 @@ const NodeHeaderButton = ({onClick, icon, disabled}: NodeHeaderButtonProps) => {
 
 const NodeTextarea = ({placeholder, value, handleTextChange}: NodeTextareaProps) => {
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div className="flex flex-col flex-1 min-h-0 w-full">
       <Textarea
         aria-label="Textarea"
         value={value}
         onChange={handleTextChange}
         placeholder={placeholder}
         className={cn(
-          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-base text-black',
+          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-lg! text-black',
           'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
         )}
       />

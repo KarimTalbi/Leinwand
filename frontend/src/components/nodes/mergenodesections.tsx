@@ -1,66 +1,55 @@
-interface MergeNodeSummaryProps {
-  totalStreams: number;
-  totalNodes: number;
-}
-
-interface MergeNodeStreamProps {
-  streamId: string;
-  totalNodes: number;
-}
-
 interface PromptNodeProps {
+  stream_id: number;
   depth: number;
   prompt: string;
   response: string;
 }
 
 interface TextNodeProps {
+  stream_id: number;
   depth: number;
   text: string;
 }
 
 interface MergeNodeProps {
+  stream_id: number;
   depth: number;
 }
 
-const MergeContent = ({sections}: {sections: string[]}) => {
+interface ProblemProps {
+  ai: string;
+  user: string;
+  solution: string;
+}
+
+const MergeContent = ({sections}: { sections: string[] }) => {
   if (!sections || sections.length === 0) return null;
 
-  const summarySection = ({totalStreams, totalNodes}: MergeNodeSummaryProps) => (
-    <div className="bg-white px-2 my-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-lg">Total Streams:</div>
-        <div className="text-lg font-bold">{totalStreams}</div>
-      </div>
-
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-lg">Total Nodes:</div>
-        <div className="text-lg font-bold">{totalNodes}</div>
-      </div>
-    </div>
-  );
-
-  const streamSection = ({streamId, totalNodes}: MergeNodeStreamProps) => {
+  const problemSection = ({ai, user, solution}: ProblemProps) => {
     return (
-      <div className="bg-white pt-4 px-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center justify-between gap-1">
-
-            <div className="text-base">Stream:</div>
-            <div className="text-base font-bold">{streamId}</div>
+      <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-base">PROBLEM</div>
           </div>
-
-          <div className="flex items-center justify-between gap-1">
-            <div className="text-base">Nodes:</div>
-            <div className="text-base font-bold">{totalNodes}</div>
-          </div>
-
+          <div className="text-xs mb-2">PROBLEM RESOLUTION</div>
         </div>
-      </div>
-    );
-  };
+        <div className="my-4 h-px mx-2 bg-black/10"/>
+        <div className="text-base font-bold">AI</div>
+        <div className="text-base">{ai}</div>
 
-  const promptSection = ({depth, prompt, response}: PromptNodeProps) => {
+        <div className="my-4 h-px mx-2 bg-black/10"/>
+        <div className="text-base font-bold">User</div>
+        <div className="text-base">{user}</div>
+
+        <div className="my-4 h-px mx-2 bg-black/10"/>
+        <div className="text-base font-bold">Solution</div>
+        <div className="text-base">{solution}</div>
+      </div>
+    )
+  }
+
+  const promptSection = ({stream_id, depth, prompt, response}: PromptNodeProps) => {
     return (
       <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
 
@@ -68,9 +57,10 @@ const MergeContent = ({sections}: {sections: string[]}) => {
 
           <div className="flex items-center justify-between gap-3">
 
-            <div className="text-xs">DEPTH:</div>
-            <div className="text-xs font-bold">{depth}</div>
+            <div className="text-base">BRANCH / DEPTH:</div>
+            <div className="text-base font-bold">{stream_id} / {depth}</div>
           </div>
+
           <div className="text-xs mb-2">PROMPT NODE</div>
 
         </div>
@@ -78,19 +68,19 @@ const MergeContent = ({sections}: {sections: string[]}) => {
         <div className="my-4 h-px mx-2 bg-black/10"/>
 
         <div className="text-base font-bold">User</div>
-        <div className="text-xs">{prompt}</div>
+        <div className="text-base">{prompt}</div>
 
         <div className="my-4 h-px mx-2 bg-black/10"/>
 
         <div className="text-base font-bold">AI</div>
-        <div className="text-xs">{response}</div>
+        <div className="text-base">{response}</div>
 
       </div>
 
     );
   };
 
-  const textSection = ({depth, text}: TextNodeProps) => {
+  const textSection = ({stream_id, depth, text}: TextNodeProps) => {
     return (
       <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
 
@@ -98,8 +88,8 @@ const MergeContent = ({sections}: {sections: string[]}) => {
 
           <div className="flex items-center justify-between gap-3">
 
-            <div className="text-xs">BRANCH / DEPTH:</div>
-            <div className="text-xs font-bold">{depth}</div>
+            <div className="text-base">BRANCH / DEPTH:</div>
+            <div className="text-base font-bold">{stream_id} / {depth}</div>
           </div>
           <div className="text-xs">TEXT NODE</div>
 
@@ -107,14 +97,14 @@ const MergeContent = ({sections}: {sections: string[]}) => {
 
         <div className="my-4 h-px mx-2 bg-black/10"/>
 
-        <div className="text-xs">{text}</div>
+        <div className="text-base">{text}</div>
 
       </div>
 
     );
   };
 
-  const mergeSection = ({depth}: MergeNodeProps) => {
+  const mergeSection = ({stream_id, depth}: MergeNodeProps) => {
     return (
       <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
 
@@ -122,8 +112,8 @@ const MergeContent = ({sections}: {sections: string[]}) => {
 
           <div className="flex items-center justify-between gap-3">
 
-            <div className="text-xs">BRANCH / DEPTH:</div>
-            <div className="text-xs font-bold">{depth}</div>
+            <div className="text-base">BRANCH / DEPTH:</div>
+            <div className="text-base font-bold">{stream_id}{depth}</div>
           </div>
           <div className="text-xs">MERGE NODE</div>
 
@@ -136,20 +126,17 @@ const MergeContent = ({sections}: {sections: string[]}) => {
   const buildSectionByType = (section: any) => {
 
     switch (section.type) {
-      case 'global_summary':
-        return summarySection({totalStreams: section.total_streams, totalNodes: section.total_nodes});
-
-      case 'stream_summary':
-        return streamSection({streamId: section.stream_id, totalNodes: section.total_nodes});
-
       case 'promptNode':
-        return promptSection({depth: section.depth, prompt: section.prompt, response: section.response});
+        return promptSection({stream_id: section.stream_id, depth: section.depth, prompt: section.prompt, response: section.response});
 
       case 'textNode':
-        return textSection({depth: section.depth, text: section.text});
+        return textSection({stream_id: section.stream_id, depth: section.depth, text: section.text});
 
       case 'mergeNode':
-        return mergeSection({depth: section.depth});
+        return mergeSection({stream_id: section.stream_id, depth: section.depth});
+
+      case 'problemResolution':
+        return problemSection({ai: section.ai, user: section.user, solution: section.solution});
 
       default:
         console.error('Unknown section type:', section);

@@ -15,6 +15,7 @@ export interface TextNodeData extends Record<string, unknown> {
 export interface MergeNodeData extends Record<string, unknown> {
   context?: string[];
   problems?: string;
+  solution?: string;
   closed: boolean;
 }
 
@@ -75,6 +76,7 @@ export interface AppState {
   addNode: (type: NodeTypeNames, position?: XYPosition) => Promise<string | undefined>;
   promptNodeAction: (id: string) => Promise<void>;
   summaryNodeAction: (id: string) => Promise<void>;
+  mergeNodeAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => Promise<void>;
   deleteNode: (id: string) => Promise<void>;
   updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;

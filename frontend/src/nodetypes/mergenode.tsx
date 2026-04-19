@@ -3,24 +3,29 @@ import {useShallow} from "zustand/react/shallow";
 import {Play, RefreshCcw} from "lucide-react";
 
 import useStore from '../store.ts';
-import api from '../api.ts'
 import {AppState, MergeNodeType} from '../types.ts';
 
 import BaseNode from '@/components/nodes/basenode.tsx';
 import MergeContent from '@/components/nodes/mergenodesections.tsx';
-import {MergeHandles, NodeHeaderButton} from '@/components/nodes/nodeelements.tsx'
+import {MergeHandles, NodeDisplayText, NodeHeaderButton, NodeTextarea} from '@/components/nodes/nodeelements.tsx'
 import {NodeProps} from "@xyflow/react";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
+  mergeNodeAction: state.mergeNodeAction,
 });
 
 const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<MergeNodeType>) => {
-  const {updateNodeData, deleteNode, setSyncing} = useStore(useShallow(selector));
+  const {updateNodeData, deleteNode, mergeNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
+  const hasProblem = data.problems;
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateNodeData(id, {solution: e.target.value});
+  };
 
   const playIcon = () => {
     return data.context
@@ -29,6 +34,15 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   }
 
   const content = () => {
+    if (hasProblem) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full w-full">
+          <NodeDisplayText children={data.problems}/>
+          <NodeTextarea value={data.solution} handleTextChange={handleTextChange} placeholder='Enter your answer...'/>
+        </div>
+      )
+    }
+
     return isClosed && data.context
       ? <MergeContent sections={data.context}/>
       : <div className="flex justify-center items-center h-full">
@@ -38,29 +52,11 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       </div>
   }
 
-  const handleGet = async () => {
-    setSyncing(true);
+  const handleClick = () => {
     setLoading(true);
-
-    try {
-      const res = await api.post('/context/merge', {
-        target_id: id,
-      });
-
-      console.log(res.data)
-
-      updateNodeData(id, {context: res.data.data, closed: true});
-
-    } catch (err) {
-      console.error('Error getting context:', err);
-
-    } finally {
-      setSyncing(false);
-      setLoading(false);
-    }
-  };
-
-
+        void mergeNodeAction(id)
+    setLoading(false);
+  }
 
   return (
     <BaseNode
@@ -70,12 +66,13 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
-        <NodeHeaderButton onClick={handleGet} icon={playIcon} disabled={loading}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
       }
     >
       {content()}
 
-      <MergeHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY} style={{'--node-color': '#f5c45e'} as React.CSSProperties}/>
+      <MergeHandles sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}
+                    style={{'--node-color': '#f5c45e'} as React.CSSProperties}/>
     </BaseNode>
   );
 };
