@@ -25,10 +25,6 @@ class NodeRead(NodeBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class NodeReadList(BaseModel):
-    nodes: list[NodeRead]
-
-
 class EdgeBase(BaseModel):
     source: uuid.UUID
     target: uuid.UUID
@@ -53,10 +49,6 @@ class EdgeRead(BaseModel):
         alias_generator=to_camel,
         extra="ignore",
     )
-
-
-class EdgeReadList(BaseModel):
-    edges: list[EdgeRead]
 
 
 class CanvasBase(BaseModel):
