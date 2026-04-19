@@ -8,7 +8,7 @@ import {AppState, NodeTypeNames, CanvasRead} from './types';
 const nodeInitData = {
     promptNode: {prompt: '', response: '', closed: false},
     textNode: {text: '', closed: false},
-    mergeNode: {context: '', closed: false},
+    mergeNode: {context: '', closed: false, problems: ''},
     summaryNode: {summary: '', closed: false},
 };
 
@@ -173,8 +173,10 @@ const useStore = create<AppState>((set, get) => ({
                     {id: String(node.id), type: node.type, position: node.position, data: node.data},
                 ], syncing: false
             });
+            return String(node.id);
         } catch (err) {
             console.error('Error creating node:', err);
+            return undefined;
         }
     },
 
@@ -183,7 +185,6 @@ const useStore = create<AppState>((set, get) => ({
 
         try {
             const res = await api.get(`/node/${nodeId}/chat/`);
-            console.log(res.data)
             set({
                 nodes: get().nodes.map((n) =>
                 n.id === nodeId
@@ -193,6 +194,26 @@ const useStore = create<AppState>((set, get) => ({
             });
         } catch (err) {
             console.error('Error prompting Node', err);
+        } finally {
+            set({syncing: false});
+        }
+    },
+
+    summaryNodeAction: async (nodeId) => {
+        set({syncing: true})
+
+        try {
+            const res = await api.get(`/node/${nodeId}/summary/`);
+            console.log(res.data)
+            set({
+                nodes: get().nodes.map((n) =>
+                  n.id === nodeId
+                    ? { ...n, data: { ...n, summary: res.data.data.summary, closed: true}}
+                    : n
+                ),
+            });
+        } catch (err) {
+            console.error('Error summarizing', err);
         } finally {
             set({syncing: false});
         }

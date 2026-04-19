@@ -13,10 +13,11 @@ const ConnectionHandle = ({sourceId, posX, posY, style}: {
 }) => {
   const {addNode, addEdge} = useStore();
 
-  const onCreateNode = (type: NodeTypeNames) => {
+  const onCreateNode = async (type: NodeTypeNames) => {
     const newPosition = {x: posX + 800, y: posY};
-    const newNodeId = addNode(type, newPosition);
-    addEdge(sourceId, newNodeId)
+    const newNodeId = await addNode(type, newPosition);
+    if (!newNodeId) return;
+    await addEdge(sourceId, newNodeId)
   }
 
   const addItem = [

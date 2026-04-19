@@ -3,7 +3,6 @@ import {useShallow} from "zustand/react/shallow";
 
 import {AppState, SummaryNodeType} from "@/types.ts";
 import useStore from "@/store.ts";
-import api from "@/api.ts";
 import BaseNode from "@/components/nodes/basenode.tsx";
 import {NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {Play, RefreshCcw} from "lucide-react";
@@ -15,12 +14,13 @@ const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
   setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
+  summaryNodeAction: state.summaryNodeAction
 });
 
 
 const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<SummaryNodeType>) => {
   if (!data) return null;
-  const {updateNodeData, deleteNode, setSyncing, updateNodeClosed} = useStore(useShallow(selector));
+  const {deleteNode, updateNodeClosed, summaryNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
 
@@ -41,30 +41,12 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
   }
 
   const handleClick = () => {
+    setLoading(true);
     isClosed
       ? updateNodeClosed(id, false)
-      : void handleSummarize();
+      : void summaryNodeAction(id);
+    setLoading(false);
   }
-
-  const handleSummarize = async () => {
-    setSyncing(true);
-    setLoading(true);
-
-    try {
-      const res = await api.post('/llm/summarize', {
-        target_id: id,
-      })
-
-      updateNodeData(id, {summary: res.data.response, closed: true});
-
-    } catch (err) {
-      console.error('Error summarizing:', err);
-
-    } finally {
-      setSyncing(false);
-      setLoading(false);
-    }
-  };
 
 
   return (
