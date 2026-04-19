@@ -1,29 +1,25 @@
 WITH RECURSIVE ancestors AS (
-
-    -- Basisfall: direkte Source-Nodes der Ziel-Node
-    SELECT n.id,
-           n.type,
-           n.position,
-           n.data,
-           1 AS depth
-    FROM nodes n
-             INNER JOIN edges e ON n.id = e.source
+    -- base case: assign stream_id to each direct parent
+    SELECT e.source                          AS node_id,
+           ROW_NUMBER() OVER (ORDER BY e.id) AS stream_id,
+           1                                 AS depth
+    FROM edges e
     WHERE e.target = :node_id
-      AND (:target_handle IS NULL OR e.target_handle = :target_handle)
 
     UNION ALL
 
-    -- Rekursiver Fall: stoppt wenn aktuelle Node eine Merge Node ist
-    SELECT n.id,
-           n.type,
-           n.position,
-           n.data,
+    -- recursive: inherit stream_id from child
+    SELECT e.source,
+           a.stream_id,
            a.depth + 1
-    FROM nodes n
-             INNER JOIN edges e ON n.id = e.source
-             INNER JOIN ancestors a ON e.target = a.id
-    WHERE a.type != 'mergeNode')
-SELECT id, type, position, data, MIN(depth) AS depth
-FROM ancestors
-GROUP BY id, type, position, data
-ORDER BY depth DESC;
+    FROM edges e
+             INNER JOIN ancestors a ON e.target = a.node_id
+             INNER JOIN nodes n ON n.id = a.node_id
+    WHERE n.type != 'mergeNode')
+SELECT a.depth,
+       a.stream_id,
+       n.type,
+       n.data
+FROM nodes n
+         INNER JOIN ancestors a ON n.id = a.node_id
+ORDER BY a.stream_id, a.depth Desc

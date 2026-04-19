@@ -13,10 +13,8 @@ def get_text_clause(name: str, params: dict[str, Any] | None = None) -> TextClau
     return text(query).bindparams(**params) if params else text(query)
 
 
-def get_ancestors_recursive(
-    node_id: str, target_handle: str | None = None
-) -> TextClause:
+def get_ancestors_recursive(node_id: str) -> TextClause:
     return get_text_clause(
         "get_ancestors",
-        {"node_id": node_id, "target_handle": target_handle},
+        {"node_id": node_id},
     )

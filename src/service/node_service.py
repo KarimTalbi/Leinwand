@@ -4,7 +4,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import NodeCreate, Node, NodeUpdate, Canvas
+from data.queries import get_ancestors_recursive
 from exceptions import NodeNotFoundException, CanvasNotFoundException
+
 
 async def create_node(
     session: AsyncSession, node: NodeCreate, canvas_id: UUID, user_id: UUID
@@ -67,6 +69,19 @@ async def delete_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> UU
     await session.flush()
 
     return node_id
+
+
+async def get_ancestors(session: AsyncSession, node_id: UUID, user_id: UUID):
+    db_node = await get_node(session, node_id, user_id)
+
+    result = await session.execute(get_ancestors_recursive(db_node.id))
+    nodes = [dict(row) for row in result.mappings().all()]
+
+    for node in nodes:
+        node["data"].pop("closed", None)
+        node.update(node.pop("data"))
+
+    return nodes
 
 
 # from typing import Any

@@ -13,6 +13,7 @@ from data import (
     NodeRead,
     NodeCreate,
     NodeUpdate,
+    MergeResponse,
 )
 
 
@@ -61,3 +62,13 @@ async def update_node(
     session: AsyncSession = Depends(get_async_session),
 ) -> NodeRead:
     return await ns.update_node(session, node_id, node_update, current_user.id)
+
+
+@node_router.get("/{node_id}/ancestors/")
+async def get_ancestors(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> MergeResponse:
+    result = await ns.get_ancestors(session, UUID(node_id), current_user.id)
+    return MergeResponse(response=result)
