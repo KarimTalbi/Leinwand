@@ -29,6 +29,7 @@ class AiModelBase:
         self.system_prompt = system_prompt
 
         self.model = self.__build_model()
+        self.model_structured = self.model.with_structured_output(self.response_model)
 
     @staticmethod
     def __get_api_key(provider: str) -> str:
@@ -49,13 +50,13 @@ class AiModelBase:
             **self.config.model_dump(exclude_unset=True, exclude_none=True),
             api_key=self.__get_api_key(self.config.model_provider),
         )
-        return model.with_structured_output(self.response_model)
+        return model
 
     async def generate_with_context(self, context: Any, prompt: str) -> BaseModel:
 
         logger.info("invoking model with context")
 
-        result = await self.model.ainvoke(
+        result = await self.model_structured.ainvoke(
             [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
             config={"callbacks": [langfuse_handler]},
         )
@@ -66,12 +67,28 @@ class AiModelBase:
 
         logger.info("invoking model without context")
 
-        result = await self.model.ainvoke(
+        result = await self.model_structured.ainvoke(
             [HumanMessage(prompt)],
             config={"callbacks": [langfuse_handler]},
         )
 
         return result
+
+    async def stream_with_context(self, context: Any, prompt: str):
+         async for chunk in self.model.astream(
+             [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
+             config={"callbacks": [langfuse_handler]},
+         ):
+             if chunk.content:
+                 yield chunk.content
+
+    async def stream(self, prompt: str):
+        async for chunk in self.model.astream(
+            [HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
+        ):
+            if chunk.content:
+                yield chunk.content
 
 
 @lru_cache

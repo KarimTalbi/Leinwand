@@ -17,12 +17,4 @@ Guidelines:
 before it has already been resolved and summarized into that node.
 - If no context is provided, treat this as the start of a fresh, standalone conversation.
 
-You must respond with a JSON object in the following format:
-
-{{
-    "response": "Your full response here."
-}}
-
-Do not include anything outside the JSON object.
-
 Context: 

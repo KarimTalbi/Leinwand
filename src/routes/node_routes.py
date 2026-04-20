@@ -2,6 +2,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from llm import (
@@ -146,6 +147,33 @@ async def get_chat_response(
         current_user.id,
         {"response": response.response, "closed": True},
     )
+
+
+@node_router.get("/{node_id}/streaming_chat/")
+async def get_streaming_chat_response(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> NodeRead:
+    node = await ns.get_node(session, UUID(node_id), current_user.id)
+    model = build_chat_model()
+
+    ancestors = await ns.get_ancestors(session, node.id, current_user.id)
+
+    async def token_generator():
+        accumulated = ""
+        async for token in model.stream_with_context(
+            ancestors, node.data.get("prompt")
+        ):
+            accumulated += token
+            yield f"data: {token.replace(chr(10), '\\n')}\n\n"
+
+        await ns.update_node_data(
+            session, node.id, current_user.id, {"response": accumulated, "closed": True}
+        )
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(token_generator(), media_type="text/event-stream")
 
 
 @node_router.get("/{node_id}/summary")
