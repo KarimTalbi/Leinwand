@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} from "@xyflow/react";
 
-import api from './api';
+import api, {BASE_URL} from './api';
 import {AppState, NodeTypeNames, CanvasRead} from './types';
 
 
@@ -195,14 +195,67 @@ const useStore = create<AppState>((set, get) => ({
     set({syncing: true})
 
     try {
-      const res = await api.get(`/node/${nodeId}/chat/`);
+      const res = await fetch(`${BASE_URL}/node/${nodeId}/streaming_chat/`, {
+        headers: {
+          'Accept': 'text/event-stream',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.body) throw new Error('No response body');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = '';
+      let buffer = '';
+
       set({
         nodes: get().nodes.map((n) =>
           n.id === nodeId
-            ? {...n, data: {...n, response: res.data.data.response, prompt: res.data.data.prompt, closed: true}}
+            ? {...n, data: {...n.data, response: '', closed: true}}
             : n
         ),
       });
+
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, {stream: true});
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const token = line.slice(6).replaceAll('\\n', '\n');
+          if (token === '[DONE]') break;
+          accumulated += token;
+        }
+
+        set({
+          nodes: get().nodes.map((n) =>
+            n.id === nodeId
+              ? {...n, data: {...n.data, response: accumulated}}
+              : n
+          ),
+        });
+      }
+
+      if (buffer.startsWith('data: ')) {
+        const token = buffer.slice(6).replaceAll('\\n', '\n');
+        if (token === '[DONE]') accumulated += token;
+      }
+
+      set({
+        nodes: get().nodes.map((n) =>
+          n.id === nodeId
+            ? {...n, data: {...n.data, response: accumulated}}
+            : n
+        ),
+      });
+
     } catch (err) {
       console.error('Error prompting Node', err);
     } finally {

@@ -28,9 +28,13 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
   };
 
   const content = () => {
-    return isClosed
-      ? <NodeDisplayText children={data.response}/>
-      : <NodeTextarea value={data.prompt} handleTextChange={handleTextChange} placeholder='Enter your prompt...'/>
+    if (isClosed && data.response) {
+      return <NodeDisplayText children={data.response}/>;
+    }
+    else if (isClosed && !data.response) {
+      return <NodeDisplayText></NodeDisplayText>
+    }
+    return <NodeTextarea value={data.prompt} handleTextChange={handleTextChange} placeholder='Enter your prompt...'/>
   }
 
   const playIcon = () => {

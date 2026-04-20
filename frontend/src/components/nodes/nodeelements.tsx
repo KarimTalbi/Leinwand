@@ -3,8 +3,6 @@ import React, {JSX} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
 import {cn} from "@/lib/utils.ts";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import ConnectionHandle from "@/components/nodes/createconnected.tsx";
 
 
@@ -88,23 +86,23 @@ const NodeTextarea = ({placeholder, value, handleTextChange}: NodeTextareaProps)
   )
 };
 
-const NodeDisplayText = ({children}: { children?: string }) => (
-  <div className="flex-1 text-xl p-5 min-h-0 overflow-y-auto nowheel whitespace-pre-wrap">{children}</div>
-)
+const NodeDisplayText = ({children}: { children?: string }) => {
+  if (!children || children === 'thinking...') {
+    return (
+      <div className="flex-1 p-5 flex items-center justify-center">
+        <span className="text-xl text-muted-foreground animate-pulse">thinking...</span>
+      </div>
+    )
+  }
 
-
-const NodeMarkdown = ({children}: { children?: string }) => {
   return (
-    <div
-      className="flex-1 p-3 rounded-xl min-h-0 overflow-y-auto nowheel whitespace-pre-wrap">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-      >
-        {children}
-      </ReactMarkdown>
+    <div className="flex-1 text-xl p-5 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
+      {children?.split('\n').map((line, i) => (
+        <span key={i} className="block mb-3">{line || '\u00A0'}</span>
+      ))}
     </div>
   )
 }
 
 
-export {DefaultHandles, MergeHandles, NodeHeaderButton, NodeTextarea, NodeMarkdown, NodeDisplayText}
+export {DefaultHandles, MergeHandles, NodeHeaderButton, NodeTextarea, NodeDisplayText}

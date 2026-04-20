@@ -34,7 +34,6 @@ const BaseNode = ({title, loading, onDelete, headerActions, children, style}: Ba
 
 
         </div>
-
       </div>
 
       {/* Content */}
