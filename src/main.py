@@ -24,7 +24,7 @@ app: FastAPI = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=['http://localhost:5173', 'http://192.168.0.207:5173'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,6 +40,7 @@ app.include_router(edge_router)
 
 
 # PYTHONPATH=src fastapi dev src/main.py
+# PYTHONPATH=src uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 # docker compose up -d
 # .venv/bin/alembic revision --autogenerate -m "initial schema"
 # .venv/bin/alembic upgrade head

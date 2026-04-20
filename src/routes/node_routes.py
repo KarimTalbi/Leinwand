@@ -101,7 +101,7 @@ async def get_context(
             session,
             node_id,
             current_user.id,
-            {"context": context, "problems": "", "solution": ""},
+            {"context": context, "problems": "", "solution": "", "closed": True},
         )
 
     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
@@ -117,7 +117,7 @@ async def get_context(
         )
 
     return await ns.update_node_data(
-        session, node_id, current_user.id, {"context": ancestors}
+        session, node_id, current_user.id, {"context": ancestors, "closed": True}
     )
 
 

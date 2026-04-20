@@ -2,6 +2,7 @@ import logging
 from functools import lru_cache
 from typing import Any
 
+import dotenv
 from langchain.chat_models import init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
@@ -11,11 +12,11 @@ from core import LLMModelConfig, AiModel, settings
 from data import ChatResponse, SummaryResponse, MergeResponse, MergeResolveResponse
 from data.prompts import SystemPrompts
 
+dotenv.load_dotenv()
+
 logger = logging.getLogger(__name__)
 
-langfuse_handler = CallbackHandler(
-    public_key=settings.fuse.public_key.get_secret_value(),
-)
+langfuse_handler = CallbackHandler()
 
 
 class AiModelBase:
@@ -75,7 +76,7 @@ class AiModelBase:
 
 @lru_cache
 def build_chat_model():
-    config = AiModel.GEMINI_2_5_FLASH.value
+    config = AiModel.OPENAI_GPT5_MINI.value
     response = ChatResponse
     system_prompt = SystemPrompts.CHAT_SYSTEM.value
     return AiModelBase(config, response, system_prompt)
@@ -83,7 +84,7 @@ def build_chat_model():
 
 @lru_cache
 def build_summary_model():
-    config = AiModel.GEMINI_2_5_FLASH.value
+    config = AiModel.OPENAI_GPT5_MINI.value
     response = SummaryResponse
     system_prompt = SystemPrompts.SUMMARY_SYSTEM.value
     return AiModelBase(config, response, system_prompt)
@@ -91,7 +92,7 @@ def build_summary_model():
 
 @lru_cache
 def build_merge_validation_model():
-    config = AiModel.GEMINI_2_5_FLASH.value
+    config = AiModel.OPENAI_GPT5_MINI.value
     response = MergeResponse
     system_prompt = SystemPrompts.MERGE_SYSTEM.value
     return AiModelBase(config, response, system_prompt)
@@ -99,7 +100,7 @@ def build_merge_validation_model():
 
 @lru_cache
 def build_merge_resolution_model():
-    config = AiModel.GEMINI_2_5_FLASH.value
+    config = AiModel.OPENAI_GPT5_MINI.value
     response = MergeResolveResponse
     system_prompt = SystemPrompts.MERGE_RESOLVE_SYSTEM.value
     return AiModelBase(config, response, system_prompt)

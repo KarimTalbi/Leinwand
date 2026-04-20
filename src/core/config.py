@@ -25,12 +25,6 @@ class LLMSettings(BaseModel):
     anthropic_api_key: SecretStr
 
 
-class LangFuseSettings(BaseModel):
-    secret_key: SecretStr
-    public_key: SecretStr
-    base_url: str
-
-
 class AuthSettings(BaseModel):
     secret_key: SecretStr
     algorithm: str
@@ -60,7 +54,6 @@ class FastAPISettings(BaseModel):
 
 class Settings(BaseSettings):
     llm: LLMSettings
-    fuse: LangFuseSettings
     auth: AuthSettings
     db: DBSettings
     fast: FastAPISettings
@@ -69,6 +62,7 @@ class Settings(BaseSettings):
         env_file=_FILE,
         env_nested_delimiter="__",
         env_file_encoding="utf-8",
+        extra="ignore",
     )
 
 
