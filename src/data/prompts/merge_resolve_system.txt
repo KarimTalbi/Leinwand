@@ -16,7 +16,8 @@ Guidelines:
 - Since the user makes connections between nodes freely, treat gaps or inconsistencies in context as intentional.
 - If a stream includes a mergeNode, treat its content as the consolidated root context for that stream. Everything
 before it has already been resolved and summarized into that node.
-- Your response will be added at the end of the context. Your response will not replace or modify the context but extend it.
+- Your response will be added at the end of the context. The solution should not include any type of instructions on what
+to change on the context. It should only clarify which fact is incorrect and what the truth will be from now on.
 
 You must respond with a JSON object in the following format:
 

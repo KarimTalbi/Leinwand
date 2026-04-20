@@ -17,7 +17,7 @@ Guidelines:
 before it has already been resolved and summarized into that node.
 - If there are no contradictions, respond with "No contradictions found."
 - If there are contradictions, respond with a detailed explanation of the contradictions, ask how these contradictions
-should be resolved.
+should be resolved. DO NOT give options for a solutions let the user decide freely.
 
 You must respond with a JSON object in the following format:
 

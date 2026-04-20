@@ -86,7 +86,12 @@ async def get_context(
         context.extend([])
 
         model = build_merge_resolution_model()
-        result = await model.generate_with_context(context, "write solution")
+        result = await model.generate_with_context(
+            context,
+            "write a solution that will be appended"
+            "at the end of the text so we know which"
+            "truth will be accepted from now on.",
+        )
 
         context.append(
             {
@@ -106,7 +111,9 @@ async def get_context(
 
     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
     model = build_merge_validation_model()
-    result = await model.generate_with_context(ancestors, "validate context")
+    result = await model.generate_with_context(
+        ancestors, "check the context for inconsistencies"
+    )
 
     if result.has_issues:
         return await ns.update_node_data(
@@ -150,7 +157,9 @@ async def get_summary(
     ancestors = await ns.get_ancestors(session, UUID(node_id), current_user.id)
     model = build_summary_model()
     response = await model.generate_with_context(
-        ancestors, "summarize content of context"
+        ancestors,
+        "summarize the topics in the context. Don't mention it being the context or being"
+        "a summary. Summarize as if i would tell you to summarize a topic.",
     )
 
     return await ns.update_node_data(
