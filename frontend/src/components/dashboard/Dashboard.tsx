@@ -1,4 +1,4 @@
-import {useEffect, useState, FormEvent} from 'react';
+import React, {useEffect, useState, FormEvent} from 'react';
 import {useShallow} from 'zustand/react/shallow';
 import {Plus, Trash2, LogOut, FolderOpen} from 'lucide-react';
 import useStore from '@/store';
@@ -71,7 +71,7 @@ export default function Dashboard() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New project name..."
-            className="flex-1 px-3 py-2 bg-black/1 border border-gray-300 rounded-full shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="flex-1 px-3 py-2  border border-gray-300 rounded-lg shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
           />
           <button
             type="submit"
@@ -95,7 +95,7 @@ export default function Dashboard() {
               <div
                 key={canvas.id}
                 onClick={() => void selectCanvas(canvas.id)}
-                className="bg-black/3 border border-gray-300 rounded-full px-5 py-3 flex items-center justify-between cursor-pointer hover:border-gray-400 hover:shadow-sm transition-all group"
+                className="border border-gray-300 rounded-xl px-5 py-3 flex items-center justify-between cursor-pointer hover:border-gray-400 hover:shadow-sm transition-all group"
               >
                 <div className="flex items-center gap-3">
                   <div className="size-2 rounded-full bg-gray-300 group-hover:bg-gray-500 transition-colors"/>

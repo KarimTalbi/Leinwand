@@ -43,6 +43,7 @@ const useStore = create<AppState>((set, get) => ({
   // Flow state
   nodes: [],
   edges: [],
+  selectedNodeId: null,
   syncing: false,
   locked: false,
 
@@ -106,6 +107,7 @@ const useStore = create<AppState>((set, get) => ({
         api.get(`/node/list/${canvasId}/`),
         api.get(`/edge/list/${canvasId}/`),
       ]);
+      console.log(nodesRes.data)
       set({
         nodes: (nodesRes.data ?? []).map((n: {
           id: string;
@@ -181,7 +183,12 @@ const useStore = create<AppState>((set, get) => ({
       set({
         nodes: [
           ...get().nodes,
-          {id: String(node.id), type: node.type, position: node.position, data: node.data},
+          {
+            id: String(node.id),
+            type: node.type,
+            position: node.position,
+            data: node.data
+          },
         ], syncing: false
       });
       return String(node.id);
@@ -444,6 +451,8 @@ const useStore = create<AppState>((set, get) => ({
       .catch(console.error);
     set({syncing: false})
   },
+
+  setSelectedNodeId: (id) => set({selectedNodeId: id}),
 
   setSyncing: (status) => set({syncing: status}),
   setLocked: (status) => set({locked: status}),

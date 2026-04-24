@@ -36,8 +36,15 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#ebebeb] flex items-center justify-center">
-            <div className="bg-white rounded-3xl shadow-lg w-full max-w-sm p-8">
+        <div
+          className="min-h-screen flex items-start justify-start"
+          style={{backgroundImage: "url('static/login.png')", backgroundSize: 'cover', backgroundPosition: 'left'}}
+        >
+
+            <div className="w-8/12 h-screen bg-white flex items-center shadow-2xl justify-center">
+
+            <div className="bg-white rounded-3xl w-full max-w-sm p-8">
+                <div className="flex items-center text-xl justify-center mb-10">{tab === "login" ? "Welcome back to Leinwand!" : "Welcome to Leinwand!"}</div>
 
                 {/* Tabs */}
                 <div className="flex rounded-full bg-gray-100 p-1 mb-6">
@@ -67,7 +74,7 @@ export default function LoginPage() {
                             onChange={(e) => setUsername(e.target.value)}
                             required
                             autoComplete="username"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
                     </div>
 
@@ -81,7 +88,7 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                             autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
                     </div>
 
@@ -97,6 +104,7 @@ export default function LoginPage() {
                         {loading ? '...' : tab === 'login' ? 'Log in' : 'Create account'}
                     </button>
                 </form>
+            </div>
             </div>
         </div>
     );

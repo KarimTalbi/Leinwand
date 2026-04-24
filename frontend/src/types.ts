@@ -24,10 +24,13 @@ export interface SummaryNodeData extends Record<string, unknown> {
   closed: boolean
 }
 
+export type PartialNodeData = Partial<PromptNodeData | TextNodeData | MergeNodeData | SummaryNodeData>;
+
 export type TextNodeType = Node<TextNodeData>;
 export type PromptNodeType = Node<PromptNodeData>;
 export type MergeNodeType = Node<MergeNodeData>;
 export type SummaryNodeType = Node<SummaryNodeData>;
+export type NodeTypes = TextNodeType | PromptNodeType | MergeNodeType | SummaryNodeType;
 export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
 
@@ -54,8 +57,9 @@ export interface AppState {
   currentCanvasId: string | null;
 
   // Flow state
-  nodes: (PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType)[];
+  nodes: (NodeTypes)[];
   edges: Edge[];
+  selectedNodeId: string | null;
   syncing: boolean;
   locked: boolean;
 
@@ -79,12 +83,14 @@ export interface AppState {
   mergeNodeAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => Promise<void>;
   deleteNode: (id: string) => Promise<void>;
-  updateNodeData: (id: string, data: Partial<PromptNodeData> | Partial<TextNodeData> | Partial<MergeNodeData> | Partial<SummaryNodeData>) => void;
+  updateNodeData: (id: string, data: PartialNodeData) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
-  onNodesChange: OnNodesChange<PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType>;
+  onNodesChange: OnNodesChange<NodeTypes>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
+
+  setSelectedNodeId: (id: string | null) => void;
   setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
 }

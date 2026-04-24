@@ -1,7 +1,7 @@
 import {Panel} from "@xyflow/react";
 import {NavbarButton, NavBarButtonGroup, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
 import {Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/react";
-import {Plus, ChevronLeft} from "lucide-react";
+import {Plus, ChevronLeft, Settings2} from "lucide-react";
 import {JSX} from "react";
 
 interface NavbarProps {
@@ -10,13 +10,14 @@ interface NavbarProps {
   addItem: { text: string, onClick: () => void }[];
   syncing: boolean;
   onExit: () => void;
+  onSettings: () => void;
 }
 
 
-const NavigationBar = ({controls, undoControls, addItem, syncing, onExit}: NavbarProps) => {
+const NavigationBar = ({controls, undoControls, addItem, syncing, onExit, onSettings}: NavbarProps) => {
   return (
     <div>
-      <Panel position="top-left" className="flex flex-row items-center justify-between gap-4">
+      <Panel position="top-center" className="flex flex-row items-center justify-between gap-4">
 
         <NavBarButtonGroup>
 
@@ -78,6 +79,10 @@ const NavigationBar = ({controls, undoControls, addItem, syncing, onExit}: Navba
 
           <NavbarButton onClick={onExit}>
             <ChevronLeft className="size-6 text-black"/>
+          </NavbarButton>
+
+          <NavbarButton onClick={onSettings}>
+            <Settings2 className="size-6 text-black"/>
           </NavbarButton>
 
         </NavBarButtonGroup>

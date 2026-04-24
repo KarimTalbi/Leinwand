@@ -37,7 +37,7 @@ const BaseNode = ({title, loading, onDelete, headerActions, children, style}: Ba
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 min-h-0 p-3 m-1 bg-white rounded-2xl">
+      <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
         {children}
       </div>
     </div>
