@@ -1,15 +1,6 @@
 import {Panel, useReactFlow} from "@xyflow/react";
 import {NavbarButton, NavBarButtonGroup, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
-import {
-  ChevronLeft,
-  Lock,
-  LockOpen,
-  LucideScan,
-  Redo2,
-  Undo2,
-  ZoomInIcon,
-  ZoomOutIcon
-} from "lucide-react";
+import {ChevronLeft, Lock, LockOpen, LucideScan, Redo2, Undo2, ZoomInIcon, ZoomOutIcon} from "lucide-react";
 import AddNodeMenu from '../nodes/addnode.tsx'
 
 import useStore from "@/store.ts";
@@ -55,7 +46,7 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <AddNodeMenu />
+          <AddNodeMenu/>
 
         </NavBarButtonGroup>
 
