@@ -3,7 +3,7 @@ import {Plus} from "lucide-react";
 
 type DropdownItem = { text: string; onClick: () => void };
 
-export const DropdownMenu = ({items}: { items: DropdownItem[] }) => {
+const DropdownMenu = ({items}: { items: DropdownItem[] }) => {
     return (
         <div>
           <Menu>
@@ -35,3 +35,5 @@ export const DropdownMenu = ({items}: { items: DropdownItem[] }) => {
         </div>
     )
 }
+
+export default DropdownMenu;

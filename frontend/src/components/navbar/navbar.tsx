@@ -10,38 +10,23 @@ import {
   ZoomInIcon,
   ZoomOutIcon
 } from "lucide-react";
-import {DropdownMenu} from "@/components/menus/dropdownmenu.tsx";
+import AddNodeMenu from '../nodes/addnode.tsx'
 
 import useStore from "@/store.ts";
-import {AppState, NodeTypeNames} from "@/types.ts";
+import {AppState} from "@/types.ts";
 import {useShallow} from "zustand/react/shallow";
 
 const selector = (state: AppState) => ({
   syncing: state.syncing,
   locked: state.locked,
-  addNode: state.addNode,
   setLocked: state.setLocked,
   exitCanvas: state.exitCanvas,
 });
 
 const NavigationBar = () => {
-  const {screenToFlowPosition, zoomIn, zoomOut, zoomTo} = useReactFlow()
+  const {zoomIn, zoomOut, zoomTo} = useReactFlow()
+  const {syncing, locked, setLocked, exitCanvas} = useStore(useShallow(selector));
 
-  const {syncing, locked, addNode, setLocked, exitCanvas} = useStore(useShallow(selector));
-
-  const addItem = [
-    {text: "Prompt Node", onClick: () => onCreateNode('promptNode')},
-    {text: "Text Node", onClick: () => onCreateNode('textNode')},
-    {text: "Merge Node", onClick: () => onCreateNode('mergeNode')},
-    {text: "Summary Node", onClick: () => onCreateNode('summaryNode')},
-  ]
-
-  const onCreateNode = (type: NodeTypeNames) => {
-    const position = screenToFlowPosition(
-      {x: window.innerWidth / 2, y: window.innerHeight / 2}
-    );
-    void addNode(type, position);
-  };
 
   return (
     <div>
@@ -70,7 +55,7 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <DropdownMenu items={addItem}/>
+          <AddNodeMenu />
 
         </NavBarButtonGroup>
 
