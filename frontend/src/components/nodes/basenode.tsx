@@ -1,18 +1,19 @@
 import React from 'react';
 import {Button} from "@/components/ui/button.tsx";
 import {X} from "lucide-react";
+import useStore from "@/store.ts";
 
 interface BaseNodeProps {
   id: string;
   title: string;
   loading?: boolean;
-  onDelete: () => void;
   style?: React.CSSProperties;
   headerActions?: React.ReactNode;
   children: React.ReactNode;
 }
 
-const BaseNode = ({title, loading, onDelete, headerActions, children, style}: BaseNodeProps) => {
+const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNodeProps) => {
+  const {deleteNode} = useStore();
   return (
     <div className={`w-180 h-150 flex flex-col rounded-3xl shadow-xl`}
     style={{...style, backgroundColor: `var(--node-color)`}}>
@@ -25,7 +26,7 @@ const BaseNode = ({title, loading, onDelete, headerActions, children, style}: Ba
           {headerActions}
 
           <Button
-            onClick={onDelete}
+            onClick={() => deleteNode(id)}
             disabled={loading}
             className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed"
           >

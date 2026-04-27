@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {memo, useState} from 'react';
 import {useShallow} from "zustand/react/shallow";
 import {Lock, LockOpen} from "lucide-react";
 
@@ -8,22 +8,27 @@ import {AppState, TextNodeType} from "@/types.ts";
 import BaseNode from "@/components/nodes/basenode.tsx"
 import {NodeHeaderButton, NodeTextarea, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {NodeProps} from "@xyflow/react";
+import {useDebouncedCallback} from "use-debounce";
 
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  deleteNode: state.deleteNode,
   updateNodeClosed: state.updateNodeClosed,
 });
 
 const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<TextNodeType>) => {
   const isClosed = data.closed;
-  const {updateNodeData, deleteNode, updateNodeClosed} = useStore(useShallow(selector));
+  const {updateNodeData, updateNodeClosed} = useStore(useShallow(selector));
+  const [localText, setLocalText] = useState(data.text);
+
+  const debouncedUpdate = useDebouncedCallback((value: string) => {
+    updateNodeData(id, { text: value });
+  }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    updateNodeData(id, {text: e.target.value});
+    setLocalText(e.target.value);
+    debouncedUpdate(e.target.value);
   };
-
   const lockIcon = () => {
     return isClosed
       ? <LockOpen className="size-5 text-white"/>
@@ -37,7 +42,7 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
   const content = () => {
     return isClosed
       ? <NodeDisplayText children={data.text}/>
-      : <NodeTextarea value={data.text} handleTextChange={handleTextChange} placeholder='Enter your text...'/>
+      : <NodeTextarea value={localText} handleTextChange={handleTextChange} placeholder='Enter your text...'/>
   }
 
   const handleSave = () => {
@@ -49,7 +54,6 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
     <BaseNode
       id={id}
       title="Text Node"
-      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#309898'} as React.CSSProperties}
       headerActions={
 

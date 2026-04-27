@@ -2,6 +2,8 @@ import React, {memo, useState} from 'react';
 import {NodeProps} from "@xyflow/react";
 import {Undo2, Play} from "lucide-react";
 import {useShallow} from "zustand/react/shallow";
+import { useDebouncedCallback } from 'use-debounce';
+
 
 import useStore from '../store.ts';
 import {AppState, PromptNodeType} from "../types.ts";
@@ -13,18 +15,23 @@ import BaseNode from "@/components/nodes/basenode.tsx";
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
   deleteNode: state.deleteNode,
-  setSyncing: state.setSyncing,
   updateNodeClosed: state.updateNodeClosed,
   promptNodeAction: state.promptNodeAction,
 });
 
 const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<PromptNodeType>) => {
-  const {updateNodeData, deleteNode, updateNodeClosed, promptNodeAction} = useStore(useShallow(selector));
+  const {updateNodeData, updateNodeClosed, promptNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
+  const [localPrompt, setLocalPrompt] = useState(data.prompt);
+
+  const debouncedUpdate = useDebouncedCallback((value: string) => {
+    updateNodeData(id, { prompt: value });
+  }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    updateNodeData(id, {prompt: e.target.value});
+    setLocalPrompt(e.target.value);
+    debouncedUpdate(e.target.value);
   };
 
   const content = () => {
@@ -34,7 +41,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
     else if (isClosed && !data.response) {
       return <NodeDisplayText></NodeDisplayText>
     }
-    return <NodeTextarea value={data.prompt} handleTextChange={handleTextChange} placeholder='Enter your prompt...'/>
+    return <NodeTextarea value={localPrompt} handleTextChange={handleTextChange} placeholder='Enter your prompt...'/>
   }
 
   const playIcon = () => {
@@ -58,7 +65,6 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       id={id}
       title="Prompt Node"
       loading={loading}
-      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#ec4899'} as React.CSSProperties}
       headerActions={
         <div className="flex items-center gap-3">
