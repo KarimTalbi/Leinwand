@@ -9,7 +9,7 @@ export default defineConfig({
     host: true,
     port: 5173,
     hmr: {
-      host: '192.168.0.207',
+      host: '192.168.0.106',
     },
   },
   plugins: [react(), tailwindcss()],
