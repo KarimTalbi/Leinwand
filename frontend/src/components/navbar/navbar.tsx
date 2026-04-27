@@ -1,11 +1,13 @@
 import {Panel, useReactFlow} from "@xyflow/react";
-import {NavbarButton, NavBarButtonGroup, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
 import {ChevronLeft, Lock, LockOpen, LucideScan, Redo2, Undo2, ZoomInIcon, ZoomOutIcon} from "lucide-react";
-import AddNodeMenu from '../nodes/addnode.tsx'
 
 import useStore from "@/store.ts";
 import {AppState} from "@/types.ts";
 import {useShallow} from "zustand/react/shallow";
+
+import {NavbarButton, NavBarButtonGroup, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
+import AddNodeMenu from '@/components/nodes/addnode.tsx'
+
 
 const selector = (state: AppState) => ({
   syncing: state.syncing,
@@ -13,6 +15,7 @@ const selector = (state: AppState) => ({
   setLocked: state.setLocked,
   exitCanvas: state.exitCanvas,
 });
+
 
 const NavigationBar = () => {
   const {zoomIn, zoomOut, zoomTo} = useReactFlow()
@@ -22,6 +25,7 @@ const NavigationBar = () => {
   return (
     <div>
       <Panel position="top-center" className="flex flex-row items-center justify-between gap-4">
+
 
         <NavBarButtonGroup>
 
@@ -63,10 +67,12 @@ const NavigationBar = () => {
 
         </NavBarButtonGroup>
 
+
       </Panel>
 
 
       <Panel position="top-right" className="flex flex-row items-center justify-between gap-4">
+
 
         <NavBarButtonGroup>
 
@@ -82,6 +88,7 @@ const NavigationBar = () => {
           <SyncIndicator syncing={syncing} label="Status"/>
 
         </NavBarButtonGroup>
+
 
       </Panel>
     </div>

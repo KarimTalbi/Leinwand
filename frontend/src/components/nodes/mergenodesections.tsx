@@ -23,10 +23,14 @@ interface ProblemProps {
 }
 
 const MergeContent = ({sections}: { sections: string[] }) => {
+
   if (!sections || sections.length === 0) return null;
 
+
   const problemSection = ({ai, user, solution}: ProblemProps) => {
+
     return (
+
       <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-between gap-3">
@@ -46,6 +50,7 @@ const MergeContent = ({sections}: { sections: string[] }) => {
         <div className="text-base font-bold">Solution</div>
         <div className="text-base">{solution}</div>
       </div>
+
     )
   }
 
