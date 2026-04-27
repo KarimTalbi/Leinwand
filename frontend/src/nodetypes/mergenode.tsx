@@ -18,7 +18,7 @@ const selector = (state: AppState) => ({
 });
 
 const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<MergeNodeType>) => {
-  const {updateNodeData, deleteNode, mergeNodeAction} = useStore(useShallow(selector));
+  const {updateNodeData, mergeNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
   const hasProblem = data.problems;
@@ -63,7 +63,6 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       id={id}
       title="Merge Node"
       loading={loading}
-      onDelete={() => void deleteNode(id)}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
         <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
