@@ -8,8 +8,14 @@ from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
 from pydantic import BaseModel
 
-from core import LLMModelConfig, AiModel, settings
-from data import ChatResponse, SummaryResponse, MergeResponse, MergeResolveResponse
+from core import AiModel, LLMModelConfig, settings
+from data import (
+    AiResponse,
+    ChatResponse,
+    MergeResolveResponse,
+    MergeResponse,
+    SummaryResponse,
+)
 from data.prompts import SystemPrompts
 
 dotenv.load_dotenv()
@@ -20,9 +26,11 @@ langfuse_handler = CallbackHandler()
 
 
 class AiModelBase:
-
     def __init__(
-        self, config: LLMModelConfig, response_model: BaseModel, system_prompt: str
+        self,
+        config: LLMModelConfig,
+        response_model: type[AiResponse],
+        system_prompt: str,
     ) -> None:
         self.config = config
         self.response_model = response_model
@@ -75,12 +83,12 @@ class AiModelBase:
         return result
 
     async def stream_with_context(self, context: Any, prompt: str):
-         async for chunk in self.model.astream(
-             [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
-             config={"callbacks": [langfuse_handler]},
-         ):
-             if chunk.content:
-                 yield chunk.content
+        async for chunk in self.model.astream(
+            [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
+        ):
+            if chunk.content:
+                yield chunk.content
 
     async def stream(self, prompt: str):
         async for chunk in self.model.astream(

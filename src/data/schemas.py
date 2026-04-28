@@ -100,7 +100,6 @@ class UserInDb(UserBase):
 
 class UserRead(UserBase):
     username: str
-    disabled: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -110,21 +109,21 @@ class UserCreate(UserBase):
     password: str
 
 
-class ChatResponse(BaseModel):
+class AiResponse(BaseModel):
     response: str
 
 
-class SummaryResponse(BaseModel):
-    response: str
+class ChatResponse(AiResponse): ...
 
 
-class MergeResponse(BaseModel):
-    response: str
+class SummaryResponse(AiResponse): ...
+
+
+class MergeResolveResponse(AiResponse): ...
+
+
+class MergeResponse(AiResponse):
     has_issues: bool
-
-
-class MergeResolveResponse(BaseModel):
-    response: str
 
 
 class MergeRequest(BaseModel):

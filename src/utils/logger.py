@@ -9,25 +9,27 @@ logger = logging.getLogger("app.services")
 def service_monitor(func):
 
     @wraps(func)
-    async def wrapper(self, *args, **kwargs):
-        class_name = self.__class__.__name__
+    async def wrapper(*args, **kwargs):
+        func_file = func.__code__.co_filename
         func_name = func.__name__
 
-        logger.debug(f"[{class_name}] Starting {func_name}")
+        logger.debug(f"Starting {func_name} {func_file}:{func.__code__.co_firstlineno}")
 
         start_time = time.perf_counter()
         try:
-            result = await func(self, *args, **kwargs)
+            result = await func(*args, **kwargs)
             duration = time.perf_counter() - start_time
 
-            logger.info(f"[{class_name}] {func_name} completed in {duration:.4f}s")
+            logger.info(
+                f"{func_name} completed in {duration:.4f}s {func_file}:{func.__code__.co_firstlineno}"
+            )
             return result
 
         except Exception as e:
             duration = time.perf_counter() - start_time
 
             logger.error(
-                f"[{class_name}] {func_name} failed after {duration:.4f}s. Error: {type(e).__name__}: {e}",
+                f"{func_name} failed after {duration:.4f}s. Error: {type(e).__name__}: {e}",
                 exc_info=True,
             )
             raise
@@ -47,6 +49,7 @@ def setup_logging():
     )
 
     logging.getLogger("app").setLevel(logging.DEBUG)
+    logging.getLogger("app.services").setLevel(logging.INFO)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("uvicorn").setLevel(logging.INFO)

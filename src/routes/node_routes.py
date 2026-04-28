@@ -5,23 +5,23 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from data import (
+    NodeCreate,
+    NodeRead,
+    NodeUpdate,
+    UserAuth,
+    get_async_session,
+)
 from llm import (
     build_chat_model,
-    build_summary_model,
     build_merge_resolution_model,
     build_merge_validation_model,
+    build_summary_model,
 )
+from service import get_current_active_user
+from service import node_service as ns
 
 node_router = APIRouter(prefix="/node", tags=["node"])
-
-from service import node_service as ns, get_current_active_user
-from data import (
-    get_async_session,
-    UserAuth,
-    NodeRead,
-    NodeCreate,
-    NodeUpdate,
-)
 
 
 @node_router.get("/list/{canvas_id}/")
@@ -154,7 +154,7 @@ async def get_streaming_chat_response(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     node_id: str,
     session: AsyncSession = Depends(get_async_session),
-) -> NodeRead:
+) -> StreamingResponse:
     node = await ns.get_node(session, UUID(node_id), current_user.id)
     model = build_chat_model()
 

@@ -2,9 +2,9 @@ import logging
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Annotated
+from typing import Annotated, Any
 
-from pydantic import BaseModel, computed_field, Field, SecretStr
+from pydantic import BaseModel, Field, SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()  # type: ignore[call-arg]
+    return Settings()  # type: ignore[call-arg]  # ty:ignore[missing-argument]
 
 
 settings = get_settings()
@@ -78,7 +78,6 @@ settings = get_settings()
 
 
 class LLMModelConfig(BaseModel):
-
     model: str
     model_provider: str
     temperature: Annotated[float, Field(ge=0.0, le=2.0)] | None = None
@@ -90,14 +89,8 @@ class LLMModelConfig(BaseModel):
 
 class AiModel(Enum):
     OPENAI_GPT5_MINI = LLMModelConfig(model="gpt-5-mini", model_provider="openai")
-    OPENAI_GPT4_MINI = LLMModelConfig(
-        model="gpt-4o-mini",
-        model_provider="openai",
-    )
-    OPENAI_GPT4_1_MINI = LLMModelConfig(
-        model="gpt-4.1-mini",
-        model_provider="openai",
-    )
+    OPENAI_GPT4_MINI = LLMModelConfig(model="gpt-4o-mini", model_provider="openai")
+    OPENAI_GPT4_1_MINI = LLMModelConfig(model="gpt-4.1-mini", model_provider="openai")
     GEMINI_2_FLASH = LLMModelConfig(
         model="gemini-2.0-flash",
         model_provider="google_genai",
