@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import NodeCreate, Node, NodeUpdate, Canvas
+from data import Canvas, Node, NodeCreate, NodeUpdate
 from data.queries import get_ancestors_recursive
-from exceptions import NodeNotFoundException, CanvasNotFoundException
+from exceptions import CanvasNotFoundException, NodeNotFoundException
 from utils import service_monitor as monitor
 
 
@@ -70,7 +70,7 @@ async def update_node(
 @monitor
 async def update_node_data(
     session: AsyncSession, node_id: UUID, user_id: UUID, node_data: dict
-) -> Node:
+) -> Node | None:
     result = await session.execute(
         update(Node)
         .where(
@@ -98,7 +98,7 @@ async def delete_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> UU
 async def get_ancestors(session: AsyncSession, node_id: UUID, user_id: UUID):
     db_node = await get_node(session, node_id, user_id)
 
-    result = await session.execute(get_ancestors_recursive(db_node.id))
+    result = await session.execute(get_ancestors_recursive(str(db_node.id)))
     nodes = [dict(row) for row in result.mappings().all()]
 
     for node in nodes:

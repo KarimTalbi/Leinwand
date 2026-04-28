@@ -1,7 +1,9 @@
-from sqlalchemy import UUID, select
+from uuid import UUID
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import EdgeCreate, Edge, Canvas
+from data import Canvas, Edge, EdgeCreate
 from exceptions import CanvasNotFoundException, EdgeNotFoundException
 
 

@@ -1,14 +1,14 @@
 import logging
+from collections.abc import AsyncGenerator
 from functools import lru_cache
 from typing import Any
 
 import dotenv
-from langchain.chat_models import init_chat_model
+from langchain.chat_models import BaseChatModel, init_chat_model
 from langchain.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
 from pydantic import BaseModel
 
-from core import AiModel, LLMModelConfig, settings
 from data import (
     AiResponse,
     ChatResponse,
@@ -17,6 +17,7 @@ from data import (
     SummaryResponse,
 )
 from data.prompts import SystemPrompts
+from src.llm.config import AiModel, LLMModelConfig
 
 dotenv.load_dotenv()
 
@@ -39,61 +40,46 @@ class AiModelBase:
         self.model = self.__build_model()
         self.model_structured = self.model.with_structured_output(self.response_model)
 
-    @staticmethod
-    def __get_api_key(provider: str) -> str:
-        keys = {
-            "openai": settings.llm.openai_api_key,
-            "google_genai": settings.llm.google_api_key,
-            "anthropic": settings.llm.anthropic_api_key,
-        }
-        secret = keys.get(provider)
-
-        if not secret:
-            raise ValueError(f"Invalid provider: {provider}")
-
-        return secret.get_secret_value()
-
-    def __build_model(self):
+    def __build_model(self) -> BaseChatModel:
         model = init_chat_model(
             **self.config.model_dump(exclude_unset=True, exclude_none=True),
-            api_key=self.__get_api_key(self.config.model_provider),
         )
         return model
 
-    async def generate_with_context(self, context: Any, prompt: str) -> BaseModel:
+    async def generate_with_context(self, context: Any, prompt: str) -> AiResponse:
 
-        logger.info("invoking model with context")
+        logger.info('invoking model with context')
 
         result = await self.model_structured.ainvoke(
-            [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
-            config={"callbacks": [langfuse_handler]},
+            [SystemMessage(f'{self.system_prompt}\n\n{context}'), HumanMessage(prompt)],
+            config={'callbacks': [langfuse_handler]},
         )
 
-        return result
+        return result  # type: ignore
 
-    async def generate(self, prompt: str) -> BaseModel:
+    async def generate(self, prompt: str) -> dict[str, Any] | BaseModel:
 
-        logger.info("invoking model without context")
+        logger.info('invoking model without context')
 
         result = await self.model_structured.ainvoke(
             [HumanMessage(prompt)],
-            config={"callbacks": [langfuse_handler]},
+            config={'callbacks': [langfuse_handler]},
         )
 
         return result
 
-    async def stream_with_context(self, context: Any, prompt: str):
+    async def stream_with_context(self, context: Any, prompt: str) -> AsyncGenerator[str, Any]:
         async for chunk in self.model.astream(
-            [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
-            config={"callbacks": [langfuse_handler]},
+            [SystemMessage(f'{self.system_prompt}\n\n{context}'), HumanMessage(prompt)],
+            config={'callbacks': [langfuse_handler]},
         ):
             if chunk.content:
-                yield chunk.content
+                yield chunk.content  # type: ignore
 
     async def stream(self, prompt: str):
         async for chunk in self.model.astream(
             [HumanMessage(prompt)],
-            config={"callbacks": [langfuse_handler]},
+            config={'callbacks': [langfuse_handler]},
         ):
             if chunk.content:
                 yield chunk.content

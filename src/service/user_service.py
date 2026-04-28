@@ -1,6 +1,8 @@
-from datetime import timedelta, datetime, timezone
+import os
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
+import dotenv
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -9,22 +11,23 @@ from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core import settings
-from data import User, UserCreate, TokenData, get_async_session, Token
+from data import Token, TokenData, User, UserCreate, get_async_session
 from exceptions import (
     CredentialsException,
     InactiveUserException,
-    UserAlreadyExistsException,
     InvalidUserOrPasswordException,
+    UserAlreadyExistsException,
 )
 
-password_hash = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
+dotenv.load_dotenv()
 
-DUMMY_HASH: str = settings.auth.dummy_hash
-SECRET_KEY: str = settings.auth.secret_key.get_secret_value()
-ALGORITHM: str = settings.auth.algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES: int = settings.auth.access_token_expire_minutes
+password_hash = PasswordHash.recommended()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='users/token')
+
+DUMMY_HASH: str = os.getenv('AUTH_DUMMY_HASH', '')
+SECRET_KEY: str = os.getenv('AUTH_SECRET_KEY', '')
+ALGORITHM: str = os.getenv('AUTH_ALGORITHM', '')
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv('AUTH_ACCESS_TOKEN_EXPIRE_MINUTES', 0))
 
 
 def get_password_hash(password: str) -> str:
@@ -40,17 +43,15 @@ async def get_user(session: AsyncSession, username: str) -> User | None:
     return result.scalar_one_or_none()
 
 
-async def authenticate_user(
-    session: AsyncSession, username: str, password: str
-) -> User | bool:
+async def authenticate_user(session: AsyncSession, username: str, password: str) -> User:
     user = await get_user(session, username)
 
     if not user:
         verify_password(password, DUMMY_HASH)
-        return False
+        raise InvalidUserOrPasswordException
 
     if not verify_password(password, user.hashed_password):
-        return False
+        raise InvalidUserOrPasswordException
 
     return user
 
@@ -81,26 +82,22 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
 
-    to_encode.update({"exp": expire})
+    to_encode.update({'exp': expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
 
 
-async def get_access_token(session: AsyncSession, username: str, password: str) -> str:
+async def get_access_token(session: AsyncSession, username: str, password: str) -> Token:
     user = await authenticate_user(session, username, password)
-
-    if not user:
-        raise InvalidUserOrPasswordException
 
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
 
-    # noinspection PyUnresolvedReferences
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={'sub': user.username}, expires_delta=access_token_expires
     )
 
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(access_token=access_token, token_type='bearer')
 
 
 async def get_current_user(
@@ -110,7 +107,7 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username: str | None = payload.get('sub')
 
         if username is None:
             raise CredentialsException
@@ -120,7 +117,7 @@ async def get_current_user(
     except InvalidTokenError:
         raise CredentialsException
 
-    user = await get_user(session, username=token_data.username)
+    user = await get_user(session, username=token_data.username)  # type: ignore
 
     if user is None:
         raise CredentialsException

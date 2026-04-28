@@ -26,7 +26,7 @@ class NodeRead(NodeBase):
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
-        extra="ignore",
+        extra='ignore',
     )
 
 
@@ -52,7 +52,7 @@ class EdgeRead(BaseModel):
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
-        extra="ignore",
+        extra='ignore',
     )
 
 
@@ -67,6 +67,13 @@ class CanvasCreate(CanvasBase): ...
 class CanvasRead(CanvasBase):
     id: uuid.UUID
     data: dict[str, Any]
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        extra='ignore',
+    )
 
 
 class CanvasUpdate(BaseModel):
