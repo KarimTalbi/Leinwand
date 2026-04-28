@@ -26,7 +26,7 @@ class NodeRead(NodeBase):
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
-        extra='ignore',
+        extra="ignore",
     )
 
 
@@ -52,7 +52,7 @@ class EdgeRead(BaseModel):
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
-        extra='ignore',
+        extra="ignore",
     )
 
 
@@ -72,7 +72,7 @@ class CanvasRead(CanvasBase):
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
-        extra='ignore',
+        extra="ignore",
     )
 
 

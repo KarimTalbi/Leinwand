@@ -22,12 +22,12 @@ from exceptions import (
 dotenv.load_dotenv()
 
 password_hash = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='users/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
-DUMMY_HASH: str = os.getenv('AUTH_DUMMY_HASH', '')
-SECRET_KEY: str = os.getenv('AUTH_SECRET_KEY', '')
-ALGORITHM: str = os.getenv('AUTH_ALGORITHM', '')
-ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv('AUTH_ACCESS_TOKEN_EXPIRE_MINUTES', 0))
+DUMMY_HASH: str = os.getenv("AUTH_DUMMY_HASH", "")
+SECRET_KEY: str = os.getenv("AUTH_SECRET_KEY", "")
+ALGORITHM: str = os.getenv("AUTH_ALGORITHM", "")
+ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("AUTH_ACCESS_TOKEN_EXPIRE_MINUTES", 0))
 
 
 def get_password_hash(password: str) -> str:
@@ -82,7 +82,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
 
-    to_encode.update({'exp': expire})
+    to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
@@ -94,10 +94,10 @@ async def get_access_token(session: AsyncSession, username: str, password: str) 
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
 
     access_token = create_access_token(
-        data={'sub': user.username}, expires_delta=access_token_expires
+        data={"sub": user.username}, expires_delta=access_token_expires
     )
 
-    return Token(access_token=access_token, token_type='bearer')
+    return Token(access_token=access_token, token_type="bearer")
 
 
 async def get_current_user(
@@ -107,7 +107,7 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str | None = payload.get('sub')
+        username: str | None = payload.get("sub")
 
         if username is None:
             raise CredentialsException

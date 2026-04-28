@@ -6,13 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 dotenv.load_dotenv()
 
-USER = os.getenv('DB_USER')
-PASS = os.getenv('DB_PASSWORD')
-HOST = os.getenv('DB_HOST')
-PORT = os.getenv('DB_PORT')
-NAME = os.getenv('DB_NAME')
+USER = os.getenv("DB_USER")
+PASS = os.getenv("DB_PASSWORD")
+HOST = os.getenv("DB_HOST")
+PORT = os.getenv("DB_PORT")
+NAME = os.getenv("DB_NAME")
 
-PATH = f'postgresql+psycopg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}'
+PATH = f"postgresql+psycopg://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
 
 engine = create_async_engine(PATH, echo=False)
 async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

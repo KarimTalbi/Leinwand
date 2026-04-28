@@ -48,30 +48,30 @@ class AiModelBase:
 
     async def generate_with_context(self, context: Any, prompt: str) -> AiResponse:
 
-        logger.info('invoking model with context')
+        logger.info("invoking model with context")
 
         result = await self.model_structured.ainvoke(
-            [SystemMessage(f'{self.system_prompt}\n\n{context}'), HumanMessage(prompt)],
-            config={'callbacks': [langfuse_handler]},
+            [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
         )
 
         return result  # type: ignore
 
     async def generate(self, prompt: str) -> dict[str, Any] | BaseModel:
 
-        logger.info('invoking model without context')
+        logger.info("invoking model without context")
 
         result = await self.model_structured.ainvoke(
             [HumanMessage(prompt)],
-            config={'callbacks': [langfuse_handler]},
+            config={"callbacks": [langfuse_handler]},
         )
 
         return result
 
     async def stream_with_context(self, context: Any, prompt: str) -> AsyncGenerator[str, Any]:
         async for chunk in self.model.astream(
-            [SystemMessage(f'{self.system_prompt}\n\n{context}'), HumanMessage(prompt)],
-            config={'callbacks': [langfuse_handler]},
+            [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
+            config={"callbacks": [langfuse_handler]},
         ):
             if chunk.content:
                 yield chunk.content  # type: ignore
@@ -79,7 +79,7 @@ class AiModelBase:
     async def stream(self, prompt: str):
         async for chunk in self.model.astream(
             [HumanMessage(prompt)],
-            config={'callbacks': [langfuse_handler]},
+            config={"callbacks": [langfuse_handler]},
         ):
             if chunk.content:
                 yield chunk.content
