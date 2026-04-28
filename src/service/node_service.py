@@ -6,10 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from data import Canvas, Node, NodeCreate, NodeUpdate
 from data.queries import get_ancestors_recursive
 from exceptions import CanvasNotFoundException, NodeNotFoundException
-from utils import service_monitor as monitor
 
 
-@monitor
 async def create_node(
     session: AsyncSession, node: NodeCreate, canvas_id: UUID, user_id: UUID
 ) -> Node:
@@ -27,7 +25,6 @@ async def create_node(
     return new_node
 
 
-@monitor
 async def list_nodes(
     session: AsyncSession, user_id: UUID, canvas_id: UUID
 ) -> list[Node]:
@@ -39,7 +36,6 @@ async def list_nodes(
     return list(result.scalars().all())
 
 
-@monitor
 async def get_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> Node:
     result = await session.execute(
         select(Node).join(Canvas).where(Node.id == node_id, Canvas.user_id == user_id)
@@ -52,7 +48,6 @@ async def get_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> Node:
     return node
 
 
-@monitor
 async def update_node(
     session: AsyncSession, node_id: UUID, node_update: NodeUpdate, user_id: UUID
 ) -> Node:
@@ -67,7 +62,6 @@ async def update_node(
     return db_node
 
 
-@monitor
 async def update_node_data(
     session: AsyncSession, node_id: UUID, user_id: UUID, node_data: dict
 ) -> Node | None:
@@ -84,7 +78,6 @@ async def update_node_data(
     return result.scalar_one_or_none()
 
 
-@monitor
 async def delete_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> UUID:
     db_node = await get_node(session, node_id, user_id)
 
@@ -94,11 +87,10 @@ async def delete_node(session: AsyncSession, node_id: UUID, user_id: UUID) -> UU
     return node_id
 
 
-@monitor
 async def get_ancestors(session: AsyncSession, node_id: UUID, user_id: UUID):
     db_node = await get_node(session, node_id, user_id)
 
-    result = await session.execute(get_ancestors_recursive(str(db_node.id)))
+    result = await session.execute(get_ancestors_recursive(db_node.id))
     nodes = [dict(row) for row in result.mappings().all()]
 
     for node in nodes:

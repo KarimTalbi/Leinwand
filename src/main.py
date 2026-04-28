@@ -4,10 +4,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from data import engine
+from data import engine, Base
 from exceptions import register_exception_handlers
 from routes import user_router, canvas_router, edge_router, node_router
 from utils import setup_logging
+
+DROP_AND_CREATE_DB = False
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -15,7 +17,14 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    async with engine.begin() as conn:
+
+        if DROP_AND_CREATE_DB:
+            logger.info("Dropping and recreating database")
+            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.create_all)
     yield
+
     await engine.dispose()
 
 
