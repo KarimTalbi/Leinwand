@@ -53,4 +53,6 @@ async def update_node(
     canvas_update: CanvasUpdate,
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
-    return await cs.update_canvas(session, canvas_update, UUID(canvas_id), current_user.id)
+    return await cs.update_canvas(
+        session, canvas_update, UUID(canvas_id), current_user.id
+    )

@@ -68,7 +68,9 @@ class AiModelBase:
 
         return result
 
-    async def stream_with_context(self, context: Any, prompt: str) -> AsyncGenerator[str, Any]:
+    async def stream_with_context(
+        self, context: Any, prompt: str
+    ) -> AsyncGenerator[str, Any]:
         async for chunk in self.model.astream(
             [SystemMessage(f"{self.system_prompt}\n\n{context}"), HumanMessage(prompt)],
             config={"callbacks": [langfuse_handler]},

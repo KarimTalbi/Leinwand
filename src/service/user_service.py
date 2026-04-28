@@ -43,7 +43,9 @@ async def get_user(session: AsyncSession, username: str) -> User | None:
     return result.scalar_one_or_none()
 
 
-async def authenticate_user(session: AsyncSession, username: str, password: str) -> User:
+async def authenticate_user(
+    session: AsyncSession, username: str, password: str
+) -> User:
     user = await get_user(session, username)
 
     if not user:
@@ -88,7 +90,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return encoded_jwt
 
 
-async def get_access_token(session: AsyncSession, username: str, password: str) -> Token:
+async def get_access_token(
+    session: AsyncSession, username: str, password: str
+) -> Token:
     user = await authenticate_user(session, username, password)
 
     access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))

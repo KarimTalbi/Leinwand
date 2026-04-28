@@ -20,12 +20,18 @@ class AiModel(Enum):
     OPENAI_GPT5_MINI = LLMModelConfig(model="gpt-5-mini", model_provider="openai")
     OPENAI_GPT4_MINI = LLMModelConfig(model="gpt-4o-mini", model_provider="openai")
     OPENAI_GPT4_1_MINI = LLMModelConfig(model="gpt-4.1-mini", model_provider="openai")
-    GEMINI_2_FLASH = LLMModelConfig(model="gemini-2.0-flash", model_provider="google_genai")
-    GEMINI_2_5_FLASH = LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
+    GEMINI_2_FLASH = LLMModelConfig(
+        model="gemini-2.0-flash", model_provider="google_genai"
+    )
+    GEMINI_2_5_FLASH = LLMModelConfig(
+        model="gemini-2.5-flash", model_provider="google_genai"
+    )
     GEMINI_2_5_FLASH_LITE = LLMModelConfig(
         model="gemini-2.5-flash-lite", model_provider="google_genai"
     )
-    GEMINI_2_5_PRO = LLMModelConfig(model="gemini-2.5-pro", model_provider="google_genai")
+    GEMINI_2_5_PRO = LLMModelConfig(
+        model="gemini-2.5-pro", model_provider="google_genai"
+    )
     GEMINI_3_FLASH_PREVIEW = LLMModelConfig(
         model="gemini-3-flash-preview", model_provider="google_genai"
     )

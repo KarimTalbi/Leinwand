@@ -26,5 +26,7 @@ async def read_users_me(
 
 
 @user_router.post("/create", response_model=UserRead)
-async def create_users(user: UserCreate, session: AsyncSession = Depends(get_async_session)) -> Any:
+async def create_users(
+    user: UserCreate, session: AsyncSession = Depends(get_async_session)
+) -> Any:
     return await create_user(session, user)

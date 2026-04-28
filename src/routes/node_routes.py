@@ -111,7 +111,9 @@ async def get_context(
 
     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
     model = build_merge_validation_model()
-    result = await model.generate_with_context(ancestors, "check the context for inconsistencies")
+    result = await model.generate_with_context(
+        ancestors, "check the context for inconsistencies"
+    )
 
     if result.has_issues:  # type: ignore
         return await ns.update_node_data(
@@ -159,7 +161,9 @@ async def get_streaming_chat_response(
 
     async def token_generator():
         accumulated = ""
-        async for token in model.stream_with_context(ancestors, node.data.get("prompt", "")):
+        async for token in model.stream_with_context(
+            ancestors, node.data.get("prompt", "")
+        ):
             accumulated += token  # type: ignore
             yield f"data: {token.replace(chr(10), '\\n')}\n\n"
 
