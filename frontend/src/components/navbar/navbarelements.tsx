@@ -7,13 +7,14 @@ interface NavbarButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   children?: React.ReactNode;
+  title?: string;
 }
 
 
-const NavbarButton = ({onClick, disabled, children}: NavbarButtonProps) => {
+const NavbarButton = ({onClick, disabled, children, title}: NavbarButtonProps) => {
   return (
 
-    <Button onClick={onClick} disabled={disabled}
+    <Button onClick={onClick} disabled={disabled} title={title}
             className="transition-opacity w-12 h-12 bg-transparent duration-200 rounded-full
                 hover:opacity-70 hover:bg-black/10 disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed">
 

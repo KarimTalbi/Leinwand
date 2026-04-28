@@ -29,19 +29,21 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <NavbarButton onClick={() => zoomIn()}>
+
+
+          <NavbarButton onClick={() => zoomIn()} title="Zoom In">
             <ZoomInIcon className="size-6 text-black"/>
           </NavbarButton>
 
-          <NavbarButton onClick={() => zoomOut()}>
+          <NavbarButton onClick={() => zoomOut()} title="Zoom Out">
             <ZoomOutIcon className="size-6 text-black"/>
           </NavbarButton>
 
-          <NavbarButton onClick={() => zoomTo(1)}>
+          <NavbarButton onClick={() => zoomTo(1)} title="Reset Zoom">
             <LucideScan className="size-6 text-black"/>
           </NavbarButton>
 
-          <NavbarButton onClick={() => setLocked(!locked)}>
+          <NavbarButton onClick={() => setLocked(!locked)} title="Lock Canvas">
             {locked ? <LockOpen className="size-6 text-black"/> : <Lock className="size-6 text-black"/>}
           </NavbarButton>
 
@@ -57,11 +59,11 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <NavbarButton onClick={() => console.log('undo')}>
+          <NavbarButton onClick={() => console.log('undo')} title="Undo">
             <Undo2 className="size-6 text-black"/>
           </NavbarButton>
 
-          <NavbarButton onClick={() => console.log('redo')}>
+          <NavbarButton onClick={() => console.log('redo')} title="Redo">
             <Redo2 className="size-6 text-black"/>
           </NavbarButton>
 
@@ -76,7 +78,7 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <NavbarButton onClick={exitCanvas}>
+          <NavbarButton onClick={exitCanvas} title="Exit Canvas">
             <ChevronLeft className="size-6 text-black"/>
           </NavbarButton>
 

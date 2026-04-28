@@ -69,7 +69,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       headerActions={
         <div className="flex items-center gap-3">
 
-          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
+          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title="Send to LLM"/>
         </div>
       }>
 

@@ -10,6 +10,7 @@ interface NodeHeaderButtonProps {
   onClick: () => void;
   icon: () => JSX.Element;
   disabled?: boolean;
+  title?: string;
 }
 
 
@@ -57,9 +58,9 @@ const MergeHandles = ({style, sourceId, posX, posY}: {
 }
 
 
-const NodeHeaderButton = ({onClick, icon, disabled}: NodeHeaderButtonProps) => {
+const NodeHeaderButton = ({onClick, icon, disabled, title}: NodeHeaderButtonProps) => {
   return (
-    <Button onClick={onClick} disabled={disabled}
+    <Button onClick={onClick} disabled={disabled} title={title}
             className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full
                 hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed">
 

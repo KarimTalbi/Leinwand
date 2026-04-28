@@ -7,7 +7,7 @@ const DropdownMenu = ({items}: { items: { text: string; onClick: () => void }[] 
     <div>
       <Menu>
 
-        <MenuButton
+        <MenuButton title="Add Node"
           className="inline-flex items-center h-12 rounded-full px-3 py-1 data-hover:bg-black/10 data-focus:outline-none">
           <Plus className="size-6 text-black"/>
         </MenuButton>

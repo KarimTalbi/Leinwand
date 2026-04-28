@@ -34,7 +34,7 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
           {headerActions}
 
 
-          <Button
+          <Button title="Delete Node"
             onClick={() => deleteNode(id)}
             disabled={loading}
             className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed"

@@ -9,6 +9,7 @@ import BaseNode from '@/components/nodes/basenode.tsx';
 import MergeContent from '@/components/nodes/mergenodesections.tsx';
 import {MergeHandles, NodeDisplayText, NodeHeaderButton, NodeTextarea} from '@/components/nodes/nodeelements.tsx'
 import {NodeProps} from "@xyflow/react";
+import {useDebouncedCallback} from "use-debounce";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
@@ -22,9 +23,15 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
   const hasProblem = data.problems;
+  const [localSolution, setLocalSolution] = useState(data.solution);
+
+  const debouncedUpdate = useDebouncedCallback((value: string) => {
+    updateNodeData(id, { solution: value });
+  }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    updateNodeData(id, {solution: e.target.value});
+    setLocalSolution(e.target.value);
+    debouncedUpdate(e.target.value);
   };
 
   const playIcon = () => {
@@ -38,7 +45,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       return (
         <div className="flex flex-col items-center justify-center h-full w-full">
           <NodeDisplayText children={data.problems}/>
-          <NodeTextarea value={data.solution} handleTextChange={handleTextChange} placeholder='Enter your answer...'/>
+          <NodeTextarea value={localSolution} handleTextChange={handleTextChange} placeholder='Enter your answer...'/>
         </div>
       )
     }
@@ -65,7 +72,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       loading={loading}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title="Send to LLM"/>
       }
     >
       {content()}
