@@ -1,4 +1,4 @@
-import {Handle, Position} from "@xyflow/react";
+import {Handle, Position, useNodeConnections} from "@xyflow/react";
 import React, {JSX} from "react";
 import {Button} from "@/components/ui/button.tsx";
 import {Textarea} from "@/components/ui/textarea.tsx";
@@ -21,15 +21,20 @@ interface NodeTextareaProps {
 }
 
 
+
+
+
 const DefaultHandles = ({style, sourceId, posX, posY}: {
   style?: React.CSSProperties,
   sourceId: string,
   posX: number,
   posY: number
 }) => {
+  const connections = useNodeConnections({handleType: "target"});
+
   return (
     <div>
-      <Handle id="target-1" type="target" position={Position.Left}
+      <Handle id="target-1" type="target" position={Position.Left} isConnectable={connections.length === 0}
               className="w-4! h-8! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
       <ConnectionHandle sourceId={sourceId} posX={posX} posY={posY} style={style}/>
@@ -44,12 +49,17 @@ const MergeHandles = ({style, sourceId, posX, posY}: {
   posX: number,
   posY: number
 }) => {
+
+  const isConnected = (handleId: string) => (
+    useNodeConnections({handleId: handleId, handleType: "target"}).length > 0
+  )
+
   return (
     <div>
-      <Handle id="target-2" type="target" position={Position.Left}
+      <Handle id="target-2" type="target" position={Position.Left} isConnectable={!isConnected("target-2")}
               className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! translate-y-20! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
-      <Handle id="target-1" type="target" position={Position.Left}
+      <Handle id="target-1" type="target" position={Position.Left} isConnectable={!isConnected("target-1")}
               className="w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-y-20! -translate-x-1! z-[-1]!"
               style={{...style, backgroundColor: 'var(--node-color)'}}/>
       <ConnectionHandle sourceId={sourceId} posX={posX} posY={posY} style={style}/>
@@ -69,7 +79,7 @@ const NodeHeaderButton = ({onClick, icon, disabled, title}: NodeHeaderButtonProp
 
       {icon()}
       <span
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-lg bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-xl bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
           {title}
         </span>
     </Button>

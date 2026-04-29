@@ -41,6 +41,12 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       : <Play className="size-8 text-white"/>
   }
 
+  const titleText = () => {
+    if (hasProblem) return 'Send Solution'
+    return data.context
+    ? 'Refresh Context' : 'Get Context'
+  }
+
   const content = () => {
     if (hasProblem) {
       return (
@@ -73,7 +79,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       loading={loading}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title="Send to LLM"/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
       }
     >
       {content()}

@@ -82,7 +82,7 @@ function Flow() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        snapToGrid={false}
+        snapToGrid={true}
         snapGrid={[20, 20]}
         defaultEdgeOptions={{style: {strokeWidth: 6}}}
         onConnect={onConnect}
@@ -93,6 +93,7 @@ function Flow() {
         nodesDraggable={!locked}
         nodesConnectable={!locked}
         elementsSelectable={!locked}
+        proOptions={{hideAttribution: true}}
       >
 
         <NavigationBar />
@@ -100,17 +101,21 @@ function Flow() {
 
         <Background
           bgColor="#ebebeb"
-          size={2}
-          gap={20}
+          size={8}
+          gap={60}
           color="#CCCCCC"
         />
 
           <MiniMap
+            className="rounded-2xl shadow-md backdrop-blur-lg backdrop-saturate-150"
+            bgColor="#ffffff7e"
+            maskColor={"transparent"}
             nodeColor={nodeColor}
             nodeBorderRadius={100}
             pannable
             zoomable
           />
+
 
 
       </ReactFlow>

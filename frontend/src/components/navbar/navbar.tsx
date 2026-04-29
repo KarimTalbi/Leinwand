@@ -24,7 +24,7 @@ const NavigationBar = () => {
 
   return (
     <div>
-      <Panel position="top-center" className="flex flex-row items-center justify-between gap-4">
+      <Panel position="bottom-center" className="flex flex-row items-center justify-between gap-4">
 
 
         <NavBarButtonGroup>

@@ -19,7 +19,7 @@ const DropdownMenu = ({items, isOnNode}: { items: { text: string; onClick: () =>
               Add Node
               </span>
             : <span
-              className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
               Add Node
               </span>
           }
