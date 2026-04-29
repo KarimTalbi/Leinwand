@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react';
 import {NodeProps} from "@xyflow/react";
-import {Undo2, Play} from "lucide-react";
+import {Undo2, Play, Settings2} from "lucide-react";
 import {useShallow} from "zustand/react/shallow";
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -56,6 +56,10 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       : 'Send to LLM'
   }
 
+  const settingsIcon = () => {
+    return <Settings2 className="size-8 text-white"/>
+  }
+
   const handleClick = () => {
     setLoading(true);
 
@@ -73,8 +77,8 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       loading={loading}
       style={{'--node-color': '#ec4899'} as React.CSSProperties}
       headerActions={
-        <div className="flex items-center gap-3">
-
+        <div className="flex items-center gap-6">
+          <NodeHeaderButton onClick={() => null} icon={settingsIcon} disabled={loading} title="Settings"/>
           <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
         </div>
       }>

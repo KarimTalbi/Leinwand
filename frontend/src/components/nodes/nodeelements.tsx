@@ -98,7 +98,7 @@ const NodeTextarea = ({placeholder, value, handleTextChange}: NodeTextareaProps)
         onChange={handleTextChange}
         placeholder={placeholder}
         className={cn(
-          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-2xl! text-black',
+          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-5 text-2xl/10! text-black nowheel',
           'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
         )}
       />

@@ -38,7 +38,7 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       ? <NodeDisplayText>{data.summary}</NodeDisplayText>
       : <div className="flex justify-center items-center h-full">
         <div className="flex flex-col justify-center align-middle">
-          <p className="text-xl font-bold mb-15">Connect Nodes and run to Summarize!</p>
+          <p className="text-2xl font-bold mb-15">Connect Nodes and run to Summarize!</p>
         </div>
       </div>
   }

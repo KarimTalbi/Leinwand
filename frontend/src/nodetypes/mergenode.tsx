@@ -61,7 +61,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       ? <MergeContent sections={data.context}/>
       : <div className="flex justify-center items-center h-full">
         <div className="flex flex-col justify-center align-middle">
-          <p className="text-xl font-bold mb-15">Connect 2 Streams and Press Run!</p>
+          <p className="text-2xl font-bold mb-15">Connect 2 Streams and Press Run!</p>
         </div>
       </div>
   }
