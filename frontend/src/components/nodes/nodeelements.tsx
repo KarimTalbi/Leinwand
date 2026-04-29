@@ -60,12 +60,20 @@ const MergeHandles = ({style, sourceId, posX, posY}: {
 
 const NodeHeaderButton = ({onClick, icon, disabled, title}: NodeHeaderButtonProps) => {
   return (
-    <Button onClick={onClick} disabled={disabled} title={title}
+
+
+  <div className="relative group">
+    <Button onClick={onClick} disabled={disabled}
             className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full
                 hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed">
 
       {icon()}
+      <span
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+          {title}
+        </span>
     </Button>
+  </div>
   )
 };
 

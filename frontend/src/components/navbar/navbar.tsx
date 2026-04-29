@@ -52,7 +52,7 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <AddNodeMenu/>
+          <AddNodeMenu isOnNode={false}/>
 
         </NavBarButtonGroup>
 

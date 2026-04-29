@@ -2,15 +2,28 @@ import {Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/react";
 import {Plus} from "lucide-react";
 
 
-const DropdownMenu = ({items}: { items: { text: string; onClick: () => void }[] }) => {
+const DropdownMenu = ({items, isOnNode}: { items: { text: string; onClick: () => void }[], isOnNode: boolean }) => {
   return (
     <div>
       <Menu>
 
-        <MenuButton title="Add Node"
-          className="inline-flex items-center h-12 rounded-full px-3 py-1 data-hover:bg-black/10 data-focus:outline-none">
-          <Plus className="size-6 text-black"/>
-        </MenuButton>
+        <div className="relative group">
+          <MenuButton
+                      className="inline-flex items-center h-12 rounded-full px-3 py-1 data-hover:bg-black/10 data-focus:outline-none">
+            <Plus className="size-6 text-black"/>
+          </MenuButton>
+
+          {isOnNode
+            ? <span
+              className="absolute top-full left-full -translate-x-1/2 mt-1 ml-3 px-2 py-1 text-lg bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+              Add Node
+              </span>
+            : <span
+              className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+              Add Node
+              </span>
+          }
+        </div>
 
         <MenuItems
           transition

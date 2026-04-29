@@ -20,7 +20,7 @@ const ConnectionHandle = ({sourceId, posX, posY, style}: {
 
       <div className="flex flex-col items-center justify-center mt-60 bg-black/20 rounded-r-full h-12 w-12">
 
-        <AddNodeMenu sourceId={sourceId} posX={posX} posY={posY}/>
+        <AddNodeMenu sourceId={sourceId} posX={posX} posY={posY} isOnNode={true}/>
 
       </div>
 

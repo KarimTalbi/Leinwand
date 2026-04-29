@@ -6,7 +6,7 @@ import {NodeTypeNames} from "@/types.ts";
 import DropdownMenu from "@/components/menus/dropdownmenu.tsx"
 
 
-const AddNodeMenu = ({sourceId, posX, posY}: { sourceId?: string, posX?: number, posY?: number }) => {
+const AddNodeMenu = ({sourceId, posX, posY, isOnNode}: { sourceId?: string, posX?: number, posY?: number, isOnNode: boolean }) => {
   const {screenToFlowPosition} = useReactFlow()
   const {addNode, addEdge} = useStore();
 
@@ -48,7 +48,7 @@ const AddNodeMenu = ({sourceId, posX, posY}: { sourceId?: string, posX?: number,
 
   return (
 
-    <DropdownMenu items={addItem}/>
+    <DropdownMenu items={addItem} isOnNode={isOnNode}/>
 
   )
 }
