@@ -31,8 +31,8 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
   };
   const lockIcon = () => {
     return isClosed
-      ? <LockOpen className="size-5 text-white"/>
-      : <Lock className="size-5 text-white"/>
+      ? <LockOpen className="size-7 text-white mb-2"/>
+      : <Lock className="size-7 text-white mb-2"/>
   }
 
   const handleClick = () => {

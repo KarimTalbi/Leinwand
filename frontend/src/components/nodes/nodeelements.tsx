@@ -69,7 +69,7 @@ const NodeHeaderButton = ({onClick, icon, disabled, title}: NodeHeaderButtonProp
 
       {icon()}
       <span
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-lg bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
           {title}
         </span>
     </Button>

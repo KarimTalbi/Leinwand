@@ -35,9 +35,10 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   };
 
   const playIcon = () => {
+    if (hasProblem) return <Play className="size-8 text-white"/>
     return data.context
-      ? <RefreshCcw className="size-6 text-white"/>
-      : <Play className="size-6 text-white"/>
+      ? <RefreshCcw className="size-8 text-white"/>
+      : <Play className="size-8 text-white"/>
   }
 
   const content = () => {

@@ -2,8 +2,7 @@ import React from 'react';
 import {X} from "lucide-react";
 
 import useStore from "@/store.ts";
-
-import {Button} from "@/components/ui/button.tsx";
+import {NodeHeaderButton} from "@/components/nodes/nodeelements.tsx";
 
 
 interface BaseNodeProps {
@@ -19,6 +18,10 @@ interface BaseNodeProps {
 const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNodeProps) => {
   const {deleteNode} = useStore();
 
+  const icon = () => (
+    <X className="size-8 text-white"/>
+  )
+
 
   return (
 
@@ -27,22 +30,15 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
 
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-4 pb-3 shrink-0">
-        <div className="text-base font-bold text-white h-fit">{title}</div>
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-5 pt-4 pb-2 shrink-0">
+        <div className="text-lg font-bold text-white mb-2 h-fit">{title}</div>
+        <div className="flex items-center gap-4">
 
           {headerActions}
 
+          <NodeHeaderButton title="Delete Node" icon={icon} disabled={loading} onClick={() => deleteNode(id)} />
 
-          <Button title="Delete Node"
-            onClick={() => deleteNode(id)}
-            disabled={loading}
-            className="transition-opacity w-8 h-8 duration-200 bg-transparent rounded-full hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed"
-          >
 
-            <X className="size-7 text-white"/>
-
-          </Button>
 
 
         </div>

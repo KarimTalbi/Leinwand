@@ -23,8 +23,8 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
 
   const playIcon = () => {
     return data.summary
-      ? <RefreshCcw className="size-6 text-white"/>
-      : <Play className="size-6 text-white"/>
+      ? <RefreshCcw className="size-8 text-white"/>
+      : <Play className="size-8 text-white"/>
   }
 
   const content = () => {

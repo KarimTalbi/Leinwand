@@ -46,8 +46,8 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
 
   const playIcon = () => {
     return isClosed
-      ? <Undo2 className="size-6 text-white"/>
-      : <Play className="size-6 text-white"/>
+      ? <Undo2 className="size-8 text-white"/>
+      : <Play className="size-8 text-white"/>
   }
 
   const handleClick = () => {
