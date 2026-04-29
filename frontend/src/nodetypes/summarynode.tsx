@@ -27,6 +27,12 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       : <Play className="size-8 text-white"/>
   }
 
+  const titleText = () => {
+    return data.summary
+      ? 'Refresh Summary'
+      : 'Summarize'
+  }
+
   const content = () => {
     return isClosed && data.summary
       ? <NodeDisplayText>{data.summary}</NodeDisplayText>
@@ -54,7 +60,7 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       style={{'--node-color': '#bf4546'} as React.CSSProperties}
       headerActions={
 
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
 
       }>
 

@@ -25,7 +25,7 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
 
   return (
 
-    <div className={`w-180 h-150 flex flex-col rounded-3xl shadow-xl`}
+    <div className={`w-180 h-164.5 flex flex-col rounded-3xl shadow-xl`}
     style={{...style, backgroundColor: `var(--node-color)`}}>
 
 
@@ -36,7 +36,7 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
 
           {headerActions}
 
-          <NodeHeaderButton title="Delete Node" icon={icon} disabled={loading} onClick={() => deleteNode(id)} />
+          <NodeHeaderButton title="Delete" icon={icon} disabled={loading} onClick={() => deleteNode(id)} />
 
 
 

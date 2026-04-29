@@ -50,6 +50,12 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       : <Play className="size-8 text-white"/>
   }
 
+  const titleText = () => {
+    return isClosed
+      ? 'Reset'
+      : 'Send to LLM'
+  }
+
   const handleClick = () => {
     setLoading(true);
 
@@ -69,7 +75,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       headerActions={
         <div className="flex items-center gap-3">
 
-          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title="Send to LLM"/>
+          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
         </div>
       }>
 

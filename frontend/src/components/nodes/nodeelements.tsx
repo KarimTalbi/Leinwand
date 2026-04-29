@@ -78,11 +78,12 @@ const NodeHeaderButton = ({onClick, icon, disabled, title}: NodeHeaderButtonProp
                 hover:opacity-70 hover:bg-transparent disabled:opacity-30 disabled:bg-transparent disabled:cursor-not-allowed">
 
       {icon()}
-      <span
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-5 px-2 py-1 text-xl bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
+
+    </Button>
+    <span
+      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-6 px-3 py-2 text-2xl bg-gray-800 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-pointer-events-none whitespace-nowrap">
           {title}
         </span>
-    </Button>
   </div>
   )
 };
@@ -97,7 +98,7 @@ const NodeTextarea = ({placeholder, value, handleTextChange}: NodeTextareaProps)
         onChange={handleTextChange}
         placeholder={placeholder}
         className={cn(
-          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-lg! text-black',
+          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-3 text-2xl! text-black',
           'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
         )}
       />
@@ -109,13 +110,13 @@ const NodeDisplayText = ({children}: { children?: string }) => {
   if (!children || children === 'thinking...') {
     return (
       <div className="flex-1 p-5 flex items-center justify-center">
-        <span className="text-xl text-muted-foreground animate-pulse">thinking...</span>
+        <span className="text-2xl! text-muted-foreground animate-pulse">thinking...</span>
       </div>
     )
   }
 
   return (
-    <div className="flex-1 text-xl p-5 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
+    <div className="flex-1 text-2xl p-5 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
       {children?.split('\n').map((line, i) => (
         <span key={i} className="block mb-3">{line || '\u00A0'}</span>
       ))}

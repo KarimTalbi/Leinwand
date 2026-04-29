@@ -35,6 +35,12 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
       : <Lock className="size-7 text-white mb-2"/>
   }
 
+  const titleText = () => {
+    return isClosed
+      ? 'Unlock'
+      : 'Lock'
+  }
+
   const handleClick = () => {
     isClosed ? updateNodeClosed(id, false) : handleSave();
   }
@@ -57,7 +63,7 @@ const TextNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<Te
       style={{'--node-color': '#309898'} as React.CSSProperties}
       headerActions={
 
-        <NodeHeaderButton onClick={handleClick} icon={lockIcon}/>
+        <NodeHeaderButton onClick={handleClick} icon={lockIcon} title={titleText()}/>
 
       }>
 
