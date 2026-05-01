@@ -9,7 +9,7 @@ from exceptions import register_exception_handlers
 from routes import user_router, canvas_router, edge_router, node_router
 from utils import setup_logging
 
-DROP_AND_CREATE_DB = False
+DROP_AND_CREATE_DB = True
 
 setup_logging()
 logger = logging.getLogger(__name__)

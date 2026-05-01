@@ -42,7 +42,7 @@ class User(Base, AuditMixin, PrimaryKeyMixin):
 class Node(Base, AuditMixin, PrimaryKeyMixin):
     __tablename__ = "nodes"
 
-    canvas_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("canvas.id"), index=True)
+    canvas_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("canvas.id", ondelete="CASCADE"), index=True)
     type: Mapped[str] = mapped_column(String, index=True)
     position: Mapped[dict[str, float]] = mapped_column(MutableDict.as_mutable(JSONB))
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
@@ -87,5 +87,15 @@ class Canvas(Base, AuditMixin, PrimaryKeyMixin):
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
 
     user: Mapped[User] = relationship(back_populates="canvases")
-    nodes: Mapped[list["Node"]] = relationship(back_populates="canvas")
-    edges: Mapped[list["Edge"]] = relationship(back_populates="canvas")
+    nodes = relationship(
+        "Node",
+        foreign_keys="Node.canvas_id",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    edges = relationship(
+        "Edge",
+        foreign_keys="Edge.canvas_id",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
