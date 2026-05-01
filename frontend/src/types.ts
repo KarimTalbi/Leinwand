@@ -59,15 +59,19 @@ export interface AppState {
   // Flow state
   nodes: (NodeTypes)[];
   edges: Edge[];
-  selectedNodeId: string | null;
   syncing: boolean;
   locked: boolean;
+
+  historyTicket: number;
+  saveSnapshot: () => void;
 
   // Auth actions
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   register: (username: string, password: string) => Promise<void>;
   clearAuthError: () => void;
+
+
 
   // Canvas management actions
   loadCanvases: () => Promise<void>;
@@ -90,7 +94,6 @@ export interface AppState {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
 
-  setSelectedNodeId: (id: string | null) => void;
   setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
 }

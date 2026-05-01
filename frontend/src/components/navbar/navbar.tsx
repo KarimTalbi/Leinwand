@@ -1,7 +1,7 @@
 import {Panel, useReactFlow} from "@xyflow/react";
 import {ChevronLeft, Lock, LockOpen, LucideScan, Redo2, Undo2, ZoomInIcon, ZoomOutIcon} from "lucide-react";
 
-import useStore from "@/store.ts";
+import useStore, {useTemporalStore} from "@/store.ts";
 import {AppState} from "@/types.ts";
 import {useShallow} from "zustand/react/shallow";
 
@@ -20,6 +20,7 @@ const selector = (state: AppState) => ({
 const NavigationBar = () => {
   const {zoomIn, zoomOut, zoomTo} = useReactFlow()
   const {syncing, locked, setLocked, exitCanvas} = useStore(useShallow(selector));
+  const {undo, redo, pastStates, futureStates} = useTemporalStore();
 
 
   return (
@@ -59,11 +60,11 @@ const NavigationBar = () => {
 
         <NavBarButtonGroup>
 
-          <NavbarButton onClick={() => console.log('undo')} title="Undo">
+          <NavbarButton onClick={() => undo()} disabled={pastStates.length === 0} title="Undo">
             <Undo2 className="size-6 text-black"/>
           </NavbarButton>
 
-          <NavbarButton onClick={() => console.log('redo')} title="Redo">
+          <NavbarButton onClick={() => redo()} disabled={futureStates.length === 0} title="Redo">
             <Redo2 className="size-6 text-black"/>
           </NavbarButton>
 
