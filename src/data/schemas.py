@@ -1,27 +1,26 @@
-import uuid
-from typing import Any
+from uuid import UUID
+from typing import Any, Annotated
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, AfterValidator
 from pydantic.alias_generators import to_camel
 
 
-class NodeBase(BaseModel):
+def check_uuid4(v: str) -> UUID:
+    try:
+        return UUID(v, version=4)
+    except ValueError:
+        raise ValueError("Invalid UUID4 format")
+
+
+UUID4Str = Annotated[str, AfterValidator(check_uuid4)]
+
+
+class NodeRead(BaseModel):
+    id: UUID4Str
+    canvas_id: UUID4Str
     type: str
     position: dict[str, float]
     data: dict[str, Any]
-
-
-class NodeCreate(NodeBase): ...
-
-
-class NodeUpdate(BaseModel):
-    position: dict[str, float] | None = None
-    data: dict[str, Any] | None = None
-
-
-class NodeRead(NodeBase):
-    id: uuid.UUID
-    canvas_id: uuid.UUID
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,
@@ -29,24 +28,18 @@ class NodeRead(NodeBase):
         extra="ignore",
     )
 
-
-class EdgeBase(BaseModel):
-    source: uuid.UUID
-    target: uuid.UUID
-    source_handle: str | None = None
-    target_handle: str | None = None
-
-
-class EdgeCreate(EdgeBase): ...
+class LoadDataResponse(BaseModel):
+    nodes: list[NodeRead]
+    edges: list[EdgeRead]
 
 
 class EdgeRead(BaseModel):
-    id: uuid.UUID
-    source: uuid.UUID
-    target: uuid.UUID
+    id: UUID4Str
+    source: UUID4Str
+    target: UUID4Str
     source_handle: str | None = None
     target_handle: str | None = None
-    canvas_id: uuid.UUID
+    canvas_id: UUID4Str
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -56,29 +49,17 @@ class EdgeRead(BaseModel):
     )
 
 
-class CanvasBase(BaseModel):
+class CanvasRead(BaseModel):
+    id: UUID4Str
     name: str
     data: dict[str, Any]
 
-
-class CanvasCreate(CanvasBase): ...
-
-
-class CanvasRead(CanvasBase):
-    id: uuid.UUID
-    data: dict[str, Any]
-
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
         extra="ignore",
     )
-
-
-class CanvasUpdate(BaseModel):
-    name: str | None = None
-    data: dict[str, Any] | None = None
 
 
 class Token(BaseModel):
@@ -96,7 +77,7 @@ class UserBase(BaseModel):
 
 
 class UserAuth(UserBase):
-    id: uuid.UUID
+    id: UUID4Str
 
 
 class UserInDb(UserBase):
