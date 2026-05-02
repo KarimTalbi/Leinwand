@@ -71,11 +71,11 @@ const useStore = create<AppState>()((set, get) => ({
 
       set({authError: null});
 
-      const newUserId = uuidv4()
+      const newUserId = String(uuidv4())
 
       try {
 
-        await api.post('/users/create', {newUserId, username, password});
+        await api.post('/users/create', {id: newUserId, username: username, password: password});
         await get().login(username, password);
 
       } catch (err: unknown) {
@@ -111,14 +111,11 @@ const useStore = create<AppState>()((set, get) => ({
 
       try {
 
-        const [nodesRes, edgesRes] = await Promise.all([
-          api.get(`/node/list/${canvasId}/`),
-          api.get(`/edge/list/${canvasId}/`),
-        ]);
+        const res = await api.get(`/node/list/${canvasId}`)
 
         set({
 
-          nodes: (nodesRes.data ?? []).map((n: {
+          nodes: (res.data.nodes ?? []).map((n: {
             id: string;
             type: string;
             position: { x: number; y: number };
@@ -133,7 +130,7 @@ const useStore = create<AppState>()((set, get) => ({
 
           })),
 
-          edges: (edgesRes.data ?? []).map((e: {
+          edges: (res.data.edges ?? []).map((e: {
             id: string;
             source: string;
             target: string;
@@ -160,11 +157,11 @@ const useStore = create<AppState>()((set, get) => ({
 
     createCanvas: async (name) => {
 
-      const newCanvasId = uuidv4();
+      const newCanvasId = String(uuidv4());
 
       try {
 
-        await api.post<CanvasRead>('/canvas/create/', {newCanvasId, name, data: {}});
+        await api.post<CanvasRead>('/canvas/create/', {id: newCanvasId, name: name, data: {}});
         await get().loadCanvases()
 
       } catch (err) {
@@ -204,6 +201,8 @@ const useStore = create<AppState>()((set, get) => ({
 
         const flowData = {nodes: get().nodes, edges: get().edges}
 
+        console.log(flowData)
+
         await api.post(`/node/sync/${canvasId}/`, flowData);
 
       } catch (err) {
@@ -222,7 +221,7 @@ const useStore = create<AppState>()((set, get) => ({
       const pos = position ?? {x: Math.random() * 400, y: Math.random() * 400};
 
       const newNode = {
-        id: uuidv4(),
+        id: String(uuidv4()),
         type: type,
         position: pos,
         data: nodeInitData[type],
@@ -356,7 +355,7 @@ const useStore = create<AppState>()((set, get) => ({
         edges: [
           ...get().edges,
           {
-            id: uuidv4(),
+            id: String(uuidv4()),
             source: source,
             target: target,
             sourceHandle: 'source-1',
@@ -415,7 +414,7 @@ const useStore = create<AppState>()((set, get) => ({
       set({
         edges: xyAddEdge(
           {
-            id: uuidv4(),
+            id: String(uuidv4()),
             ...connection,
             sourceHandle: connection.sourceHandle ?? null,
             targetHandle: connection.targetHandle ?? null,
