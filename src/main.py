@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data import engine, Base
 from exceptions import register_exception_handlers
-from routes import user_router, canvas_router, edge_router, node_router
+from routes import user_router, canvas_router, node_router
 from utils import setup_logging
 
-DROP_AND_CREATE_DB = True
+DROP_AND_CREATE_DB = False
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -49,7 +49,6 @@ register_exception_handlers(app)
 app.include_router(user_router)
 app.include_router(canvas_router)
 app.include_router(node_router)
-app.include_router(edge_router)
 
 
 # PYTHONPATH=src fastapi dev src/main.py

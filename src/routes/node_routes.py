@@ -50,8 +50,8 @@ async def sync_data(
     await ns.delete_all_edges(session, current_user.id, canvas_id)
     await ns.delete_all_nodes(session, current_user.id, canvas_id)
 
-    await ns.write_nodes(session, data.nodes, canvas_id, current_user.id)
-    await ns.write_edges(session, data.edges, canvas_id, current_user.id)
+    await ns.write_nodes(session, data.nodes, current_user.id, canvas_id)
+    await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
 
 # @node_router.get("/{node_id}/merge/", response_model=NodeRead)

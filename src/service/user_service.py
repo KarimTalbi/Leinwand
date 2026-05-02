@@ -65,7 +65,7 @@ async def create_user(session: AsyncSession, user: UserCreate) -> User:
         raise UserAlreadyExistsException
 
     hashed_password = get_password_hash(user.password)
-    new_user = User(username=user.username, hashed_password=hashed_password)
+    new_user = User(id=user.id, username=user.username, hashed_password=hashed_password)
 
     session.add(new_user)
 

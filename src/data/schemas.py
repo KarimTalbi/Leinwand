@@ -5,9 +5,10 @@ from pydantic import BaseModel, ConfigDict, AfterValidator
 from pydantic.alias_generators import to_camel
 
 
-def check_uuid4(v: str) -> UUID:
+def check_uuid4(v: str) -> str:
     try:
-        return UUID(v, version=4)
+        UUID(v)
+        return v
     except ValueError:
         raise ValueError("Invalid UUID4 format")
 
@@ -17,7 +18,6 @@ UUID4Str = Annotated[str, AfterValidator(check_uuid4)]
 
 class NodeRead(BaseModel):
     id: UUID4Str
-    canvas_id: UUID4Str
     type: str
     position: dict[str, float]
     data: dict[str, Any]
@@ -39,7 +39,6 @@ class EdgeRead(BaseModel):
     target: UUID4Str
     source_handle: str | None = None
     target_handle: str | None = None
-    canvas_id: UUID4Str
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -89,10 +88,11 @@ class UserInDb(UserBase):
 class UserRead(UserBase):
     username: str
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
 
 
 class UserCreate(UserBase):
+    id: UUID4Str
     username: str
     password: str
 
