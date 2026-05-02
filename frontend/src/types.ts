@@ -62,9 +62,6 @@ export interface AppState {
   syncing: boolean;
   locked: boolean;
 
-  historyTicket: number;
-  saveSnapshot: () => void;
-
   // Auth actions
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -81,12 +78,13 @@ export interface AppState {
   exitCanvas: () => void;
 
   // Flow actions
-  addNode: (type: NodeTypeNames, position?: XYPosition) => Promise<string | undefined>;
+  syncCanvas: () => Promise<void>;
+  addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
   promptNodeAction: (id: string) => Promise<void>;
   summaryNodeAction: (id: string) => Promise<void>;
   mergeNodeAction: (id: string) => Promise<void>;
-  addEdge: (source: string, target: string) => Promise<void>;
-  deleteNode: (id: string) => Promise<void>;
+  addEdge: (source: string, target: string) => void;
+  deleteNode: (id: string) => void;
   updateNodeData: (id: string, data: PartialNodeData) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
