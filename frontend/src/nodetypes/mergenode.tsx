@@ -13,8 +13,6 @@ import {useDebouncedCallback} from "use-debounce";
 
 const selector = (state: AppState) => ({
   updateNodeData: state.updateNodeData,
-  deleteNode: state.deleteNode,
-  setSyncing: state.setSyncing,
   mergeNodeAction: state.mergeNodeAction,
 });
 
@@ -31,7 +29,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   const isConnected2 = connections2.length > 0;
 
   const debouncedUpdate = useDebouncedCallback((value: string) => {
-    updateNodeData(id, { solution: value });
+    updateNodeData(id, {solution: value});
   }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,12 +45,14 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   }
 
   const titleText = () => {
+
     if (hasProblem) return 'Send Solution'
     return data.context
-    ? 'Refresh Context' : 'Get Context'
+      ? 'Refresh Context' : 'Get Context'
   }
 
   const content = () => {
+
     if (hasProblem) {
       return (
         <div className="flex flex-col items-center justify-center h-full w-full">
@@ -60,6 +60,10 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
           <NodeTextarea value={localSolution} handleTextChange={handleTextChange} placeholder='Enter your answer...'/>
         </div>
       )
+    }
+
+    if (isClosed && !data.context) {
+      return <NodeDisplayText></NodeDisplayText>
     }
 
     return isClosed && data.context
@@ -73,7 +77,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
 
   const handleClick = () => {
     setLoading(true);
-        void mergeNodeAction(id)
+    void mergeNodeAction(id)
     setLoading(false);
   }
 
@@ -84,7 +88,9 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       loading={loading}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading || !isConnected1 || !isConnected2} title={titleText()}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon}
+                          disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution}
+                          title={titleText()}/>
       }
     >
       {content()}

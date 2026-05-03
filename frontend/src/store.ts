@@ -342,6 +342,14 @@ const useStore = create<AppState>()((set, get) => ({
 
     mergeNodeAction: async (nodeId) => {
 
+      set({
+        nodes: get().nodes.map((n) =>
+          n.id === nodeId
+            ? {...n, data: {...n.data, closed: true, context: '', problems: '', solution: ''}}
+            : n
+        ),
+      });
+
       try {
         const res = await api.get(`/node/${nodeId}/merge/`);
         set({
