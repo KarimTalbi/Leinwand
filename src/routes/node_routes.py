@@ -1,5 +1,4 @@
 from typing import Annotated, Any
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -11,7 +10,7 @@ from data import (
     get_async_session,
     LoadDataResponse, EdgeRead
 )
-from data.schemas import ChatRequest, ChatResponse
+from data.schemas import ChatRequest, ChatResponse, MergeAnswer
 from llm import (
     build_chat_model,
     build_merge_resolution_model,
@@ -57,7 +56,7 @@ async def sync_data(
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
 
-@node_router.get("/{node_id}/merge/")
+@node_router.get("/{node_id}/merge/", response_model=MergeAnswer)
 async def get_context(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     node_id: str,
@@ -69,7 +68,7 @@ async def get_context(
     solution = node.data.get("solution")
 
     if problems and solution:
-        context: list[dict[str, Any]] = node.data.get("context", {})
+        context = node.data.get("context", {})
 
         model = build_merge_resolution_model()
         result = await model.generate_with_context(
@@ -88,7 +87,7 @@ async def get_context(
             }
         )
 
-        return {"context": context, "closed": True}
+        return MergeAnswer(context=context, closed=True)
 
     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
     model = build_merge_validation_model()
@@ -98,12 +97,10 @@ async def get_context(
 
 
     if result.has_issues:  # type: ignore
-        print(result.response)
-        return {"context": ancestors, "problems": result.response, "closed": False},
+        return MergeAnswer(context=ancestors, closed=False, problems=result.response)
 
 
-    return  {"context": ancestors, "closed": True}
-
+    return  MergeAnswer(context=ancestors, closed=True)
 
 
 @node_router.post("/{node_id}/chat/", response_model=ChatResponse)
@@ -119,8 +116,8 @@ async def get_chat_response(
     response = await model.generate_with_context(ancestors, data.prompt)
 
     return ChatResponse(response=response.response)
-#
-#
+
+
 @node_router.post("/{node_id}/streaming_chat/")
 async def get_streaming_chat_response(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
@@ -148,25 +145,3 @@ async def get_streaming_chat_response(
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(token_generator(), media_type="text/event-stream")
-#
-#
-# @node_router.get("/{node_id}/summary", response_model=NodeRead)
-# async def get_summary(
-#     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-#     node_id: str,
-#     session: AsyncSession = Depends(get_async_session),
-# ) -> Any:
-#     ancestors = await ns.get_ancestors(session, node_id, current_user.id)
-#     model = build_summary_model()
-#     response = await model.generate_with_context(
-#         ancestors,
-#         "summarize the topics in the context. Don't mention it being the context or being"
-#         "a summary. Summarize as if i would tell you to summarize a topic.",
-#     )
-#
-#     return await ns.update_node_data(
-#         session,
-#         UUID(node_id),
-#         current_user.id,
-#         {"summary": response.response, "closed": True},
-#     )

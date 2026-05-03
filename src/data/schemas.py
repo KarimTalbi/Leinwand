@@ -119,3 +119,11 @@ class MergeResponse(AiResponse):
 
 class MergeRequest(BaseModel):
     check_consistency: bool
+
+
+class MergeAnswer(BaseModel):
+    closed: bool | None = None
+    problems: str | None = None
+    solution: str | None = None
+    context: list[dict[str, Any]] | None = None
+
