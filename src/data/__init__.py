@@ -17,6 +17,7 @@ from .schemas import (
     UserInDb,
     UserRead,
     LoadDataResponse,
+ChatRequest
 )
 
 __all__ = [
@@ -44,4 +45,5 @@ __all__ = [
     "UserInDb",
     "UserRead",
     "LoadDataResponse",
+    "ChatRequest"
 ]

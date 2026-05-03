@@ -19,6 +19,7 @@ async def delete_all_nodes(session: AsyncSession, user_id: str, canvas_id: str) 
         .where(Node.canvas_id == canvas_id)
         .where(Node.user_id == user_id)
     )
+    await session.flush()
 
 
 
@@ -27,6 +28,7 @@ async def write_nodes(session: AsyncSession, nodes: list[NodeRead], user_id: str
 
     if data:
         await session.execute(insert(Node).values(data))
+    await session.flush()
 
 
 async def get_node(session: AsyncSession, node_id: str, user_id: str) -> Node:
@@ -65,6 +67,7 @@ async def delete_all_edges(session: AsyncSession, user_id: str, canvas_id: str) 
     await session.execute(
         delete(Edge).where(Edge.canvas_id == canvas_id).where(Edge.user_id == user_id)
     )
+    await session.flush()
 
 
 async def write_edges(session: AsyncSession, edges: list[EdgeRead], user_id: str, canvas_id: str):
@@ -72,3 +75,4 @@ async def write_edges(session: AsyncSession, edges: list[EdgeRead], user_id: str
 
     if data:
         await session.execute(insert(Edge).values(data))
+    await session.flush()

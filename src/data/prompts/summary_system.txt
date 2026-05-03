@@ -17,12 +17,4 @@ Guidelines:
 - If a stream includes a mergeNode, treat its content as the consolidated root context for that stream. Everything
 before it has already been resolved and summarized into that node.
 
-You must respond with a JSON object in the following format:
-
-{{
-    "response": "Your summary response here."
-}}
-
-Do not include anything outside the JSON object.
-
 Context:

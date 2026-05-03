@@ -100,6 +100,9 @@ class UserCreate(UserBase):
 class AiResponse(BaseModel):
     response: str
 
+class ChatRequest(BaseModel):
+    prompt: str
+    type: str = "chat"
 
 class ChatResponse(AiResponse): ...
 

@@ -11,6 +11,7 @@ from data import (
     get_async_session,
     LoadDataResponse, EdgeRead
 )
+from data.schemas import ChatRequest, ChatResponse
 from llm import (
     build_chat_model,
     build_merge_resolution_model,
@@ -48,114 +49,105 @@ async def sync_data(
 ) -> None:
 
     await ns.delete_all_edges(session, current_user.id, canvas_id)
+    await session.flush()
     await ns.delete_all_nodes(session, current_user.id, canvas_id)
+    await session.flush()
 
     await ns.write_nodes(session, data.nodes, current_user.id, canvas_id)
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
 
-# @node_router.get("/{node_id}/merge/", response_model=NodeRead)
-# async def get_context(
-#     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-#     node_id: str,
-#     session: AsyncSession = Depends(get_async_session),
-# ) -> Any:
-#     node = await ns.get_node(session, node_id, current_user.id)
-#
-#     problems = node.data.get("problems")
-#     solution = node.data.get("solution")
-#
-#     if problems and solution:
-#         context: list[dict[str, Any]] = node.data.get("context", {})
-#
-#         model = build_merge_resolution_model()
-#         result = await model.generate_with_context(
-#             context,
-#             "write a solution that will be appended"
-#             "at the end of the text so we know which"
-#             "truth will be accepted from now on.",
-#         )
-#
-#         context.append(
-#             {
-#                 "type": "problemResolution",
-#                 "ai": problems,
-#                 "user": solution,
-#                 "solution": result.response,
-#             }
-#         )
-#
-#         return await ns.update_node_data(
-#             session,
-#             UUID(node_id),
-#             current_user.id,
-#             {"context": context, "problems": "", "solution": "", "closed": True},
-#         )
-#
-#     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
-#     model = build_merge_validation_model()
-#     result = await model.generate_with_context(
-#         ancestors, "check the context for inconsistencies"
-#     )
-#
-#     if result.has_issues:  # type: ignore
-#         return await ns.update_node_data(
-#             session,
-#             UUID(node_id),
-#             current_user.id,
-#             {"context": ancestors, "problems": result.response},
-#         )
-#
-#     return await ns.update_node_data(
-#         session, UUID(node_id), current_user.id, {"context": ancestors, "closed": True}
-#     )
-#
-#
-# @node_router.get("/{node_id}/chat/", response_model=NodeRead)
-# async def get_chat_response(
-#     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-#     node_id: str,
-#     session: AsyncSession = Depends(get_async_session),
-# ) -> Any:
-#     node = await ns.get_node(session, node_id, current_user.id)
-#     model = build_chat_model()
-#
-#     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
-#     response = await model.generate_with_context(ancestors, node.data.get("prompt", ""))
-#
-#     return await ns.update_node_data(
-#         session,
-#         node.id,
-#         current_user.id,
-#         {"response": response.response, "closed": True},
-#     )
+@node_router.get("/{node_id}/merge/")
+async def get_context(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    node = await ns.get_node(session, node_id, current_user.id)
+
+    problems = node.data.get("problems")
+    solution = node.data.get("solution")
+
+    if problems and solution:
+        context: list[dict[str, Any]] = node.data.get("context", {})
+
+        model = build_merge_resolution_model()
+        result = await model.generate_with_context(
+            context,
+            "write a solution that will be appended"
+            "at the end of the text so we know which"
+            "truth will be accepted from now on.",
+        )
+
+        context.append(
+            {
+                "type": "problemResolution",
+                "ai": problems,
+                "user": solution,
+                "solution": result.response,
+            }
+        )
+
+        return {"context": context, "closed": True}
+
+    ancestors = await ns.get_ancestors(session, node.id, current_user.id)
+    model = build_merge_validation_model()
+    result = await model.generate_with_context(
+        ancestors, "check the context for inconsistencies"
+    )
+
+
+    if result.has_issues:  # type: ignore
+        print(result.response)
+        return {"context": ancestors, "problems": result.response, "closed": False},
+
+
+    return  {"context": ancestors, "closed": True}
+
+
+
+@node_router.post("/{node_id}/chat/", response_model=ChatResponse)
+async def get_chat_response(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: ChatRequest,
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    model = build_chat_model()
+
+    ancestors = await ns.get_ancestors(session, node_id, current_user.id)
+    response = await model.generate_with_context(ancestors, data.prompt)
+
+    return ChatResponse(response=response.response)
 #
 #
-# @node_router.get("/{node_id}/streaming_chat/")
-# async def get_streaming_chat_response(
-#     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-#     node_id: str,
-#     session: AsyncSession = Depends(get_async_session),
-# ) -> StreamingResponse:
-#     node = await ns.get_node(session, UUID(node_id), current_user.id)
-#     model = build_chat_model()
-#
-#     ancestors = await ns.get_ancestors(session, node.id, current_user.id)
-#
-#     async def token_generator():
-#         accumulated = ""
-#         async for token in model.stream_with_context(
-#             ancestors, node.data.get("prompt", "")
-#         ):
-#             accumulated += token  # type: ignore
-#             yield f"data: {token.replace(chr(10), '\\n')}\n\n"
-#
-#         await ns.update_node_data(
-#             session, node.id, current_user.id, {"response": accumulated, "closed": True}
-#         )
-#         yield "data: [DONE]\n\n"
-#
-#     return StreamingResponse(token_generator(), media_type="text/event-stream")
+@node_router.post("/{node_id}/streaming_chat/")
+async def get_streaming_chat_response(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: ChatRequest,
+    node_id: str,
+    session: AsyncSession = Depends(get_async_session),
+) -> StreamingResponse:
+
+    if data.type == 'summary':
+        model = build_summary_model()
+
+    else:
+        model = build_chat_model()
+
+    ancestors = await ns.get_ancestors(session, node_id, current_user.id)
+
+    async def token_generator():
+        accumulated = ""
+        async for token in model.stream_with_context(
+            ancestors, data.prompt
+        ):
+            accumulated += token  # type: ignore
+            yield f"data: {token.replace(chr(10), '\\n')}\n\n"
+
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(token_generator(), media_type="text/event-stream")
 #
 #
 # @node_router.get("/{node_id}/summary", response_model=NodeRead)
