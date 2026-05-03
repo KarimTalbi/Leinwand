@@ -50,7 +50,7 @@ const SyncIndicator = ({label, syncing}: { label: string, syncing: boolean }) =>
     <span className="text-s font-semibold text-black/80">{label}</span>
 
     <div
-      className={`h-2.5 w-2.5 rounded-full ${syncing ? 'animate-pulse bg-yellow-400' : 'bg-green-500'}`}/>
+      className={`h-2.5 w-2.5 rounded-full ${syncing ? 'bg-yellow-400' : 'bg-green-500'}`}/>
 
   </div>
 

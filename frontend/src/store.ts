@@ -7,7 +7,7 @@ import {AppState, NodeTypeNames, CanvasRead} from './types';
 
 
 const nodeInitData = {
-  promptNode: {prompt: '', response: '', closed: false},
+  promptNode: {prompt: '', response: '', closed: false, config: {}},
   textNode: {text: '', closed: false},
   mergeNode: {context: '', closed: false, problems: '', solution: ''},
   summaryNode: {response: '', closed: false},
@@ -267,6 +267,7 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     promptNodeAction: async (nodeId, prompt, type) => {
+      get().setSyncing(true)
       try {
         const res = await fetch(`${BASE_URL}/node/${nodeId}/streaming_chat/`, {
           headers: {
@@ -336,11 +337,12 @@ const useStore = create<AppState>()((set, get) => ({
         console.error('Error prompting Node', err);
 
       } finally {
-        void get().syncCanvas()
+        void get().syncCanvas
       }
     },
 
     mergeNodeAction: async (nodeId) => {
+      get().setSyncing(true)
 
       set({
         nodes: get().nodes.map((n) =>

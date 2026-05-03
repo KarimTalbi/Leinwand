@@ -1,10 +1,17 @@
 import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@xyflow/react";
 
+export type PromptNodeConfig = {
+  inheritConfig: boolean;
+  provider?: string;
+  model?: string;
+  systemInstructions?: string;
+};
 
 export interface PromptNodeData extends Record<string, unknown> {
   prompt?: string;
   response?: string;
   closed: boolean;
+  config: PromptNodeConfig;
 }
 
 export interface TextNodeData extends Record<string, unknown> {
