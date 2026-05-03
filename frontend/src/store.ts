@@ -10,7 +10,7 @@ const nodeInitData = {
   promptNode: {prompt: '', response: '', closed: false},
   textNode: {text: '', closed: false},
   mergeNode: {context: '', closed: false, problems: '', solution: ''},
-  summaryNode: {summary: '', closed: false},
+  summaryNode: {response: '', closed: false},
 };
 
 const useStore = create<AppState>()((set, get) => ({
@@ -219,9 +219,10 @@ const useStore = create<AppState>()((set, get) => ({
     addNode: (type: NodeTypeNames, position?: XYPosition) => {
 
       const pos = position ?? {x: Math.random() * 400, y: Math.random() * 400};
+      const newNodeId = String(uuidv4());
 
       const newNode = {
-        id: String(uuidv4()),
+        id: newNodeId,
         type: type,
         position: pos,
         data: nodeInitData[type],
@@ -231,18 +232,51 @@ const useStore = create<AppState>()((set, get) => ({
 
       void get().syncCanvas()
 
-      return newNode.id
+      return newNodeId
 
     },
 
-    promptNodeAction: async (nodeId) => {
+    createConnectedNode: (type: NodeTypeNames, source: string, position?: XYPosition) => {
+      const pos = position ?? {x: Math.random() * 400, y: Math.random() * 400};
+      const newNodeId = String(uuidv4());
+
+      const newNode = {
+        id: newNodeId,
+        type: type,
+        position: pos,
+        data: nodeInitData[type],
+      }
+
+      set({nodes: [...get().nodes, newNode]})
+
+      set({
+        edges: [
+          ...get().edges,
+          {
+            id: String(uuidv4()),
+            source: source,
+            target: newNodeId,
+            sourceHandle: 'source-1',
+            targetHandle: 'target-1',
+          },
+        ]
+      });
+
+      void get().syncCanvas()
+
+    },
+
+    promptNodeAction: async (nodeId, prompt, type) => {
       try {
         const res = await fetch(`${BASE_URL}/node/${nodeId}/streaming_chat/`, {
           headers: {
+            'Content-Type': 'application/json',
             'Accept': 'text/event-stream',
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
-
+          method: 'POST',
+          body:
+            JSON.stringify({prompt: prompt, type: type}),
         });
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -298,28 +332,11 @@ const useStore = create<AppState>()((set, get) => ({
         });
 
       } catch (err) {
+
         console.error('Error prompting Node', err);
+
       } finally {
-
-      }
-    },
-
-    summaryNodeAction: async (nodeId) => {
-
-
-      try {
-        const res = await api.get(`/node/${nodeId}/summary/`);
-        set({
-          nodes: get().nodes.map((n) =>
-            n.id === nodeId
-              ? {...n, data: {...n, summary: res.data.data.summary, closed: true}}
-              : n
-          ),
-        });
-      } catch (err) {
-        console.error('Error summarizing', err);
-      } finally {
-
+        void get().syncCanvas()
       }
     },
 
@@ -331,21 +348,25 @@ const useStore = create<AppState>()((set, get) => ({
           nodes: get().nodes.map((n) =>
             n.id === nodeId
               ? {
-                ...n,
-                data: {
-                  ...n,
-                  context: res.data.data.context,
-                  problems: res.data.data.problems || "",
-                  solution: res.data.data.solution || "",
-                  closed: true
+                ...n, data: {
+                  ...n.data,
+                  context: res.data.context,
+                  problems: res.data.problems || "",
+                  solution: res.data.solution || "",
+                  closed: res.data.closed || false,
                 }
               }
               : n
           ),
         });
       } catch (err) {
+
         console.error('Error Merging', err)
+
       } finally {
+
+        void get().syncCanvas()
+
       }
     },
 

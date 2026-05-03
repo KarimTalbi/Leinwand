@@ -20,7 +20,7 @@ export interface MergeNodeData extends Record<string, unknown> {
 }
 
 export interface SummaryNodeData extends Record<string, unknown> {
-  summary: string,
+  response: string,
   closed: boolean
 }
 
@@ -80,8 +80,8 @@ export interface AppState {
   // Flow actions
   syncCanvas: () => Promise<void>;
   addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
-  promptNodeAction: (id: string) => Promise<void>;
-  summaryNodeAction: (id: string) => Promise<void>;
+  createConnectedNode: (type: NodeTypeNames, sourceId: string, position?: XYPosition) => void;
+  promptNodeAction: (id: string, prompt: string, type: string) => Promise<void>;
   mergeNodeAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => void;
   deleteNode: (id: string) => void;

@@ -65,7 +65,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
 
     isClosed
       ? updateNodeClosed(id, false)
-      : promptNodeAction(id);
+      : promptNodeAction(id, data.prompt || '', 'chat');
 
     setLoading(false);
   }
@@ -79,7 +79,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
       headerActions={
         <div className="flex items-center gap-6">
           <NodeHeaderButton onClick={() => null} icon={settingsIcon} disabled={loading} title="Settings"/>
-          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
+          <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading || !localPrompt} title={titleText()}/>
         </div>
       }>
 

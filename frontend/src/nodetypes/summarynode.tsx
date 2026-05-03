@@ -6,48 +6,63 @@ import useStore from "@/store.ts";
 import BaseNode from "@/components/nodes/basenode.tsx";
 import {NodeHeaderButton, DefaultHandles, NodeDisplayText} from "@/components/nodes/nodeelements.tsx";
 import {Play, RefreshCcw} from "lucide-react";
-import {NodeProps} from "@xyflow/react";
+import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 
 const selector = (state: AppState) => ({
   updateNodeClosed: state.updateNodeClosed,
-  summaryNodeAction: state.summaryNodeAction
+  promptNodeAction: state.promptNodeAction,
 });
+
+const prompt = "summarize the topics in the context. Don't mention it being the context or being a summary. Summarize as if i would tell you to summarize a topic.";
 
 
 const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<SummaryNodeType>) => {
   if (!data) return null;
-  const {updateNodeClosed, summaryNodeAction} = useStore(useShallow(selector));
+  const {updateNodeClosed, promptNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
+  const nodes = useNodes();
+
+  const connections = useNodeConnections({handleId: "target-1", handleType: "target"});
+  const isConnected = connections.length > 0;
+
+  const isSourceSummary = isConnected
+    ? nodes.find(n => n.id === connections[0].source)?.type === 'summaryNode'
+    : false;
 
   const playIcon = () => {
-    return data.summary
+    return data.response
       ? <RefreshCcw className="size-8 text-white"/>
       : <Play className="size-8 text-white"/>
   }
 
   const titleText = () => {
-    return data.summary
+    return data.response
       ? 'Refresh Summary'
       : 'Summarize'
   }
 
   const content = () => {
-    return isClosed && data.summary
-      ? <NodeDisplayText>{data.summary}</NodeDisplayText>
-      : <div className="flex justify-center items-center h-full">
+    if (isClosed && data.response) {
+            return <NodeDisplayText children={data.response}/>;
+          }
+    else if (isClosed && !data.response) {
+      return <NodeDisplayText></NodeDisplayText>
+    }
+
+     return ( <div className="flex justify-center items-center h-full">
         <div className="flex flex-col justify-center align-middle">
           <p className="text-2xl font-bold mb-15">Connect Nodes and run to Summarize!</p>
         </div>
-      </div>
+      </div> )
   }
 
   const handleClick = () => {
     setLoading(true);
     isClosed
       ? updateNodeClosed(id, false)
-      : void summaryNodeAction(id);
+      : void promptNodeAction(id, prompt, 'summary');
     setLoading(false);
   }
 
@@ -60,7 +75,7 @@ const SummaryNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps
       style={{'--node-color': '#bf4546'} as React.CSSProperties}
       headerActions={
 
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading || !isConnected || isSourceSummary} title={titleText()}/>
 
       }>
 

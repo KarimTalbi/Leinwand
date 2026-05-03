@@ -8,7 +8,7 @@ import {AppState, MergeNodeType} from '../types.ts';
 import BaseNode from '@/components/nodes/basenode.tsx';
 import MergeContent from '@/components/nodes/mergenodesections.tsx';
 import {MergeHandles, NodeDisplayText, NodeHeaderButton, NodeTextarea} from '@/components/nodes/nodeelements.tsx'
-import {NodeProps} from "@xyflow/react";
+import {NodeProps, useNodeConnections} from "@xyflow/react";
 import {useDebouncedCallback} from "use-debounce";
 
 const selector = (state: AppState) => ({
@@ -24,6 +24,11 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
   const isClosed = data.closed;
   const hasProblem = data.problems;
   const [localSolution, setLocalSolution] = useState(data.solution);
+
+  const connections1 = useNodeConnections({handleId: "target-1", handleType: "target"});
+  const connections2 = useNodeConnections({handleId: "target-2", handleType: "target"});
+  const isConnected1 = connections1.length > 0;
+  const isConnected2 = connections2.length > 0;
 
   const debouncedUpdate = useDebouncedCallback((value: string) => {
     updateNodeData(id, { solution: value });
@@ -79,7 +84,7 @@ const MergeNode = ({id, positionAbsoluteX, positionAbsoluteY, data}: NodeProps<M
       loading={loading}
       style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       headerActions={
-        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading} title={titleText()}/>
+        <NodeHeaderButton onClick={handleClick} icon={playIcon} disabled={loading || !isConnected1 || !isConnected2} title={titleText()}/>
       }
     >
       {content()}

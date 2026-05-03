@@ -1,14 +1,19 @@
 import {useReactFlow} from "@xyflow/react";
+import {useShallow} from "zustand/react/shallow";
 
 import useStore from "@/store.ts";
-import {NodeTypeNames} from "@/types.ts";
+import {AppState, NodeTypeNames} from "@/types.ts";
 
 import DropdownMenu from "@/components/menus/dropdownmenu.tsx"
 
+const selector = (state: AppState) => ({
+  addNode: state.addNode,
+  createConnectedNode: state.createConnectedNode,
+});
 
 const AddNodeMenu = ({sourceId, posX, posY, isOnNode}: { sourceId?: string, posX?: number, posY?: number, isOnNode: boolean }) => {
   const {screenToFlowPosition} = useReactFlow()
-  const {addNode, addEdge} = useStore();
+  const {addNode, createConnectedNode} = useStore(useShallow(selector));
 
 
   const addItem = [
@@ -19,7 +24,7 @@ const AddNodeMenu = ({sourceId, posX, posY, isOnNode}: { sourceId?: string, posX
   ];
 
 
-  const onCreateNode = async (type: NodeTypeNames,) => {
+  const onCreateNode = async (type: NodeTypeNames) => {
 
     if (!sourceId) {
 
@@ -27,18 +32,13 @@ const AddNodeMenu = ({sourceId, posX, posY, isOnNode}: { sourceId?: string, posX
         {x: window.innerWidth / 2, y: window.innerHeight / 2}
       );
 
-      void addNode(type, position);
+      addNode(type, position);
 
     } else if (sourceId && posX && posY) {
 
       const position = {x: posX + 800, y: posY};
-      const newNodeId = await addNode(type, position);
 
-      if (newNodeId) {
-
-        void addEdge(sourceId, newNodeId)
-
-      }
+      createConnectedNode(type, sourceId, position);
 
     } else {
       console.error("Invalid sourceId or position");
