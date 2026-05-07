@@ -124,7 +124,7 @@ const PromptNode = ({id, data, positionAbsoluteX, positionAbsoluteY}: NodeProps<
           <NodeHeaderButton
             onClick={() => setSettingsOpen(!settingsOpen)}
             icon={settingsIcon}
-            disabled={loading}
+            disabled={loading || !!data.response}
             title="Settings"
           />
 

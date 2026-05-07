@@ -5,7 +5,7 @@ import useStore from "@/store.ts";
 import {AppState} from "@/types.ts";
 import {useShallow} from "zustand/react/shallow";
 
-import {NavbarButton, NavBarButtonGroup, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
+import {NavbarButton, SyncIndicator} from "@/components/navbar/navbarelements.tsx";
 import AddNodeMenu from '@/components/nodes/addnode.tsx'
 
 
@@ -27,7 +27,7 @@ const NavigationBar = () => {
       <Panel position="bottom-center" className="flex flex-row items-center justify-between gap-4">
 
 
-        <NavBarButtonGroup>
+        <div className="flex flex-row items-center justify-between mb-3 bg-white/50 rounded-full shadow-md backdrop-blur-sm">
 
 
 
@@ -47,17 +47,17 @@ const NavigationBar = () => {
             {locked ? <LockOpen className="size-6 text-black"/> : <Lock className="size-6 text-black"/>}
           </NavbarButton>
 
-        </NavBarButtonGroup>
+        </div>
 
 
-        <NavBarButtonGroup>
+        <div className="flex flex-row items-center justify-between mb-3 bg-white/50 rounded-full shadow-md backdrop-blur-sm">
 
           <AddNodeMenu isOnNode={false}/>
 
-        </NavBarButtonGroup>
+        </div>
 
 
-        <NavBarButtonGroup>
+        <div className="flex flex-row items-center justify-between mb-3 bg-white/50 rounded-full shadow-md backdrop-blur-sm">
 
           <NavbarButton onClick={() => console.log("undo")} title="Undo">
             <Undo2 className="size-6 text-black"/>
@@ -67,7 +67,7 @@ const NavigationBar = () => {
             <Redo2 className="size-6 text-black"/>
           </NavbarButton>
 
-        </NavBarButtonGroup>
+        </div>
 
 
       </Panel>
@@ -76,20 +76,20 @@ const NavigationBar = () => {
       <Panel position="top-right" className="flex flex-row items-center justify-between gap-4">
 
 
-        <NavBarButtonGroup>
+        <div className="flex flex-row items-center justify-between mb-3 bg-white/50 rounded-full shadow-md backdrop-blur-sm">
 
           <NavbarButton onClick={exitCanvas} title="Exit Canvas">
             <ChevronLeft className="size-6 text-black"/>
           </NavbarButton>
 
-        </NavBarButtonGroup>
+        </div>
 
 
-        <NavBarButtonGroup>
+        <div className="flex flex-row items-center justify-between mb-3 bg-white/50 rounded-full shadow-md backdrop-blur-sm">
 
           <SyncIndicator syncing={syncing} label="Status"/>
 
-        </NavBarButtonGroup>
+        </div>
 
 
       </Panel>
