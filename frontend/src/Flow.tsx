@@ -9,7 +9,7 @@ import SummaryNode from './nodetypes/summarynode.tsx';
 import useStore from './store';
 import {AppState} from './types'
 
-import NavigationBar from '@/components/navbar/navbar.tsx';
+import NavigationBar from '@/components/Navigation/navigation-bar.tsx';
 
 import '@xyflow/react/dist/style.css';
 

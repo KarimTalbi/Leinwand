@@ -3,6 +3,7 @@ import {X} from "lucide-react";
 
 import useStore from "@/store.ts";
 import {NodeHeaderButton} from "@/components/nodes/nodeelements.tsx";
+import AddNodeMenu from "@/components/menus/AddNodeMenu.tsx";
 
 
 interface BaseNodeProps {
@@ -25,8 +26,12 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
 
   return (
 
-    <div className={`w-180 h-164.5 flex flex-col rounded-3xl shadow-xl`}
+    <div className={`w-180 h-164.5 flex flex-col rounded-3xl shadow-xl indicator`}
     style={{...style, backgroundColor: `var(--node-color)`}}>
+
+      <div className="indicator-item indicator-bottom pt-5 pl-5">
+        <AddNodeMenu color="default"/>
+      </div>
 
 
       {/* Header */}
@@ -49,6 +54,10 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
       <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
         {children}
       </div>
+
+
+
+
 
 
     </div>

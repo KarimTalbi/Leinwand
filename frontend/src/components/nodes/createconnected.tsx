@@ -1,7 +1,7 @@
 import React from "react";
 import {Handle, Position} from "@xyflow/react";
 
-import AddNodeMenu from "@/components/nodes/addnode.tsx";
+import AddNodeMenu from "@/components/menus/AddNodeMenu.tsx";
 
 
 const ConnectionHandle = ({sourceId, posX, posY, style}: {
@@ -18,9 +18,9 @@ const ConnectionHandle = ({sourceId, posX, posY, style}: {
             className="flex flex-col w-4! h-8! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!"
             style={{...style, backgroundColor: 'var(--node-color)'}}>
 
-      <div className="flex flex-col items-center justify-center mt-60 bg-black/20 rounded-r-full h-12 w-12">
+      <div className="">
 
-        <AddNodeMenu sourceId={sourceId} posX={posX} posY={posY} isOnNode={true}/>
+        <AddNodeMenu sourceId={sourceId} posX={posX} posY={posY} color="primary" size="lg"/>
 
       </div>
 
