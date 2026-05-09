@@ -12,7 +12,7 @@ const selector = (state: AppState) => ({
 });
 
 type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
-type ButtonColor = "primary" | "secondary" | "accent" | "ghost" | "link";
+type ButtonColor = "primary" | "secondary" | "accent" | "ghost" | "link" | "default";
 
 const sizeStyles: Record<ButtonSize, string> = {
   xs: "btn-xs",
@@ -23,6 +23,7 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 const colorStyles: Record<ButtonColor, string> = {
+  default: "btn-default",
   primary: "btn-primary",
   secondary: "btn-secondary",
   accent: "btn-accent",
@@ -78,7 +79,11 @@ const AddNodeMenu = ({sourceId, posX, posY, size = "lg", color = "secondary", cl
         className
       )}
     >
-      <div className="tooltip tooltip-right" data-tip="Add Node">
+      <div className={cn(
+        "tooltip tooltip-right", size === "xl" ? "[&::before]:text-2xl" : ""
+      )}
+           data-tip="Add Node"
+      >
         <div
           tabIndex={0}
           role="button"
@@ -93,7 +98,13 @@ const AddNodeMenu = ({sourceId, posX, posY, size = "lg", color = "secondary", cl
       </div>
 
       {nodeButtons.map(({tip, type, icon}) => (
-        <div key={type} className="tooltip tooltip-right" data-tip={tip}>
+        <div
+          key={type}
+          className={cn(
+            "tooltip tooltip-right", size === "xl" ? "[&::before]:text-2xl" : ""
+          )}
+          data-tip={tip}
+        >
           <button
             className={cn("btn btn-circle", sizeStyles[size])}
             onClick={() => onCreateNode(type)}

@@ -22,8 +22,6 @@ interface NodeTextareaProps {
 
 
 
-
-
 const DefaultHandles = ({style, sourceId, posX, posY}: {
   style?: React.CSSProperties,
   sourceId: string,

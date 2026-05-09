@@ -12,6 +12,7 @@ interface CircleIconButtonProps {
   size?: CircleIconButtonSize;
   tooltipPosition?: TooltipPosition;
   className?: string;
+  bigTooltip?: boolean;
 }
 
 const sizeStyles: Record<CircleIconButtonSize, string> = {
@@ -38,13 +39,15 @@ const CircleIconButton = (
     size = "lg",
     tooltipPosition = "top",
     className,
+    bigTooltip = false,
   }: CircleIconButtonProps) => {
 
   return (
 
     <div className={cn(
       "tooltip",
-      tooltipPositionStyles[tooltipPosition]
+      tooltipPositionStyles[tooltipPosition],
+      bigTooltip ? "[&::before]:text-2xl" : ""
     )}
          data-tip={title}
     >
@@ -53,9 +56,10 @@ const CircleIconButton = (
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          "btn btn-circle btn-ghost btn-default border",
+          "btn btn-circle btn-ghost",
           className,
           sizeStyles[size],
+          disabled ? "opacity-70 cursor-not-allowed" : "hover:opacity-100"
         )}
       >
 

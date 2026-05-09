@@ -26,11 +26,11 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
 
   return (
 
-    <div className={`w-180 h-164.5 flex flex-col rounded-3xl shadow-xl indicator`}
+    <div className={`w-180 h-164.5 flex flex-col rounded-2xl shadow-xl indicator`}
     style={{...style, backgroundColor: `var(--node-color)`}}>
 
-      <div className="indicator-item indicator-bottom pt-5 pl-5">
-        <AddNodeMenu color="default"/>
+      <div className="indicator-item indicator-bottom pt-17 pl-17">
+        <AddNodeMenu color="default" size="xl"/>
       </div>
 
 
@@ -44,8 +44,6 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
           <NodeHeaderButton title="Delete" icon={icon} disabled={loading} onClick={() => deleteNode(id)} />
 
 
-
-
         </div>
       </div>
 
@@ -54,11 +52,6 @@ const BaseNode = ({id, title, loading, headerActions, children, style}: BaseNode
       <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
         {children}
       </div>
-
-
-
-
-
 
     </div>
 
