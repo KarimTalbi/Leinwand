@@ -8,19 +8,20 @@ interface NodeTextareaProps {
   id: string,
   initialValue?: string,
   placeholder?: string
+  dataKey?: string
 }
 
 interface NodeDisplayTextProps {
   children?: string
 }
 
-export const NodeTextarea = ({id, initialValue, placeholder}: NodeTextareaProps) => {
+export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}: NodeTextareaProps) => {
 
   const [localPrompt, setLocalPrompt] = useState(initialValue || "");
   const updateNodeData = useStore((s) => s.updateNodeData);
 
   const debouncedUpdate = useDebouncedCallback((value: string) => {
-    updateNodeData(id, {prompt: value});
+    updateNodeData(id, {[dataKey]: value});
   }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

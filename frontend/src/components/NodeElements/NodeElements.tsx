@@ -20,7 +20,7 @@ interface HeaderProps {
 
 interface DeleteButtonProps {
   id: string,
-  loading: boolean
+  loading?: boolean
 }
 
 export const NodeBackground = ({style, children}: BackgroundProps) => (
