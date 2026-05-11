@@ -3,8 +3,8 @@ import {Panel, useReactFlow} from "@xyflow/react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, Lock, LockOpen, LucideScan, ZoomInIcon, ZoomOutIcon} from "lucide-react";
-import AddNodeMenu from "@/components/menus/AddNodeMenu.tsx";
-import CircleIconButton from "@/components/menus/CircleButton.tsx";
+import AddNodeMenu from "../Buttons/AddNodeMenu.tsx";
+import CircleIconButton from "../Buttons/CircleButton.tsx";
 
 const selector = (state: AppState) => ({
   syncing: state.syncing,

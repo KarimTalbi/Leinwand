@@ -1,7 +1,7 @@
 import React from "react";
 
 import {X} from "lucide-react";
-import CircleIconButton from "@/components/menus/CircleButton.tsx";
+import CircleIconButton from "../Buttons/CircleButton.tsx";
 import useStore from "@/store.ts";
 
 interface BackgroundProps {

@@ -2,8 +2,8 @@ import {create} from 'zustand';
 import {v4 as uuidv4} from 'uuid'
 import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} from "@xyflow/react";
 
-import api, {BASE_URL} from './api';
-import {AppState, NodeTypeNames, CanvasRead} from './types';
+import api, {BASE_URL} from '@/api';
+import {AppState, NodeTypeNames, CanvasRead} from '@/types';
 
 
 const nodeInitData = {
@@ -280,8 +280,11 @@ const useStore = create<AppState>()((set, get) => ({
             JSON.stringify({prompt: prompt, type: type}),
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        if (!res.body) throw new Error('No response body');
+        if (!res.ok || !res.body) {
+          console.error(`HTTP ${res.status} or no response body`);
+          get().setSyncing(false);
+          return;
+        }
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -337,7 +340,7 @@ const useStore = create<AppState>()((set, get) => ({
         console.error('Error prompting Node', err);
 
       } finally {
-        void get().syncCanvas
+        void get().syncCanvas()
       }
     },
 

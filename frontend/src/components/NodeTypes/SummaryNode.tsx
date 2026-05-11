@@ -5,7 +5,7 @@ import useStore from '../../store.ts';
 import {AppState, SummaryNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeDisplayThinking} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CircleIconButton from "@/components/menus/CircleButton.tsx";
+import CircleIconButton from "../Buttons/CircleButton.tsx";
 import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";

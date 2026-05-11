@@ -1,10 +1,10 @@
 import {ReactFlowProvider} from "@xyflow/react";
 import {useShallow} from 'zustand/react/shallow';
-import Flow from './Flow.tsx';
-import LoginPage from './components/pages/LoginPage.tsx';
-import Dashboard from './components/pages/Dashboard.tsx';
-import useStore from './store.ts';
-import './App.css';
+import Flow from '@/Flow.tsx';
+import LoginPage from '@/components/pages/LoginPage.tsx';
+import Dashboard from '@/components/pages/Dashboard.tsx';
+import useStore from '@/store.ts';
+import '@/App.css';
 
 function App() {
     const {token, currentCanvasId} = useStore(
