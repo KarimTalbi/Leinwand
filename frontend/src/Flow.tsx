@@ -9,7 +9,7 @@ import SummaryNode from './nodetypes/summarynode.tsx';
 import useStore from './store';
 import {AppState} from './types'
 
-import NavigationBar from '@/components/Navigation/navigation-bar.tsx';
+import NavigationOverlay from './components/Navigation/NavigationOverlay.tsx';
 
 import '@xyflow/react/dist/style.css';
 
@@ -96,7 +96,7 @@ function Flow() {
         proOptions={{hideAttribution: true}}
       >
 
-        <NavigationBar />
+        <NavigationOverlay />
 
 
         <Background

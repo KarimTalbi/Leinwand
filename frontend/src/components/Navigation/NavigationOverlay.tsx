@@ -14,7 +14,7 @@ const selector = (state: AppState) => ({
 });
 
 
-const NavigationBar = () => {
+const NavigationOverlay = () => {
   const {zoomIn, zoomOut, zoomTo} = useReactFlow()
   const {locked, setLocked, exitCanvas} = useStore(useShallow(selector));
 
@@ -72,4 +72,4 @@ const NavigationBar = () => {
   )
 };
 
-export default NavigationBar;
+export default NavigationOverlay;

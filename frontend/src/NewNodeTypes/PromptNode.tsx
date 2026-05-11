@@ -80,14 +80,17 @@ const PromptNode = (
           isClosed
             ? !!data.response
 
-              ? <div>
+              ? <div className="flex flex-col h-full justify-between">
                 <NodeDisplayText>{data.response}</NodeDisplayText>
-                <DisplayUserMessage></DisplayUserMessage>
+                <DisplayUserMessage>
+                  {data.prompt}
+                </DisplayUserMessage>
               </div>
               : <NodeDisplayThinking/>
 
             : <NodeTextarea id={id} initialValue={data.prompt} placeholder={'Enter your prompt...'}/>
         }
+
       </NodeForeground>
 
       <ConnectionHandles
