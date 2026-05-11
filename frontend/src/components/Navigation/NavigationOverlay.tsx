@@ -2,7 +2,7 @@ import {AppState} from "@/types.ts";
 import {Panel, useReactFlow} from "@xyflow/react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {ChevronLeft, Lock, LockOpen, LucideScan, ZoomInIcon, ZoomOutIcon} from "lucide-react";
+import {ChevronLeft, Lock, LockOpen, LucideScan, ZoomInIcon, ZoomOutIcon, Settings2} from "lucide-react";
 import AddNodeMenu from "../Buttons/AddNodeMenu.tsx";
 import CircleIconButton from "../Buttons/CircleButton.tsx";
 
@@ -63,6 +63,10 @@ const NavigationOverlay = () => {
 
           <CircleIconButton onClick={exitCanvas} title="Exit" tooltipPosition="bottom">
             <ChevronLeft/>
+          </CircleIconButton>
+
+          <CircleIconButton onClick={() => null} title="Settings" tooltipPosition="bottom">
+            <Settings2/>
           </CircleIconButton>
 
         </div>
