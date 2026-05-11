@@ -39,7 +39,7 @@ export function ZoomSlider({
   return (
     <Panel
       className={cn(
-        "bg-primary-foreground text-foreground flex gap-1 rounded-md p-1",
+        "bg-primary-foreground text-foreground flex gap-1 rounded-md p-1 px-2",
         orientation === "horizontal" ? "flex-row" : "flex-col",
         className,
       )}
