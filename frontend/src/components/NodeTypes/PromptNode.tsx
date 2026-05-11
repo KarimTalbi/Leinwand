@@ -2,8 +2,8 @@ import React, {memo, useState} from 'react';
 import {NodeProps} from "@xyflow/react";
 
 
-import useStore from '../store.ts';
-import {AppState, PromptNodeType} from "../types.ts";
+import useStore from '@/store.ts';
+import {AppState, PromptNodeType} from "@/types.ts";
 import {
   DisplayUserMessage,
   NodeDisplayText,

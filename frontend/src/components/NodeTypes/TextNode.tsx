@@ -1,8 +1,8 @@
 import React, {memo} from 'react';
 import {NodeProps} from "@xyflow/react";
 
-import useStore from '../store.ts';
-import {AppState, TextNodeType} from "../types.ts";
+import useStore from '@/store.ts';
+import {AppState, TextNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeTextarea} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import CircleIconButton from "@/components/menus/CircleButton.tsx";

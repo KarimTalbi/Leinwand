@@ -1,10 +1,10 @@
 import {useShallow} from 'zustand/react/shallow'
 import {ReactFlow, Background, NodeTypes, MiniMap, Node} from '@xyflow/react';
 
-import PromptNode from './NewNodeTypes/PromptNode.tsx';
-import TextNode from './NewNodeTypes/TextNode.tsx';
-import MergeNode from './nodetypes/mergenode.tsx';
-import SummaryNode from './NewNodeTypes/SummaryNode.tsx';
+import PromptNode from './components/NodeTypes/PromptNode.tsx';
+import TextNode from './components/NodeTypes/TextNode.tsx';
+import MergeNode from './components/NodeTypes/MergeNode.tsx';
+import SummaryNode from './components/NodeTypes/SummaryNode.tsx';
 
 import useStore from './store';
 import {AppState} from './types'
