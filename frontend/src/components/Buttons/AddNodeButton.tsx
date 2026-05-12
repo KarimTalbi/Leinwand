@@ -33,15 +33,17 @@ const selector = (state: AppState) => ({
   createConnectedNode: state.createConnectedNode,
 });
 
-export const AddNodeButton = ({
-                                sourceId,
-                                posX,
-                                posY,
-                                size,
-                                color,
-                                style,
-                                orientation = "vertical"
-                              }: AddNodeButtonProps) => {
+export const AddNodeButton = (
+  {
+    sourceId,
+    posX,
+    posY,
+    size,
+    color,
+    style,
+    orientation = "vertical"
+  }: AddNodeButtonProps) => {
+
   const [isOpen, setIsOpen] = useState(false);
   const {screenToFlowPosition} = useReactFlow()
   const {addNode, createConnectedNode} = useStore(useShallow(selector));

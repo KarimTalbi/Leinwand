@@ -9,6 +9,7 @@ import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
+import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 
 const prompt = "summarize the topics in the context. Don't mention it being the context or being a summary. Summarize as if i would tell you to summarize a topic.";
 
@@ -45,25 +46,31 @@ const SummaryNode = (
     <NodeBackground style={{'--node-color': '#bf4546'} as React.CSSProperties}>
       <NodeHeader title="Summary Node">
 
-        <CustomButton
-          onClick={() => null}
-          buttonStyle="circle"
-          disabled={loading}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Settings2/>
-        </CustomButton>
+        <ToolTip position="top" label="Settings">
+          <CustomButton
+            onClick={() => null}
+            buttonStyle="circle"
+            disabled={loading}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Settings2/>
+          </CustomButton>
+        </ToolTip>
 
-        <CustomButton
-          onClick={handleClick}
-          buttonStyle="circle"
-          disabled={loading || isClosed || isSourceSummary || !isConnected}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Play/>
-        </CustomButton>
+        <ToolTip position="top" label="Get Summary">
+          <CustomButton
+            onClick={handleClick}
+            buttonStyle="circle"
+            disabled={loading || isClosed || isSourceSummary || !isConnected}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Play/>
+          </CustomButton>
+        </ToolTip>
 
-        <DeleteButton id={id} loading={loading}/>
+        <ToolTip position="top" label="Delete Node">
+          <DeleteButton id={id} loading={loading}/>
+        </ToolTip>
 
       </NodeHeader>
 

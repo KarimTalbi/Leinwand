@@ -9,6 +9,7 @@ import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {Lock, LockOpen} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
+import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -35,16 +36,20 @@ const TextNode = (
     <NodeBackground style={{'--node-color': '#309898'} as React.CSSProperties}>
       <NodeHeader title="Text Node">
 
-        <CustomButton
-          onClick={handleClick}
-          buttonStyle="circle"
-          disabled={!data.text}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          {isClosed ? <LockOpen/> : <Lock/>}
-        </CustomButton>
+        <ToolTip position="top" label="Lock Node">
+          <CustomButton
+            onClick={handleClick}
+            buttonStyle="circle"
+            disabled={!data.text}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            {isClosed ? <LockOpen/> : <Lock/>}
+          </CustomButton>
+        </ToolTip>
 
-        <DeleteButton id={id}/>
+        <ToolTip position="top" label="Delete Node">
+          <DeleteButton id={id}/>
+        </ToolTip>
 
       </NodeHeader>
 

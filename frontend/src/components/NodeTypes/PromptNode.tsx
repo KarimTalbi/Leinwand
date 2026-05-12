@@ -15,6 +15,7 @@ import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
+import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -35,7 +36,7 @@ const PromptNode = (
 
   const handleClick = () => {
     setLoading(true);
-      void promptNodeAction(id, data.prompt || '', 'chat');
+    void promptNodeAction(id, data.prompt || '', 'chat');
     setLoading(false);
   }
 
@@ -43,25 +44,31 @@ const PromptNode = (
     <NodeBackground style={{'--node-color': '#ec4899'} as React.CSSProperties}>
       <NodeHeader title="Prompt Node">
 
-        <CustomButton
-          onClick={() => null}
-          buttonStyle="circle"
-          disabled={loading}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Settings2/>
-        </CustomButton>
+        <ToolTip position="top" label="Settings">
+          <CustomButton
+            onClick={() => null}
+            buttonStyle="circle"
+            disabled={loading}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Settings2/>
+          </CustomButton>
+        </ToolTip>
 
-        <CustomButton
-          onClick={handleClick}
-          buttonStyle="circle"
-          disabled={loading || !data.prompt || isClosed}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Play/>
-        </CustomButton>
+        <ToolTip position="top" label="Send to LLM">
+          <CustomButton
+            onClick={handleClick}
+            buttonStyle="circle"
+            disabled={loading || !data.prompt || isClosed}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Play/>
+          </CustomButton>
+        </ToolTip>
 
-        <DeleteButton id={id} loading={loading}/>
+        <ToolTip position="top" label="Delete Node">
+          <DeleteButton id={id} loading={loading}/>
+        </ToolTip>
 
       </NodeHeader>
 

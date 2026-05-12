@@ -15,6 +15,7 @@ import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
+import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -49,25 +50,31 @@ const MergeNode = (
     <NodeBackground style={{'--node-color': '#f5c45e'} as React.CSSProperties}>
       <NodeHeader title="Merge Node">
 
-        <CustomButton
-          onClick={() => null}
-          buttonStyle="circle"
-          disabled={loading}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Settings2/>
-        </CustomButton>
+        <ToolTip position="top" label="Settings">
+          <CustomButton
+            onClick={() => null}
+            buttonStyle="circle"
+            disabled={loading}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Settings2/>
+          </CustomButton>
+        </ToolTip>
 
-        <CustomButton
-          onClick={handleClick}
-          buttonStyle="circle"
-          disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed}
-          className="bg-white text-black  border-[#e5e5e5] border"
-        >
-          <Play/>
-        </CustomButton>
+        <ToolTip position="top" label="Merge Streams">
+          <CustomButton
+            onClick={handleClick}
+            buttonStyle="circle"
+            disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed}
+            className="bg-white text-black  border-[#e5e5e5] border"
+          >
+            <Play/>
+          </CustomButton>
+        </ToolTip>
 
-        <DeleteButton id={id} loading={loading}/>
+        <ToolTip position="top" label="Delete Node">
+          <DeleteButton id={id} loading={loading}/>
+        </ToolTip>
 
       </NodeHeader>
 
@@ -86,8 +93,8 @@ const MergeNode = (
 
               ? <NodeDisplayThinking/>
               : (<div className="flex flex-col h-full justify-center items-center">
-                  <p className="text-2xl font-bold mb-15">Connect Node and press Play to get a summary</p>
-                </div>)
+                <p className="text-2xl font-bold mb-15">Connect Node and press Play to get a summary</p>
+              </div>)
         }
 
       </NodeForeground>
