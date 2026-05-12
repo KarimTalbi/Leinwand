@@ -5,7 +5,7 @@ import useStore from '../../store.ts';
 import {AppState, SummaryNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeDisplayThinking} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CircleIconButton from "../Buttons/CircleButton.tsx";
+import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
@@ -45,27 +45,23 @@ const SummaryNode = (
     <NodeBackground style={{'--node-color': '#bf4546'} as React.CSSProperties}>
       <NodeHeader title="Summary Node">
 
-        <CircleIconButton
+        <CustomButton
           onClick={() => null}
-          title="Config"
-          tooltipPosition="top"
-          bigTooltip={true}
+          buttonStyle="circle"
           disabled={loading}
           className="bg-white text-black  border-[#e5e5e5] border"
         >
           <Settings2/>
-        </CircleIconButton>
+        </CustomButton>
 
-        <CircleIconButton
+        <CustomButton
           onClick={handleClick}
-          title={!isConnected ? 'Connect Node' : isSourceSummary ? "Can't summarize from a summary" : "Get Summary"}
-          tooltipPosition="top"
-          bigTooltip={true}
+          buttonStyle="circle"
           disabled={loading || isClosed || isSourceSummary || !isConnected}
           className="bg-white text-black  border-[#e5e5e5] border"
         >
           <Play/>
-        </CircleIconButton>
+        </CustomButton>
 
         <DeleteButton id={id} loading={loading}/>
 

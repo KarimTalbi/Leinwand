@@ -1,7 +1,7 @@
 import React from "react";
 
 import {X} from "lucide-react";
-import CircleIconButton from "../Buttons/CircleButton.tsx";
+import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import useStore from "@/store.ts";
 
 interface BackgroundProps {
@@ -25,7 +25,7 @@ interface DeleteButtonProps {
 
 export const NodeBackground = ({style, children}: BackgroundProps) => (
   <div
-    className='w-180 h-164.5 flex flex-col rounded-2xl shadow-xl'
+    className='w-180 h-164.5 flex flex-col rounded-2xl'
     style={{...style, backgroundColor: `var(--node-color)`}}
   >
     {children}
@@ -34,7 +34,7 @@ export const NodeBackground = ({style, children}: BackgroundProps) => (
 
 
 export const NodeForeground = ({children}: ForegroundProps) => (
-  <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl">
+  <div className="flex flex-col flex-1 min-h-0 p-3 bg-white rounded-2xl m-1">
     {children}
   </div>
 )
@@ -54,16 +54,14 @@ export const DeleteButton = ({id, loading}: DeleteButtonProps) => {
   const {deleteNode} = useStore();
 
   return (
-    <CircleIconButton
+    <CustomButton
       onClick={() => deleteNode(id)}
-      title="Delete"
-      tooltipPosition="top"
-      bigTooltip={true}
+      buttonStyle="circle"
       disabled={loading}
       className="bg-white text-black  border-[#e5e5e5] border"
     >
       <X/>
-    </CircleIconButton>
+    </CustomButton>
   )
 }
 

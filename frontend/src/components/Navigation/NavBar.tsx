@@ -1,0 +1,42 @@
+import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
+import CustomButton from "@/components/Buttons/CustomButton.tsx";
+import {ChevronLeft, Settings2} from "lucide-react";
+import {AppState} from "@/types.ts";
+import useStore from "@/store.ts";
+import {useShallow} from "zustand/react/shallow";
+
+const selector = (state: AppState) => ({
+  exitCanvas: state.exitCanvas,
+});
+
+
+export const NavBar = () => {
+  const {exitCanvas} = useStore(useShallow(selector));
+
+
+  return (
+    <div className="navbar bg-base-100/70 backdrop-blur-md shadow-sm z-100 flex-row items-center justify-between">
+      <div >
+        <p className="text-xl font-bold px-3">LEINWAND</p>
+      </div>
+      <div className="border-x border-gray-300 px-5">
+        <ZoomSlider></ZoomSlider>
+      </div>
+      <div>
+        <div className="menu menu-horizontal px-1">
+
+            <CustomButton onClick={exitCanvas}>
+              <p>Exit</p>
+              <ChevronLeft className="size-4"/>
+            </CustomButton>
+
+
+            <CustomButton onClick={() => null}>
+              <Settings2 className="size-4"/>
+            </CustomButton>
+
+        </div>
+      </div>
+    </div>
+  )
+}

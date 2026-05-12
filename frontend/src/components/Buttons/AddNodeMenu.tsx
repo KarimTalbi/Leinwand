@@ -75,7 +75,7 @@ const AddNodeMenu = ({sourceId, posX, posY, size = "lg", color = "secondary", cl
   return (
     <div
       className={cn(
-        "fab",
+        "fab [&]:flex-col",
         className
       )}
     >
@@ -84,6 +84,7 @@ const AddNodeMenu = ({sourceId, posX, posY, size = "lg", color = "secondary", cl
       )}
            data-tip="Add Node"
       >
+
         <div
           tabIndex={0}
           role="button"

@@ -5,17 +5,15 @@ import useStore from "@/store.ts"
 import {useShallow} from "zustand/react/shallow";
 
 import {
-  Panel,
   useViewport,
   useStore as ZuseStore,
   useReactFlow,
   type PanelProps,
 } from "@xyflow/react";
 
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {AppState} from "@/types.ts";
+import CustomButton from "@/components/Buttons/CustomButton.tsx";
 
 const selector = (state: AppState) => ({
   locked: state.locked,
@@ -37,9 +35,9 @@ export function ZoomSlider({
   const {locked, setLocked} = useStore(useShallow(selector));
 
   return (
-    <Panel
+    <div
       className={cn(
-        "bg-primary-foreground text-foreground flex gap-1 rounded-md p-1 px-2",
+        "text-foreground flex gap-1",
         orientation === "horizontal" ? "flex-row" : "flex-col",
         className,
       )}
@@ -47,71 +45,48 @@ export function ZoomSlider({
     >
       <div
         className={cn(
-          "flex gap-1",
+          "flex gap-2",
           orientation === "horizontal" ? "flex-row" : "flex-col-reverse",
         )}
       >
-        <Button
-          aria-label="Zoom Out"
-          variant="ghost"
-          size="icon"
-          onClick={() => zoomOut({ duration: 300 })}
-          className="size-10"
-        >
-          <Minus className="size-5" />
-        </Button>
-        <Slider
-          className={cn(
-            orientation === "horizontal" ? "w-40" : "h-35",
-          )}
-          orientation={orientation}
-          value={[zoom]}
+
+        <CustomButton onClick={() => zoomOut({ duration: 300 })} buttonStyle="square">
+          <Minus className="size-4"/>
+        </CustomButton>
+
+        <div className="flex flex-col items-center justify-center">
+
+        <input
+          type="range"
           min={minZoom}
           max={maxZoom}
           step={0.01}
-          onValueChange={(values) => zoomTo(values[0])}
+          value={zoom}
+          onChange={(e) => zoomTo(Number(e.target.value))}
+          className=" range range-neutral range-xs w-[12vw]"
         />
-        <Button
-          aria-label="Zoom In"
-          variant="ghost"
-          size="icon"
-          onClick={() => zoomIn({ duration: 300 })}
-          className="size-10"
-        >
-          <Plus className="size-5" />
-        </Button>
+
+        </div>
+
+
+        <CustomButton onClick={() => zoomIn({ duration: 300 })} buttonStyle="square">
+          <Plus className="size-4"/>
+        </CustomButton>
+
       </div>
-      <Button
-        className={cn(
-          "tabular-nums",
-          orientation === "horizontal"
-            ? "w-20 min-w-10 h-10"
-            : "h-10 w-10",
-          "text-sm"
-        )}
-        variant="ghost"
-        onClick={() => zoomTo(1, { duration: 300 })}
-      >
+
+      <CustomButton onClick={() => zoomTo(1, { duration: 300 })}  buttonStyle="square">
         {(100 * zoom).toFixed(0)}%
-      </Button>
-      <Button
-        aria-label="Fit View"
-        variant="ghost"
-        size="icon"
-        onClick={() => fitView({ duration: 300 })}
-        className="size-10"
-      >
-        <Maximize className="size-5" />
-      </Button>
-      <Button
-        aria-label="Lock"
-        variant="ghost"
-        size="icon"
-        onClick={() => setLocked(!locked)}
-        className="size-10"
-      >
-        {locked ? <LockOpen className="size-5"/> : <Lock className="size-5"/>}
-      </Button>
-    </Panel>
+      </CustomButton>
+
+      <CustomButton onClick={() => fitView({ duration: 300 })} buttonStyle="square">
+        <Maximize className="size-4"/>
+      </CustomButton>
+
+      <CustomButton onClick={() => setLocked(!locked)} buttonStyle="square">
+        {locked ? <LockOpen className="size-4"/> : <Lock className="size-4"/>}
+      </CustomButton>
+
+    </div>
   );
 }

@@ -12,7 +12,7 @@ import {AppState} from '@/types'
 import NavigationOverlay from '@/components/Navigation/NavigationOverlay.tsx';
 
 import '@xyflow/react/dist/style.css';
-import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
+import {NavBar} from "@/components/Navigation/NavBar.tsx";
 
 
 const nodeTypes: NodeTypes = {
@@ -78,6 +78,8 @@ function Flow() {
 
     <div className="flex h-screen w-screen overflow-hidden">
 
+
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -95,26 +97,27 @@ function Flow() {
         nodesConnectable={!locked}
         elementsSelectable={!locked}
         proOptions={{hideAttribution: true}}
+        colorMode="light"
       >
 
         <NavigationOverlay/>
 
+        <NavBar></NavBar>
+
 
         <Background
-          bgColor="#ebebeb"
-          size={8}
+          className="bg-white!"
+          size={4}
           gap={60}
-          color="#CCCCCC"
         />
 
-        <ZoomSlider position="bottom-left" orientation="horizontal" className="mb-5! ml-5! rounded-full! z-5!"/>
-
         <MiniMap
-          className="rounded-2xl shadow-md backdrop-blur-lg backdrop-saturate-150"
-          bgColor="#ffffff7e"
+          className="rounded-2xl border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
+          bgColor="white"
           maskColor={"transparent"}
           nodeColor={nodeColor}
           nodeBorderRadius={100}
+          position="bottom-left"
           pannable
           zoomable
         />

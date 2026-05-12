@@ -5,7 +5,7 @@ import useStore from '@/store.ts';
 import {AppState, TextNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeTextarea} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CircleIconButton from "../Buttons/CircleButton.tsx";
+import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {Lock, LockOpen} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
@@ -35,16 +35,14 @@ const TextNode = (
     <NodeBackground style={{'--node-color': '#309898'} as React.CSSProperties}>
       <NodeHeader title="Text Node">
 
-        <CircleIconButton
+        <CustomButton
           onClick={handleClick}
-          title={isClosed ? 'Unlock' : 'Lock'}
-          tooltipPosition="top"
-          bigTooltip={true}
+          buttonStyle="circle"
           disabled={!data.text}
           className="bg-white text-black  border-[#e5e5e5] border"
         >
           {isClosed ? <LockOpen/> : <Lock/>}
-        </CircleIconButton>
+        </CustomButton>
 
         <DeleteButton id={id}/>
 
