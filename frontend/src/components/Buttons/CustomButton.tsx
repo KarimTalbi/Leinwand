@@ -1,18 +1,30 @@
 import {cn} from "@/lib/utils.ts";
 import React from "react";
 
-type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
-type ButtonStyle = "default" | "circle" | "square";
+export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
+export type ButtonStyle = "default" | "circle" | "square";
+export type ButtonColor = "primary" | "secondary" | "accent" | "ghost" | "link" | "default" | "neutral" | "error";
 
 interface CircleIconButtonProps {
   onClick: () => void;
   children: React.ReactNode;
   disabled?: boolean;
   size?: ButtonSize;
+  color?: ButtonColor;
   className?: string;
   buttonStyle?: ButtonStyle;
 }
 
+const buttonColors: Record<ButtonColor, string> = {
+  default: "btn-default",
+  neutral: "btn-neutral",
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  accent: "btn-accent",
+  ghost: "btn-ghost hover:bg-base-300",
+  link: "btn-link",
+  error: "btn-error",
+};
 
 const buttonStyles: Record<ButtonStyle, string> = {
   default: "",
@@ -35,6 +47,7 @@ const CustomButton = (
     children,
     disabled,
     size,
+    color,
     className,
     buttonStyle,
   }: CircleIconButtonProps) => {
@@ -44,9 +57,10 @@ const CustomButton = (
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          "btn btn-ghost hover:bg-base-300 border-none",
+          "btn  border-none",
           buttonStyles[buttonStyle || "default"],
           buttonSizes[size || "md"],
+          buttonColors[color || "ghost"],
           className,
           disabled ? "opacity-70 cursor-not-allowed" : "hover:opacity-100"
         )}

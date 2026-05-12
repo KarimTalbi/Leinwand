@@ -17,7 +17,7 @@ export const NavBar = () => {
   return (
     <div className="navbar bg-base-100/70 backdrop-blur-md shadow-sm z-100 flex-row items-center justify-between">
       <div >
-        <p className="text-xl font-bold px-3">LEINWAND</p>
+        <h1 className="text-xl font-bold px-3">LEINWAND</h1>
       </div>
       <div className="border-x border-gray-300 px-5">
         <ZoomSlider></ZoomSlider>
@@ -26,13 +26,14 @@ export const NavBar = () => {
         <div className="menu menu-horizontal px-1">
 
             <CustomButton onClick={exitCanvas}>
-              <p>Exit</p>
               <ChevronLeft className="size-4"/>
+              <p className="font-normal pr-1">Exit</p>
             </CustomButton>
 
 
             <CustomButton onClick={() => null}>
               <Settings2 className="size-4"/>
+              <p className="font-normal pr-1">Settings</p>
             </CustomButton>
 
         </div>
