@@ -1,5 +1,5 @@
 import {useShallow} from 'zustand/react/shallow'
-import {ReactFlow, Background, NodeTypes, MiniMap, Node, Panel} from '@xyflow/react';
+import {ReactFlow, Background, NodeTypes, MiniMap, Node} from '@xyflow/react';
 
 import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
 import TextNode from '@/components/NodeTypes/TextNode.tsx';
@@ -11,7 +11,7 @@ import {AppState} from '@/types'
 
 import '@xyflow/react/dist/style.css';
 import {NavBar} from "@/components/Navigation/NavBar.tsx";
-import {AddNodeButton} from "@/components/Buttons/AddNodeButton.tsx";
+import NavigationOverlay from "@/components/Navigation/NavigationOverlay.tsx";
 
 
 const nodeTypes: NodeTypes = {
@@ -86,7 +86,6 @@ function Flow() {
         onEdgesChange={onEdgesChange}
         snapToGrid={true}
         snapGrid={[20, 20]}
-        defaultEdgeOptions={{style: {strokeWidth: 6}}}
         onConnect={onConnect}
         fitView
         nodeTypes={nodeTypes}
@@ -119,17 +118,7 @@ function Flow() {
           zoomable
         />
 
-        <Panel
-          position="bottom-right"
-        >
-          <AddNodeButton
-            size="xl"
-            color="secondary"
-            style="circle"
-            orientation={"vertical"}
-            toolTipPosition="left"
-          />
-        </Panel>
+        <NavigationOverlay/>
 
 
       </ReactFlow>

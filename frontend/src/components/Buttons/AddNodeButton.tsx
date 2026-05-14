@@ -72,17 +72,15 @@ export const AddNodeButton = (
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-1",
+        "relative flex items-center",
         orientationStyles[orientation],
       )}>
 
       {isOpen && (
       <div
         className={cn(
-          isOpen ? "scale-y-100" : "scale-y-0 h-0",
-          isOpen ? "transition-scale duration-200 origin-bottom" : "",
-          "flex items-center justify-center gap-1",
-          orientationStyles[orientation]
+          "absolute left-full pl-1",
+          "flex items-center gap-1",
         )}>
 
         <ToolTip position={toolTipPosition as position} label="Prompt Node">

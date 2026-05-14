@@ -72,7 +72,7 @@ const PromptNode = (
         </ToolTip>
 
         <ToolTip position="top" label="Delete Node">
-          <DeleteButton id={id} loading={loading} />
+          <DeleteButton id={id} loading={loading}/>
         </ToolTip>
 
       </NodeHeader>
@@ -111,11 +111,10 @@ const PromptNode = (
         style={{'--node-color': '#ec4899'} as React.CSSProperties}
 
       >
-        <div className="bg-black w-7 rounded-r-full h-6 translate-y-35">
-          <AddConnectedNode nodeId={id} position={{x: positionAbsoluteX, y: positionAbsoluteY}}/>
-        </div>
-      </ConnectionHandles>
 
+        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+
+      </ConnectionHandles>
 
 
     </NodeBackground>
