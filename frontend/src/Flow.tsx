@@ -11,7 +11,7 @@ import {AppState} from '@/types'
 
 import '@xyflow/react/dist/style.css';
 import {NavBar} from "@/components/Navigation/NavBar.tsx";
-import NavigationOverlay from "@/components/Navigation/NavigationOverlay.tsx";
+import AddNodeOverlay from "@/components/Navigation/AddNodeOverlay.tsx";
 
 
 const nodeTypes: NodeTypes = {
@@ -119,7 +119,7 @@ function Flow() {
           zoomable
         />
 
-        <NavigationOverlay/>
+        <AddNodeOverlay/>
 
 
       </ReactFlow>

@@ -13,7 +13,7 @@ const selector = (state: AppState) => ({
   addNode: state.addNode,
 });
 
-const NavigationOverlay = () => {
+const AddNodeOverlay = () => {
   const {addNode} = useStore(useShallow(selector));
   const [isOpen, setIsOpen] = useState(false);
   const {screenToFlowPosition} = useReactFlow();
@@ -80,4 +80,4 @@ const NavigationOverlay = () => {
   )
 };
 
-export default NavigationOverlay;
+export default AddNodeOverlay;

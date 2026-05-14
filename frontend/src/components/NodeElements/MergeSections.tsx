@@ -31,7 +31,7 @@ interface ProblemProps {
 }
 
 const Section = ({children}: { children: React.ReactNode }) => (
-  <div className="bg-gray-200 rounded-2xl my-4 p-4 shadow-md">
+  <div className="bg-gray-200 rounded-md p-2 my-2">
     {children}
   </div>
 )
@@ -39,26 +39,26 @@ const Section = ({children}: { children: React.ReactNode }) => (
 const SectionHeader = ({stream_id, depth, type}: { stream_id: number, depth: number, type: string }) => (
   <div className="flex items-center justify-between">
 
-    <div className="flex items-center justify-between gap-3">
-      <p className="text-base">BRANCH / DEPTH:</p>
-      <p className="text-base font-bold">{stream_id} / {depth}</p>
+    <div className="flex items-center justify-between gap-1">
+      <p className="text-xs">BRANCH / DEPTH:</p>
+      <p className="text-xs font-bold">{stream_id} / {depth}</p>
     </div>
 
-    <p className="text-xs mb-2">{type}</p>
+    <p className="text-xs">{type}</p>
 
   </div>
 )
 
 const SectionSeparator = () => (
-  <div className="my-4 h-px mx-2 bg-black/10"/>
+  <div className="my-2 h-px bg-black/10"/>
 )
 
 const SectionText = ({text}: { text: string }) => (
-  <p className="text-base">{text}</p>
+  <p className="text-xs">{text}</p>
 )
 
 const SectionLabel = ({label}: { label: string }) => (
-  <p className="text-base font-bold">{label}</p>
+  <p className="text-xs font-bold">{label}</p>
 )
 
 const MergeContent = ({sections}: { sections: string[] }) => {
@@ -104,10 +104,10 @@ const MergeContent = ({sections}: { sections: string[] }) => {
   const problemSection = ({ai, user, solution}: ProblemProps) => (
     <Section>
       <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-base">PROBLEM</p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs">PROBLEM</p>
         </div>
-        <div className="text-xs mb-2">PROBLEM RESOLUTION</div>
+        <div className="text-xs">PROBLEM RESOLUTION</div>
       </div>
       <SectionSeparator/>
       <SectionLabel label="AI"/>
@@ -151,8 +151,8 @@ const MergeContent = ({sections}: { sections: string[] }) => {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 space-y-2 rounded-t-2xl p-2">
-      <div className="flex-1 w-full text-black p-2 py-0 rounded-xl min-h-16 overflow-y-auto nowheel">
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex-1 w-full text-black  rounded-xl min-h-16 overflow-y-auto nowheel">
 
         {sections.map((section: any) => (
 
