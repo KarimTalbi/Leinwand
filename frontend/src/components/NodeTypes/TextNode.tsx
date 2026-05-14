@@ -41,9 +41,10 @@ const TextNode = (
             onClick={handleClick}
             buttonStyle="circle"
             disabled={!data.text}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            {isClosed ? <LockOpen/> : <Lock/>}
+            {isClosed ? <LockOpen size={16}/> : <Lock size={16}/>}
           </CustomButton>
         </ToolTip>
 

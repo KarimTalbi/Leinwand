@@ -25,7 +25,7 @@ interface AddNodeButtonProps {
   color?: ButtonColor,
   style?: ButtonStyle,
   orientation?: Orientation,
-  toolTipPosition?: position,
+  toolTipPosition: position,
 }
 
 const selector = (state: AppState) => ({
@@ -41,7 +41,8 @@ export const AddNodeButton = (
     size,
     color,
     style,
-    orientation = "vertical"
+    orientation = "vertical",
+    toolTipPosition = "left",
   }: AddNodeButtonProps) => {
 
   const [isOpen, setIsOpen] = useState(false);
@@ -72,10 +73,10 @@ export const AddNodeButton = (
     <div
       className={cn(
         "flex items-center justify-center gap-1",
-        orientationStyles[orientation]
+        orientationStyles[orientation],
       )}>
 
-
+      {isOpen && (
       <div
         className={cn(
           isOpen ? "scale-y-100" : "scale-y-0 h-0",
@@ -84,38 +85,39 @@ export const AddNodeButton = (
           orientationStyles[orientation]
         )}>
 
-        <ToolTip position="left" label="Prompt Node">
-          <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle" color="neutral" size="xl">
-            <MessagesSquare/>
+        <ToolTip position={toolTipPosition as position} label="Prompt Node">
+          <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle={style} color="neutral" size={size}>
+            <MessagesSquare size={size === "xs" ? 14 : 25}/>
           </CustomButton>
         </ToolTip>
 
-        <ToolTip position="left" label="Text Node">
-          <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle" color="neutral" size="xl">
-            <LucideTextCursorInput/>
+        <ToolTip position={toolTipPosition as position} label="Text Node">
+          <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle={style} color="neutral" size={size}>
+            <LucideTextCursorInput size={size === "xs" ? 14 : 25}/>
           </CustomButton>
         </ToolTip>
 
-        <ToolTip position="left" label="Summary Node">
-          <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle" color="neutral" size="xl">
-            <Minimize2 className="rotate-45"/>
+        <ToolTip position={toolTipPosition as position} label="Summary Node">
+          <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle={style} color="neutral" size={size}>
+            <Minimize2 className="rotate-45" size={size === "xs" ? 14 : 25}/>
           </CustomButton>
         </ToolTip>
 
-        <ToolTip position="left" label="Merge Node">
-          <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle" color="neutral" size="xl">
-            <MergeIcon className="rotate-90"/>
+        <ToolTip position={toolTipPosition as position} label="Merge Node">
+          <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle={style} color="neutral" size={size}>
+            <MergeIcon className="rotate-90" size={size === "xs" ? 14 : 25}/>
           </CustomButton>
         </ToolTip>
 
       </div>
+      )}
 
-      <ToolTip position="left" label={isOpen ? "Close" : "Add Node"}>
+
         <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle={style} color={isOpen ? "error" : color}
                       size={size}>
-          {isOpen ? <X/> : <Plus/>}
+          {isOpen ? <X size={size === "xs" ? 14 : 25}/> : <Plus size={size === "xs" ? 14 : 25}/>}
         </CustomButton>
-      </ToolTip>
+
     </div>
   )
 }

@@ -37,7 +37,7 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
         onChange={handleTextChange}
         placeholder={placeholder}
         className={cn(
-          'nodrag flex-1 min-h-16 w-full resize-none rounded-xl border-none p-5 text-2xl/10! text-black nowheel',
+          'nodrag flex-1 min-h-16 w-full resize-none rounded-sm border-none p-2 text-sm/5! text-black nowheel',
           'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
         )}
       />
@@ -48,9 +48,9 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
 
 export const NodeDisplayText = ({children}: NodeDisplayTextProps) => (
 
-    <div className="flex-1 text-2xl p-5 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
+    <div className="flex-1 text-sm p-1 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
       {children?.split('\n').map((line, i) => (
-        <span key={i} className="block mb-3">{line || '\u00A0'}</span>
+        <span key={i} className="block mb-2">{line || '\u00A0'}</span>
       ))}
     </div>
 )
@@ -67,8 +67,8 @@ export const NodeDisplayThinking = (
 
 
 export const DisplayUserMessage = ({children}: { children?: string }) => (
-  <div className="p-5 bg-gray-100 rounded-xl">
-    <p className="text-base font-bold mb-3">User Message:</p>
-    <p className="text-base mb-3">{children}</p>
+  <div className="p-3 bg-gray-100 rounded-xl h-15 overflow-y-auto">
+    <p className="text-xs font-bold">User Message:</p>
+    <p className="text-xs">{children}</p>
   </div>
 )

@@ -16,6 +16,7 @@ import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
+import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -27,6 +28,8 @@ const PromptNode = (
   {
     id,
     data,
+    positionAbsoluteX,
+    positionAbsoluteY,
   }: NodeProps<PromptNodeType>
 ) => {
 
@@ -49,9 +52,10 @@ const PromptNode = (
             onClick={() => null}
             buttonStyle="circle"
             disabled={loading}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Settings2/>
+            <Settings2 size={16}/>
           </CustomButton>
         </ToolTip>
 
@@ -60,14 +64,15 @@ const PromptNode = (
             onClick={handleClick}
             buttonStyle="circle"
             disabled={loading || !data.prompt || isClosed}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Play/>
+            <Play size={16}/>
           </CustomButton>
         </ToolTip>
 
         <ToolTip position="top" label="Delete Node">
-          <DeleteButton id={id} loading={loading}/>
+          <DeleteButton id={id} loading={loading} />
         </ToolTip>
 
       </NodeHeader>
@@ -104,7 +109,14 @@ const PromptNode = (
         position="right"
         nodeId={id}
         style={{'--node-color': '#ec4899'} as React.CSSProperties}
-      />
+
+      >
+        <div className="bg-black w-7 rounded-r-full h-6 translate-y-35">
+          <AddConnectedNode nodeId={id} position={{x: positionAbsoluteX, y: positionAbsoluteY}}/>
+        </div>
+      </ConnectionHandles>
+
+
 
     </NodeBackground>
 

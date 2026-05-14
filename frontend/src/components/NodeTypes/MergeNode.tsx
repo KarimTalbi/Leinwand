@@ -55,9 +55,10 @@ const MergeNode = (
             onClick={() => null}
             buttonStyle="circle"
             disabled={loading}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Settings2/>
+            <Settings2 size={16}/>
           </CustomButton>
         </ToolTip>
 
@@ -66,9 +67,10 @@ const MergeNode = (
             onClick={handleClick}
             buttonStyle="circle"
             disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Play/>
+            <Play size={16}/>
           </CustomButton>
         </ToolTip>
 

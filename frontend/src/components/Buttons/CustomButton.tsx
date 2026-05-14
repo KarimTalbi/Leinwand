@@ -62,7 +62,7 @@ const CustomButton = (
           buttonSizes[size || "md"],
           buttonColors[color || "ghost"],
           className,
-          disabled ? "opacity-70 cursor-not-allowed" : "hover:opacity-100"
+          disabled ? "opacity-70 cursor-not-allowed" : "hover:opacity-100",
         )}
       >
 

@@ -127,7 +127,7 @@ function Flow() {
             color="secondary"
             style="circle"
             orientation={"vertical"}
-            toolTipPosition={"left"}
+            toolTipPosition="left"
           />
         </Panel>
 

@@ -51,9 +51,10 @@ const SummaryNode = (
             onClick={() => null}
             buttonStyle="circle"
             disabled={loading}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Settings2/>
+            <Settings2 size={16}/>
           </CustomButton>
         </ToolTip>
 
@@ -62,9 +63,10 @@ const SummaryNode = (
             onClick={handleClick}
             buttonStyle="circle"
             disabled={loading || isClosed || isSourceSummary || !isConnected}
+            size="xs"
             className="bg-white text-black  border-[#e5e5e5] border"
           >
-            <Play/>
+            <Play size={16}/>
           </CustomButton>
         </ToolTip>
 

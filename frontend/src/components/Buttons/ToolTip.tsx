@@ -10,7 +10,7 @@ interface ToolTipProps {
   label: string;
 }
 
-const toolTipPositions: Record<position, string> = {
+export const toolTipPositions: Record<position, string> = {
   top: "tooltip-top",
   bottom: "tooltip-bottom",
   left: "tooltip-left",

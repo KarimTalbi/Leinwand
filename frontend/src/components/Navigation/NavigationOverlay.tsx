@@ -7,7 +7,7 @@ const NavigationOverlay = () => {
 
   return (
       <Panel position="bottom-right" className="flex flex-row items-center justify-between">
-        <AddNodeButton size="xl" color="secondary" style="circle" orientation={"vertical"} toolTipPosition={"left"}/>
+        <AddNodeButton size="xl" color="secondary" style="circle" orientation={"vertical"} toolTipPosition="left"/>
       </Panel>
   )
 };

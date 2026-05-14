@@ -14,12 +14,13 @@ interface ConnectionHandleProps {
   position: handlePosition,
   offset?: number,
   style?: React.CSSProperties,
-  className?: string
+  className?: string,
+  children?: React.ReactNode
 }
 
 
 export const ConnectionHandles = (
-  {nodeId, handleId, handleType, position, offset, style, className}: ConnectionHandleProps
+  {nodeId, handleId, handleType, position, offset, style, className, children}: ConnectionHandleProps
 ) => {
 
   const connections = useNodeConnections({
@@ -35,8 +36,8 @@ export const ConnectionHandles = (
   }
 
   const handlePositionStyle = () => {
-    if (position === "left") return "w-4! h-8! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!";
-    return "w-4! h-8! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!";
+    if (position === "left") return "w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!";
+    return "w-3! h-6! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!";
   }
 
   return (
@@ -51,6 +52,8 @@ export const ConnectionHandles = (
           className
         )}
         style={{...style, backgroundColor: 'var(--node-color)'}}
-      />
+      >
+        {children}
+      </Handle>
   )
 };
