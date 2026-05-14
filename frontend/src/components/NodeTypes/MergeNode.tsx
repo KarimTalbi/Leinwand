@@ -16,6 +16,7 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
+import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -27,6 +28,8 @@ const MergeNode = (
   {
     id,
     data,
+    positionAbsoluteX,
+    positionAbsoluteY,
   }: NodeProps<MergeNodeType>
 ) => {
 
@@ -103,7 +106,7 @@ const MergeNode = (
 
       <ConnectionHandles
         handleId="target-1"
-        offset={60}
+        offset={-60}
         handleType="target"
         position="left"
         nodeId={id}
@@ -112,7 +115,7 @@ const MergeNode = (
 
       <ConnectionHandles
         handleId="target-2"
-        offset={-60}
+        offset={60}
         handleType="target"
         position="left"
         nodeId={id}
@@ -125,7 +128,11 @@ const MergeNode = (
         position="right"
         nodeId={id}
         style={{'--node-color': '#f5c45e'} as React.CSSProperties}
-      />
+      >
+
+        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+
+      </ConnectionHandles>
 
     </NodeBackground>
 

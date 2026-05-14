@@ -10,6 +10,7 @@ import {Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
+import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 const prompt = "summarize the topics in the context. Don't mention it being the context or being a summary. Summarize as if i would tell you to summarize a topic.";
 
@@ -22,6 +23,8 @@ const SummaryNode = (
   {
     id,
     data,
+    positionAbsoluteX,
+    positionAbsoluteY,
   }: NodeProps<SummaryNodeType>
 ) => {
 
@@ -108,7 +111,11 @@ const SummaryNode = (
         position="right"
         nodeId={id}
         style={{'--node-color': '#bf4546'} as React.CSSProperties}
-      />
+      >
+
+        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+
+      </ConnectionHandles>
 
     </NodeBackground>
 

@@ -10,6 +10,7 @@ import {Lock, LockOpen} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
+import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -22,6 +23,8 @@ const TextNode = (
   {
     id,
     data,
+    positionAbsoluteX,
+    positionAbsoluteY,
   }: NodeProps<TextNodeType>
 ) => {
 
@@ -78,7 +81,11 @@ const TextNode = (
         position="right"
         nodeId={id}
         style={{'--node-color': '#309898'} as React.CSSProperties}
-      />
+      >
+
+        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+
+      </ConnectionHandles>
 
     </NodeBackground>
 

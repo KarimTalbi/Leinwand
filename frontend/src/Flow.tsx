@@ -109,7 +109,7 @@ function Flow() {
         />
 
         <MiniMap
-          className="rounded-2xl border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
+          className="rounded-xl border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
           bgColor="white"
           maskColor={"transparent"}
           nodeColor={nodeColor}
