@@ -94,6 +94,7 @@ function Flow() {
         nodesDraggable={!locked}
         nodesConnectable={!locked}
         elementsSelectable={!locked}
+        defaultEdgeOptions={{style: {strokeWidth: 6}}}
         proOptions={{hideAttribution: true}}
         colorMode="light"
       >

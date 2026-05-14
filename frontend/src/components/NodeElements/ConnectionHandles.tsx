@@ -29,11 +29,6 @@ export const ConnectionHandles = (
     handleId: handleId
   });
 
-  const handleOffset = () => {
-    if (!offset) return '';
-
-    return offset > 0 ? `translate-y-${offset}!` : `-translate-y-${offset*-1}!`;
-  }
 
   const handlePositionStyle = () => {
     if (position === "left") return "w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!";
@@ -48,10 +43,9 @@ export const ConnectionHandles = (
         isConnectable={connections.length === 0}
         className={cn(
           handlePositionStyle(),
-          handleOffset(),
           className
         )}
-        style={{...style, backgroundColor: 'var(--node-color)'}}
+        style={{...style, backgroundColor: 'var(--node-color)', transform: `translateY(${offset ?? 0}px)` + (position === "left" ? " translateX(-4px)" : " translateX(4px)")}}
       >
         {children}
       </Handle>

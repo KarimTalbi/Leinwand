@@ -95,7 +95,7 @@ const MergeNode = (
 
               ? <NodeDisplayThinking/>
               : (<div className="flex flex-col h-full justify-center items-center">
-                <p className="text-2xl font-bold mb-15">Connect Node and press Play to get a summary</p>
+                <p className="text-sm font-bold mb-15">Connect Node and press Play to get a summary</p>
               </div>)
         }
 
@@ -103,7 +103,7 @@ const MergeNode = (
 
       <ConnectionHandles
         handleId="target-1"
-        offset={20}
+        offset={60}
         handleType="target"
         position="left"
         nodeId={id}
@@ -112,7 +112,7 @@ const MergeNode = (
 
       <ConnectionHandles
         handleId="target-2"
-        offset={-20}
+        offset={-60}
         handleType="target"
         position="left"
         nodeId={id}
