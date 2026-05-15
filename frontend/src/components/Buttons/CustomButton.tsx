@@ -57,7 +57,7 @@ const CustomButton = (
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          "btn  border-none",
+          "btn border-none",
           buttonStyles[buttonStyle || "default"],
           buttonSizes[size || "md"],
           buttonColors[color || "ghost"],

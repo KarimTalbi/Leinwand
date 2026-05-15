@@ -13,6 +13,7 @@ const selector = (state: AppState) => ({
   addNode: state.addNode,
 });
 
+
 const AddNodeOverlay = () => {
   const {addNode} = useStore(useShallow(selector));
   const [isOpen, setIsOpen] = useState(false);
@@ -42,25 +43,41 @@ const AddNodeOverlay = () => {
               )}>
 
               <ToolTip position="left" label="Prompt Node">
-                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle" color="neutral" size="lg">
+                <CustomButton
+                  onClick={() => onCreateNode("promptNode")}
+                  buttonStyle="circle" color="neutral" size="lg"
+                  className="shadow-none bg-[#ec4899]"
+                >
                   <MessagesSquare />
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Text Node">
-                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle" color="neutral" size="lg">
+                <CustomButton
+                  onClick={() => onCreateNode("textNode")}
+                  buttonStyle="circle" color="neutral" size="lg"
+                  className="shadow-none bg-[#309898]"
+                >
                   <LucideTextCursorInput />
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Summary Node">
-                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle" color="neutral" size="lg">
+                <CustomButton
+                  onClick={() => onCreateNode("summaryNode")}
+                  buttonStyle="circle" color="neutral" size="lg"
+                  className="shadow-none bg-[#bf4546]"
+                >
                   <Minimize2 className="rotate-45"/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Merge Node">
-                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle" color="neutral" size="lg">
+                <CustomButton
+                  onClick={() => onCreateNode("mergeNode")}
+                  buttonStyle="circle" color="neutral" size="lg"
+                  className="shadow-none bg-[#f5c45e]"
+                >
                   <MergeIcon className="rotate-90"/>
                 </CustomButton>
               </ToolTip>
@@ -70,8 +87,8 @@ const AddNodeOverlay = () => {
           )}
 
 
-          <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle="circle" color={isOpen ? "error" : "secondary"}
-                        size="lg">
+          <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle="circle" color={"neutral"}
+                        size="lg" className="shadow-none">
             {isOpen ? <X /> : <Plus />}
           </CustomButton>
 

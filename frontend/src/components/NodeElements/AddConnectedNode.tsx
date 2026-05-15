@@ -55,25 +55,29 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
               )}>
 
               <ToolTip position="top" label="Prompt Node">
-                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle" color="neutral" size="xs">
+                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle"
+                              color="neutral" size="xs" className="bg-[#ec4899]">
                   <MessagesSquare size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Text Node">
-                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle" color="neutral" size="xs">
+                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle"
+                              color="neutral" size="xs" className="bg-[#309898]">
                   <LucideTextCursorInput size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Summary Node">
-                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle" color="neutral" size="xs">
+                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle"
+                              color="neutral" size="xs" className="bg-[#bf4546]">
                   <Minimize2 className="rotate-45" size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Merge Node">
-                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle" color="neutral" size="xs">
+                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle"
+                              color="neutral" size="xs" className="bg-[#f5c45e]">
                   <MergeIcon className="rotate-90" size={14}/>
                 </CustomButton>
               </ToolTip>

@@ -121,6 +121,10 @@ function Flow() {
           position="bottom-left"
           pannable
           zoomable
+          style={{
+            width: 150,
+            height: 120,
+          }}
         />
 
         <AddNodeOverlay/>
