@@ -42,25 +42,25 @@ const AddNodeOverlay = () => {
               )}>
 
               <ToolTip position="left" label="Prompt Node">
-                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle" color="neutral" size="xl">
+                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle" color="neutral" size="lg">
                   <MessagesSquare />
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Text Node">
-                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle" color="neutral" size="xl">
+                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle" color="neutral" size="lg">
                   <LucideTextCursorInput />
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Summary Node">
-                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle" color="neutral" size="xl">
+                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle" color="neutral" size="lg">
                   <Minimize2 className="rotate-45"/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="left" label="Merge Node">
-                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle" color="neutral" size="xl">
+                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle" color="neutral" size="lg">
                   <MergeIcon className="rotate-90"/>
                 </CustomButton>
               </ToolTip>
@@ -71,7 +71,7 @@ const AddNodeOverlay = () => {
 
 
           <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle="circle" color={isOpen ? "error" : "secondary"}
-                        size="xl">
+                        size="lg">
             {isOpen ? <X /> : <Plus />}
           </CustomButton>
 

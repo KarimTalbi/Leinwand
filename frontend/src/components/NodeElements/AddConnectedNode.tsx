@@ -40,7 +40,7 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
 
       <div
         style={{position: 'absolute'}}
-        className="bg-black w-7 rounded-r-full h-6 translate-y-35"
+        className="bg-[#a9a9a9] w-7 rounded-r-full h-6 translate-y-35"
       >
         <div
           className={cn(
@@ -82,7 +82,7 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
           )}
 
           <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle="circle" color="neutral"
-                        size="xs">
+                        size="xs" className="bg-[#a9a9a9] shadow-none">
             {isOpen ? <X size={14}/> : <Plus size={14}/>}
           </CustomButton>
 
