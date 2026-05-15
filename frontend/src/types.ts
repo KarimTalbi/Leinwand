@@ -77,6 +77,8 @@ export interface AppState {
   createCanvas: (name: string) => Promise<void>;
   deleteCanvas: (canvasId: string) => Promise<void>;
   exitCanvas: () => void;
+  settingsOpen: boolean;
+  setSettingsOpen: (status: boolean) => void;
 
   // Flow actions
   syncCanvas: () => Promise<void>;

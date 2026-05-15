@@ -21,7 +21,7 @@ const buttonColors: Record<ButtonColor, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
   accent: "btn-accent",
-  ghost: "btn-ghost hover:bg-base-300",
+  ghost: "btn-ghost hover:bg-none",
   link: "btn-link",
   error: "btn-error",
 };

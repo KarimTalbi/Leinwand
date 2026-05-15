@@ -11,7 +11,7 @@ import {
 } from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Play, Settings2} from "lucide-react";
+import {MergeIcon, Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
@@ -51,7 +51,7 @@ const MergeNode = (
 
   return (
     <NodeBackground style={{'--node-color': '#f5c45e'} as React.CSSProperties}>
-      <NodeHeader title="Merge Node">
+      <NodeHeader title="Merge Node" icon={<MergeIcon className="rotate-90" size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
           <CustomButton
@@ -59,7 +59,8 @@ const MergeNode = (
             buttonStyle="circle"
             disabled={loading}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
             <Settings2 size={16}/>
           </CustomButton>
@@ -71,7 +72,8 @@ const MergeNode = (
             buttonStyle="circle"
             disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
             <Play size={16}/>
           </CustomButton>

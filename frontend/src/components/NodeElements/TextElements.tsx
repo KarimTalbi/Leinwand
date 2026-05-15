@@ -67,8 +67,8 @@ export const NodeDisplayThinking = (
 
 
 export const DisplayUserMessage = ({children}: { children?: string }) => (
-  <div className="p-3 bg-gray-100 rounded-xl h-15 overflow-y-auto">
-    <p className="text-xs font-bold">User Message:</p>
+  <div className="p-2 bg-gray-100 rounded-lg h-12 overflow-y-auto">
+    <p className="text-xs font-semibold">User Message:</p>
     <p className="text-xs">{children}</p>
   </div>
 )

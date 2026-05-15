@@ -6,7 +6,7 @@ import {AppState, TextNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeTextarea} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Lock, LockOpen} from "lucide-react";
+import {Lock, LockOpen, LucideTextCursorInput} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
@@ -37,7 +37,7 @@ const TextNode = (
 
   return (
     <NodeBackground style={{'--node-color': '#309898'} as React.CSSProperties}>
-      <NodeHeader title="Text Node">
+      <NodeHeader title="Text Node" icon={<LucideTextCursorInput size={14} color="white"/>}>
 
         <ToolTip position="top" label="Lock Node">
           <CustomButton
@@ -45,9 +45,10 @@ const TextNode = (
             buttonStyle="circle"
             disabled={!data.text}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
-            {isClosed ? <LockOpen size={16}/> : <Lock size={16}/>}
+            {isClosed ? <LockOpen size={14} color="white"/> : <Lock size={14} color="white"/>}
           </CustomButton>
         </ToolTip>
 

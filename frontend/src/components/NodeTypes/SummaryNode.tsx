@@ -6,7 +6,7 @@ import {AppState, SummaryNodeType} from "@/types.ts";
 import {NodeDisplayText, NodeDisplayThinking} from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Play, Settings2} from "lucide-react";
+import {Minimize2, Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
@@ -47,7 +47,7 @@ const SummaryNode = (
 
   return (
     <NodeBackground style={{'--node-color': '#bf4546'} as React.CSSProperties}>
-      <NodeHeader title="Summary Node">
+      <NodeHeader title="Summary Node" icon={<Minimize2 className="rotate-45" size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
           <CustomButton
@@ -55,7 +55,8 @@ const SummaryNode = (
             buttonStyle="circle"
             disabled={loading}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
             <Settings2 size={16}/>
           </CustomButton>
@@ -67,7 +68,8 @@ const SummaryNode = (
             buttonStyle="circle"
             disabled={loading || isClosed || isSourceSummary || !isConnected}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
             <Play size={16}/>
           </CustomButton>

@@ -12,6 +12,7 @@ import {AppState} from '@/types'
 import '@xyflow/react/dist/style.css';
 import {NavBar} from "@/components/Navigation/NavBar.tsx";
 import AddNodeOverlay from "@/components/Navigation/AddNodeOverlay.tsx";
+import Settings from "@/components/Settings/Settings.tsx";
 
 
 const nodeTypes: NodeTypes = {
@@ -39,6 +40,8 @@ const selector = (state: AppState) => ({
   onConnect: state.onConnect,
   addNode: state.addNode,
   setLocked: state.setLocked,
+  settingsOpen: state.settingsOpen,
+  setSettingsOpen: state.setSettingsOpen,
 });
 
 
@@ -74,6 +77,7 @@ function Flow() {
 
 
   return (
+    <div className="relative">
 
     <div className="flex h-screen w-screen overflow-hidden">
 
@@ -124,6 +128,9 @@ function Flow() {
 
       </ReactFlow>
 
+      <Settings></Settings>
+
+    </div>
     </div>
   );
 }

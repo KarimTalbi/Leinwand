@@ -31,8 +31,8 @@ export const ConnectionHandles = (
 
 
   const handlePositionStyle = () => {
-    if (position === "left") return "w-3! h-6! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!";
-    return "w-3! h-6! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!";
+    if (position === "left") return "w-2! h-4! rounded-l-full! rounded-r-none! border-none! -translate-x-1! z-[-1]!";
+    return "w-2! h-4! rounded-l-none! rounded-r-full! border-none! translate-x-1! z-[-1]!";
   }
 
   return (
@@ -45,7 +45,7 @@ export const ConnectionHandles = (
           handlePositionStyle(),
           className
         )}
-        style={{...style, backgroundColor: 'var(--node-color)', transform: `translateY(${offset ?? 0}px)` + (position === "left" ? " translateX(-4px)" : " translateX(4px)")}}
+        style={{...style, backgroundColor: 'black', transform: `translateY(${offset ?? 0}px)` + (position === "left" ? " translateX(-4px)" : " translateX(4px)")}}
       >
         {children}
       </Handle>

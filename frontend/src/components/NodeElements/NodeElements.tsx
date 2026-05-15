@@ -15,7 +15,8 @@ interface ForegroundProps {
 
 interface HeaderProps {
   title: string,
-  children: React.ReactNode
+  children: React.ReactNode,
+  icon: React.ReactNode
 }
 
 interface DeleteButtonProps {
@@ -25,8 +26,8 @@ interface DeleteButtonProps {
 
 export const NodeBackground = ({style, children}: BackgroundProps) => (
   <div
-    className='w-100 h-90 flex flex-col rounded-xl'
-    style={{...style, backgroundColor: `var(--node-color)`}}
+    className={`w-100 h-90 flex flex-col rounded-xl border-2`}
+    style={{...style, backgroundColor: `var(--node-color)`, borderColor: `var(--node-color)`}}
   >
     {children}
   </div>
@@ -34,16 +35,20 @@ export const NodeBackground = ({style, children}: BackgroundProps) => (
 
 
 export const NodeForeground = ({children}: ForegroundProps) => (
-  <div className="flex flex-col flex-1 min-h-0 p-2 bg-white rounded-lg m-1">
+  <div className="flex flex-col flex-1 min-h-0 p-2 bg-white rounded-xl">
     {children}
   </div>
 )
 
 
-export const NodeHeader = ({title, children}: HeaderProps) => (
-  <div className="flex items-center justify-between pl-3 pr-2 pt-1 shrink-0">
-    <h1 className="text-sm font-bold text-white h-fit">{title}</h1>
+export const NodeHeader = ({title, children, icon}: HeaderProps) => (
+  <div className="flex items-center justify-between px-2 py-0.5 shrink-0">
     <div className="flex items-center gap-1.5">
+    {icon}
+    <h1 className="flex items-center gap-1 text-sm text-white">{title}</h1>
+    </div>
+
+    <div className="flex items-center gap-1">
       {children}
     </div>
   </div>
@@ -59,9 +64,10 @@ export const DeleteButton = ({id, loading}: DeleteButtonProps) => {
       buttonStyle="circle"
       disabled={loading}
       size="xs"
-      className="bg-white text-black  border-[#e5e5e5] border"
+      color="ghost"
+      className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
     >
-      <X size={16}/>
+      <X size={14}/>
     </CustomButton>
   )
 }

@@ -29,6 +29,8 @@ const useStore = create<AppState>()((set, get) => ({
     syncing: false,
     locked: false,
 
+    settingsOpen: false,
+
 
     // ── Auth actions ──────────────────────────────────────────────────────────
 
@@ -463,6 +465,7 @@ const useStore = create<AppState>()((set, get) => ({
 
     setSyncing: (status) => set({syncing: status}),
     setLocked: (status) => set({locked: status}),
+    setSettingsOpen: (status) => set({settingsOpen: status}),
 
   }),
 );

@@ -12,7 +12,7 @@ import {
 } from "@/components/NodeElements/TextElements.tsx";
 import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Play, Settings2} from "lucide-react";
+import {MessagesSquare, Play, Settings2} from "lucide-react";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
@@ -45,7 +45,7 @@ const PromptNode = (
 
   return (
     <NodeBackground style={{'--node-color': '#ec4899'} as React.CSSProperties}>
-      <NodeHeader title="Prompt Node">
+      <NodeHeader title="Prompt Node" icon={<MessagesSquare size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
           <CustomButton
@@ -53,9 +53,10 @@ const PromptNode = (
             buttonStyle="circle"
             disabled={loading}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
-            <Settings2 size={16}/>
+            <Settings2 size={14}/>
           </CustomButton>
         </ToolTip>
 
@@ -65,9 +66,10 @@ const PromptNode = (
             buttonStyle="circle"
             disabled={loading || !data.prompt || isClosed}
             size="xs"
-            className="bg-white text-black  border-[#e5e5e5] border"
+            color="ghost"
+            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
           >
-            <Play size={16}/>
+            <Play size={14}/>
           </CustomButton>
         </ToolTip>
 
@@ -84,14 +86,14 @@ const PromptNode = (
 
               ? <div className="flex flex-col h-full justify-between">
                 <NodeDisplayText>{data.response}</NodeDisplayText>
-                <DisplayUserMessage>
-                  {data.prompt}
-                </DisplayUserMessage>
+              <DisplayUserMessage>{data.prompt}</DisplayUserMessage>
+
               </div>
               : <NodeDisplayThinking/>
 
             : <NodeTextarea id={id} initialValue={data.prompt} placeholder={'Enter your prompt...'}/>
         }
+
 
       </NodeForeground>
 
