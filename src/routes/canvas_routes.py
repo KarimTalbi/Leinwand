@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import CanvasRead, UserAuth, get_async_session
-from service import canvas_service as cs
-from service import get_current_active_user
+from service import canvas_service as cs, get_current_active_user
 
 canvas_router = APIRouter(prefix="/canvas", tags=["canvas"])
 

@@ -1,11 +1,15 @@
-from .db_models import Base, Canvas, Edge, Node, User, Owner
+from .db_models import Base, Canvas, Edge, Node, Owner, User
 from .db_session import engine, get_async_session
 from .queries.load_query import get_ancestors_recursive
 from .schemas import (
     AiResponse,
     CanvasRead,
+    ChatRequest,
     ChatResponse,
     EdgeRead,
+    LLMModelConfig,
+    LoadDataResponse,
+    MergeAnswer,
     MergeResolveResponse,
     MergeResponse,
     NodeRead,
@@ -16,9 +20,6 @@ from .schemas import (
     UserCreate,
     UserInDb,
     UserRead,
-    LoadDataResponse,
-ChatRequest,
-MergeAnswer
 )
 
 __all__ = [
@@ -47,5 +48,6 @@ __all__ = [
     "UserRead",
     "LoadDataResponse",
     "ChatRequest",
-    "MergeAnswer"
+    "MergeAnswer",
+    "LLMModelConfig",
 ]

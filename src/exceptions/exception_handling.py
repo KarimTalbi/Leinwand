@@ -19,30 +19,22 @@ logger = logging.getLogger(__name__)
 # --- Domain exceptions → HTTP responses ---
 
 
-async def node_not_found_handler(
-    _: Request, exc: NodeNotFoundException
-) -> JSONResponse:
+async def node_not_found_handler(_: Request, exc: NodeNotFoundException) -> JSONResponse:
     logger.debug("Node not found: %s", exc.node_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
-async def edge_not_found_handler(
-    _: Request, exc: EdgeNotFoundException
-) -> JSONResponse:
+async def edge_not_found_handler(_: Request, exc: EdgeNotFoundException) -> JSONResponse:
     logger.debug("Edge not found: %s", exc.edge_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
-async def canvas_not_found_handler(
-    _: Request, exc: CanvasNotFoundException
-) -> JSONResponse:
+async def canvas_not_found_handler(_: Request, exc: CanvasNotFoundException) -> JSONResponse:
     logger.debug("Canvas not found: %s", exc.canvas_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
-async def user_already_exists_handler(
-    _: Request, exc: UserAlreadyExistsException
-) -> JSONResponse:
+async def user_already_exists_handler(_: Request, exc: UserAlreadyExistsException) -> JSONResponse:
     logger.debug("User already exists: %s", exc.username)
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
@@ -55,17 +47,11 @@ async def inactive_user_handler(_: Request, exc: InactiveUserException) -> JSONR
 # --- FastAPI / HTTP exceptions ---
 
 
-async def http_exception_handler_with_logging(
-    request: Request, exc: HTTPException
-) -> Response:
+async def http_exception_handler_with_logging(request: Request, exc: HTTPException) -> Response:
     if exc.status_code >= 500:
-        logger.error(
-            "HTTP %s on %s %s", exc.status_code, request.method, request.url.path
-        )
+        logger.error("HTTP %s on %s %s", exc.status_code, request.method, request.url.path)
     else:
-        logger.debug(
-            "HTTP %s on %s %s", exc.status_code, request.method, request.url.path
-        )
+        logger.debug("HTTP %s on %s %s", exc.status_code, request.method, request.url.path)
     return await http_exception_handler(request, exc)
 
 
@@ -95,30 +81,37 @@ async def unhandled_exception_handler(request: Request, _: Exception) -> JSONRes
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         NodeNotFoundException,
-        node_not_found_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        node_not_found_handler,
     )
     app.add_exception_handler(
         EdgeNotFoundException,
-        edge_not_found_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        edge_not_found_handler,
     )
     app.add_exception_handler(
         CanvasNotFoundException,
-        canvas_not_found_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        canvas_not_found_handler,
     )
     app.add_exception_handler(
         UserAlreadyExistsException,
-        user_already_exists_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        user_already_exists_handler,
     )
     app.add_exception_handler(
         InactiveUserException,
-        inactive_user_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        inactive_user_handler,
     )
     app.add_exception_handler(
         HTTPException,
-        http_exception_handler_with_logging,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        http_exception_handler_with_logging,
     )
     app.add_exception_handler(
         RequestValidationError,
-        validation_exception_handler,  # pyright: ignore[reportArgumentType]
+        # pyrefly: ignore [bad-argument-type]
+        validation_exception_handler,
     )
     app.add_exception_handler(Exception, unhandled_exception_handler)

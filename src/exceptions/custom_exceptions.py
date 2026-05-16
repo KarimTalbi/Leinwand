@@ -4,41 +4,37 @@ from fastapi import HTTPException, status
 
 
 class NodeNotFoundException(Exception):
-    def __init__(self, node_id: UUID | str | None = None):
+    def __init__(self, node_id: UUID | str | None = None) -> None:
         self.node_id = node_id
         super().__init__(f"Node not found: {node_id}" if node_id else "Node not found")
 
 
 class EdgeNotFoundException(Exception):
-    def __init__(self, edge_id: UUID | str | None = None):
+    def __init__(self, edge_id: UUID | str | None = None) -> None:
         self.edge_id = edge_id
         super().__init__(f"Edge not found: {edge_id}" if edge_id else "Edge not found")
 
 
 class CanvasNotFoundException(Exception):
-    def __init__(self, canvas_id: UUID | str | None = None):
+    def __init__(self, canvas_id: UUID | str | None = None) -> None:
         self.canvas_id = canvas_id
-        super().__init__(
-            f"Canvas not found: {canvas_id}" if canvas_id else "Canvas not found"
-        )
+        super().__init__(f"Canvas not found: {canvas_id}" if canvas_id else "Canvas not found")
 
 
 class UserAlreadyExistsException(Exception):
-    def __init__(self, username: str | None = None):
+    def __init__(self, username: str | None = None) -> None:
         self.username = username
-        super().__init__(
-            f"User already exists: {username}" if username else "User already exists"
-        )
+        super().__init__(f"User already exists: {username}" if username else "User already exists")
 
 
 class InactiveUserException(Exception):
-    def __init__(self, username: str | None = None):
+    def __init__(self, username: str | None = None) -> None:
         self.username = username
         super().__init__(f"Inactive user: {username}" if username else "Inactive user")
 
 
 class InvalidUserOrPasswordException(HTTPException):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
@@ -47,7 +43,7 @@ class InvalidUserOrPasswordException(HTTPException):
 
 
 class CredentialsException(HTTPException):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",

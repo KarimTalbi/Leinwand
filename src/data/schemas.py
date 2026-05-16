@@ -1,7 +1,7 @@
+from typing import Annotated, Any
 from uuid import UUID
-from typing import Any, Annotated
 
-from pydantic import BaseModel, ConfigDict, AfterValidator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 
@@ -9,8 +9,8 @@ def check_uuid4(v: str) -> str:
     try:
         UUID(v)
         return v
-    except ValueError:
-        raise ValueError("Invalid UUID4 format")
+    except ValueError as exc:
+        raise ValueError("Invalid UUID4 format") from exc
 
 
 UUID4Str = Annotated[str, AfterValidator(check_uuid4)]
@@ -27,6 +27,7 @@ class NodeRead(BaseModel):
         alias_generator=to_camel,
         extra="ignore",
     )
+
 
 class LoadDataResponse(BaseModel):
     nodes: list[NodeRead]
@@ -100,9 +101,11 @@ class UserCreate(UserBase):
 class AiResponse(BaseModel):
     response: str
 
+
 class ChatRequest(BaseModel):
     prompt: str
     type: str = "chat"
+
 
 class ChatResponse(AiResponse): ...
 
@@ -127,3 +130,12 @@ class MergeAnswer(BaseModel):
     solution: str | None = None
     context: list[dict[str, Any]] | None = None
 
+
+class LLMModelConfig(BaseModel):
+    model: str
+    model_provider: str
+    temperature: Annotated[float, Field(ge=0.0, le=2.0)] | None = None
+    max_tokens: Annotated[int, Field(ge=0)] | None = None
+    timeout: Annotated[int, Field(ge=0)] | None = None
+    max_retries: Annotated[int, Field(ge=0)] | None = None
+    model_kwargs: dict[str, Any] | None = None

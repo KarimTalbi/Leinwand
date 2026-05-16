@@ -1,12 +1,13 @@
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from data import engine, Base
+from data import Base, engine
 from exceptions import register_exception_handlers
-from routes import user_router, canvas_router, node_router
+from routes import canvas_router, node_router, user_router, llm_router
 from utils import setup_logging
 
 DROP_AND_CREATE_DB = False
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     async with engine.begin() as conn:
 
         if DROP_AND_CREATE_DB:
@@ -49,6 +50,7 @@ register_exception_handlers(app)
 app.include_router(user_router)
 app.include_router(canvas_router)
 app.include_router(node_router)
+app.include_router(llm_router)
 
 
 # PYTHONPATH=src fastapi dev src/main.py

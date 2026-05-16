@@ -1,24 +1,24 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Protocol
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import (
+    Edge,
+    EdgeRead,
+    LoadDataResponse,
+    Node,
     NodeRead,
     UserAuth,
     get_async_session,
-    LoadDataResponse, EdgeRead
 )
-from data.schemas import ChatRequest, ChatResponse, MergeAnswer
-from llm import (
-    build_chat_model,
-    build_merge_resolution_model,
-    build_merge_validation_model,
-    build_summary_model,
-)
-from service import get_current_active_user
-from service import node_service as ns
+from service import get_current_active_user, node_service as ns
+
+
+class LLMResponse(Protocol):
+    response: str
+    has_issues: bool | None
+
 
 node_router = APIRouter(prefix="/node", tags=["node"])
 
@@ -30,11 +30,11 @@ async def get_data(
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
 
-    nodes = await ns.list_nodes(session, current_user.id, canvas_id)
-    edges = await ns.list_edges(session, current_user.id, canvas_id)
+    nodes: list[Node] = await ns.list_nodes(session, current_user.id, canvas_id)
+    edges: list[Edge] = await ns.list_edges(session, current_user.id, canvas_id)
 
-    nodes_read = [NodeRead.model_validate(node) for node in nodes]
-    edges_read = [EdgeRead.model_validate(edge) for edge in edges]
+    nodes_read: list[NodeRead] = [NodeRead.model_validate(node) for node in nodes]
+    edges_read: list[EdgeRead] = [EdgeRead.model_validate(edge) for edge in edges]
 
     return LoadDataResponse(nodes=nodes_read, edges=edges_read)
 
@@ -55,93 +55,3 @@ async def sync_data(
     await ns.write_nodes(session, data.nodes, current_user.id, canvas_id)
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
-
-@node_router.get("/{node_id}/merge/", response_model=MergeAnswer)
-async def get_context(
-    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-    node_id: str,
-    session: AsyncSession = Depends(get_async_session),
-) -> Any:
-    node = await ns.get_node(session, node_id, current_user.id)
-
-    problems = node.data.get("problems")
-    solution = node.data.get("solution")
-
-    if problems and solution:
-        context = node.data.get("context", {})
-
-        model = build_merge_resolution_model()
-        result = await model.generate_with_context(
-            context,
-            "write a solution that will be appended"
-            "at the end of the text so we know which"
-            "truth will be accepted from now on.",
-        )
-
-        context.append(
-            {
-                "type": "problemResolution",
-                "ai": problems,
-                "user": solution,
-                "solution": result.response,
-            }
-        )
-
-        return MergeAnswer(context=context, closed=True)
-
-    ancestors = await ns.get_ancestors(session, node.id, current_user.id)
-    model = build_merge_validation_model()
-    result = await model.generate_with_context(
-        ancestors, "check the context for inconsistencies"
-    )
-
-
-    if result.has_issues:  # type: ignore
-        return MergeAnswer(context=ancestors, closed=False, problems=result.response)
-
-
-    return  MergeAnswer(context=ancestors, closed=True)
-
-
-@node_router.post("/{node_id}/chat/", response_model=ChatResponse)
-async def get_chat_response(
-    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-    data: ChatRequest,
-    node_id: str,
-    session: AsyncSession = Depends(get_async_session),
-) -> Any:
-    model = build_chat_model()
-
-    ancestors = await ns.get_ancestors(session, node_id, current_user.id)
-    response = await model.generate_with_context(ancestors, data.prompt)
-
-    return ChatResponse(response=response.response)
-
-
-@node_router.post("/{node_id}/streaming_chat/")
-async def get_streaming_chat_response(
-    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-    data: ChatRequest,
-    node_id: str,
-    session: AsyncSession = Depends(get_async_session),
-) -> StreamingResponse:
-
-    if data.type == 'summary':
-        model = build_summary_model()
-
-    else:
-        model = build_chat_model()
-
-    ancestors = await ns.get_ancestors(session, node_id, current_user.id)
-
-    async def token_generator():
-        accumulated = ""
-        async for token in model.stream_with_context(
-            ancestors, data.prompt
-        ):
-            accumulated += token  # type: ignore
-            yield f"data: {token.replace(chr(10), '\\n')}\n\n"
-
-        yield "data: [DONE]\n\n"
-
-    return StreamingResponse(token_generator(), media_type="text/event-stream")

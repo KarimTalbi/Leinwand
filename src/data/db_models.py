@@ -55,3 +55,13 @@ class Owner(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), primary_key=True)
     canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id"), primary_key=True)
     role: Mapped[str] = mapped_column(String)
+
+
+class ApiKey(Base):
+    __tablename__ = "api_key"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    key: Mapped[str] = mapped_column(String)
+    models: Mapped[list[str]] = mapped_column(MutableDict.as_mutable(JSONB))
+    model_provider: Mapped[str] = mapped_column(String)
