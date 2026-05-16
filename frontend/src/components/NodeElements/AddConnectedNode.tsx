@@ -1,4 +1,3 @@
-import {useNodeConnections} from "@xyflow/react";
 import {cn} from "@/lib/utils.ts";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
@@ -24,19 +23,12 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const {createConnectedNode} = useStore(useShallow(selector));
 
-  const connections = useNodeConnections({
-    id: sourceId,
-    handleType: "source",
-  });
-
   const onCreateNode = async (type: NodeTypeNames) => {
     const position = {x: posX + 450, y: posY};
     createConnectedNode(type, sourceId, position);
   };
 
   return (
-    <div>
-      {connections.length === 0 && (
 
       <div
         style={{position: 'absolute'}}
@@ -55,28 +47,28 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
               )}>
 
               <ToolTip position="top" label="Prompt Node">
-                <CustomButton onClick={() => onCreateNode("promptNode")} buttonStyle="circle"
+                <CustomButton onClick={() => onCreateNode("promptNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#ec4899]">
                   <MessagesSquare size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Text Node">
-                <CustomButton onClick={() => onCreateNode("textNode")} buttonStyle="circle"
+                <CustomButton onClick={() => onCreateNode("textNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#309898]">
                   <LucideTextCursorInput size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Summary Node">
-                <CustomButton onClick={() => onCreateNode("summaryNode")} buttonStyle="circle"
+                <CustomButton onClick={() => onCreateNode("summaryNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#bf4546]">
                   <Minimize2 className="rotate-45" size={14}/>
                 </CustomButton>
               </ToolTip>
 
               <ToolTip position="top" label="Merge Node">
-                <CustomButton onClick={() => onCreateNode("mergeNode")} buttonStyle="circle"
+                <CustomButton onClick={() => onCreateNode("mergeNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#f5c45e]">
                   <MergeIcon className="rotate-90" size={14}/>
                 </CustomButton>
@@ -93,8 +85,7 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
         </div>
 
       </div>
-      )}
-    </div>
+
   )
 };
 

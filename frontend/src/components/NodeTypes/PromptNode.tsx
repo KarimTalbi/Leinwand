@@ -39,7 +39,7 @@ const PromptNode = (
 
   const handleClick = () => {
     setLoading(true);
-    void promptNodeAction(id, data.prompt || '', 'chat');
+    void promptNodeAction(id, data.prompt || '');
     setLoading(false);
   }
 

@@ -12,10 +12,8 @@ import {useShallow} from "zustand/react/shallow";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
-const prompt = "summarize the topics in the context. Don't mention it being the context or being a summary. Summarize as if i would tell you to summarize a topic.";
-
 const selector = (state: AppState) => ({
-  promptNodeAction: state.promptNodeAction,
+  summaryNodeAction: state.summaryNodeAction,
 });
 
 
@@ -28,7 +26,7 @@ const SummaryNode = (
   }: NodeProps<SummaryNodeType>
 ) => {
 
-  const {promptNodeAction} = useStore(useShallow(selector));
+  const {summaryNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
   const nodes = useNodes();
@@ -41,7 +39,7 @@ const SummaryNode = (
 
   const handleClick = () => {
     setLoading(true);
-    void promptNodeAction(id, prompt, 'summary');
+    void summaryNodeAction(id);
     setLoading(false);
   }
 

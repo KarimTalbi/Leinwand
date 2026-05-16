@@ -84,7 +84,8 @@ export interface AppState {
   syncCanvas: () => Promise<void>;
   addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
   createConnectedNode: (type: NodeTypeNames, sourceId: string, position?: XYPosition) => void;
-  promptNodeAction: (id: string, prompt: string, type: string) => Promise<void>;
+  promptNodeAction: (id: string, prompt: string) => Promise<void>;
+  summaryNodeAction: (id: string) => Promise<void>;
   mergeNodeAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => void;
   deleteNode: (id: string) => void;
