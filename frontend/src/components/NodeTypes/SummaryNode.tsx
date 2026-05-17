@@ -3,14 +3,58 @@ import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '../../store.ts';
 import {AppState, SummaryNodeType} from "@/types.ts";
-import {NodeDisplayText, NodeDisplayThinking} from "@/components/NodeElements/TextElements.tsx";
-import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Minimize2, Play, Settings2} from "lucide-react";
+import {
+  NodeDisplayPulsingText,
+  NodeDisplayMarkdown,
+} from "@/components/NodeElements/TextElements.tsx";
+import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
-import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+
+
+const DisplaySummaryScreen = (summary: string) => (
+      <NodeDisplayMarkdown content={summary}/>
+)
+
+const DefaultScreen = (
+  onSettings: () => void,
+  onSend: () => void,
+  sendDisabled: boolean,
+) => {
+  return (
+  <div className="flex flex-col flex-1 justify-end chat chat-start nodrag select-text cursor-text">
+    <div className="chat-bubble text-sm mx-3">
+      Connect a Node and press "Summarize" to get a summary
+    </div>
+    <div className="flex w-full items-center justify-end px-2 pt-2 shrink-0">
+      <div className="flex items-center gap-1.5">
+        <button
+          className="btn btn-ghost btn-sm" onClick={onSettings}>
+          Settings
+        </button>
+        <button
+          className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
+          Summarize
+        </button>
+      </div>
+    </div>
+  </div>
+  )
+}
+
+const DisplayLoadingScreen = () => (
+    <div className="flex flex-col flex-1 justify-end chat chat-start nodrag select-text cursor-text">
+      <div className="chat-bubble text-sm mx-3">
+        <NodeDisplayPulsingText>
+          Summarizing...
+        </NodeDisplayPulsingText>
+      </div>
+    </div>
+)
+
+
+
 
 const selector = (state: AppState) => ({
   summaryNodeAction: state.summaryNodeAction,
@@ -21,8 +65,6 @@ const SummaryNode = (
   {
     id,
     data,
-    positionAbsoluteX,
-    positionAbsoluteY,
   }: NodeProps<SummaryNodeType>
 ) => {
 
@@ -43,77 +85,42 @@ const SummaryNode = (
     setLoading(false);
   }
 
+  const foreground = () => {
+    if (!isClosed) return DefaultScreen(() => null, handleClick, loading || !isConnected || isSourceSummary)
+    if (!!data.response) return DisplaySummaryScreen(data.response)
+    return DisplayLoadingScreen()
+  }
+
   return (
-    <NodeBackground className="bg-[#bf4546] border-[#bf4546] w-130 min-h-100">
-      <NodeHeader title="Summary Node" icon={<Minimize2 className="rotate-45" size={14} color="white"/>}>
-
-        <ToolTip position="top" label="Settings">
-          <CustomButton
-            onClick={() => null}
-            buttonStyle="circle"
-            disabled={loading}
-            size="xs"
-            color="ghost"
-            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
-          >
-            <Settings2 size={16}/>
-          </CustomButton>
-        </ToolTip>
-
-        <ToolTip position="top" label="Get Summary">
-          <CustomButton
-            onClick={handleClick}
-            buttonStyle="circle"
-            disabled={loading || isClosed || isSourceSummary || !isConnected}
-            size="xs"
-            color="ghost"
-            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
-          >
-            <Play size={16}/>
-          </CustomButton>
-        </ToolTip>
-
-        <ToolTip position="top" label="Delete Node">
-          <DeleteButton id={id} loading={loading}/>
-        </ToolTip>
-
-      </NodeHeader>
+    <NodeBackground>
+      <NodeHeader title="Summary" color="#bf4546" id={id} loading={loading}/>
 
       <NodeForeground>
-
-        {
-          isClosed
-            ? !!data.response
-
-              ? <div className="flex flex-col h-full justify-between">
-                <NodeDisplayText>{data.response}</NodeDisplayText>
-              </div>
-              : <NodeDisplayThinking/>
-
-            : <div className="flex flex-col h-full justify-center items-center">
-              <p className="text-sm font-bold mb-15">Connect Node and press Play to get a summary</p>
-            </div>
-        }
-
+        {foreground()}
       </NodeForeground>
+
 
       <ConnectionHandles
         handleId="target-1"
         handleType="target"
         position="top"
         nodeId={id}
+        color="#bf4546"
       />
 
+      {!!data.response && (
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
         position="bottom"
         nodeId={id}
+        color="#bf4546"
       >
 
-        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+        <AddConnectedNode sourceId={id}/>
 
       </ConnectionHandles>
+      )}
 
     </NodeBackground>
 

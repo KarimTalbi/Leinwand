@@ -1,15 +1,15 @@
-import {memo} from 'react';
+import {memo, useState} from 'react';
 import {NodeProps} from "@xyflow/react";
 
 import useStore from '@/store.ts';
 import {AppState, TextNodeType} from "@/types.ts";
-import {NodeDisplayText, NodeTextarea} from "@/components/NodeElements/TextElements.tsx";
-import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {Lock, LockOpen, LucideTextCursorInput} from "lucide-react";
+import {
+  NodeDisplayMarkdown, NodeDisplayText,
+  NodeTextarea
+} from "@/components/NodeElements/TextElements.tsx";
+import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
-import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 
@@ -19,53 +19,71 @@ const selector = (state: AppState) => ({
 });
 
 
+const DisplayTextScreen = (text: string, onSettings: () => void, onSend: () => void, useMarkdown: boolean) => (
+  <div className="flex flex-col flex-1 justify-between gap-5">
+    {useMarkdown
+    ? <NodeDisplayMarkdown content={text} className="px-2"/>
+    : <NodeDisplayText>{text}</NodeDisplayText>
+    }
+    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
+      <button
+        className="btn btn-ghost btn-sm" onClick={onSettings}>
+        Settings
+      </button>
+      <button
+        className="btn btn-ghost btn-sm" onClick={onSend}>
+        Edit
+      </button>
+    </div>
+  </div>
+)
+
+const DisplayInputScreen = (
+  id: string,
+  text: string,
+  onSend: () => void,
+  sendDisabled: boolean,
+) => (
+  <div>
+    <div className="flex flex-col flex-1 justify-between gap-5">
+      <NodeTextarea id={id} initialValue={text} placeholder={'Enter text...'} dataKey="text"/>
+    </div>
+    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
+      <button
+        className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
+        Save
+      </button>
+    </div>
+  </div>
+)
+
 const TextNode = (
   {
     id,
     data,
-    positionAbsoluteX,
-    positionAbsoluteY,
   }: NodeProps<TextNodeType>
 ) => {
 
   const {updateNodeData} = useStore(useShallow(selector));
   const isClosed = data.closed;
+  const [useMarkdown, setUseMarkdown] = useState(true);
 
   const handleClick = () => {
     updateNodeData(id, {closed: !isClosed})
   }
 
+  const foreground = () => {
+    if (!isClosed) return DisplayInputScreen(id, data.text || "", handleClick, !data.text)
+    return DisplayTextScreen(data.text, () => setUseMarkdown(!useMarkdown), handleClick, useMarkdown)
+  }
+
   return (
-    <NodeBackground className="bg-[#309898] border-[#309898] w-130 min-h-100">
-      <NodeHeader title="Text Node" icon={<LucideTextCursorInput size={14} color="white"/>}>
+    <NodeBackground>
+      <NodeHeader title="Text" id={id} color="#309898" loading={false}/>
 
-        <ToolTip position="top" label="Lock Node">
-          <CustomButton
-            onClick={handleClick}
-            buttonStyle="circle"
-            disabled={!data.text}
-            size="xs"
-            color="ghost"
-            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
-          >
-            {isClosed ? <LockOpen size={14} color="white"/> : <Lock size={14} color="white"/>}
-          </CustomButton>
-        </ToolTip>
-
-        <ToolTip position="top" label="Delete Node">
-          <DeleteButton id={id}/>
-        </ToolTip>
-
-      </NodeHeader>
 
       <NodeForeground>
-
-        {
-          isClosed
-            ? <NodeDisplayText>{data.text}</NodeDisplayText>
-            : <NodeTextarea id={id} initialValue={data.text} placeholder={'Enter text...'} dataKey="text"/>
-        }
-
+        {foreground()}
       </NodeForeground>
 
       <ConnectionHandles
@@ -73,18 +91,22 @@ const TextNode = (
         handleType="target"
         position="top"
         nodeId={id}
+        color="#309898"
       />
 
+      {!!data.text && (
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
-        position="top"
+        position="bottom"
         nodeId={id}
+        color="#309898"
       >
 
-        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+        <AddConnectedNode sourceId={id}/>
 
       </ConnectionHandles>
+      )}
 
     </NodeBackground>
 

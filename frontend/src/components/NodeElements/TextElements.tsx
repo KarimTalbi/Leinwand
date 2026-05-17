@@ -7,6 +7,7 @@ import DOMPurify from 'dompurify';
 import {marked} from '@/lib/markdown.ts';
 
 import 'highlight.js/styles/github-dark.css'
+import {Play} from "lucide-react";
 
 interface NodeTextareaProps {
   id: string,
@@ -43,10 +44,15 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
         onChange={handleTextChange}
         placeholder={placeholder}
         className={cn(
-          'nodrag flex-1 min-h-16 w-full resize-none rounded-sm border-none p-2 text-sm/5! text-black nowheel',
-          'transition-all focus:ring ring-gray-300 outline-none ring-offset-4',
+          'nodrag min-h-16 w-123 max-h-50 resize-none bg-black/5 border-[lightgray] rounded-sm mx-2 border p-2 text-sm/5! text-black nowheel',
+          'transition-all focus:ring ring-0! outline-none',
         )}
-      />
+      >
+        <div>
+          <Play></Play>
+        </div>
+      </Textarea>
+
     </div>
   );
 };
@@ -54,17 +60,20 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
 
 export const NodeDisplayText = ({children}: NodeDisplayTextProps) => (
 
-    <div className="flex-1 text-sm p-1 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
-      {children?.split('\n').map((line, i) => (
-        <span key={i} className="block mb-2">{line || '\u00A0'}</span>
-      ))}
-    </div>
+  <div className="flex-1 text-sm p-1 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
+    {children?.split('\n').map((line, i) => (
+      <span key={i} className="block mb-2">{line || '\u00A0'}</span>
+    ))}
+  </div>
 )
 
 
-export const NodeDisplayMarkdown = ({content}: {content: string}) => (
+export const NodeDisplayMarkdown = ({content, className}: { content: string, className?: string }) => (
   <div
-    className="prose prose-sm nodrag select-text cursor-text"
+    className={cn(
+      "prose prose-sm nodrag select-text cursor-text",
+      className,
+    )}
     dangerouslySetInnerHTML={{
       __html: DOMPurify.sanitize(marked.parse(content) as string)
     }}
@@ -72,18 +81,48 @@ export const NodeDisplayMarkdown = ({content}: {content: string}) => (
 )
 
 
-export const NodeDisplayThinking = (
-
+export const NodeDisplayPulsingText = (
+  {children}: { children?: React.ReactNode }
 ) => (
 
   <div className="flex-1 p-5 flex items-center justify-center">
-    <span className="text-sm! text-muted-foreground animate-pulse">thinking...</span>
+    <span className="text-sm! text-muted-foreground animate-pulse">
+      {children}
+    </span>
   </div>
 )
 
+type ChatBubblePosition = "left" | "right"
 
-export const DisplayUserMessage = ({message}: { message?: string }) => (
-  <div className="chat chat-end nodrag select-text cursor-text">
-    <div className="chat-bubble text-sm">{message}</div>
+const ChatBubblePositions: Record<ChatBubblePosition, string> = {
+  left: "chat-start",
+  right: "chat-end",
+};
+
+export const ChatBubble = (
+  {
+    children,
+    position,
+    maxHeight = true
+  }:
+  {
+    children?: React.ReactNode,
+    position: ChatBubblePosition,
+    maxHeight?: boolean
+  }) => (
+  <div className={cn(
+    "chat nodrag select-text cursor-text",
+    ChatBubblePositions[position]
+  )}>
+
+    <div className="chat-bubble text-sm wrap-break-word">
+      <div className={cn(
+        "overflow-y-auto overflow-x-hidden",
+        maxHeight ? "max-h-15" : "",
+      )}>
+        {children}
+      </div>
+    </div>
+
   </div>
 )

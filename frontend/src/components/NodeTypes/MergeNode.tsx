@@ -5,19 +5,97 @@ import {NodeProps, useNodeConnections} from "@xyflow/react";
 import useStore from '@/store.ts';
 import {AppState, MergeNodeType} from "@/types.ts";
 import {
-  NodeDisplayText,
-  NodeDisplayThinking,
-  NodeTextarea
+  NodeDisplayPulsingText,
+  NodeTextarea, ChatBubble, NodeDisplayMarkdown
 } from "@/components/NodeElements/TextElements.tsx";
-import {DeleteButton, NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
-import CustomButton from "@/components/Buttons/CustomButton.tsx";
-import {MergeIcon, Play, Settings2} from "lucide-react";
+import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
-import MergeContent from "@/components/NodeElements/MergeSections.tsx";
-import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
+
+const DefaultScreen = (
+  onSettings: () => void,
+  onSend: () => void,
+  sendDisabled: boolean,
+) => {
+  return (
+    <div className="flex flex-col flex-1 justify-end chat chat-start nodrag select-text cursor-text">
+      <div className="chat-bubble text-sm mx-3">
+        Connect 2 Nodes and press "Merge" to merge their context
+      </div>
+      <div className="flex w-full items-center justify-end px-2 pt-2 shrink-0">
+        <div className="flex items-center gap-1.5">
+          <button
+            className="btn btn-ghost btn-sm" onClick={onSettings}>
+            Settings
+          </button>
+          <button
+            className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
+            Merge
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const DisplayLoadingScreen = () => (
+  <div className="flex flex-col flex-1 justify-end chat chat-start nodrag select-text cursor-text">
+    <div className="chat-bubble text-sm mx-3">
+      <NodeDisplayPulsingText>
+        Merging...
+      </NodeDisplayPulsingText>
+    </div>
+  </div>
+)
+
+const DisplayMergeScreen = (problems?: string, context?: Record<string, string>[]) => {
+  if (!problems) return (
+    <ChatBubble position="left">
+      Merging Successful! <br/>
+      No Contradictions detected. <br/>
+      This Node holds the context of both Streams.
+    </ChatBubble>
+  )
+  if (!context) return null
+  const lastItem = context[context.length - 1]
+  const solution = lastItem?.solution
+  return (
+    <div>
+    <ChatBubble position="left">
+      Merging Successful! <br/>
+      Contradictions solved!. <br/>
+      This Node holds the context of both Streams.
+    </ChatBubble>
+      <ChatBubble position="left" maxHeight={false}>
+        <NodeDisplayMarkdown content={solution}></NodeDisplayMarkdown>
+      </ChatBubble>
+    </div>
+  )
+}
+
+
+const DisplayMergeProblemScreen = (
+  id: string,
+  onSend: () => void,
+  sendDisabled: boolean,
+  problems?: string,
+  solution?: string,
+) => (
+  <div>
+    <div className="flex flex-col flex-1 justify-between gap-5">
+      <NodeDisplayMarkdown content={problems || ""} className="px-2"/>
+      <NodeTextarea id={id} initialValue={solution} placeholder={'Enter your solution...'} dataKey="solution"/>
+    </div>
+    <div className="flex w-full items-center justify-end px-2 pt-2 shrink-0">
+      <button
+        className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
+        Merge
+      </button>
+    </div>
+  </div>
+)
 
 const selector = (state: AppState) => ({
   mergeNodeAction: state.mergeNodeAction,
@@ -29,8 +107,6 @@ const MergeNode = (
   {
     id,
     data,
-    positionAbsoluteX,
-    positionAbsoluteY,
   }: NodeProps<MergeNodeType>
 ) => {
 
@@ -54,61 +130,24 @@ const MergeNode = (
     setLoading(false);
   }
 
+  const foreground = () => {
+    if (!isClosed) return DefaultScreen(() => null, handleClick, loading || !isConnected1 || !isConnected2)
+    if (hasProblem) return DisplayMergeProblemScreen(id, handleClick, loading || !data.solution, data.problems, data.solution)
+    if (!!data.context) return DisplayMergeScreen(data.problems, data.context)
+    return DisplayLoadingScreen()
+  }
+
   return (
-    <NodeBackground className="bg-[#f5c45e] border-[#f5c45e] w-130 min-h-100">
-      <NodeHeader title="Merge Node" icon={<MergeIcon className="rotate-90" size={14} color="white"/>}>
-
-        <ToolTip position="top" label="Settings">
-          <CustomButton
-            onClick={() => null}
-            buttonStyle="circle"
-            disabled={loading}
-            size="xs"
-            color="ghost"
-            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
-          >
-            <Settings2 size={16}/>
-          </CustomButton>
-        </ToolTip>
-
-        <ToolTip position="top" label="Merge Streams">
-          <CustomButton
-            onClick={handleClick}
-            buttonStyle="circle"
-            disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed && !hasProblem}
-            size="xs"
-            color="ghost"
-            className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
-          >
-            <Play size={16}/>
-          </CustomButton>
-        </ToolTip>
-
-        <ToolTip position="top" label="Delete Node">
-          <DeleteButton id={id} loading={loading}/>
-        </ToolTip>
-
-      </NodeHeader>
+    <NodeBackground>
+      <NodeHeader
+        title="Merge"
+        color="#f5c45e"
+        id={id}
+        loading={loading}
+      />
 
       <NodeForeground>
-        {hasProblem
-
-          ? (<div className="flex flex-col items-center justify-center h-full w-full">
-            <NodeDisplayText>{data.problems}</NodeDisplayText>
-            <NodeTextarea id={id} initialValue={data.solution} placeholder={'Enter your answer...'} dataKey="solution"/>
-          </div>)
-
-          : isClosed && !!data.context
-
-            ? <MergeContent sections={data.context}/>
-            : isClosed && !data.context
-
-              ? <NodeDisplayThinking/>
-              : (<div className="flex flex-col h-full justify-center items-center">
-                <p className="text-sm font-bold mb-15">Connect Node and press Play to get a summary</p>
-              </div>)
-        }
-
+        {foreground()}
       </NodeForeground>
 
       <ConnectionHandles
@@ -117,6 +156,7 @@ const MergeNode = (
         handleType="target"
         position="top"
         nodeId={id}
+        color="#f5c45e"
       />
 
       <ConnectionHandles
@@ -125,18 +165,22 @@ const MergeNode = (
         handleType="target"
         position="top"
         nodeId={id}
+        color="#f5c45e"
       />
 
+      {!!data.context && (
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
         position="bottom"
         nodeId={id}
+        color="#f5c45e"
       >
 
-        <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>
+        <AddConnectedNode sourceId={id}/>
 
       </ConnectionHandles>
+      )}
 
     </NodeBackground>
 

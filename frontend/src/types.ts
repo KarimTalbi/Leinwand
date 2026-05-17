@@ -14,7 +14,7 @@ export interface TextNodeData extends Record<string, unknown> {
 }
 
 export interface MergeNodeData extends Record<string, unknown> {
-  context?: string[];
+  context?: Record<string, string>[];
   problems?: string;
   solution?: string;
   has_issues?: boolean;
