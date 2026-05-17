@@ -21,6 +21,7 @@ import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 const selector = (state: AppState) => ({
   mergeNodeAction: state.mergeNodeAction,
+  mergeNodeResolveAction: state.mergeNodeResolveAction,
 });
 
 
@@ -33,10 +34,10 @@ const MergeNode = (
   }: NodeProps<MergeNodeType>
 ) => {
 
-  const {mergeNodeAction} = useStore(useShallow(selector));
+  const {mergeNodeAction, mergeNodeResolveAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
-  const hasProblem = data.problems;
+  const hasProblem = data.has_issues;
 
   const connections1 = useNodeConnections({handleId: "target-1", handleType: "target"});
   const connections2 = useNodeConnections({handleId: "target-2", handleType: "target"});
@@ -45,7 +46,11 @@ const MergeNode = (
 
   const handleClick = () => {
     setLoading(true);
-    void mergeNodeAction(id);
+    if (hasProblem) {
+      void mergeNodeResolveAction(id)
+    } else {
+      void mergeNodeAction(id)
+    }
     setLoading(false);
   }
 
@@ -70,7 +75,7 @@ const MergeNode = (
           <CustomButton
             onClick={handleClick}
             buttonStyle="circle"
-            disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed}
+            disabled={loading || !isConnected1 || !isConnected2 || !!data.problems && !data.solution || isClosed && !hasProblem}
             size="xs"
             color="ghost"
             className="text-white hover:border-none hover:bg-transparent hover:shadow-none"
@@ -90,7 +95,7 @@ const MergeNode = (
 
           ? (<div className="flex flex-col items-center justify-center h-full w-full">
             <NodeDisplayText>{data.problems}</NodeDisplayText>
-            <NodeTextarea id={id} initialValue={data.solution} placeholder={'Enter your answer...'}/>
+            <NodeTextarea id={id} initialValue={data.solution} placeholder={'Enter your answer...'} dataKey="solution"/>
           </div>)
 
           : isClosed && !!data.context

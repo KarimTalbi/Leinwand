@@ -15,6 +15,8 @@ interface NodeDisplayTextProps {
   children?: string
 }
 
+const maxHeight = "max-h-20";
+
 export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}: NodeTextareaProps) => {
 
   const [localPrompt, setLocalPrompt] = useState(initialValue || "");
@@ -30,7 +32,7 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 w-full">
+    <div className={cn("flex flex-col flex-1 min-h-0 w-full", dataKey === "solution" ? maxHeight : "")}>
       <Textarea
         aria-label="Textarea"
         value={localPrompt}
@@ -38,7 +40,7 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
         placeholder={placeholder}
         className={cn(
           'nodrag flex-1 min-h-16 w-full resize-none rounded-sm border-none p-2 text-sm/5! text-black nowheel',
-          'transition-all focus:ring ring-gray-300 outline-none ring-offset-4'
+          'transition-all focus:ring ring-gray-300 outline-none ring-offset-4',
         )}
       />
     </div>
@@ -61,7 +63,7 @@ export const NodeDisplayThinking = (
 ) => (
 
   <div className="flex-1 p-5 flex items-center justify-center">
-    <span className="text-2xl! text-muted-foreground animate-pulse">thinking...</span>
+    <span className="text-sm! text-muted-foreground animate-pulse">thinking...</span>
   </div>
 )
 

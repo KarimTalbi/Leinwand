@@ -268,7 +268,7 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
-    promptNodeAction: async (nodeId, prompt) => {
+    promptNodeAction: async (nodeId) => {
       get().setSyncing(true)
       const node = get().nodes.find((node) => node.id === nodeId)
       try {
@@ -280,7 +280,7 @@ const useStore = create<AppState>()((set, get) => ({
           },
           method: 'POST',
           body:
-            JSON.stringify({node: node, prompt: prompt}),
+            JSON.stringify({node: node}),
         });
 
         if (!res.ok || !res.body) {
@@ -347,55 +347,68 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
-  summaryNodeAction: async (nodeId) => {
-    get().setSyncing(true)
-    const node = get().nodes.find((node) => node.id === nodeId)
-    try {
-      const res = await fetch(`${BASE_URL}/llm/summary/`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'text/event-stream',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        method: 'POST',
-        body:
-          JSON.stringify({node}),
-      });
+    summaryNodeAction: async (nodeId) => {
+      get().setSyncing(true)
+      const node = get().nodes.find((node) => node.id === nodeId)
+      try {
+        const res = await fetch(`${BASE_URL}/llm/summary/`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'text/event-stream',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          method: 'POST',
+          body:
+            JSON.stringify({node}),
+        });
 
-      if (!res.ok || !res.body) {
-        console.error(`HTTP ${res.status} or no response body`);
-        get().setSyncing(false);
-        return;
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let accumulated = '';
-      let buffer = '';
-
-      set({
-        nodes: get().nodes.map((n) =>
-          n.id === nodeId
-            ? {...n, data: {...n.data, response: '', closed: true}}
-            : n
-        ),
-      });
-
-      while (true) {
-        const {done, value} = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, {stream: true});
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const token = line.slice(6).replaceAll('\\n', '\n');
-          if (token === '[DONE]') break;
-          accumulated += token;
+        if (!res.ok || !res.body) {
+          console.error(`HTTP ${res.status} or no response body`);
+          get().setSyncing(false);
+          return;
         }
 
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulated = '';
+        let buffer = '';
+
+        set({
+          nodes: get().nodes.map((n) =>
+            n.id === nodeId
+              ? {...n, data: {...n.data, response: '', closed: true}}
+              : n
+          ),
+        });
+
+        while (true) {
+          const {done, value} = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, {stream: true});
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const token = line.slice(6).replaceAll('\\n', '\n');
+            if (token === '[DONE]') break;
+            accumulated += token;
+          }
+
+          set({
+            nodes: get().nodes.map((n) =>
+              n.id === nodeId
+                ? {...n, data: {...n.data, response: accumulated}}
+                : n
+            ),
+          });
+        }
+
+        if (buffer.startsWith('data: ')) {
+          const token = buffer.slice(6).replaceAll('\\n', '\n');
+          if (token === '[DONE]') accumulated += token;
+        }
         set({
           nodes: get().nodes.map((n) =>
             n.id === nodeId
@@ -403,44 +416,32 @@ const useStore = create<AppState>()((set, get) => ({
               : n
           ),
         });
+
+      } catch (err) {
+
+        console.error('Error prompting Node', err);
+
+      } finally {
+        void get().syncCanvas()
       }
-
-      if (buffer.startsWith('data: ')) {
-        const token = buffer.slice(6).replaceAll('\\n', '\n');
-        if (token === '[DONE]') accumulated += token;
-      }
-      set({
-        nodes: get().nodes.map((n) =>
-          n.id === nodeId
-            ? {...n, data: {...n.data, response: accumulated}}
-            : n
-        ),
-      });
-
-    } catch (err) {
-
-      console.error('Error prompting Node', err);
-
-    } finally {
-      void get().syncCanvas()
-    }
-  },
+    },
 
     mergeNodeAction: async (nodeId) => {
       get().setSyncing(true)
+      const node = get().nodes.find((node) => node.id === nodeId)
 
       set({
         nodes: get().nodes.map((n) =>
           n.id === nodeId
-            ? {...n, data: {...n.data, closed: true, context: '', problems: '', solution: ''}}
+            ? {...n, data: {...n.data, closed: true}}
             : n
         ),
       });
 
       try {
-        const res = await api.post(`/llm/merge/`, {
-
-        });
+        const res = await api.post(`/llm/merge/`,
+          {node: node, check_consistencies: true},
+        );
         set({
           nodes: get().nodes.map((n) =>
             n.id === nodeId
@@ -448,9 +449,40 @@ const useStore = create<AppState>()((set, get) => ({
                 ...n, data: {
                   ...n.data,
                   context: res.data.context,
-                  problems: res.data.problems || "",
-                  solution: res.data.solution || "",
-                  closed: res.data.closed || false,
+                  problems: res.data.problems,
+                  has_issues: res.data.has_issues
+                }
+              }
+              : n
+          ),
+        });
+      } catch (err) {
+
+        console.error('Error Merging', err)
+
+      } finally {
+
+        void get().syncCanvas()
+
+      }
+    },
+
+    mergeNodeResolveAction: async (nodeId) => {
+      get().setSyncing(true)
+      const node = get().nodes.find((node) => node.id === nodeId)
+
+      try {
+        const res = await api.post(`/llm/merge/resolve/`,
+          {node: node},
+        );
+        set({
+          nodes: get().nodes.map((n) =>
+            n.id === nodeId
+              ? {
+                ...n, data: {
+                  ...n.data,
+                  context: res.data.context,
+                  has_issues: false
                 }
               }
               : n

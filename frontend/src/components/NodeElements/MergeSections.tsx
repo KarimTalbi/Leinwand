@@ -25,7 +25,7 @@ interface SummaryNodeProps {
 }
 
 interface ProblemProps {
-  ai: string;
+  problems: string;
   user: string;
   solution: string;
 }
@@ -69,6 +69,7 @@ const MergeContent = ({sections}: { sections: string[] }) => {
     <Section>
       <SectionHeader stream_id={stream_id} depth={depth} type="TEXT NODE"/>
       <SectionSeparator/>
+      <SectionLabel label="Text:"/>
       <SectionText text={text}/>
     </Section>
   );
@@ -78,10 +79,10 @@ const MergeContent = ({sections}: { sections: string[] }) => {
     <Section>
       <SectionHeader stream_id={stream_id} depth={depth} type="PROMPT NODE"/>
       <SectionSeparator/>
-      <SectionLabel label="User"/>
+      <SectionLabel label="User:"/>
       <SectionText text={prompt}/>
       <SectionSeparator/>
-      <SectionLabel label="AI"/>
+      <SectionLabel label="AI:"/>
       <SectionText text={response}/>
     </Section>
   );
@@ -97,11 +98,12 @@ const MergeContent = ({sections}: { sections: string[] }) => {
     <Section>
       <SectionHeader stream_id={stream_id} depth={depth} type="SUMMARY NODE"/>
       <SectionSeparator/>
+      <SectionLabel label="Summary:"/>
       <SectionText text={response}/>
     </Section>
   )
 
-  const problemSection = ({ai, user, solution}: ProblemProps) => (
+  const problemSection = ({problems, user, solution}: ProblemProps) => (
     <Section>
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between gap-2">
@@ -110,13 +112,13 @@ const MergeContent = ({sections}: { sections: string[] }) => {
         <div className="text-xs">PROBLEM RESOLUTION</div>
       </div>
       <SectionSeparator/>
-      <SectionLabel label="AI"/>
-      <SectionText text={ai}/>
+      <SectionLabel label="Problems:"/>
+      <SectionText text={problems}/>
       <SectionSeparator/>
-      <SectionLabel label="User"/>
+      <SectionLabel label="User:"/>
       <SectionText text={user}/>
       <SectionSeparator/>
-      <SectionLabel label="Solution"/>
+      <SectionLabel label="Solution:"/>
       <SectionText text={solution}/>
     </Section>
   )
@@ -139,7 +141,7 @@ const MergeContent = ({sections}: { sections: string[] }) => {
         return mergeSection({stream_id: section.stream_id, depth: section.depth});
 
       case 'problemResolution':
-        return problemSection({ai: section.ai, user: section.user, solution: section.solution});
+        return problemSection({problems: section.problems, user: section.user, solution: section.solution});
 
       case 'summaryNode':
         return summarySection({stream_id: section.stream_id, depth: section.depth, response: section.response});
