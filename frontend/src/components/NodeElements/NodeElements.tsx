@@ -3,31 +3,34 @@ import React from "react";
 import {X} from "lucide-react";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import useStore from "@/store.ts";
+import {cn} from "@/lib/utils.ts";
 
 interface BackgroundProps {
-  style: React.CSSProperties,
-  children: React.ReactNode
+  children: React.ReactNode,
+  className?: string
 }
 
 interface ForegroundProps {
-  children: React.ReactNode
+  children: React.ReactNode,
+  className?: string
 }
 
 interface HeaderProps {
   title: string,
   children: React.ReactNode,
-  icon: React.ReactNode
+  icon: React.ReactNode,
+  className?: string
 }
 
 interface DeleteButtonProps {
   id: string,
   loading?: boolean
+  className?: string
 }
 
-export const NodeBackground = ({style, children}: BackgroundProps) => (
+export const NodeBackground = ({children, className}: BackgroundProps) => (
   <div
-    className={`w-100 h-90 flex flex-col rounded-xl border-2`}
-    style={{...style, backgroundColor: `var(--node-color)`, borderColor: `var(--node-color)`}}
+    className={cn('flex flex-col rounded-xl border-2', className)}
   >
     {children}
   </div>

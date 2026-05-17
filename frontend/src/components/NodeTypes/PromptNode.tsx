@@ -6,7 +6,7 @@ import useStore from '@/store.ts';
 import {AppState, PromptNodeType} from "@/types.ts";
 import {
   DisplayUserMessage,
-  NodeDisplayText,
+  NodeDisplayMarkdown,
   NodeDisplayThinking,
   NodeTextarea
 } from "@/components/NodeElements/TextElements.tsx";
@@ -39,13 +39,13 @@ const PromptNode = (
 
   const handleClick = () => {
     setLoading(true);
-    void promptNodeAction(id, data.prompt || '');
+    void promptNodeAction(id);
     setLoading(false);
   }
 
   return (
-    <NodeBackground style={{'--node-color': '#ec4899'} as React.CSSProperties}>
-      <NodeHeader title="Prompt Node" icon={<MessagesSquare size={14} color="white"/>}>
+    <NodeBackground className="bg-[#ec4899] border-[#ec4899] w-130 min-h-100">
+      <NodeHeader title="Chat" icon={<MessagesSquare size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
           <CustomButton
@@ -84,11 +84,11 @@ const PromptNode = (
           isClosed
             ? !!data.response
 
-              ? <div className="flex flex-col h-full justify-between">
-                <NodeDisplayText>{data.response}</NodeDisplayText>
-              <DisplayUserMessage>{data.prompt}</DisplayUserMessage>
-
+              ? <div className="gap-2 flex flex-col h-full justify-between">
+                <DisplayUserMessage message={data.prompt}/>
+                <NodeDisplayMarkdown content={data.response}/>
               </div>
+
               : <NodeDisplayThinking/>
 
             : <NodeTextarea id={id} initialValue={data.prompt} placeholder={'Enter your prompt...'}/>
@@ -100,7 +100,7 @@ const PromptNode = (
       <ConnectionHandles
         handleId="target-1"
         handleType="target"
-        position="left"
+        position="top"
         nodeId={id}
         style={{'--node-color': '#ec4899'} as React.CSSProperties}
       />
@@ -108,7 +108,7 @@ const PromptNode = (
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
-        position="right"
+        position="bottom"
         nodeId={id}
         style={{'--node-color': '#ec4899'} as React.CSSProperties}
 
@@ -120,7 +120,6 @@ const PromptNode = (
 
 
     </NodeBackground>
-
   )
 };
 

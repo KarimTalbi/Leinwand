@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils.ts";
 
 
 type handleType = "target" | "source";
-type handlePosition = "left" | "right"
+type handlePosition = "top" | "bottom"
 
 
 interface ConnectionHandleProps {
@@ -12,6 +12,7 @@ interface ConnectionHandleProps {
   handleId: string,
   handleType: handleType,
   position: handlePosition,
+  color?: string,
   offset?: number,
   style?: React.CSSProperties,
   className?: string,
@@ -20,7 +21,7 @@ interface ConnectionHandleProps {
 
 
 export const ConnectionHandles = (
-  {nodeId, handleId, handleType, position, offset, style, className, children}: ConnectionHandleProps
+  {nodeId, handleId, handleType, position, color, offset, style, className, children}: ConnectionHandleProps
 ) => {
 
   const connections = useNodeConnections({
@@ -31,21 +32,21 @@ export const ConnectionHandles = (
 
 
   const handlePositionStyle = () => {
-    if (position === "left") return "w-1.5! h-8! rounded-l-full! rounded-r-none! border-none! -translate-x-0.5! z-[-1]!";
-    return "w-1.5! h-8! rounded-l-none! rounded-r-full! border-none! translate-x-0.5! z-[-1]!";
+    if (position === "top") return "w-20! h-2! rounded-t-full! rounded-b-none! border-none! -translate-y-1! z-[-1]!";
+    return "w-20! h-2! rounded-t-none! rounded-b-full! border-none! translate-y-1! z-[-1]!";
   }
 
   return (
       <Handle
         id={handleId}
         type={handleType}
-        position={position === "left" ? Position.Left : Position.Right}
-        isConnectable={connections.length === 0}
+        position={position === "top" ? Position.Top : Position.Bottom}
+        isConnectable={handleType === "source" ? true : connections.length === 0}
         className={cn(
           handlePositionStyle(),
           className
         )}
-        style={{...style, backgroundColor: 'darkgray', transform: `translateY(${offset ?? 0}px)` + (position === "left" ? " translateX(-4px)" : " translateX(4px)")}}
+        style={{...style, backgroundColor: color || 'darkgray', transform: `translateX(calc(-50% + ${offset ?? 0}px))` + (position === "top" ? " translateY(-4px)" : " translateY(4px)")}}
       >
         {children}
       </Handle>

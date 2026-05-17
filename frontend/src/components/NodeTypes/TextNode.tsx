@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import {memo} from 'react';
 import {NodeProps} from "@xyflow/react";
 
 import useStore from '@/store.ts';
@@ -36,7 +36,7 @@ const TextNode = (
   }
 
   return (
-    <NodeBackground style={{'--node-color': '#309898'} as React.CSSProperties}>
+    <NodeBackground className="bg-[#309898] border-[#309898] w-130 min-h-100">
       <NodeHeader title="Text Node" icon={<LucideTextCursorInput size={14} color="white"/>}>
 
         <ToolTip position="top" label="Lock Node">
@@ -71,17 +71,15 @@ const TextNode = (
       <ConnectionHandles
         handleId="target-1"
         handleType="target"
-        position="left"
+        position="top"
         nodeId={id}
-        style={{'--node-color': '#309898'} as React.CSSProperties}
       />
 
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
-        position="right"
+        position="top"
         nodeId={id}
-        style={{'--node-color': '#309898'} as React.CSSProperties}
       >
 
         <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>

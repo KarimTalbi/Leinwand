@@ -3,6 +3,10 @@ import {cn} from "@/lib/utils.ts";
 import React, {useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
 import useStore from "@/store.ts";
+import DOMPurify from 'dompurify';
+import {marked} from '@/lib/markdown.ts';
+
+import 'highlight.js/styles/github-dark.css'
 
 interface NodeTextareaProps {
   id: string,
@@ -58,6 +62,16 @@ export const NodeDisplayText = ({children}: NodeDisplayTextProps) => (
 )
 
 
+export const NodeDisplayMarkdown = ({content}: {content: string}) => (
+  <div
+    className="prose prose-sm nodrag select-text cursor-text"
+    dangerouslySetInnerHTML={{
+      __html: DOMPurify.sanitize(marked.parse(content) as string)
+    }}
+  />
+)
+
+
 export const NodeDisplayThinking = (
 
 ) => (
@@ -68,9 +82,8 @@ export const NodeDisplayThinking = (
 )
 
 
-export const DisplayUserMessage = ({children}: { children?: string }) => (
-  <div className="p-2 bg-gray-100 rounded-lg h-12 overflow-y-auto">
-    <p className="text-xs font-semibold">User Message:</p>
-    <p className="text-xs">{children}</p>
+export const DisplayUserMessage = ({message}: { message?: string }) => (
+  <div className="chat chat-end nodrag select-text cursor-text">
+    <div className="chat-bubble text-sm">{message}</div>
   </div>
 )

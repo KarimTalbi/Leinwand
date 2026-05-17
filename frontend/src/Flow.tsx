@@ -101,6 +101,8 @@ function Flow() {
         defaultEdgeOptions={{style: {strokeWidth: 4, strokeColor: "black"}}}
         proOptions={{hideAttribution: true}}
         colorMode="light"
+        zoomOnScroll={false}
+        panOnScroll={true}
       >
 
         <NavBar/>

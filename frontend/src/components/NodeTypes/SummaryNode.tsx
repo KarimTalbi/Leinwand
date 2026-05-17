@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import {memo, useState} from 'react';
 import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '../../store.ts';
@@ -44,7 +44,7 @@ const SummaryNode = (
   }
 
   return (
-    <NodeBackground style={{'--node-color': '#bf4546'} as React.CSSProperties}>
+    <NodeBackground className="bg-[#bf4546] border-[#bf4546] w-130 min-h-100">
       <NodeHeader title="Summary Node" icon={<Minimize2 className="rotate-45" size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
@@ -100,17 +100,15 @@ const SummaryNode = (
       <ConnectionHandles
         handleId="target-1"
         handleType="target"
-        position="left"
+        position="top"
         nodeId={id}
-        style={{'--node-color': '#bf4546'} as React.CSSProperties}
       />
 
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
-        position="right"
+        position="bottom"
         nodeId={id}
-        style={{'--node-color': '#bf4546'} as React.CSSProperties}
       >
 
         <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>

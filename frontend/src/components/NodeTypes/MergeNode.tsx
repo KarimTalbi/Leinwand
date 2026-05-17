@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import {memo, useState} from 'react';
 import {NodeProps, useNodeConnections} from "@xyflow/react";
 
 
@@ -55,7 +55,7 @@ const MergeNode = (
   }
 
   return (
-    <NodeBackground style={{'--node-color': '#f5c45e'} as React.CSSProperties}>
+    <NodeBackground className="bg-[#f5c45e] border-[#f5c45e] w-130 min-h-100">
       <NodeHeader title="Merge Node" icon={<MergeIcon className="rotate-90" size={14} color="white"/>}>
 
         <ToolTip position="top" label="Settings">
@@ -113,28 +113,25 @@ const MergeNode = (
 
       <ConnectionHandles
         handleId="target-1"
-        offset={-60}
+        offset={-100}
         handleType="target"
-        position="left"
+        position="top"
         nodeId={id}
-        style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       />
 
       <ConnectionHandles
         handleId="target-2"
-        offset={60}
+        offset={100}
         handleType="target"
-        position="left"
+        position="top"
         nodeId={id}
-        style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       />
 
       <ConnectionHandles
         handleId="source-1"
         handleType="source"
-        position="right"
+        position="bottom"
         nodeId={id}
-        style={{'--node-color': '#f5c45e'} as React.CSSProperties}
       >
 
         <AddConnectedNode sourceId={id} posX={positionAbsoluteX} posY={positionAbsoluteY}/>

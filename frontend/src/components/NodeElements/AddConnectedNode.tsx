@@ -32,42 +32,43 @@ const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
 
       <div
         style={{position: 'absolute'}}
-        className="bg-[#a9a9a9] w-7 rounded-r-full h-6 translate-y-35"
+        className="bg-[darkgray] translate-x-60 h-23px rounded-b-full"
       >
         <div
           className={cn(
-            "relative flex items-center translate-x-1",
+            "relative flex items-center translate-y-1",
           )}>
 
           {isOpen && (
             <div
               className={cn(
-                "absolute left-full pl-1",
+                "absolute top-full" +
+                " flex flex-col",
                 "flex items-center gap-1",
               )}>
 
-              <ToolTip position="top" label="Prompt Node">
+              <ToolTip position="left" label="Prompt Node">
                 <CustomButton onClick={() => onCreateNode("promptNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#ec4899]">
                   <MessagesSquare size={14}/>
                 </CustomButton>
               </ToolTip>
 
-              <ToolTip position="top" label="Text Node">
+              <ToolTip position="left" label="Text Node">
                 <CustomButton onClick={() => onCreateNode("textNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#309898]">
                   <LucideTextCursorInput size={14}/>
                 </CustomButton>
               </ToolTip>
 
-              <ToolTip position="top" label="Summary Node">
+              <ToolTip position="left" label="Summary Node">
                 <CustomButton onClick={() => onCreateNode("summaryNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#bf4546]">
                   <Minimize2 className="rotate-45" size={14}/>
                 </CustomButton>
               </ToolTip>
 
-              <ToolTip position="top" label="Merge Node">
+              <ToolTip position="left" label="Merge Node">
                 <CustomButton onClick={() => onCreateNode("mergeNode").then(() => setIsOpen(false))} buttonStyle="circle"
                               color="neutral" size="xs" className="bg-[#f5c45e]">
                   <MergeIcon className="rotate-90" size={14}/>
