@@ -1,5 +1,5 @@
 import {memo, useState} from 'react';
-import {NodeProps} from "@xyflow/react";
+import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '@/store.ts';
 import {AppState, PromptNodeType} from "@/types.ts";
@@ -15,10 +15,18 @@ import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
 
-const DisplayResponseScreen = (prompt: string, response: string) => (
+const DisplayResponseScreen = (prompt: string, response: string, onReply: () => void) => (
+  <div>
   <div className="flex flex-col flex-1 justify-between gap-5 pb-2">
     <ChatBubble position="right">{prompt}</ChatBubble>
     <NodeDisplayMarkdown content={response} className="px-2"/>
+  </div>
+    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
+        <button
+          className="btn btn-ghost btn-sm" onClick={onReply}>
+          Reply
+        </button>
+    </div>
   </div>
 )
 
@@ -34,13 +42,16 @@ const DisplayThinkingScreen = (prompt: string) => (
 const DisplayInputScreen = (
   id: string,
   prompt: string,
+  isSourcePrompt: boolean,
   onSettings: () => void,
   onSend: () => void,
   sendDisabled: boolean,
 ) => (
   <div>
     <div className="flex flex-col flex-1 justify-between gap-5">
+      {!isSourcePrompt && (
       <ChatBubble position="left">How can i help you?</ChatBubble>
+      )}
       <NodeTextarea id={id} initialValue={prompt} placeholder={'Enter your prompt...'}/>
     </div>
     <div className="flex items-center justify-end px-2 pt-2 shrink-0">
@@ -61,7 +72,7 @@ const DisplayInputScreen = (
 
 const selector = (state: AppState) => ({
   promptNodeAction: state.promptNodeAction,
-  deleteNode: state.deleteNode,
+  createConnectedNode: state.createConnectedNode
 });
 
 
@@ -72,9 +83,16 @@ const PromptNode = (
   }: NodeProps<PromptNodeType>
 ) => {
 
-  const {promptNodeAction} = useStore(useShallow(selector));
+  const {promptNodeAction, createConnectedNode} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
+  const nodes = useNodes();
+
+  const connections = useNodeConnections({handleId: "target-1", handleType: "target"});
+  const isConnected = connections.length > 0;
+  const isSourcePrompt = isConnected
+    ? nodes.find(n => n.id === connections[0].source)?.type === 'promptNode'
+    : false;
 
   const handleClick = () => {
     setLoading(true);
@@ -84,9 +102,11 @@ const PromptNode = (
 
   const foreground = () => {
     if (!isClosed) return (
-      DisplayInputScreen(id, data.prompt || "", () => null, handleClick, loading || !data.prompt)
+      DisplayInputScreen(id, data.prompt || "", isSourcePrompt, () => null, handleClick, loading || !data.prompt)
     )
-    if (!!data.response) return DisplayResponseScreen(data.prompt || "", data.response)
+    if (!!data.response) return DisplayResponseScreen(
+      data.prompt || "", data.response, () => createConnectedNode("promptNode", id)
+    )
     return DisplayThinkingScreen(data.prompt || "")
   }
 

@@ -243,7 +243,7 @@ const useStore = create<AppState>()((set, get) => ({
       if (!node) return null
       const sourcePos = node.position
       const sourceHeight = node.measured?.height
-      const gap = 60
+      const gap = 30
 
       if (!sourceHeight) return null
 
