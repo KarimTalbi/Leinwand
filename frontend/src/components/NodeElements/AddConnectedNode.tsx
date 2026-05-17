@@ -1,3 +1,4 @@
+
 import {cn} from "@/lib/utils.ts";
 import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
@@ -11,21 +12,19 @@ import {useShallow} from "zustand/react/shallow";
 
 interface AddConnectedNodeProps {
   sourceId: string;
-  posX: number;
-  posY: number;
 }
 
 const selector = (state: AppState) => ({
   createConnectedNode: state.createConnectedNode,
 });
 
-const AddConnectedNode = ({sourceId, posX, posY}: AddConnectedNodeProps) => {
+const AddConnectedNode = ({sourceId}: AddConnectedNodeProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const {createConnectedNode} = useStore(useShallow(selector));
 
+
   const onCreateNode = async (type: NodeTypeNames) => {
-    const position = {x: posX + 450, y: posY};
-    createConnectedNode(type, sourceId, position);
+    createConnectedNode(type, sourceId);
   };
 
   return (

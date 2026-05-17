@@ -238,9 +238,25 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
-    createConnectedNode: (type: NodeTypeNames, source: string, position?: XYPosition) => {
-      const pos = position ?? {x: Math.random() * 400, y: Math.random() * 400};
-      const newNodeId = String(uuidv4());
+    createConnectedNode: (type: NodeTypeNames, source: string) => {
+      const node = get().nodes.find((node) => node.id === source)
+      if (!node) return null
+      const sourcePos = node.position
+      const sourceHeight = node.measured?.height
+      const gap = 60
+
+      if (!sourceHeight) return null
+
+      const newY = sourcePos.y + sourceHeight + gap
+
+
+      const pos = {
+        x: sourcePos.x,
+        y: newY
+      }
+
+      const newNodeId = String(uuidv4())
+
 
       const newNode = {
         id: newNodeId,
