@@ -39,7 +39,6 @@ class MergeRequest(LLMBase):
 class MergeResponse(BaseModel):
     context: list[dict[str, Any]]
     has_issues: bool
-    closed: bool
     problems: str | None = None
 
 
@@ -50,9 +49,9 @@ class LLMMergeResponse(BaseModel):
 
 class MergeResolveRequest(LLMBase):
     node: NodeRead
-    problems: str
-    solution: str
 
+class MergeResolveResponse(BaseModel):
+    context: list[dict[str, Any]]
 
 class LLMMergeResolveResponse(BaseModel):
     response: str
@@ -60,7 +59,6 @@ class LLMMergeResolveResponse(BaseModel):
 
 class ChatRequest(LLMBase):
     node: NodeRead
-    prompt: str
 
 
 class SummaryRequest(LLMBase):
@@ -76,7 +74,7 @@ async def merge_streams(
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
 
     if not data.check_consistencies:
-        return MergeResponse(context=ancestors, has_issues=False, closed=True)
+        return MergeResponse(context=ancestors, has_issues=False)
 
     config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
 
@@ -94,18 +92,18 @@ async def merge_streams(
 
     if response.has_issues:
         return MergeResponse(
-            context=ancestors, has_issues=True, closed=False, problems=response.response
+            context=ancestors, has_issues=True, problems=response.response
         )
 
-    return MergeResponse(context=ancestors, has_issues=False, closed=True)
+    return MergeResponse(context=ancestors, has_issues=False)
 
 
-@llm_router.get("/merge/resolve/")
+@llm_router.post("/merge/resolve/")
 async def resolve_merge(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
         data: MergeResolveRequest,
         session: AsyncSession = Depends(get_async_session),
-) -> MergeAnswer:
+) -> MergeResolveResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
 
     config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
@@ -126,13 +124,14 @@ async def resolve_merge(
     context.append(
         {
             "type": "problemResolution",
-            "ai": response.response,
-            "user": data.problems,
-            "solution": data.solution,
+            "problems": data.node.data.get("problems"),
+            "user": data.node.data.get("solution"),
+            "solution": response.response,
         }
     )
+    print(context)
 
-    return MergeAnswer(context=context, closed=True)
+    return MergeResolveResponse(context=context)
 
 
 @llm_router.post("/streaming_chat/")
@@ -149,7 +148,7 @@ async def get_streaming_chat_response(
         async for chunk in model.astream(
                 [
                     SystemMessage(f"{pr.CHAT_SYSTEM}\n\n{ancestors}"),
-                    HumanMessage(data.prompt)
+                    HumanMessage(data.node.data.get("prompt"))
                 ],
                 config={"callbacks": [langfuse_handler]},
         ):
