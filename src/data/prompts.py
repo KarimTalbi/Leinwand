@@ -24,6 +24,8 @@ intentional.
 stream. Everything before it has already been resolved and summarized into that node.
 - If no context is provided, treat this as the start of a fresh, standalone conversation.
 
+USE MARKDOWN FOR FORMATING!!!
+
 Context:
 """
 
@@ -53,6 +55,8 @@ responses.
  intentional.
 - If a stream includes a mergeNode, treat its content as the consolidated root context for that
 stream. Everything before it has already been resolved and summarized into that node.
+
+USE MARKDOWN FOR FORMATING!!!
 
 Context:
 """
@@ -98,6 +102,8 @@ You must respond with a JSON object in the following format:
 
 Do not include anything outside the JSON object.
 
+USE MARKDOWN FOR FORMATING!!!
+
 Context:
 """
 
@@ -140,6 +146,8 @@ You must respond with a JSON object in the following format:
 }}
 
 Do not include anything outside the JSON object.
+
+USE MARKDOWN FOR FORMATING!!!
 
 Context:
 """
