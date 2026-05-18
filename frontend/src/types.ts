@@ -83,7 +83,6 @@ export interface AppState {
   clearAuthError: () => void;
 
 
-
   // Canvas management actions
   loadCanvases: () => Promise<void>;
   selectCanvas: (canvasId: string) => Promise<void>;
@@ -92,6 +91,7 @@ export interface AppState {
   exitCanvas: () => void;
   settingsOpen: boolean;
   setSettingsOpen: (status: boolean) => void;
+  thumbnailCallback: (() => Promise<void>) | null;
 
   // Flow actions
   syncCanvas: () => Promise<void>;
@@ -114,4 +114,5 @@ export interface AppState {
   setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
   setScrollToZoom: (status: boolean) => void;
+  setThumbnailCallback: (callback: (() => Promise<void>)) => void;
 }

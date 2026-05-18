@@ -38,6 +38,11 @@ const useStore = create<AppState>()((set, get) => ({
     scrollToZoom: false,
 
     settingsOpen: false,
+    // state
+    thumbnailCallback: null as (() => Promise<void>) | null,
+
+// action
+    setThumbnailCallback: (callback: () => Promise<void>) => set({ thumbnailCallback: callback }),
 
 
     // ── Auth actions ──────────────────────────────────────────────────────────
@@ -222,6 +227,7 @@ const useStore = create<AppState>()((set, get) => ({
       } finally {
 
         get().setSyncing(false)
+        await get().thumbnailCallback?.()
 
       }
     },
