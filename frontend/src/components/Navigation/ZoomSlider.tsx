@@ -1,6 +1,6 @@
 "use client";
 
-import {LockOpen, Maximize, Minus, Plus, Lock, Mouse} from "lucide-react";
+import {LockOpen, Maximize, Minus, Plus, Lock, Mouse, Expand, Shrink} from "lucide-react";
 import useStore from "@/store.ts"
 import {useShallow} from "zustand/react/shallow";
 
@@ -31,7 +31,7 @@ export function ZoomSlider({
   orientation?: "horizontal" | "vertical";
 }) {
   const {zoom} = useViewport();
-  const {zoomTo, zoomIn, zoomOut, fitView} = useReactFlow();
+  const {zoomTo, zoomIn, zoomOut} = useReactFlow();
   const minZoom = ZuseStore((state) => state.minZoom);
   const maxZoom = ZuseStore((state) => state.maxZoom);
 
@@ -48,18 +48,19 @@ export function ZoomSlider({
     >
       <div
         className={cn(
-          "flex gap-2",
+          "flex gap-2 items-center",
           orientation === "horizontal" ? "flex-row" : "flex-col-reverse",
         )}
       >
         <ToolTip position="bottom" label={scrollToZoom ? "Disable Scroll Zoom" : "Enable Scroll Zoom"}>
-          <CustomButton onClick={() => setScrollToZoom(!scrollToZoom)} buttonStyle="square">
+          <CustomButton onClick={() => setScrollToZoom(!scrollToZoom)} buttonStyle="square" size="sm">
             <Mouse className="size-4"></Mouse>
           </CustomButton>
         </ToolTip>
 
+
         <ToolTip label="Zoom Out" position="bottom">
-          <CustomButton onClick={() => zoomOut({duration: 300})} buttonStyle="square">
+          <CustomButton onClick={() => zoomOut({duration: 300})} buttonStyle="square" size="sm">
             <Minus className="size-4"/>
           </CustomButton>
         </ToolTip>
@@ -79,31 +80,50 @@ export function ZoomSlider({
         </div>
 
         <ToolTip label="Zoom In" position="bottom">
-          <CustomButton onClick={() => zoomIn({duration: 300})} buttonStyle="square">
+          <CustomButton onClick={() => zoomIn({duration: 300})} buttonStyle="square" size="sm">
             <Plus className="size-4"/>
           </CustomButton>
         </ToolTip>
 
       </div>
 
-      <ToolTip label="Reset Zoom" position="bottom">
-      <CustomButton onClick={() => zoomTo(1, {duration: 300})} buttonStyle="square">
-        {(100 * zoom).toFixed(0)}%
-      </CustomButton>
-      </ToolTip>
 
-      <ToolTip label="Fit View" position="bottom">
-      <CustomButton onClick={() => fitView({duration: 300})} buttonStyle="square">
-        <Maximize className="size-4"/>
-      </CustomButton>
-      </ToolTip>
+      <div className="flex-1 flex items-center justify-center">
 
-      <ToolTip label={locked ? "Unlock Canvas" : "Lock Canvas"} position="bottom">
-      <CustomButton onClick={() => setLocked(!locked)} buttonStyle="square">
-        {locked ? <LockOpen className="size-4"/> : <Lock className="size-4"/>}
-      </CustomButton>
-      </ToolTip>
+        <CustomButton
+          onClick={() => zoomTo(1, {duration: 300})}
+          buttonStyle="square"
+          disabled={true}
+          className="text-black text-xs font-semibold mr-2"
+          size="sm"
+        >
+          {(100 * zoom).toFixed(0)}%
+        </CustomButton>
 
+        <ToolTip label="Reset Zoom" position="bottom">
+          <CustomButton onClick={() => zoomTo(1, {duration: 300})} buttonStyle="square" size="sm">
+            <Maximize className="size-4"/>
+          </CustomButton>
+        </ToolTip>
+
+        <ToolTip label="Max Zoom" position="bottom">
+          <CustomButton onClick={() => zoomTo(maxZoom, {duration: 300})} buttonStyle="square" size="sm">
+            <Shrink className="size-4"></Shrink>
+          </CustomButton>
+        </ToolTip>
+
+        <ToolTip label="Min Zoom" position="bottom">
+          <CustomButton onClick={() => zoomTo(minZoom, {duration: 300})} buttonStyle="square" size="sm">
+            <Expand className="size-4"></Expand>
+          </CustomButton>
+        </ToolTip>
+
+        <ToolTip label={locked ? "Unlock Canvas" : "Lock Canvas"} position="bottom">
+          <CustomButton onClick={() => setLocked(!locked)} buttonStyle="square" size="sm" className="ml-2">
+            {locked ? <LockOpen className="size-4"/> : <Lock className="size-4"/>}
+          </CustomButton>
+        </ToolTip>
+      </div>
 
 
     </div>

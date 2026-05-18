@@ -20,9 +20,8 @@ export const NavBar = () => {
       <div >
         <h1 className="text-xl font-bold px-3">LEINWAND</h1>
       </div>
-      <div className="border-x border-gray-300 px-5">
-        <ZoomSlider></ZoomSlider>
-      </div>
+
+      <ZoomSlider></ZoomSlider>
       <div>
         <div className="menu menu-horizontal px-1">
 
