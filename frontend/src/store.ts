@@ -5,12 +5,19 @@ import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} fr
 import api, {BASE_URL} from '@/api';
 import {AppState, NodeTypeNames, CanvasRead} from '@/types';
 
+const defaultLLMConfig = {
+  model: 'gpt-5-mini',
+  temperature: 0,
+  max_tokens: 0,
+  timeout: 0,
+  max_retries: 0,
+}
 
 const nodeInitData = {
-  promptNode: {prompt: '', response: '', closed: false, config: {}},
+  promptNode: {prompt: '', response: '', closed: false, config: defaultLLMConfig},
   textNode: {text: '', closed: false},
-  mergeNode: {context: '', closed: false, problems: '', solution: ''},
-  summaryNode: {response: '', closed: false},
+  mergeNode: {context: '', closed: false, problems: '', solution: '', config: defaultLLMConfig},
+  summaryNode: {response: '', closed: false, config: defaultLLMConfig},
 };
 
 const useStore = create<AppState>()((set, get) => ({

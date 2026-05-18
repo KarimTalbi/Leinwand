@@ -2,7 +2,7 @@ import {memo, useState} from 'react';
 import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '../../store.ts';
-import {AppState, SummaryNodeType} from "@/types.ts";
+import {AppState, LLMConfig, SummaryNodeType} from "@/types.ts";
 import {
   NodeDisplayPulsingText,
   NodeDisplayMarkdown,
@@ -12,6 +12,13 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
+const defaultLLMConfig = {
+  model: 'gpt-5-mini',
+  temperature: 0,
+  max_tokens: 0,
+  timeout: 0,
+  max_retries: 0,
+}
 
 const DisplaySummaryScreen = (summary: string) => (
       <NodeDisplayMarkdown content={summary}/>
@@ -67,6 +74,7 @@ const SummaryNode = (
     data,
   }: NodeProps<SummaryNodeType>
 ) => {
+  if (!data.config) data.config = defaultLLMConfig as LLMConfig
 
   const {summaryNodeAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);

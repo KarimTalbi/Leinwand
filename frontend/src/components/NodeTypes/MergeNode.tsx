@@ -3,7 +3,7 @@ import {NodeProps, useNodeConnections} from "@xyflow/react";
 
 
 import useStore from '@/store.ts';
-import {AppState, MergeNodeType} from "@/types.ts";
+import {AppState, LLMConfig, MergeNodeType} from "@/types.ts";
 import {
   NodeDisplayPulsingText,
   NodeTextarea, ChatBubble, NodeDisplayMarkdown
@@ -13,6 +13,13 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 
+const defaultLLMConfig = {
+  model: 'gpt-5-mini',
+  temperature: 0,
+  max_tokens: 0,
+  timeout: 0,
+  max_retries: 0,
+}
 
 const DefaultScreen = (
   onSettings: () => void,
@@ -109,6 +116,7 @@ const MergeNode = (
     data,
   }: NodeProps<MergeNodeType>
 ) => {
+  if (!data.config) data.config = defaultLLMConfig as LLMConfig
 
   const {mergeNodeAction, mergeNodeResolveAction} = useStore(useShallow(selector));
   const [loading, setLoading] = useState(false);

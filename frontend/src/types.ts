@@ -2,10 +2,19 @@ import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@
 
 
 
+export interface LLMConfig {
+  model: string;
+  temperature: number;
+  max_tokens: number;
+  timeout: number;
+  max_retries: number;
+}
+
 export interface PromptNodeData extends Record<string, unknown> {
   prompt?: string;
   response?: string;
   closed: boolean;
+  config?: LLMConfig;
 }
 
 export interface TextNodeData extends Record<string, unknown> {
@@ -19,11 +28,13 @@ export interface MergeNodeData extends Record<string, unknown> {
   solution?: string;
   has_issues?: boolean;
   closed: boolean;
+  config?: LLMConfig;
 }
 
 export interface SummaryNodeData extends Record<string, unknown> {
   response: string,
   closed: boolean
+  config?: LLMConfig;
 }
 
 export type PartialNodeData = Partial<PromptNodeData | TextNodeData | MergeNodeData | SummaryNodeData>;
