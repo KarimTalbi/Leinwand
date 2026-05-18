@@ -1,6 +1,6 @@
 "use client";
 
-import {LockOpen, Maximize, Minus, Plus, Lock} from "lucide-react";
+import {LockOpen, Maximize, Minus, Plus, Lock, Mouse} from "lucide-react";
 import useStore from "@/store.ts"
 import {useShallow} from "zustand/react/shallow";
 
@@ -19,6 +19,8 @@ import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
 const selector = (state: AppState) => ({
   locked: state.locked,
   setLocked: state.setLocked,
+  scrollToZoom: state.scrollToZoom,
+  setScrollToZoom: state.setScrollToZoom,
 });
 
 export function ZoomSlider({
@@ -33,7 +35,7 @@ export function ZoomSlider({
   const minZoom = ZuseStore((state) => state.minZoom);
   const maxZoom = ZuseStore((state) => state.maxZoom);
 
-  const {locked, setLocked} = useStore(useShallow(selector));
+  const {locked, setLocked, scrollToZoom, setScrollToZoom} = useStore(useShallow(selector));
 
   return (
     <div
@@ -50,6 +52,12 @@ export function ZoomSlider({
           orientation === "horizontal" ? "flex-row" : "flex-col-reverse",
         )}
       >
+        <ToolTip position="bottom" label={scrollToZoom ? "Disable Scroll Zoom" : "Enable Scroll Zoom"}>
+          <CustomButton onClick={() => setScrollToZoom(!scrollToZoom)} buttonStyle="square">
+            <Mouse className="size-4"></Mouse>
+          </CustomButton>
+        </ToolTip>
+
         <ToolTip label="Zoom Out" position="bottom">
           <CustomButton onClick={() => zoomOut({duration: 300})} buttonStyle="square">
             <Minus className="size-4"/>
@@ -90,11 +98,13 @@ export function ZoomSlider({
       </CustomButton>
       </ToolTip>
 
-      <ToolTip label="Lock Canvas" position="bottom">
+      <ToolTip label={locked ? "Unlock Canvas" : "Lock Canvas"} position="bottom">
       <CustomButton onClick={() => setLocked(!locked)} buttonStyle="square">
         {locked ? <LockOpen className="size-4"/> : <Lock className="size-4"/>}
       </CustomButton>
       </ToolTip>
+
+
 
     </div>
   );

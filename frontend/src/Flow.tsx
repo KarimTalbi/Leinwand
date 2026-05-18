@@ -42,6 +42,7 @@ const selector = (state: AppState) => ({
   setLocked: state.setLocked,
   settingsOpen: state.settingsOpen,
   setSettingsOpen: state.setSettingsOpen,
+  scrollToZoom: state.scrollToZoom
 });
 
 
@@ -52,6 +53,7 @@ function Flow() {
     nodes,
     edges,
     locked,
+    scrollToZoom,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -101,8 +103,8 @@ function Flow() {
         defaultEdgeOptions={{style: {strokeWidth: 4, strokeColor: "black"}}}
         proOptions={{hideAttribution: true}}
         colorMode="light"
-        zoomOnScroll={false}
-        panOnScroll={true}
+        zoomOnScroll={scrollToZoom}
+        panOnScroll={!scrollToZoom}
       >
 
         <NavBar/>
@@ -115,11 +117,11 @@ function Flow() {
         />
 
         <MiniMap
-          className="rounded-xl border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
+          className="rounded-lg border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
           bgColor="white"
           maskColor={"transparent"}
           nodeColor={nodeColor}
-          nodeBorderRadius={100}
+          nodeBorderRadius={50}
           position="bottom-left"
           pannable
           zoomable

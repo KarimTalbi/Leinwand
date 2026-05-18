@@ -28,6 +28,7 @@ const useStore = create<AppState>()((set, get) => ({
     edges: [],
     syncing: false,
     locked: false,
+    scrollToZoom: false,
 
     settingsOpen: false,
 
@@ -596,6 +597,7 @@ const useStore = create<AppState>()((set, get) => ({
     setSyncing: (status) => set({syncing: status}),
     setLocked: (status) => set({locked: status}),
     setSettingsOpen: (status) => set({settingsOpen: status}),
+    setScrollToZoom: (status) => set({scrollToZoom: status}),
 
   }),
 );

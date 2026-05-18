@@ -63,6 +63,7 @@ export interface AppState {
   edges: Edge[];
   syncing: boolean;
   locked: boolean;
+  scrollToZoom: boolean;
 
   // Auth actions
   login: (username: string, password: string) => Promise<void>;
@@ -100,4 +101,5 @@ export interface AppState {
 
   setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
+  setScrollToZoom: (status: boolean) => void;
 }
