@@ -144,17 +144,20 @@ function Flow() {
 
 
         <MiniMap
-          className="rounded-lg border-2 border-gray-200 bg-white/70! backdrop-blur-sm shadow-xs"
-          bgColor="white"
-          maskColor={"transparent"}
+          zoomable
+          pannable
+          bgColor={"rgb(218 218 218 / 0.6)"}
+          maskColor={"rgb(255 255 255 / 0.7)"}
           nodeColor={nodeColor}
           nodeBorderRadius={50}
           position="bottom-left"
-          pannable
-          zoomable
           style={{
-            width: 150,
-            height: 120,
+            width: 200,
+            height: 150,
+            borderRadius: 10,
+            border: "1px solid lightgray",
+            backdropFilter: "blur(5px)",
+            overflow: "hidden",
           }}
         />
 

@@ -12,22 +12,22 @@ export const PanControls = () => {
   }
 
   return (
-    <Panel position="bottom-left">
-      <div className="grid grid-cols-3 gap-1 mb-35 ml-5">
+    <Panel position="bottom-center" className="-translate-x-123 -translate-y-1">
+      <div className="grid grid-cols-3 gap-1 ">
         <div />
-        <button className="btn btn-circle btn-neutral btn-sm" onClick={() => pan(0, PAN_AMOUNT)}>
+        <button className="btn btn-circle btn-neutral btn-xs" onClick={() => pan(0, PAN_AMOUNT)}>
           <ChevronUp size={14} />
         </button>
         <div />
-        <button className="btn btn-circle btn-neutral btn-sm" onClick={() => pan(PAN_AMOUNT, 0 )}>
+        <button className="btn btn-circle btn-neutral btn-xs" onClick={() => pan(PAN_AMOUNT, 0 )}>
           <ChevronLeft size={14} />
         </button>
         <div />
-        <button className="btn btn-circle btn-neutral btn-sm" onClick={() => pan(-1 * PAN_AMOUNT, 0 )}>
+        <button className="btn btn-circle btn-neutral btn-xs" onClick={() => pan(-1 * PAN_AMOUNT, 0 )}>
           <ChevronRight size={14} />
         </button>
         <div />
-        <button className="btn btn-circle btn-neutral btn-sm" onClick={() => pan(0, -1 * PAN_AMOUNT )}>
+        <button className="btn btn-circle btn-neutral btn-xs" onClick={() => pan(0, -1 * PAN_AMOUNT )}>
           <ChevronDown size={14} />
         </button>
         <div />
