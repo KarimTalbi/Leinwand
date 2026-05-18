@@ -246,6 +246,24 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
+    moveNode: (nodeId: string, direction: string) => {
+      const node = get().nodes.find((node) => node.id === nodeId)
+      if (!node) return null
+
+      const offset = direction === "left" ? -300 : 300
+
+      node.position.x = node.position.x + offset
+
+      set({
+        nodes: get().nodes.map((n) =>
+          n.id === nodeId
+            ? {...n, position: node.position}
+            : n
+        ),
+      });
+      void get().syncCanvas()
+    },
+
     createConnectedNode: (type: NodeTypeNames, source: string) => {
       const node = get().nodes.find((node) => node.id === source)
       if (!node) return null

@@ -125,9 +125,11 @@ const PromptNode = (
 
 
   const foreground = () => {
-    if (settingsOpen) return (
-      <DisplaySettingsScreen id={id} config={data.config} updateNodeData={updateNodeData} closeSettings={() => setSettingsOpen(false)}/>
-    )
+    if (settingsOpen) {
+      return (
+            <DisplaySettingsScreen id={id} config={data.config || defaultLLMConfig}  updateNodeData={updateNodeData} closeSettings={() => setSettingsOpen(false)}/>
+          )
+    }
     if (!isClosed) return (
       <DisplayInputScreen id={id} prompt={data.prompt || ""} isSourcePrompt={isSourcePrompt} onSettings={() => setSettingsOpen(!settingsOpen)} onSend={handleClick} sendDisabled={loading || !data.prompt}/>
     )

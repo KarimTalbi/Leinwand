@@ -96,6 +96,7 @@ export interface AppState {
   // Flow actions
   syncCanvas: () => Promise<void>;
   addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
+  moveNode: (id: string, position: string) => void;
   createConnectedNode: (type: NodeTypeNames, sourceId: string) => void;
   promptNodeAction: (id: string) => Promise<void>;
   summaryNodeAction: (id: string) => Promise<void>;

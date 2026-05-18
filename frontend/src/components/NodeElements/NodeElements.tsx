@@ -1,6 +1,6 @@
 import React from "react";
 
-import {LucideTextCursorInput, MergeIcon, MessagesSquare, Minimize2, X} from "lucide-react";
+import {ChevronLeft, ChevronRight, LucideTextCursorInput, MergeIcon, MessagesSquare, Minimize2, X} from "lucide-react";
 import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import useStore from "@/store.ts";
 import {cn} from "@/lib/utils.ts";
@@ -31,7 +31,7 @@ interface DeleteButtonProps {
 export const NodeBackground = ({children, className}: BackgroundProps) => (
   <div
     className={cn('flex flex-col',
-      "bg-white/70 border-[lightgray] border-2 w-132 rounded-lg",
+      "bg-white/70 border-[lightgray] border-2 w-130 rounded-lg",
       "backdrop-blur-sm backdrop-saturate-150",
       className,
     )}
@@ -49,7 +49,7 @@ export const NodeForeground = ({children}: ForegroundProps) => (
 
 
 export const NodeHeader = ({title, color, id, loading}: HeaderProps) => {
-  const {deleteNode} = useStore();
+  const {deleteNode, moveNode} = useStore();
 
   const icon = () => {
     if (title === "Chat") return <MessagesSquare size={14} color={color} strokeWidth={2.5}/>
@@ -58,18 +58,26 @@ export const NodeHeader = ({title, color, id, loading}: HeaderProps) => {
     if (title === "Text") return <LucideTextCursorInput size={14} color={color} strokeWidth={2.5}/>
   }
 
-  return(
+  return (
     <div className="flex items-center justify-between px-2 py-0.5 shrink-0">
-    <div className="flex items-center gap-1.5">
-      {icon()}
-      <h1 className={cn(
-        "flex items-center gap-1 text-sm font-bold",
-      )}>{title}</h1>
+      <div className="flex items-center gap-1.5">
+        {icon()}
+        <h1 className={cn(
+          "flex items-center gap-1 text-sm font-bold",
+        )}>{title}</h1>
+      </div>
+      <div className="flex items-center gap-1 text-sm font-bold">
+      <button className="btn btn-circle btn-ghost btn-sm" onClick={() => moveNode(id, "left")} disabled={loading}>
+        <ChevronLeft size={14} color={color}></ChevronLeft>
+      </button>
+      <button className="btn btn-circle btn-ghost btn-sm" onClick={() => moveNode(id, "right")} disabled={loading}>
+        <ChevronRight size={14} color={color}></ChevronRight>
+      </button>
+      <button className="btn btn-circle btn-ghost btn-sm" onClick={() => deleteNode(id)} disabled={loading}>
+        <X size={14} color={color}></X>
+      </button>
+      </div>
     </div>
-    <button className="btn btn-circle btn-ghost btn-sm" onClick={() => deleteNode(id)} disabled={loading}>
-      <X size={14} color={color}></X>
-    </button>
-  </div>
   )
 }
 

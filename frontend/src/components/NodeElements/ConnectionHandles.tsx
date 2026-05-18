@@ -46,7 +46,7 @@ export const ConnectionHandles = (
           handlePositionStyle(),
           className
         )}
-        style={{...style, backgroundColor: color || 'darkgray', transform: `translateX(calc(-50% + ${offset ?? 0}px))` + (position === "top" ? " translateY(-4px)" : " translateY(4px)")}}
+        style={{...style, backgroundColor: color || 'darkgray', transform: `translateX(calc(-54% + ${offset ?? 0}px))` + (position === "top" ? " translateY(-4px)" : " translateY(4px)")}}
       >
         {children}
       </Handle>
