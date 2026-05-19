@@ -12,7 +12,7 @@ from data import (
     UserAuth,
     get_async_session,
 )
-from service import get_current_active_user, node_service as ns
+from service import get_current_active_user, node_service as ns, canvas_service as cs
 
 
 class LLMResponse(Protocol):
@@ -48,10 +48,10 @@ async def sync_data(
 ) -> None:
 
     await ns.delete_all_edges(session, current_user.id, canvas_id)
-    await session.flush()
     await ns.delete_all_nodes(session, current_user.id, canvas_id)
-    await session.flush()
 
     await ns.write_nodes(session, data.nodes, current_user.id, canvas_id)
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
+
+    await cs.update_canvas_data(session, canvas_id, len(data.nodes))
 

@@ -75,7 +75,7 @@ async def merge_streams(
     if not data.check_consistencies:
         return MergeResponse(context=ancestors, has_issues=False)
 
-    config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
+    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
 
     # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
@@ -105,7 +105,7 @@ async def resolve_merge(
 ) -> MergeResolveResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
 
-    config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
+    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
 
     # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
@@ -140,7 +140,7 @@ async def get_streaming_chat_response(
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
+    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
     async def token_generator() -> AsyncGenerator[str]:
@@ -167,7 +167,7 @@ async def get_summary_response(
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    config = data.config or LLMModelConfig(model="gpt-5-mini", model_provider="openai")
+    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
     async def token_generator() -> AsyncGenerator[str]:

@@ -32,6 +32,7 @@ class NodeRead(BaseModel):
 class LoadDataResponse(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
+    thumbnail: str | None = None
 
 
 class EdgeRead(BaseModel):
