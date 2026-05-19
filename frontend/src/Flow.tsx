@@ -14,8 +14,6 @@ import {NavBar} from "@/components/Navigation/NavBar.tsx";
 import AddNodeOverlay from "@/components/Navigation/AddNodeOverlay.tsx";
 import Settings from "@/components/Settings/Settings.tsx";
 import {PanControls} from "@/components/Navigation/PanControls.tsx";
-import {useThumbnail} from "@/hooks/useThumbnail.ts";
-import {useEffect} from "react";
 
 
 const nodeTypes: NodeTypes = {
@@ -47,7 +45,6 @@ const selector = (state: AppState) => ({
   settingsOpen: state.settingsOpen,
   setSettingsOpen: state.setSettingsOpen,
   scrollToZoom: state.scrollToZoom,
-  setThumbnailCallback: state.setThumbnailCallback,
 });
 
 
@@ -64,17 +61,9 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    currentCanvasId,
-    setThumbnailCallback
   } = useStore(
     useShallow(selector)
   );
-
-  const {takeThumb} = useThumbnail(currentCanvasId)
-
-  useEffect(() => {
-    setThumbnailCallback(takeThumb)
-  })
 
 
   const nodeColor = (node: Node) => {

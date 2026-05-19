@@ -10,6 +10,11 @@ export interface LLMConfig {
   max_retries: number;
 }
 
+export interface CanvasReadData {
+  updated_at: string,
+  node_count: number,
+}
+
 export interface PromptNodeData extends Record<string, unknown> {
   prompt?: string;
   response?: string;
@@ -55,7 +60,7 @@ export interface UserRead {
 export interface CanvasRead {
   id: string;
   name: string;
-  data: Record<string, unknown>;
+  data: CanvasReadData;
 }
 
 
@@ -91,7 +96,6 @@ export interface AppState {
   exitCanvas: () => void;
   settingsOpen: boolean;
   setSettingsOpen: (status: boolean) => void;
-  thumbnailCallback: (() => Promise<void>) | null;
 
   // Flow actions
   syncCanvas: () => Promise<void>;
@@ -114,5 +118,4 @@ export interface AppState {
   setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
   setScrollToZoom: (status: boolean) => void;
-  setThumbnailCallback: (callback: (() => Promise<void>)) => void;
 }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState, FormEvent} from 'react';
 import {useShallow} from 'zustand/react/shallow';
-import {Plus, Trash2, LogOut, FolderOpen} from 'lucide-react';
+import {Plus, Trash2, LogOut, FolderOpen, Pen, Play, Save} from 'lucide-react';
 import useStore from '@/store';
 import {CanvasRead} from '@/types';
 
@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [newName, setNewName] = useState('');
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedEdit, setSelectedEdit] = useState<string | null>(null);
 
   const {canvases, loadCanvases, createCanvas, deleteCanvas, selectCanvas, logout, user} = useStore(useShallow((s) => ({
     canvases: s.canvases,
@@ -90,26 +91,91 @@ export default function Dashboard() {
             <p className="text-sm">No projects yet. Create one to get started.</p>
           </div>
         ) : (
-          <div className="grid gap-2">
-            {canvases.map((canvas: CanvasRead) => (
-              <div
-                key={canvas.id}
-                onClick={() => void selectCanvas(canvas.id)}
-                className="border border-gray-300 rounded-xl px-5 py-3 flex items-center justify-between cursor-pointer hover:border-gray-400 hover:shadow-sm transition-all group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="size-2 rounded-full bg-gray-300 group-hover:bg-gray-500 transition-colors"/>
-                  <span className="text-sm font-medium text-gray-900">{canvas.name}</span>
+          <div>
+
+            <ul className="list bg-base-100">
+
+              <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Your Projects:</li>
+
+              {canvases.map((canvas: CanvasRead) => (
+                <div className="flex items-center justify-between p-2">
+                  <div key={canvas.id}
+                       className="w-full"
+                  >
+                    <li className=" flex flex-row justify-between items-center h-15">
+
+                      {
+                        selectedEdit === canvas.id
+                          ? <input type="text" placeholder="Type here" value={canvas.name} className="input input-sm shadow-inner border outline-none"/>
+                          :
+                          <div>
+                            <div className="text-bold text-base">{canvas.name}</div>
+                            <div className="text-xs font-semibold opacity-60">last
+                              edited: {canvas.data.updated_at || "N/A"}</div>
+                          </div>
+                      }
+
+                      <div className="flex gap-1">
+
+                        <button
+                          onClick={selectedEdit === canvas.id ? () => setSelectedEdit(null) :  () => setSelectedEdit(canvas.id)}
+                          className="btn btn-circle btn-neutral btn-sm bg-transparent border-none shadow-none text-black hover:bg-black hover:text-white">
+                          {
+                            selectedEdit === canvas.id
+                              ? <Save size={14}></Save>
+                              : <Pen size={14}></Pen>
+                          }
+                        </button>
+
+                        <button
+                          onClick={(e) => void handleDelete(e, canvas.id)}
+                          disabled={deletingId === canvas.id}
+                          className="btn btn-circle btn-neutral btn-sm bg-transparent border-none shadow-none text-black hover:bg-black hover:text-white">
+                          <Trash2 size={14}></Trash2>
+                        </button>
+
+                        <button
+                          onClick={() => void selectCanvas(canvas.id)}
+                          disabled={deletingId === canvas.id || selectedEdit === canvas.id}
+                          className="btn btn-circle btn-neutral btn-sm bg-transparent border-none shadow-none text-black hover:bg-black hover:text-white">
+                          <Play size={14}></Play>
+                        </button>
+                      </div>
+
+
+                    </li>
+
+                  </div>
+
                 </div>
-                <button
-                  onClick={(e) => void handleDelete(e, canvas.id)}
-                  disabled={deletingId === canvas.id}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-30 transition-all cursor-pointer"
+              ))}
+
+
+            </ul>
+            <div className="grid gap-2">
+              {canvases.map((canvas: CanvasRead) => (
+                <div
+                  key={canvas.id}
+                  onClick={() => void selectCanvas(canvas.id)}
+                  className="border border-gray-300 rounded-xl px-5 py-3 flex items-center justify-between cursor-pointer hover:border-gray-400 hover:shadow-sm transition-all group"
                 >
-                  <Trash2 className="size-4"/>
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center gap-3">
+                    <div className="size-2 rounded-full bg-gray-300 group-hover:bg-gray-500 transition-colors"/>
+                    <span className="text-sm font-medium text-gray-900">{canvas.name}</span>
+                    <span>{canvas.data.updated_at}</span>
+                    <span>{canvas.data.node_count || "N/A"}</span>
+                  </div>
+                  <button
+                    onClick={(e) => void handleDelete(e, canvas.id)}
+                    disabled={deletingId === canvas.id}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-30 transition-all cursor-pointer"
+                  >
+                    <Trash2 className="size-4"/>
+                  </button>
+                </div>
+
+              ))}
+            </div>
           </div>
         )}
       </main>
