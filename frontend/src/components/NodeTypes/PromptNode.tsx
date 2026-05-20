@@ -14,6 +14,7 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {DisplaySettingsScreen} from "@/components/NodeElements/llmSettings.tsx";
+import {nodeColors} from "@/lib/styles.ts";
 
 
 
@@ -141,9 +142,9 @@ const PromptNode = (
   }
 
   return (
-    <NodeBackground className="bg-white/70 border-[lightgray] border-2 w-132 backdrop-blur-sm backdrop-saturate-150">
+    <NodeBackground className="w-132 backdrop-blur-sm backdrop-saturate-150">
 
-      <NodeHeader id={id} color="#ec4899" title="Chat" loading={loading}/>
+      <NodeHeader id={id} title="Chat" color={nodeColors.promptNode} loading={loading}/>
 
       <NodeForeground>
         {foreground()}

@@ -31,8 +31,7 @@ interface DeleteButtonProps {
 export const NodeBackground = ({children, className}: BackgroundProps) => (
   <div
     className={cn('flex flex-col',
-      "bg-white/70 border-[lightgray] border-2 w-130 rounded-lg",
-      "backdrop-blur-sm backdrop-saturate-150",
+      "bg-white border-stone-300 border-2 w-130 rounded-lg",
       className,
     )}
   >

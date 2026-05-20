@@ -1,5 +1,5 @@
 import {useShallow} from 'zustand/react/shallow'
-import {ReactFlow, Background, NodeTypes, MiniMap, Node, BackgroundVariant} from '@xyflow/react';
+import {ReactFlow, Background, NodeTypes, MiniMap, Node, BackgroundVariant, Panel} from '@xyflow/react';
 
 import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
 import TextNode from '@/components/NodeTypes/TextNode.tsx';
@@ -11,7 +11,6 @@ import {AppState} from '@/types'
 
 import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
-import AddNodeOverlay from "@/components/Navigation/AddNodeOverlay.tsx";
 import Settings from "@/components/Settings/Settings.tsx";
 import {PanControls} from "@/components/Navigation/PanControls.tsx";
 import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
@@ -45,6 +44,8 @@ const selector = (state: AppState) => ({
   setSettingsOpen: state.setSettingsOpen,
   scrollToZoom: state.scrollToZoom,
   exitCanvas: state.exitCanvas,
+  setLocked: state.setLocked,
+  setScrollToZoom: state.setScrollToZoom,
 });
 
 
@@ -98,7 +99,7 @@ function Flow() {
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           minZoom={0.5}
-          maxZoom={2}
+          maxZoom={1.5}
           nodesDraggable={!locked}
           nodesConnectable={!locked}
           elementsSelectable={!locked}
@@ -111,29 +112,26 @@ function Flow() {
         >
 
           <Navbar
-          centerChild={
-            <ZoomSlider></ZoomSlider>
-          }
-          endChild={
-            <div>
-
-              <button className="btn btn-ghost border-none shadow-none" onClick={exitCanvas}>
-                <ChevronLeft className="size-4"/>
-                <p className="font-normal pr-1">Exit</p>
-              </button>
 
 
-              <button className="btn btn-ghost border-none shadow-none" onClick={() => setSettingsOpen(true)}>
-                <Settings2 className="size-4"/>
-                <p className="font-normal pr-1">Settings</p>
-              </button>
+            endChild={
+              <div>
+
+                <button className="btn btn-ghost border-none shadow-none" onClick={exitCanvas}>
+                  <ChevronLeft className="size-4"/>
+                  <p className="font-normal pr-1">Exit</p>
+                </button>
 
 
-            </div>
-          }
+                <button className="btn btn-ghost border-none shadow-none" onClick={() => setSettingsOpen(true)}>
+                  <Settings2 className="size-4"/>
+                  <p className="font-normal pr-1">Settings</p>
+                </button>
+
+
+              </div>
+            }
           />
-
-
 
 
           <Background
@@ -164,26 +162,31 @@ function Flow() {
             style={{strokeDasharray: "20, 20", strokeDashoffset: "20"}}
           />
 
-
-          <MiniMap
-            zoomable
-            pannable
-            bgColor={"rgb(218 218 218 / 0.6)"}
-            maskColor={"rgb(255 255 255 / 0.7)"}
-            nodeColor={nodeColor}
-            nodeBorderRadius={50}
-            position="bottom-left"
-            style={{
-              width: 200,
-              height: 150,
-              borderRadius: 10,
-              border: "1px solid lightgray",
-              backdropFilter: "blur(5px)",
-              overflow: "hidden",
-            }}
-          />
-
-          <AddNodeOverlay/>
+          <Panel position="bottom-left">
+            <div className="bg-white w-52.5 h-42.5 rounded-xl border-2 border-stone-200 shadow-lg">
+              <MiniMap
+                zoomable
+                pannable
+                bgColor={"transparent"}
+                maskColor={"rgb(87, 83, 77, 0.2)"}
+                nodeColor={nodeColor}
+                nodeBorderRadius={50}
+                style={{
+                  width: 200,
+                  height: 130,
+                  borderRadius: 10,
+                  border: "1px solid lightgray",
+                  overflow: "hidden",
+                  position: "absolute",
+                  bottom: -10,
+                  left: -10,
+                }}
+              />
+              <div style={{position: "absolute", bottom: 140, left: 9}}>
+                <ZoomSlider></ZoomSlider>
+              </div>
+            </div>
+          </Panel>
 
           <PanControls/>
 
@@ -193,7 +196,8 @@ function Flow() {
 
       </div>
     </div>
-  );
+  )
+    ;
 }
 
 
