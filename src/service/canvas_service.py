@@ -66,3 +66,13 @@ async def update_canvas_data(session: AsyncSession, canvas_id: str, node_count: 
     canvas.data["node_count"] = node_count
 
     await session.flush()
+
+async def update_canvas_name(session: AsyncSession, canvas_id: str, name: str) -> None:
+    canvas = await session.get(Canvas, canvas_id)
+
+    if not canvas:
+        raise CanvasNotFoundException
+
+    canvas.name = name
+
+    await session.flush()
