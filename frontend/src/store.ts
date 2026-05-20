@@ -196,6 +196,27 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
+  updateCanvas: async (canvasId: string, canvasName: string) => {
+
+    set({
+      canvases: get().canvases.map((c) =>
+        c.id === canvasId
+          ? {...c, name: canvasName}
+          : c
+      ),
+    });
+
+
+      try {
+        await api.put(`/canvas/update`, {
+          canvas_id: canvasId,
+          canvas_name: canvasName,
+        })
+      } catch (err) {
+        console.log(err)
+      }
+  },
+
     exitCanvas: () => set({currentCanvasId: null, nodes: [], edges: []}),
 
 

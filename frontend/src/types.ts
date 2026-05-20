@@ -13,6 +13,8 @@ export interface LLMConfig {
 export interface CanvasReadData {
   updated_at: string,
   node_count: number,
+  nodes: (NodeTypes)[],
+  edges: Edge[],
 }
 
 export interface PromptNodeData extends Record<string, unknown> {
@@ -73,6 +75,7 @@ export interface AppState {
   // Canvas management
   canvases: CanvasRead[];
   currentCanvasId: string | null;
+  updateCanvas: (id: string, name: string) => Promise<void>;
 
   // Flow state
   nodes: (NodeTypes)[];
