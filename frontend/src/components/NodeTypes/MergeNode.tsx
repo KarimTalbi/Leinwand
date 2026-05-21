@@ -8,10 +8,12 @@ import {
   NodeDisplayPulsingText,
   NodeTextarea, ChatBubble, NodeDisplayMarkdown
 } from "@/components/NodeElements/TextElements.tsx";
-import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import {NodeBackgroundStyle, NodeForegroundStyle, nodeColors} from "@/lib/styles.ts";
+import {MergeIcon} from "lucide-react";
 
 const defaultLLMConfig = {
   model: 'gpt-5-mini',
@@ -146,17 +148,19 @@ const MergeNode = (
   }
 
   return (
-    <NodeBackground>
+    <div className={NodeBackgroundStyle}>
       <NodeHeader
         title="Merge"
-        color="#f5c45e"
+        color={nodeColors.mergeNode}
         id={id}
         loading={loading}
-      />
+      >
+        <MergeIcon className="rotate-90" size={14} color={nodeColors.mergeNode} strokeWidth={2.5}/>
+      </NodeHeader>
 
-      <NodeForeground>
+      <div className={NodeForegroundStyle}>
         {foreground()}
-      </NodeForeground>
+      </div>
 
       <ConnectionHandles
         handleId="target-1"
@@ -190,7 +194,7 @@ const MergeNode = (
       </ConnectionHandles>
       )}
 
-    </NodeBackground>
+    </div>
 
   )
 };

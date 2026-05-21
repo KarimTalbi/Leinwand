@@ -9,12 +9,13 @@ import {
   NodeDisplayPulsingText,
   NodeTextarea
 } from "@/components/NodeElements/TextElements.tsx";
-import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {DisplaySettingsScreen} from "@/components/NodeElements/llmSettings.tsx";
-import {nodeColors} from "@/lib/styles.ts";
+import {NodeBackgroundStyle, nodeColors, NodeForegroundStyle} from "@/lib/styles.ts";
+import {MessagesSquare} from "lucide-react";
 
 
 
@@ -142,13 +143,15 @@ const PromptNode = (
   }
 
   return (
-    <NodeBackground>
+    <div className={NodeBackgroundStyle}>
 
-      <NodeHeader id={id} title="Chat" color={nodeColors.promptNode} loading={loading}/>
+      <NodeHeader id={id} title="Chat" color={nodeColors.promptNode} loading={loading}>
+        <MessagesSquare size={14} color={nodeColors.promptNode} strokeWidth={2.5}/>
+      </NodeHeader>
 
-      <NodeForeground>
+      <div className={NodeForegroundStyle}>
         {foreground()}
-      </NodeForeground>
+      </div>
 
 
       <ConnectionHandles
@@ -175,7 +178,7 @@ const PromptNode = (
       )}
 
 
-    </NodeBackground>
+    </div>
   )
 };
 

@@ -2,7 +2,6 @@ import React from "react";
 import {Handle, Position, useNodeConnections} from "@xyflow/react";
 import {cn} from "@/lib/utils.ts";
 
-
 type handleType = "target" | "source";
 type handlePosition = "top" | "bottom"
 
@@ -30,7 +29,6 @@ export const ConnectionHandles = (
     handleId: handleId
   });
 
-
   const handlePositionStyle = () => {
     if (position === "top") return "w-20! h-2! rounded-t-full! rounded-b-none! border-none! -translate-y-1! z-[-1]!";
     return "w-20! h-2! rounded-t-none! rounded-b-full! border-none! translate-y-1! z-[-1]!";
@@ -46,7 +44,11 @@ export const ConnectionHandles = (
           handlePositionStyle(),
           className
         )}
-        style={{...style, backgroundColor: color || 'darkgray', transform: `translateX(calc(-54% + ${offset ?? 0}px))` + (position === "top" ? " translateY(-4px)" : " translateY(4px)")}}
+        style={{
+          ...style,
+          backgroundColor: color || 'darkgray',
+          transform: `translateX(calc(-54% + ${offset ?? 0}px))` + (position === "top" ? " translateY(-4px)" : " translateY(4px)")
+      }}
       >
         {children}
       </Handle>

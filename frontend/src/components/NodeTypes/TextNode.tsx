@@ -7,10 +7,12 @@ import {
   NodeDisplayMarkdown, NodeDisplayText,
   NodeTextarea
 } from "@/components/NodeElements/TextElements.tsx";
-import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import {NodeBackgroundStyle, nodeColors} from "@/lib/styles.ts";
+import {LucideTextCursorInput} from "lucide-react";
 
 
 const selector = (state: AppState) => ({
@@ -78,13 +80,15 @@ const TextNode = (
   }
 
   return (
-    <NodeBackground>
-      <NodeHeader title="Note" id={id} color="#309898" loading={false}/>
+    <div className={NodeBackgroundStyle}>
+      <NodeHeader title="Note" id={id} color={nodeColors.textNode} loading={false}>
+        <LucideTextCursorInput size={14} color={nodeColors.textNode} strokeWidth={2.5}/>
+      </NodeHeader>
 
 
-      <NodeForeground>
+      <div className={NodeBackgroundStyle}>
         {foreground()}
-      </NodeForeground>
+      </div>
 
       <ConnectionHandles
         handleId="target-1"
@@ -108,7 +112,7 @@ const TextNode = (
       </ConnectionHandles>
       )}
 
-    </NodeBackground>
+    </div>
 
   )
 };

@@ -7,10 +7,12 @@ import {
   NodeDisplayPulsingText,
   NodeDisplayMarkdown,
 } from "@/components/NodeElements/TextElements.tsx";
-import {NodeBackground, NodeForeground, NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import {NodeBackgroundStyle, nodeColors, NodeForegroundStyle} from "@/lib/styles.ts";
+import {MessagesSquare} from "lucide-react";
 
 const defaultLLMConfig = {
   model: 'gpt-5-mini',
@@ -100,12 +102,14 @@ const SummaryNode = (
   }
 
   return (
-    <NodeBackground>
-      <NodeHeader title="Summary" color="#bf4546" id={id} loading={loading}/>
+    <div className={NodeBackgroundStyle}>
+      <NodeHeader title="Summary" color={nodeColors.summaryNode} id={id} loading={loading}>
+        <MessagesSquare size={14} color={nodeColors.summaryNode} strokeWidth={2.5}/>
+      </NodeHeader>
 
-      <NodeForeground>
+      <div className={NodeForegroundStyle}>
         {foreground()}
-      </NodeForeground>
+      </div>
 
 
       <ConnectionHandles
@@ -130,7 +134,7 @@ const SummaryNode = (
       </ConnectionHandles>
       )}
 
-    </NodeBackground>
+    </div>
 
   )
 };
