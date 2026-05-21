@@ -22,7 +22,7 @@ import {AppState} from '@/types'
 import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import Settings from "@/components/Settings/Settings.tsx";
-import {PanControls} from "@/components/Navigation/PanControls.tsx";
+import {Controls} from "./components/Navigation/Controls.tsx";
 import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
 import {Axis3D, ChevronLeft, Folder, Hexagon, Settings2, Spline} from "lucide-react";
 import {navbarButtonStyle, tooltipStyle} from "@/lib/styles.ts";
@@ -240,7 +240,7 @@ function Flow() {
             </div>
           </Panel>
 
-          <PanControls/>
+          <Controls/>
 
         </ReactFlow>
 

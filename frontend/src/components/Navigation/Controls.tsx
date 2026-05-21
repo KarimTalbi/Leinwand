@@ -16,11 +16,11 @@ import {NodeTypeNames} from "@/types.ts";
 
 const PAN_AMOUNT = 300
 
-export const PanControls = () => {
+export const Controls = () => {
   const {zoom} = useViewport();
-  const {zoomTo} = useReactFlow();
-  const {getViewport, setViewport, screenToFlowPosition} = useReactFlow()
+  const {getViewport, setViewport, screenToFlowPosition, zoomTo} = useReactFlow()
   const [isOpen, setIsOpen] = useState(false);
+
   const {locked, setLocked, scrollToZoom, setScrollToZoom, addNode} = useStore(useShallow((state) => ({
     locked: state.locked,
     setLocked: state.setLocked,
@@ -51,7 +51,6 @@ export const PanControls = () => {
         <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={() => setIsOpen(false)}/>
       )}
 
-
       <Panel position="bottom-center" className="flex flex-row gap-2 p-2" style={{zIndex: 20}}>
 
         <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
@@ -66,8 +65,6 @@ export const PanControls = () => {
                data-tip={scrollToZoom ? "Disable scroll to zoom" : "Enable scroll to zoom"}>
             <button className={cn(outerButtonStyle)} onClick={() => setScrollToZoom(!scrollToZoom)}>
               {!scrollToZoom ? <Mouse size={14}></Mouse> : <MouseOff size={14}/>}
-
-
             </button>
           </div>
 
@@ -75,16 +72,16 @@ export const PanControls = () => {
 
         <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
 
-          {/* Zoom Out Button */}
           <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Zoom Out">
-            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom - 0.1, {duration: 200})} disabled={zoom <= 0.5}>
+            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom - 0.1, {duration: 200})}
+                    disabled={zoom <= 0.5}>
               <ZoomOut size={14}/>
             </button>
           </div>
 
-          {/* Zoom In Button */}
           <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Zoom In">
-            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom + 0.1, {duration: 200})} disabled={zoom >= 1.5}>
+            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom + 0.1, {duration: 200})}
+                    disabled={zoom >= 1.5}>
               <ZoomIn size={14}/>
             </button>
           </div>
@@ -105,11 +102,9 @@ export const PanControls = () => {
             </button>
           </div>
 
-
         </div>
 
         <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
-
 
           <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Pan Left">
             <button className={cn(outerButtonStyle)} onClick={() => pan(PAN_AMOUNT, 0)}>
@@ -123,17 +118,11 @@ export const PanControls = () => {
             </button>
           </div>
 
-
         </div>
 
-
-
-
         <div className="grid grid-cols-1 bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-          {/* Open Button Menu */}
           <div className="relative flex items-center" style={{zIndex: 21}}>
 
-            {/* Node Buttons */}
             {isOpen ? (
               <div>
                 <div className="absolute bottom-full pb-2 flex flex-col gap-2">
@@ -170,10 +159,8 @@ export const PanControls = () => {
                     </div>
                   </div>
 
-
                 </div>
 
-                {/* Close Button */}
                 <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
                   <button onClick={() => setIsOpen(false)} className={cn(outerButtonStyle, "btn-lg")}>
                     <X size={14}/>
@@ -184,8 +171,6 @@ export const PanControls = () => {
 
             ) : (
 
-              // Open Button
-
               <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Add Node">
                 <button onClick={() => setIsOpen(true)} className={cn(outerButtonStyle, "btn-lg")}>
                   <Plus size={14}/>
@@ -195,7 +180,6 @@ export const PanControls = () => {
 
           </div>
         </div>
-
       </Panel>
     </div>
   )
