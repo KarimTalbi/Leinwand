@@ -12,7 +12,7 @@ interface HeaderProps {
   children?: React.ReactNode
 }
 
-export const NodeHeader = ({title, color, id, loading, children}: HeaderProps) => {
+export const NodeHeader = ({title, color, id, loading = false, children}: HeaderProps) => {
   const {deleteNode, moveNode} = useStore();
 
   return (

@@ -1,93 +1,93 @@
-import {memo, useState} from 'react';
+import {memo, useLayoutEffect} from 'react';
 import {NodeProps} from "@xyflow/react";
 
 import useStore from '@/store.ts';
-import {AppState, TextNodeType} from "@/types.ts";
-import {
-  NodeDisplayMarkdown, NodeDisplayText,
-  NodeTextarea
-} from "@/components/NodeElements/TextElements.tsx";
-import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {TextNodeType} from "@/types.ts";
+import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {NodeBackgroundStyle, nodeColors} from "@/lib/styles.ts";
+import {navbarButtonStyle, NodeBackgroundStyle, nodeColors, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
 import {LucideTextCursorInput} from "lucide-react";
+import {useTextarea} from "@/hooks/useTextarea.ts";
+import {cn} from "@/lib/utils.ts";
 
 
-const selector = (state: AppState) => ({
-  updateNodeData: state.updateNodeData,
-  deleteNode: state.deleteNode
-});
+const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
 
-
-const DisplayTextScreen = (text: string, onSettings: () => void, onSend: () => void, useMarkdown: boolean) => (
-  <div className="flex flex-col flex-1 justify-between gap-5">
-    {useMarkdown
-    ? <NodeDisplayMarkdown content={text} className="px-2"/>
-    : <NodeDisplayText>{text}</NodeDisplayText>
-    }
-    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
-      <button
-        className="btn btn-ghost btn-sm" onClick={onSettings}>
-        Settings
-      </button>
-      <button
-        className="btn btn-ghost btn-sm" onClick={onSend}>
-        Edit
-      </button>
-    </div>
-  </div>
-)
-
-const DisplayInputScreen = (
-  id: string,
-  text: string,
-  onSend: () => void,
-  sendDisabled: boolean,
-) => (
-  <div>
-    <div className="flex flex-col flex-1 justify-between gap-5">
-      <NodeTextarea id={id} initialValue={text} placeholder={'Enter text...'} dataKey="text"/>
-    </div>
-    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
-      <button
-        className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
-        Save
-      </button>
-    </div>
-  </div>
-)
-
-const TextNode = (
-  {
-    id,
-    data,
-  }: NodeProps<TextNodeType>
-) => {
-
-  const {updateNodeData} = useStore(useShallow(selector));
-  const isClosed = data.closed;
-  const [useMarkdown, setUseMarkdown] = useState(true);
+  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.text, "text")
+  const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})));
 
   const handleClick = () => {
-    updateNodeData(id, {closed: !isClosed})
+    updateNodeData(id, {closed: !data.closed})
   }
 
-  const foreground = () => {
-    if (!isClosed) return DisplayInputScreen(id, data.text || "", handleClick, !data.text)
-    return DisplayTextScreen(data.text, () => setUseMarkdown(!useMarkdown), handleClick, useMarkdown)
-  }
+  useLayoutEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [localText, handleClick]);
 
   return (
     <div className={NodeBackgroundStyle}>
-      <NodeHeader title="Note" id={id} color={nodeColors.textNode} loading={false}>
+
+      <NodeHeader title="Note" id={id} color={nodeColors.textNode}>
         <LucideTextCursorInput size={14} color={nodeColors.textNode} strokeWidth={2.5}/>
       </NodeHeader>
 
+      <div className={NodeForegroundStyle}>
+        {!data.closed && (
+          <>
+            <textarea
+              ref={textareaRef}
+              value={localText}
+              onChange={handleTextChange}
+              className={cn(textareaStyle, "min-h-0")}
+              placeholder="Enter your note..."
+            />
 
-      <div className={NodeBackgroundStyle}>
-        {foreground()}
+            <div className="flex justify-end pt-1">
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")}
+                onClick={handleClick}
+                disabled={!data.text}
+              >
+                Save
+              </button>
+
+            </div>
+
+          </>
+        )}
+
+        {data.closed && (
+          <>
+
+            <NodeDisplayMarkdown content={data.text || ""} className="px-2"/>
+
+            <div className="flex justify-end pt-1">
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")}
+              >
+                Settings
+              </button>
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")}
+                onClick={handleClick}
+                disabled={!data.text}
+              >
+                Edit
+              </button>
+
+            </div>
+
+          </>
+        )}
       </div>
 
       <ConnectionHandles
@@ -95,21 +95,19 @@ const TextNode = (
         handleType="target"
         position="top"
         nodeId={id}
-        color="#309898"
+        color={nodeColors.textNode}
       />
 
       {!!data.text && (
-      <ConnectionHandles
-        handleId="source-1"
-        handleType="source"
-        position="bottom"
-        nodeId={id}
-        color="#309898"
-      >
-
-        <AddConnectedNode sourceId={id}/>
-
-      </ConnectionHandles>
+        <ConnectionHandles
+          handleId="source-1"
+          handleType="source"
+          position="bottom"
+          nodeId={id}
+          color={nodeColors.textNode}
+        >
+          <AddConnectedNode sourceId={id}/>
+        </ConnectionHandles>
       )}
 
     </div>

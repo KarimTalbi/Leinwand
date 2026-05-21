@@ -8,7 +8,7 @@ import {
   NodeDisplayPulsingText,
   NodeTextarea, ChatBubble, NodeDisplayMarkdown
 } from "@/components/NodeElements/TextElements.tsx";
-import {NodeHeader} from "@/components/NodeElements/NodeElements.tsx";
+import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";

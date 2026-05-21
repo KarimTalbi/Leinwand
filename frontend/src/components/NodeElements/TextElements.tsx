@@ -1,4 +1,3 @@
-import {Textarea} from "@/components/ui/textarea.tsx";
 import {cn} from "@/lib/utils.ts";
 import React, {useState} from "react";
 import {useDebouncedCallback} from "use-debounce";
@@ -7,24 +6,21 @@ import DOMPurify from 'dompurify';
 import {marked} from '@/lib/markdown.ts';
 
 import 'highlight.js/styles/github-dark.css'
-import {Play} from "lucide-react";
 
 interface NodeTextareaProps {
   id: string,
   initialValue?: string,
   placeholder?: string
-  dataKey?: string
+  dataKey: string
 }
 
 interface NodeDisplayTextProps {
   children?: string
 }
 
-const maxHeight = "max-h-20";
+export const NodeTextarea = ({id, initialValue, placeholder, dataKey}: NodeTextareaProps) => {
 
-export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}: NodeTextareaProps) => {
-
-  const [localPrompt, setLocalPrompt] = useState(initialValue || "");
+  const [localText, setLocalText] = useState(initialValue || "");
   const updateNodeData = useStore((s) => s.updateNodeData);
 
   const debouncedUpdate = useDebouncedCallback((value: string) => {
@@ -32,28 +28,17 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey = "prompt"}
   }, 500);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setLocalPrompt(e.target.value);
+    setLocalText(e.target.value);
     debouncedUpdate(e.target.value);
   };
 
   return (
-    <div className={cn("flex flex-col flex-1 min-h-0 w-full", dataKey === "solution" ? maxHeight : "")}>
-      <Textarea
-        aria-label="Textarea"
-        value={localPrompt}
-        onChange={handleTextChange}
-        placeholder={placeholder}
-        className={cn(
-          'nodrag min-h-16 w-123 max-h-50 resize-none bg-black/5 border-[lightgray] rounded-sm mx-2 border p-2 text-sm/5! text-black nowheel',
-          'transition-all focus:ring ring-0! outline-none',
-        )}
-      >
-        <div>
-          <Play></Play>
-        </div>
-      </Textarea>
-
-    </div>
+    <textarea
+      value={localText}
+      onChange={handleTextChange}
+      placeholder={placeholder}
+      className="textarea textarea-md nodrag nowheel min-h-16 w-auto resize-none bg-neutral-100 rounded-md outline-none"
+    />
   );
 };
 
@@ -68,17 +53,18 @@ export const NodeDisplayText = ({children}: NodeDisplayTextProps) => (
 )
 
 
-export const NodeDisplayMarkdown = ({content, className}: { content: string, className?: string }) => (
-  <div
-    className={cn(
-      "prose prose-sm nodrag select-text cursor-text",
-      className,
-    )}
-    dangerouslySetInnerHTML={{
-      __html: DOMPurify.sanitize(marked.parse(content) as string)
-    }}
-  />
-)
+export const NodeDisplayMarkdown = ({content, className}: { content: string, className?: string }) => {
+  const toMarkdownNewlines = (text: string) => text.replace(/\n/g, '  \n');
+
+  return (
+    <div
+      className={cn("prose prose-sm nodrag select-text cursor-text", className)}
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(marked.parse(toMarkdownNewlines(content)) as string)
+      }}
+    />
+  )
+}
 
 
 export const NodeDisplayPulsingText = (
