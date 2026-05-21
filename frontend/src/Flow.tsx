@@ -3,10 +3,8 @@ import {
   ReactFlow,
   Background,
   NodeTypes,
-  MiniMap,
   Node,
   BackgroundVariant,
-  Panel,
   useViewport,
   useReactFlow
 } from '@xyflow/react';
@@ -23,7 +21,7 @@ import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import Settings from "@/components/Settings/Settings.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
-import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
+import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
 import {Axis3D, ChevronLeft, Folder, Hexagon, Settings2, Spline} from "lucide-react";
 import {navbarButtonStyle, tooltipStyle} from "@/lib/styles.ts";
 import {cn} from "@/lib/utils.ts";
@@ -223,22 +221,7 @@ function Flow() {
             style={{strokeDasharray: "20, 20", strokeDashoffset: "20"}}
           />
 
-          <Panel position="bottom-left">
-            <div className="bg-white w-52.5 h-42.5 rounded-lg ring-1 ring-neutral-200 shadow-md">
-              <MiniMap
-                className="rounded-md w-50 h-32.5 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
-                zoomable
-                pannable
-                bgColor={"transparent"}
-                maskColor={"rgb(161, 161, 161, 0.2)"}
-                nodeColor={nodeColor}
-                nodeBorderRadius={50}
-              />
-              <div style={{position: "absolute", bottom: 140, left: 9}}>
-                <ZoomSlider></ZoomSlider>
-              </div>
-            </div>
-          </Panel>
+          <MiniMapZoomSlider nodeColor={nodeColor}/>
 
           <Controls/>
 
