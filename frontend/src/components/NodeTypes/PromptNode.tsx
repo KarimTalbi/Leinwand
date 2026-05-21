@@ -142,7 +142,7 @@ const PromptNode = (
   }
 
   return (
-    <NodeBackground className="w-132 backdrop-blur-sm backdrop-saturate-150">
+    <NodeBackground>
 
       <NodeHeader id={id} title="Chat" color={nodeColors.promptNode} loading={loading}/>
 

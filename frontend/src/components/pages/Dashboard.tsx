@@ -10,8 +10,7 @@ import {
   ChevronRight,
   Search,
   X,
-  WorkflowIcon,
-  LogOut
+  LogOut, Hexagon
 } from 'lucide-react';
 import useStore from '@/store';
 import { CanvasRead } from '@/types';
@@ -24,6 +23,7 @@ import TextNode from '@/components/NodeTypes/TextNode.tsx';
 import MergeNode from '@/components/NodeTypes/MergeNode.tsx';
 import SummaryNode from '@/components/NodeTypes/SummaryNode.tsx';
 import {cn} from "@/lib/utils.ts";
+import {navbarButtonStyle} from "@/lib/styles.ts";
 
 const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
@@ -114,10 +114,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white flex flex-col">
 
       <Navbar
-      endChild={
-        <button className="btn btn-ghost border-none shadow-none" onClick={logout}>
-          <LogOut className="size-4"/>
-          <p className="font-normal pr-1">Log out</p>
+      child4={
+        <button className={navbarButtonStyle} onClick={logout}>
+          <LogOut size={14}/>
+          <p>Log out</p>
         </button>
       }
       />
@@ -198,7 +198,7 @@ export default function Dashboard() {
                       <div
                         className="relative bg-gray-50 cursor-pointer"
                         style={{ height: 160 }}
-                        onClick={() => void selectCanvas(canvas.id)}
+                        onClick={() => void selectCanvas(canvas.id, canvas.name)}
                       >
                         <ReactFlowProvider>
                           <ReactFlow
@@ -218,8 +218,8 @@ export default function Dashboard() {
                             panOnDrag={false}
                           >
                             <Panel position="top-right">
-                              <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-800 text-white text-xs rounded-full translate-x-2 -translate-y-2">
-                                <WorkflowIcon size={12} ></WorkflowIcon>
+                              <div className="flex items-center gap-1 px-2 py-1 bg-neutral-500 text-white text-[10px] font-bold rounded-full translate-x-2 -translate-y-2">
+                                <Hexagon size={10} ></Hexagon>
                                 <p>{canvas.data.nodes.length}</p>
                               </div>
                             </Panel>

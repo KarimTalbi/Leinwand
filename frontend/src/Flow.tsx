@@ -1,5 +1,15 @@
 import {useShallow} from 'zustand/react/shallow'
-import {ReactFlow, Background, NodeTypes, MiniMap, Node, BackgroundVariant, Panel} from '@xyflow/react';
+import {
+  ReactFlow,
+  Background,
+  NodeTypes,
+  MiniMap,
+  Node,
+  BackgroundVariant,
+  Panel,
+  useViewport,
+  useReactFlow
+} from '@xyflow/react';
 
 import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
 import TextNode from '@/components/NodeTypes/TextNode.tsx';
@@ -14,7 +24,9 @@ import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import Settings from "@/components/Settings/Settings.tsx";
 import {PanControls} from "@/components/Navigation/PanControls.tsx";
 import {ZoomSlider} from "@/components/Navigation/ZoomSlider.tsx";
-import {ChevronLeft, Settings2} from "lucide-react";
+import {Axis3D, ChevronLeft, Folder, Hexagon, Settings2, Spline} from "lucide-react";
+import {navbarButtonStyle, tooltipStyle} from "@/lib/styles.ts";
+import {cn} from "@/lib/utils.ts";
 
 
 const nodeTypes: NodeTypes = {
@@ -46,11 +58,15 @@ const selector = (state: AppState) => ({
   exitCanvas: state.exitCanvas,
   setLocked: state.setLocked,
   setScrollToZoom: state.setScrollToZoom,
+  currentCanvasName: state.currentCanvasName,
+  nodeCount: state.nodes.length,
+  edgeCount: state.edges.length,
 });
 
 
 function Flow() {
-
+  const {x, y} = useViewport();
+  const {setViewport} = useReactFlow();
 
   const {
     nodes,
@@ -62,6 +78,9 @@ function Flow() {
     onConnect,
     setSettingsOpen,
     exitCanvas,
+    currentCanvasName,
+    nodeCount,
+    edgeCount,
   } = useStore(
     useShallow(selector)
   );
@@ -113,21 +132,62 @@ function Flow() {
 
           <Navbar
 
+            child2={
+              <div className="flex gap-2 mr-2 text-sm items-center">
 
-            endChild={
-              <div>
 
-                <button className="btn btn-ghost border-none shadow-none" onClick={exitCanvas}>
-                  <ChevronLeft className="size-4"/>
-                  <p className="font-normal pr-1">Exit</p>
+                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Project Title">
+                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                    <Folder size={14}/>
+                    <p>{currentCanvasName}</p>
+                  </button>
+                </div>
+
+                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Node Count">
+                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                    <Hexagon size={14}/>
+                    <p>{nodeCount}</p>
+                  </button>
+                </div>
+
+                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Edge Count">
+                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                    <Spline size={14}/>
+                    <p>{edgeCount}</p>
+                  </button>
+                </div>
+
+
+              </div>
+
+            }
+
+            child3={
+              <div className="flex-1 justify-start">
+                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Current Viewport Position click to reset to (0, 0)">
+                  <button className={cn(navbarButtonStyle, "flex-1 justify-start")}
+                          onClick={() => setViewport({x: 0, y: 0, zoom: 1})}>
+                    <Axis3D size={14}/>
+                    <p className="tabular-nums text-right">
+                      {Math.round(x)}, {Math.round(y)}
+                    </p>
+                  </button>
+                </div>
+              </div>
+            }
+
+            child4={
+              <div className="flex gap-1 mr-2">
+
+                <button className={cn(navbarButtonStyle)} onClick={exitCanvas}>
+                  <ChevronLeft size={14}/>
+                  <p>Exit</p>
                 </button>
 
-
-                <button className="btn btn-ghost border-none shadow-none" onClick={() => setSettingsOpen(true)}>
-                  <Settings2 className="size-4"/>
-                  <p className="font-normal pr-1">Settings</p>
+                <button className={cn(navbarButtonStyle)} onClick={() => setSettingsOpen(true)}>
+                  <Settings2 size={14}/>
+                  <p>Settings</p>
                 </button>
-
 
               </div>
             }
@@ -136,6 +196,7 @@ function Flow() {
 
           <Background
             id="2"
+            bgColor="#f5f5f5"
             size={4}
             gap={[60, 60]}
             offset={162}
@@ -148,7 +209,7 @@ function Flow() {
             offset={190}
             variant={BackgroundVariant.Lines}
             lineWidth={12}
-            color="white"
+            color="#f5f5f5"
           />
 
           <Background
@@ -158,29 +219,20 @@ function Flow() {
             offset={190}
             variant={BackgroundVariant.Lines}
             lineWidth={2}
-            color="#ebebeb"
+            color="#e5e5e5"
             style={{strokeDasharray: "20, 20", strokeDashoffset: "20"}}
           />
 
           <Panel position="bottom-left">
-            <div className="bg-white w-52.5 h-42.5 rounded-xl border-2 border-stone-200 shadow-lg">
+            <div className="bg-white w-52.5 h-42.5 rounded-lg ring-1 ring-neutral-200 shadow-md">
               <MiniMap
+                className="rounded-md w-50 h-32.5 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
                 zoomable
                 pannable
                 bgColor={"transparent"}
-                maskColor={"rgb(87, 83, 77, 0.2)"}
+                maskColor={"rgb(161, 161, 161, 0.2)"}
                 nodeColor={nodeColor}
                 nodeBorderRadius={50}
-                style={{
-                  width: 200,
-                  height: 130,
-                  borderRadius: 10,
-                  border: "1px solid lightgray",
-                  overflow: "hidden",
-                  position: "absolute",
-                  bottom: -10,
-                  left: -10,
-                }}
               />
               <div style={{position: "absolute", bottom: 140, left: 9}}>
                 <ZoomSlider></ZoomSlider>

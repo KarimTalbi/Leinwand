@@ -1,12 +1,10 @@
 import {cn} from "@/lib/utils.ts";
-import {ToolTip} from "@/components/Buttons/ToolTip.tsx";
-import CustomButton from "@/components/Buttons/CustomButton.tsx";
 import {LucideTextCursorInput, MergeIcon, MessagesSquare, Minimize2, Plus, X} from "lucide-react";
 import {NodeTypeNames} from "@/types.ts";
 import {useState} from "react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {tooltipStyle} from "@/lib/styles.ts";
+import {nodeColors, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
 
 
 const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
@@ -16,58 +14,80 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
 
   const onCreateNode = async (type: NodeTypeNames) => {
     createConnectedNode(type, sourceId);
+    setIsOpen(false);
   };
 
   return (
+    <div className="bg-neutral-300 rounded-b-full w-8 h-10  translate-x-50 ring-1 ring-neutral-300">
+      <div className="grid grid-cols-1 w-8 bg-white rounded-full ring-1 ring-neutral-200 shadow-none translate-y-2">
+        {/* Open Button Menu */}
+        <div className="relative flex items-center" style={{zIndex: -10}}>
 
-    <div style={{position: 'absolute'}} className="bg-[darkgray] translate-x-60 h-23px rounded-b-full"
-    >
-      <div className="relative flex items-center translate-y-1">
+          {/* Node Buttons */}
+          {isOpen ? (
+            <div>
+              <div className="absolute top-full pt-2 flex flex-col gap-2">
 
-        {isOpen && (
-          <div className="absolute top-full flex flex-col items-center gap-1">
+                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
+                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
+                    <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-sm")}>
+                      <MessagesSquare size={16} color={nodeColors.promptNode}/>
+                    </button>
+                  </div>
+                </div>
 
-            <div className={cn(tooltipStyle, "tooltip-left")} data-tip="Prompt Node">
-              <CustomButton onClick={() => onCreateNode("promptNode").then(() => setIsOpen(false))} buttonStyle="circle"
-                            color="neutral" size="xs" className="bg-[#ec4899]">
-                <MessagesSquare size={14}/>
-              </CustomButton>
+                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
+                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
+                    <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-sm")}>
+                      <LucideTextCursorInput size={16} color={nodeColors.textNode}/>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
+                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
+                    <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-sm")}>
+                      <Minimize2 className="rotate-45" size={16} color={nodeColors.summaryNode}/>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
+                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
+                    <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-sm")}>
+                      <MergeIcon className="rotate-90" size={16} color={nodeColors.mergeNode}/>
+                    </button>
+                  </div>
+                </div>
+
+
+              </div>
+
+              {/* Close Button */}
+              <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
+                <button onClick={() => setIsOpen(false)}
+                        className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}>
+                  <X size={14}/>
+                </button>
+              </div>
+
             </div>
 
-            <ToolTip position="left" label="Text Node">
-              <CustomButton onClick={() => onCreateNode("textNode").then(() => setIsOpen(false))} buttonStyle="circle"
-                            color="neutral" size="xs" className="bg-[#309898]">
-                <LucideTextCursorInput size={14}/>
-              </CustomButton>
-            </ToolTip>
+          ) : (
 
-            <ToolTip position="left" label="Summary Node">
-              <CustomButton onClick={() => onCreateNode("summaryNode").then(() => setIsOpen(false))}
-                            buttonStyle="circle"
-                            color="neutral" size="xs" className="bg-[#bf4546]">
-                <Minimize2 className="rotate-45" size={14}/>
-              </CustomButton>
-            </ToolTip>
+            // Open Button
 
-            <ToolTip position="left" label="Merge Node">
-              <CustomButton onClick={() => onCreateNode("mergeNode").then(() => setIsOpen(false))} buttonStyle="circle"
-                            color="neutral" size="xs" className="bg-[#f5c45e]">
-                <MergeIcon className="rotate-90" size={14}/>
-              </CustomButton>
-            </ToolTip>
+            <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Add Node">
+              <button onClick={() => setIsOpen(true)}
+                      className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}>
+                <Plus size={14}/>
+              </button>
+            </div>
+          )}
 
-          </div>
-        )}
-
-        <CustomButton onClick={() => setIsOpen(!isOpen)} buttonStyle="circle" color="neutral"
-                      size="xs" className="bg-[#a9a9a9] shadow-none">
-          {isOpen ? <X size={14}/> : <Plus size={14}/>}
-        </CustomButton>
-
+        </div>
       </div>
-
     </div>
-
   )
 };
 

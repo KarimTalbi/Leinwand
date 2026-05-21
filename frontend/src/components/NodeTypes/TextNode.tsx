@@ -79,7 +79,7 @@ const TextNode = (
 
   return (
     <NodeBackground>
-      <NodeHeader title="Text" id={id} color="#309898" loading={false}/>
+      <NodeHeader title="Note" id={id} color="#309898" loading={false}/>
 
 
       <NodeForeground>

@@ -7,16 +7,17 @@ export const nodeColors = {
 };
 
 export const innerButtonStyle = "btn btn-circle border bg-white border-stone-400 text-white hover:scale-105 transition-transform";
-export const outerButtonStyle = "btn btn-circle shadow-none border border-stone-300 text-stone-600 bg-white hover:scale-105 transition-transform";
+export const outerButtonStyle = "btn btn-circle border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const navbarButtonStyle = "btn border-none shadow-none bg-transparent text-xs text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform";
 
 export const tooltipStyle = [
   "tooltip",
-  "[--tt-bg:#d6d3d1]",
+  "[--tt-bg:#a1a1a1]",
   "[&::before]:bg-[--tt-bg]",
   "[&::after]:border-b-[--tt-bg]",
   "[&::before]:font-semibold",
   "[&::before]:text-xs",
-  "[&::before]:text-stone-600",
+  "[&::before]:text-white",
   "[&::before]:delay-500",
   "[&::after]:delay-500",
 ].join(" ");

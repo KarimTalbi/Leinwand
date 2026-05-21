@@ -75,12 +75,12 @@ export interface AppState {
   // Canvas management
   canvases: CanvasRead[];
   currentCanvasId: string | null;
+  currentCanvasName: string | null;
   updateCanvas: (id: string, name: string) => Promise<void>;
 
   // Flow state
   nodes: (NodeTypes)[];
   edges: Edge[];
-  syncing: boolean;
   locked: boolean;
   scrollToZoom: boolean;
 
@@ -93,7 +93,7 @@ export interface AppState {
 
   // Canvas management actions
   loadCanvases: () => Promise<void>;
-  selectCanvas: (canvasId: string) => Promise<void>;
+  selectCanvas: (canvasId: string, canvasName: string) => Promise<void>;
   createCanvas: (name: string) => Promise<void>;
   deleteCanvas: (canvasId: string) => Promise<void>;
   exitCanvas: () => void;
@@ -117,8 +117,6 @@ export interface AppState {
   onNodesChange: OnNodesChange<NodeTypes>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-
-  setSyncing: (status: boolean) => void;
   setLocked: (status: boolean) => void;
   setScrollToZoom: (status: boolean) => void;
 }

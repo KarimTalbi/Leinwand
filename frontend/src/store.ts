@@ -29,17 +29,16 @@ const useStore = create<AppState>()((set, get) => ({
     // Canvas management state
     canvases: [],
     currentCanvasId: null,
+    currentCanvasName: null,
 
     // Flow state
     nodes: [],
     edges: [],
-    syncing: false,
     locked: false,
     scrollToZoom: false,
 
     settingsOpen: false,
     // state
-
 
 
     // ── Auth actions ──────────────────────────────────────────────────────────
@@ -76,7 +75,7 @@ const useStore = create<AppState>()((set, get) => ({
     logout: () => {
       localStorage.removeItem('token');
 
-      set({token: null, user: null, canvases: [], currentCanvasId: null, nodes: [], edges: []});
+      set({token: null, user: null, canvases: [], currentCanvasId: null, currentCanvasName: null, nodes: [], edges: []});
     },
 
     register: async (username, password) => {
@@ -117,9 +116,9 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
-    selectCanvas: async (canvasId) => {
+    selectCanvas: async (canvasId, canvasName) => {
 
-      set({nodes: [], edges: [], currentCanvasId: canvasId});
+      set({nodes: [], edges: [], currentCanvasId: canvasId, currentCanvasName: canvasName});
 
       try {
 
@@ -196,15 +195,15 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
-  updateCanvas: async (canvasId: string, canvasName: string) => {
+    updateCanvas: async (canvasId: string, canvasName: string) => {
 
-    set({
-      canvases: get().canvases.map((c) =>
-        c.id === canvasId
-          ? {...c, name: canvasName}
-          : c
-      ),
-    });
+      set({
+        canvases: get().canvases.map((c) =>
+          c.id === canvasId
+            ? {...c, name: canvasName}
+            : c
+        ),
+      });
 
 
       try {
@@ -215,17 +214,15 @@ const useStore = create<AppState>()((set, get) => ({
       } catch (err) {
         console.log(err)
       }
-  },
+    },
 
-    exitCanvas: () => set({currentCanvasId: null, nodes: [], edges: []}),
+    exitCanvas: () => set({currentCanvasId: null, currentCanvasName: null, nodes: [], edges: []}),
 
 
     // ── Flow actions ──────────────────────────────────────────────────────────
 
 
     syncCanvas: async () => {
-
-      get().setSyncing(true)
 
       try {
 
@@ -243,8 +240,6 @@ const useStore = create<AppState>()((set, get) => ({
         console.log("error syncing", err)
 
       } finally {
-
-        get().setSyncing(false)
 
 
       }
@@ -335,7 +330,6 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     promptNodeAction: async (nodeId) => {
-      get().setSyncing(true)
       const node = get().nodes.find((node) => node.id === nodeId)
       try {
         const res = await fetch(`${BASE_URL}/llm/streaming_chat/`, {
@@ -351,7 +345,6 @@ const useStore = create<AppState>()((set, get) => ({
 
         if (!res.ok || !res.body) {
           console.error(`HTTP ${res.status} or no response body`);
-          get().setSyncing(false);
           return;
         }
 
@@ -414,7 +407,6 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     summaryNodeAction: async (nodeId) => {
-      get().setSyncing(true)
       const node = get().nodes.find((node) => node.id === nodeId)
       try {
         const res = await fetch(`${BASE_URL}/llm/summary/`, {
@@ -430,7 +422,6 @@ const useStore = create<AppState>()((set, get) => ({
 
         if (!res.ok || !res.body) {
           console.error(`HTTP ${res.status} or no response body`);
-          get().setSyncing(false);
           return;
         }
 
@@ -493,7 +484,6 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     mergeNodeAction: async (nodeId) => {
-      get().setSyncing(true)
       const node = get().nodes.find((node) => node.id === nodeId)
 
       set({
@@ -534,7 +524,6 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     mergeNodeResolveAction: async (nodeId) => {
-      get().setSyncing(true)
       const node = get().nodes.find((node) => node.id === nodeId)
 
       try {
@@ -643,7 +632,6 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
-    setSyncing: (status) => set({syncing: status}),
     setLocked: (status) => set({locked: status}),
     setSettingsOpen: (status) => set({settingsOpen: status}),
     setScrollToZoom: (status) => set({scrollToZoom: status}),
