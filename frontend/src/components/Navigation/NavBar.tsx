@@ -9,9 +9,8 @@ interface NavBarProps {
 
 export const Navbar = ({child1, child2, child3, child4}: NavBarProps) => {
   return (
-    <div
-      className="navbar bg-white h-12 shadow-sm z-100 grid grid-cols-5 items-center border-b border-neutral-200"
-    >
+    <div className="navbar bg-white h-12 shadow-sm z-100 grid grid-cols-5 items-center border-b border-neutral-200">
+
       <div>
         <h1 className="text-lg text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
       </div>
@@ -31,6 +30,7 @@ export const Navbar = ({child1, child2, child3, child4}: NavBarProps) => {
       <div className="flex justify-end">
         {child4 || <div/>}
       </div>
+
     </div>
   );
 };
