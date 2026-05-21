@@ -18,7 +18,7 @@ export interface CanvasReadData {
 }
 
 export interface PromptNodeData extends Record<string, unknown> {
-  prompt?: string;
+  prompt: string;
   response?: string;
   closed: boolean;
   config?: LLMConfig;

@@ -1,102 +1,24 @@
-import {memo, useState} from 'react';
+import {memo, useLayoutEffect, useState} from 'react';
 import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '@/store.ts';
-import {AppState, LLMConfig, PromptNodeType} from "@/types.ts";
-import {
-  ChatBubble,
-  NodeDisplayMarkdown,
-  NodeDisplayPulsingText,
-  NodeTextarea
-} from "@/components/NodeElements/TextElements.tsx";
+import {PromptNodeType} from "@/types.ts";
+import {NodeDisplayMarkdown,} from "@/components/NodeElements/TextElements.tsx";
 import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {DisplaySettingsScreen} from "@/components/NodeElements/llmSettings.tsx";
-import {NodeBackgroundStyle, nodeColors, NodeForegroundStyle} from "@/lib/styles.ts";
+import {
+  navbarButtonStyle,
+  NodeBackgroundStyle,
+  nodeColors,
+  NodeForegroundStyle,
+  pulsingText,
+  textareaStyle
+} from "@/lib/styles.ts";
 import {MessagesSquare} from "lucide-react";
-
-
-
-const defaultLLMConfig = {
-  model: 'gpt-5-mini',
-  temperature: 0,
-  max_tokens: 0,
-  timeout: 0,
-  max_retries: 0,
-}
-
-interface DisplayResponseScreenProps {
-  prompt: string;
-  response: string;
-  onReply: () => void;
-}
-
-const DisplayResponseScreen = ({prompt, response, onReply}: DisplayResponseScreenProps) => (
-  <div>
-    <div className="flex flex-col flex-1 justify-between gap-5 pb-2">
-      <ChatBubble position="right">{prompt}</ChatBubble>
-      <NodeDisplayMarkdown content={response} className="px-2"/>
-    </div>
-    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
-      <button
-        className="btn btn-ghost btn-sm" onClick={onReply}>
-        Reply
-      </button>
-    </div>
-  </div>
-)
-
-
-const DisplayThinkingScreen = ({prompt}: { prompt: string }) => (
-  <div className="flex flex-col flex-1 justify-between gap-5">
-    <ChatBubble position="right">{prompt}</ChatBubble>
-    <ChatBubble position="left"><NodeDisplayPulsingText children="Thinking..."/></ChatBubble>
-  </div>
-)
-
-interface DisplayInputScreenProps {
-  id: string;
-  prompt: string;
-  isSourcePrompt: boolean;
-  onSettings: () => void;
-  onSend: () => void;
-  sendDisabled: boolean;
-}
-
-const DisplayInputScreen = ({id, prompt, isSourcePrompt, onSettings, onSend, sendDisabled,}: DisplayInputScreenProps
-) => (
-  <div>
-    <div className="flex flex-col flex-1 justify-between gap-5">
-      {!isSourcePrompt && (
-        <ChatBubble position="left">How can i help you?</ChatBubble>
-      )}
-      <NodeTextarea id={id} initialValue={prompt} placeholder={'Enter your prompt...'}/>
-    </div>
-    <div className="flex items-center justify-end px-2 pt-2 shrink-0">
-      <div className="flex items-center gap-1.5">
-        <button
-          className="btn btn-ghost btn-sm" onClick={onSettings}>
-          Settings
-        </button>
-        <button
-          className="btn btn-ghost btn-sm" onClick={onSend} disabled={sendDisabled}>
-          Send
-        </button>
-      </div>
-    </div>
-  </div>
-)
-
-
-
-
-const selector = (state: AppState) => ({
-  promptNodeAction: state.promptNodeAction,
-  createConnectedNode: state.createConnectedNode,
-  updateNodeData: state.updateNodeData,
-});
+import {useTextarea} from "@/hooks/useTextarea.ts";
+import {cn} from "@/lib/utils.ts";
 
 
 const PromptNode = (
@@ -105,10 +27,26 @@ const PromptNode = (
     data,
   }: NodeProps<PromptNodeType>
 ) => {
-  if (!data.config) data.config = defaultLLMConfig as LLMConfig
 
-  const {promptNodeAction, createConnectedNode, updateNodeData} = useStore(useShallow(selector));
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.prompt, "prompt")
+  const {promptNodeAction, createConnectedNode} = useStore(useShallow((s) => ({
+    promptNodeAction: s.promptNodeAction,
+    createConnectedNode: s.createConnectedNode,
+  })));
+
+  const handleClick = () => {
+    setLoading(true);
+    void promptNodeAction(id);
+    setLoading(false);
+  }
+
+  useLayoutEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [localText]);
+
   const [loading, setLoading] = useState(false);
   const isClosed = data.closed;
   const nodes = useNodes();
@@ -119,28 +57,6 @@ const PromptNode = (
     ? nodes.find(n => n.id === connections[0].source)?.type === 'promptNode'
     : false;
 
-  const handleClick = () => {
-    setLoading(true);
-    void promptNodeAction(id);
-    setLoading(false);
-  }
-
-
-  const foreground = () => {
-    if (settingsOpen) {
-      return (
-            <DisplaySettingsScreen id={id} config={data.config || defaultLLMConfig}  updateNodeData={updateNodeData} closeSettings={() => setSettingsOpen(false)}/>
-          )
-    }
-    if (!isClosed) return (
-      <DisplayInputScreen id={id} prompt={data.prompt || ""} isSourcePrompt={isSourcePrompt} onSettings={() => setSettingsOpen(!settingsOpen)} onSend={handleClick} sendDisabled={loading || !data.prompt}/>
-    )
-    if (!!data.response) return (
-      <DisplayResponseScreen prompt={data.prompt || ""} response={data.response} onReply={() => createConnectedNode("promptNode", id)}/>
-    )
-
-    return <DisplayThinkingScreen prompt={data.prompt || ""}/>
-  }
 
   return (
     <div className={NodeBackgroundStyle}>
@@ -150,7 +66,88 @@ const PromptNode = (
       </NodeHeader>
 
       <div className={NodeForegroundStyle}>
-        {foreground()}
+        {!isClosed && (
+          <>
+            <div className="flex flex-col flex-1 justify-between gap-2">
+
+              {!isSourcePrompt && (
+                <div className="chat chat-start">
+                  <div className="chat-bubble text-sm">
+                    How can i help you?
+                  </div>
+                </div>
+              )}
+
+              <textarea
+                ref={textareaRef}
+                value={localText}
+                onChange={handleTextChange}
+                className={cn(textareaStyle, "min-h-0")}
+                placeholder="Enter your prompt..."
+              />
+
+            </div>
+
+            <div className="flex justify-end pt-1">
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
+                Settings
+              </button>
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")} onClick={handleClick} disabled={!data.prompt || loading}>
+                Send
+              </button>
+
+            </div>
+          </>
+        )}
+
+        {isClosed && !data.response && (
+          <div className="flex flex-col flex-1 justify-between gap-5">
+
+            <div className="chat chat-end">
+              <div className="chat-bubble text-sm">
+                {data.prompt}
+              </div>
+            </div>
+
+            <div className="chat chat-start">
+              <div className="chat-bubble text-sm!">
+                <span className={pulsingText}>
+                  Thinking...
+                </span>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {isClosed && !!data.response && (
+          <>
+            <div className="flex flex-col flex-1 justify-between gap-5 pb-2">
+
+              <div className="chat chat-end">
+                <div className="chat-bubble text-sm">
+                  {data.prompt}
+                </div>
+              </div>
+
+              <NodeDisplayMarkdown content={data.response} className="px-2"/>
+
+            </div>
+
+            <div className="flex justify-end pt-1">
+
+              <button
+                className={cn(navbarButtonStyle, "btn-xs")} onClick={() => createConnectedNode("promptNode", id)}>
+                Reply
+              </button>
+            </div>
+          </>
+        )}
+
       </div>
 
 
@@ -159,7 +156,7 @@ const PromptNode = (
         handleType="target"
         position="top"
         nodeId={id}
-        color="#ec4899"
+        color={nodeColors.promptNode}
       />
 
       {!!data.response && (
@@ -168,12 +165,9 @@ const PromptNode = (
           handleType="source"
           position="bottom"
           nodeId={id}
-          color="#ec4899"
-
+          color={nodeColors.promptNode}
         >
-
           <AddConnectedNode sourceId={id}/>
-
         </ConnectionHandles>
       )}
 

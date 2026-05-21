@@ -14,10 +14,6 @@ interface NodeTextareaProps {
   dataKey: string
 }
 
-interface NodeDisplayTextProps {
-  children?: string
-}
-
 export const NodeTextarea = ({id, initialValue, placeholder, dataKey}: NodeTextareaProps) => {
 
   const [localText, setLocalText] = useState(initialValue || "");
@@ -41,16 +37,6 @@ export const NodeTextarea = ({id, initialValue, placeholder, dataKey}: NodeTexta
     />
   );
 };
-
-
-export const NodeDisplayText = ({children}: NodeDisplayTextProps) => (
-
-  <div className="flex-1 text-sm p-1 min-h-0 overflow-y-auto nowheel select-text nodrag cursor-text">
-    {children?.split('\n').map((line, i) => (
-      <span key={i} className="block mb-2">{line || '\u00A0'}</span>
-    ))}
-  </div>
-)
 
 
 export const NodeDisplayMarkdown = ({content, className}: { content: string, className?: string }) => {
