@@ -20,10 +20,8 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
   return (
     <div className="bg-neutral-300 rounded-b-full w-8 h-10  translate-x-50 ring-1 ring-neutral-300">
       <div className="grid grid-cols-1 w-8 bg-white rounded-full ring-1 ring-neutral-200 shadow-none translate-y-2">
-        {/* Open Button Menu */}
         <div className="relative flex items-center" style={{zIndex: -10}}>
 
-          {/* Node Buttons */}
           {isOpen ? (
             <div>
               <div className="absolute top-full pt-2 flex flex-col gap-2">
@@ -60,13 +58,13 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
                   </div>
                 </div>
 
-
               </div>
 
-              {/* Close Button */}
               <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
-                <button onClick={() => setIsOpen(false)}
-                        className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}
+                >
                   <X size={14}/>
                 </button>
               </div>
@@ -75,14 +73,15 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
 
           ) : (
 
-            // Open Button
-
             <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Add Node">
-              <button onClick={() => setIsOpen(true)}
-                      className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}>
+              <button
+                onClick={() => setIsOpen(true)}
+                className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}
+              >
                 <Plus size={14}/>
               </button>
             </div>
+
           )}
 
         </div>
