@@ -19,7 +19,6 @@ import {AppState} from '@/types'
 
 import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
-import Settings from "@/components/Settings/Settings.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
 import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
 import {Axis3D, ChevronLeft, Folder, Hexagon, Settings2, Spline} from "lucide-react";
@@ -135,21 +134,21 @@ function Flow() {
 
 
                 <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Project Title">
-                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
                     <Folder size={14}/>
                     <p>{currentCanvasName}</p>
                   </button>
                 </div>
 
                 <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Node Count">
-                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
                     <Hexagon size={14}/>
                     <p>{nodeCount}</p>
                   </button>
                 </div>
 
                 <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Edge Count">
-                  <button className={cn(navbarButtonStyle)} disabled={true}>
+                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
                     <Spline size={14}/>
                     <p>{edgeCount}</p>
                   </button>
@@ -226,8 +225,6 @@ function Flow() {
           <Controls/>
 
         </ReactFlow>
-
-        <Settings></Settings>
 
       </div>
     </div>
