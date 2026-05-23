@@ -20,6 +20,12 @@ import {MessagesSquare} from "lucide-react";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
 
+type NodeState =
+  | 'loading'
+  | 'hasResponse'
+  | 'sourceIsPrompt'
+  | 'ready';
+
 
 const PromptNode = (
   {
@@ -34,10 +40,13 @@ const PromptNode = (
     createConnectedNode: s.createConnectedNode,
   })));
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setLoading(true);
-    void promptNodeAction(id);
-    setLoading(false);
+    try {
+      await promptNodeAction(id);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useLayoutEffect(() => {
@@ -57,54 +66,36 @@ const PromptNode = (
     ? nodes.find(n => n.id === connections[0].source)?.type === 'promptNode'
     : false;
 
+  const getNodeState = (): NodeState => {
+    if (!isClosed) {
+      if (loading) return 'loading';
+      if (isConnected && isSourcePrompt) return 'sourceIsPrompt';
+      return 'ready';
+    }
+    return 'hasResponse'
+  }
+
+  const nodeState = getNodeState();
+
 
   return (
     <div className={NodeBackgroundStyle}>
 
-      <NodeHeader id={id} title="Chat" color={nodeColors.promptNode} loading={loading}>
-        <MessagesSquare size={14} color={nodeColors.promptNode} strokeWidth={2.5}/>
+      <NodeHeader
+        id={id}
+        title="Chat"
+        color={nodeColors.promptNode}
+        loading={loading}
+        icon={
+          <MessagesSquare size={14} color={nodeColors.promptNode} strokeWidth={2.5}/>
+        }
+      >
+
       </NodeHeader>
 
       <div className={NodeForegroundStyle}>
-        {!isClosed && (
-          <>
-            <div className="flex flex-col flex-1 justify-between gap-2">
 
-              {!isSourcePrompt && (
-                <div className="chat chat-start">
-                  <div className="chat-bubble text-sm">
-                    How can i help you?
-                  </div>
-                </div>
-              )}
-
-              <textarea
-                ref={textareaRef}
-                value={localText}
-                onChange={handleTextChange}
-                className={cn(textareaStyle, "min-h-0")}
-                placeholder="Enter your prompt..."
-              />
-
-            </div>
-
-            <div className="flex justify-end pt-1">
-
-              <button
-                className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
-                Settings
-              </button>
-
-              <button
-                className={cn(navbarButtonStyle, "btn-xs")} onClick={handleClick} disabled={!data.prompt || loading}>
-                Send
-              </button>
-
-            </div>
-          </>
-        )}
-
-        {isClosed && !data.response && (
+        {nodeState === 'loading' && (
           <div className="flex flex-col flex-1 justify-between gap-5">
 
             <div className="chat chat-end">
@@ -124,7 +115,45 @@ const PromptNode = (
           </div>
         )}
 
-        {isClosed && !!data.response && (
+        <div className="flex flex-col flex-1 justify-between gap-2">
+
+          {nodeState === 'ready' && (
+            <div className="chat chat-start">
+              <div className="chat-bubble text-sm">
+                How can i help you?
+              </div>
+            </div>
+          )}
+
+          {(nodeState === 'sourceIsPrompt' || nodeState === 'ready') && (
+            <>
+              <textarea
+                ref={textareaRef}
+                value={localText}
+                onChange={handleTextChange}
+                className={cn(textareaStyle, "min-h-0")}
+                placeholder="Enter your prompt..."
+              />
+
+              <div className="flex justify-end pt-1">
+
+                <button
+                  className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
+                  Settings
+                </button>
+
+                <button
+                  className={cn(navbarButtonStyle, "btn-xs")} onClick={handleClick} disabled={!data.prompt || loading}>
+                  Send
+                </button>
+
+              </div>
+            </>
+          )}
+
+        </div>
+
+        {nodeState === 'hasResponse' && (
           <>
             <div className="flex flex-col flex-1 justify-between gap-5 pb-2">
 
@@ -159,7 +188,7 @@ const PromptNode = (
         color={nodeColors.promptNode}
       />
 
-      {!!data.response && (
+      {nodeState === 'hasResponse' && (
         <ConnectionHandles
           handleId="source-1"
           handleType="source"

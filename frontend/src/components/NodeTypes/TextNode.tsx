@@ -13,6 +13,10 @@ import {LucideTextCursorInput} from "lucide-react";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
 
+type NodeState =
+  | 'closed'
+  | 'open'
+  | 'empty';
 
 const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
 
@@ -30,15 +34,33 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
     }
   }, [localText, handleClick]);
 
+  const getNodeState = (): NodeState => {
+    if (data.text) {
+      if (data.closed) return 'closed';
+      return 'open';
+    }
+    return 'empty'
+  }
+
+  const nodeState = getNodeState();
+
   return (
     <div className={NodeBackgroundStyle}>
 
-      <NodeHeader title="Note" id={id} color={nodeColors.textNode}>
-        <LucideTextCursorInput size={14} color={nodeColors.textNode} strokeWidth={2.5}/>
-      </NodeHeader>
+      <NodeHeader
+        title="Note"
+        id={id}
+        color={nodeColors.textNode}
+        icon={<LucideTextCursorInput
+          size={14}
+          color={nodeColors.textNode}
+          strokeWidth={2.5}/>
+      }
+      />
+
 
       <div className={NodeForegroundStyle}>
-        {!data.closed && (
+        {(nodeState === 'empty' || nodeState === 'open') && (
           <>
             <textarea
               ref={textareaRef}
@@ -48,33 +70,26 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
               placeholder="Enter your note..."
             />
 
-            <div className="flex justify-end pt-1">
+            <div className="flex justify-center pt-1">
 
               <button
                 className={cn(navbarButtonStyle, "btn-xs")}
                 onClick={handleClick}
-                disabled={!data.text}
+                disabled={nodeState === 'empty'}
               >
                 Save
               </button>
 
             </div>
-
           </>
         )}
 
-        {data.closed && (
+        {nodeState === 'closed' && (
           <>
 
             <NodeDisplayMarkdown content={data.text || ""} className="px-2"/>
 
-            <div className="flex justify-end pt-1">
-
-              <button
-                className={cn(navbarButtonStyle, "btn-xs")}
-              >
-                Settings
-              </button>
+            <div className="flex justify-center pt-1">
 
               <button
                 className={cn(navbarButtonStyle, "btn-xs")}
@@ -98,7 +113,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
         color={nodeColors.textNode}
       />
 
-      {!!data.text && (
+      {nodeState !== 'empty' && (
         <ConnectionHandles
           handleId="source-1"
           handleType="source"

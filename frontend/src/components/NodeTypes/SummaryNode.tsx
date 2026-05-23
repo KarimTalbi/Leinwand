@@ -1,4 +1,4 @@
-import {memo, useState} from 'react';
+import React, {memo, useState} from 'react';
 import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
 
 import useStore from '../../store.ts';
@@ -9,9 +9,15 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {navbarButtonStyle, NodeBackgroundStyle, nodeColors, NodeForegroundStyle, pulsingText} from "@/lib/styles.ts";
-import {Minimize2} from "lucide-react";
+import {Info, Minimize2, TriangleAlert} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
+type NodeState =
+  | 'loading'
+  | 'hasResponse'
+  | 'sourceIsSummary'
+  | 'ready'
+  | 'needs_connection';
 
 const SummaryNode = (
   {
@@ -34,65 +40,90 @@ const SummaryNode = (
     ? nodes.find(n => n.id === connections[0].source)?.type === 'summaryNode'
     : false;
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setLoading(true);
-    void summaryNodeAction(id);
-    setLoading(false);
+    try {
+      await summaryNodeAction(id);
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const getNodeState = (): NodeState => {
+    if (!isClosed) {
+      if (loading) return 'loading';
+      if (isSourceSummary) return 'sourceIsSummary';
+      if (!isConnected) return 'needs_connection';
+      return 'ready';
+    }
+    return 'hasResponse'
+  }
+
+  const nodeState = getNodeState();
+
+  const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
+    needs_connection: (
+      <div className="badge badge-outline badge-secondary badge-sm px-2 gap-1">
+        <Info size={12}/> Connection required
+      </div>
+    ),
+
+    sourceIsSummary: (
+      <div className="badge badge-outline badge-error badge-sm px-1 gap-1">
+        <TriangleAlert size={12}/> Source can't be a summary
+      </div>
+    ),
+  };
 
   return (
     <div className={NodeBackgroundStyle}>
-      <NodeHeader title="Summary" color={nodeColors.summaryNode} id={id} loading={loading}>
-        <Minimize2 className="rotate-135" size={14} color={nodeColors.summaryNode} strokeWidth={2.5}/>
+      <NodeHeader
+        title="Summary"
+        color={nodeColors.summaryNode}
+        id={id}
+        loading={loading}
+        icon={<Minimize2 className="rotate-135" size={14} color={nodeColors.summaryNode} strokeWidth={2.5}/>}
+      >
+
+        <div className="flex-1 items-center px-2 justify-start">
+          {BADGES[nodeState]}
+        </div>
+
       </NodeHeader>
 
       <div className={NodeForegroundStyle}>
-        {!isClosed && (
 
-          <>
-            <div className="chat chat-start">
-              <div className="chat-bubble text-sm">
-                Connect a Node and press "Summarize" to get a summary
-              </div>
-            </div>
+        {(nodeState === 'ready' || nodeState === 'needs_connection' || nodeState === 'sourceIsSummary') && (
+          <div className="flex justify-around pt-1">
 
-            <div className="flex justify-end pt-1">
+            <button
+              className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
+              Settings
+            </button>
 
-                <button
-                  className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
-                  Settings
-                </button>
+            <button
+              className={cn(navbarButtonStyle, "btn-xs")}
+              onClick={handleClick}
+              disabled={nodeState === 'sourceIsSummary' || nodeState === 'needs_connection'}
+            >
+              Summarize
+            </button>
 
-                <button
-                  className={cn(navbarButtonStyle, "btn-xs")}
-                  onClick={handleClick}
-                  disabled={!isConnected || isSourceSummary}
-                >
-                  Summarize
-                </button>
-
-            </div>
-          </>
-
+          </div>
         )}
 
-        {!data.response && isClosed && (
+        {nodeState === "loading" && (
 
-          <div className="chat chat-start">
-            <div className="chat-bubble text-sm!">
-                <span className={pulsingText}>
-                  Generating Summary...
-                </span>
-            </div>
+          <div className={cn(pulsingText, "flex flex-col w-full justify-center items-center h-15")}>
+            <span>generating summary...</span>
           </div>
 
         )}
 
-        {data.response && isClosed && (
-
+        {nodeState === 'hasResponse' && (
           <NodeDisplayMarkdown content={data.response} className="px-2 pb-2"/>
-
         )}
+
       </div>
 
       <ConnectionHandles
@@ -103,7 +134,7 @@ const SummaryNode = (
         color="#bf4546"
       />
 
-      {!!data.response && (
+      {nodeState === 'hasResponse' && (
         <ConnectionHandles
           handleId="source-1"
           handleType="source"
