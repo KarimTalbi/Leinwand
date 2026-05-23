@@ -52,18 +52,6 @@ export const NodeDisplayMarkdown = ({content, className}: { content: string, cla
   )
 }
 
-
-export const NodeDisplayPulsingText = (
-  {children}: { children?: React.ReactNode }
-) => (
-
-  <div className="flex-1 p-5 flex items-center justify-center">
-    <span className="text-sm! text-muted-foreground animate-pulse">
-      {children}
-    </span>
-  </div>
-)
-
 type ChatBubblePosition = "left" | "right"
 
 const ChatBubblePositions: Record<ChatBubblePosition, string> = {
