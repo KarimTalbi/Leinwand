@@ -209,7 +209,7 @@ function Flow() {
             lineWidth={12}
             color="#f5f5f5"
           />
-
+          {/*#f5f5f5*/}
           <Background
             id="1"
             size={4}

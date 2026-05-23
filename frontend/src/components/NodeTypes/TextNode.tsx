@@ -16,7 +16,7 @@ import {cn} from "@/lib/utils.ts";
 
 const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
 
-  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.text, "text")
+  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.text || "", "text")
   const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})));
 
   const handleClick = () => {

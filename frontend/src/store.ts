@@ -5,19 +5,12 @@ import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} fr
 import api, {BASE_URL} from '@/api';
 import {AppState, NodeTypeNames, CanvasRead} from '@/types';
 
-const defaultLLMConfig = {
-  model: 'gpt-5-mini',
-  temperature: 0,
-  max_tokens: 0,
-  timeout: 0,
-  max_retries: 0,
-}
 
 const nodeInitData = {
-  promptNode: {prompt: '', response: '', closed: false, config: defaultLLMConfig},
+  promptNode: {prompt: '', response: '', closed: false},
   textNode: {text: '', closed: false},
-  mergeNode: {context: '', closed: false, problems: '', solution: '', config: defaultLLMConfig},
-  summaryNode: {response: '', closed: false, config: defaultLLMConfig},
+  mergeNode: {context: '', closed: false, problems: '', solution: ''},
+  summaryNode: {response: '', closed: false},
 };
 
 const useStore = create<AppState>()((set, get) => ({
@@ -254,7 +247,7 @@ const useStore = create<AppState>()((set, get) => ({
         id: newNodeId,
         type: type,
         position: pos,
-        data: nodeInitData[type],
+        data: nodeInitData[type as NodeTypeNames],
       }
 
       set({nodes: [...get().nodes, newNode]})
@@ -483,16 +476,8 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
-    mergeNodeAction: async (nodeId) => {
+    mergeNodeAction: async (nodeId, incomer1, incomer2) => {
       const node = get().nodes.find((node) => node.id === nodeId)
-
-      set({
-        nodes: get().nodes.map((n) =>
-          n.id === nodeId
-            ? {...n, data: {...n.data, closed: true}}
-            : n
-        ),
-      });
 
       try {
         const res = await api.post(`/llm/merge/`,
@@ -506,7 +491,10 @@ const useStore = create<AppState>()((set, get) => ({
                   ...n.data,
                   context: res.data.context,
                   problems: res.data.problems,
-                  has_issues: res.data.has_issues
+                  has_issues: res.data.has_issues,
+                  incomer1: incomer1,
+                  incomer2: incomer2,
+                  closed: !res.data.has_issues
                 }
               }
               : n
@@ -537,7 +525,8 @@ const useStore = create<AppState>()((set, get) => ({
                 ...n, data: {
                   ...n.data,
                   context: res.data.context,
-                  has_issues: false
+                  has_issues: false,
+                  closed: true
                 }
               }
               : n

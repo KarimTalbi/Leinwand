@@ -18,14 +18,13 @@ export interface CanvasReadData {
 }
 
 export interface PromptNodeData extends Record<string, unknown> {
-  prompt: string;
+  prompt?: string;
   response?: string;
   closed: boolean;
-  config?: LLMConfig;
 }
 
 export interface TextNodeData extends Record<string, unknown> {
-  text: string;
+  text?: string;
   closed: boolean;
 }
 
@@ -34,14 +33,14 @@ export interface MergeNodeData extends Record<string, unknown> {
   problems?: string;
   solution?: string;
   has_issues?: boolean;
+  incomer1?: string;
+  incomer2?: string;
   closed: boolean;
-  config?: LLMConfig;
 }
 
 export interface SummaryNodeData extends Record<string, unknown> {
-  response: string,
+  response?: string,
   closed: boolean
-  config?: LLMConfig;
 }
 
 export type PartialNodeData = Partial<PromptNodeData | TextNodeData | MergeNodeData | SummaryNodeData>;
@@ -107,7 +106,7 @@ export interface AppState {
   createConnectedNode: (type: NodeTypeNames, sourceId: string) => void;
   promptNodeAction: (id: string) => Promise<void>;
   summaryNodeAction: (id: string) => Promise<void>;
-  mergeNodeAction: (id: string) => Promise<void>;
+  mergeNodeAction: (id: string, incomer1: string, incomer2: string) => Promise<void>;
   mergeNodeResolveAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => void;
   deleteNode: (id: string) => void;

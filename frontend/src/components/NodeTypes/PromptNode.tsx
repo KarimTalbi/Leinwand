@@ -28,7 +28,7 @@ const PromptNode = (
   }: NodeProps<PromptNodeType>
 ) => {
 
-  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.prompt, "prompt")
+  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.prompt || "", "prompt")
   const {promptNodeAction, createConnectedNode} = useStore(useShallow((s) => ({
     promptNodeAction: s.promptNodeAction,
     createConnectedNode: s.createConnectedNode,

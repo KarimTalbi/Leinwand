@@ -1,4 +1,5 @@
 import React from "react";
+import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
 
 interface PromptNodeProps {
   stream_id: number;
@@ -31,7 +32,7 @@ interface ProblemProps {
 }
 
 const Section = ({children}: { children: React.ReactNode }) => (
-  <div className="bg-gray-200 rounded-md p-2 my-2">
+  <div className="bg-neutral-100 rounded-sm p-2 my-1">
     {children}
   </div>
 )
@@ -54,30 +55,29 @@ const SectionSeparator = () => (
 )
 
 const SectionText = ({text}: { text: string }) => (
-  <p className="text-xs">{text}</p>
+  <NodeDisplayMarkdown content={text}></NodeDisplayMarkdown>
 )
 
 const SectionLabel = ({label}: { label: string }) => (
   <p className="text-xs font-bold">{label}</p>
 )
 
-const MergeContent = ({sections}: { sections: string[] }) => {
+const MergeContent = ({sections}: { sections: Record<string, string>[] }) => {
 
   if (!sections || sections.length === 0) return null;
 
   const textSection = ({stream_id, depth, text}: TextNodeProps) => (
     <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="TEXT NODE"/>
+      <SectionHeader stream_id={stream_id} depth={depth} type="NOTE"/>
       <SectionSeparator/>
-      <SectionLabel label="Text:"/>
-      <SectionText text={text}/>
+      <NodeDisplayMarkdown content={text}></NodeDisplayMarkdown>
     </Section>
   );
 
 
   const promptSection = ({stream_id, depth, prompt, response}: PromptNodeProps) => (
     <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="PROMPT NODE"/>
+      <SectionHeader stream_id={stream_id} depth={depth} type="CHAT"/>
       <SectionSeparator/>
       <SectionLabel label="User:"/>
       <SectionText text={prompt}/>
@@ -90,13 +90,13 @@ const MergeContent = ({sections}: { sections: string[] }) => {
 
   const mergeSection = ({stream_id, depth}: MergeNodeProps) => (
     <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="MERGE NODE"/>
+      <SectionHeader stream_id={stream_id} depth={depth} type="MERGE"/>
     </Section>
   );
 
   const summarySection = ({stream_id, depth, response} : SummaryNodeProps) => (
     <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="SUMMARY NODE"/>
+      <SectionHeader stream_id={stream_id} depth={depth} type="SUMMARY"/>
       <SectionSeparator/>
       <SectionLabel label="Summary:"/>
       <SectionText text={response}/>
@@ -107,9 +107,9 @@ const MergeContent = ({sections}: { sections: string[] }) => {
     <Section>
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs">PROBLEM</p>
+          <p className="text-xs">Issue</p>
         </div>
-        <div className="text-xs">PROBLEM RESOLUTION</div>
+        <div className="text-xs">ISSUE</div>
       </div>
       <SectionSeparator/>
       <SectionLabel label="Problems:"/>

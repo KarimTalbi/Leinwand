@@ -24,7 +24,7 @@ export const tooltipStyle = [
 
 
 
-export const NodeBackgroundStyle = "flex flex-col bg-white border-neutral-300 border-none shadow-md ring-1 ring-neutral-200 w-130 rounded-xl px-1"
+export const NodeBackgroundStyle = "flex flex-col bg-white shadow-md ring-1 ring-neutral-200 w-130 rounded-xl px-1"
 export const NodeForegroundStyle = "flex flex-col flex-1 min-h-0 p-2 rounded-lg"
 export const textareaStyle = "textarea textarea-md nodrag w-auto resize-none bg-neutral-100 rounded-md outline-none"
 
