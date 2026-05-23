@@ -1,4 +1,4 @@
-import {useState, FormEvent} from 'react';
+import {useState} from 'react';
 import {useShallow} from 'zustand/react/shallow';
 import useStore from '@/store';
 
@@ -17,8 +17,8 @@ export default function LoginPage() {
         clearAuthError: s.clearAuthError,
     })));
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (event: {preventDefault(): void}) => {
+        event.preventDefault();
         setLoading(true);
         if (tab === 'login') {
             await login(username, password);
