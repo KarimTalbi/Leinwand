@@ -224,8 +224,6 @@ const useStore = create<AppState>()((set, get) => ({
 
         const flowData = {nodes: get().nodes, edges: get().edges}
 
-        console.log(flowData)
-
         await api.post(`/node/sync/${canvasId}/`, flowData);
 
       } catch (err) {
@@ -476,12 +474,12 @@ const useStore = create<AppState>()((set, get) => ({
       }
     },
 
-    mergeNodeAction: async (nodeId, incomer1, incomer2) => {
+    mergeNodeAction: async (nodeId, incomer1, incomer2, checkStreams) => {
       const node = get().nodes.find((node) => node.id === nodeId)
 
       try {
         const res = await api.post(`/llm/merge/`,
-          {node: node, check_consistencies: true},
+          {node: node, check_consistencies: checkStreams},
         );
         set({
           nodes: get().nodes.map((n) =>
@@ -500,6 +498,13 @@ const useStore = create<AppState>()((set, get) => ({
               : n
           ),
         });
+
+        if (!res.data.has_issues) {
+          set({
+            edges: get().edges.filter((e) => e.target !== nodeId),
+          })
+        }
+
       } catch (err) {
 
         console.error('Error Merging', err)
@@ -532,6 +537,11 @@ const useStore = create<AppState>()((set, get) => ({
               : n
           ),
         });
+
+        set({
+          edges: get().edges.filter((e) => e.target !== nodeId),
+        })
+
       } catch (err) {
 
         console.error('Error Merging', err)

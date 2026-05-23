@@ -1,6 +1,17 @@
 import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@xyflow/react";
 
-
+export interface Section {
+  id: string;
+  type: string;
+  stream_id: number;
+  depth: number;
+  prompt?: string;
+  response?: string;
+  text?: string;
+  problems?: string;
+  user?: string;
+  solution?: string;
+}
 
 export interface LLMConfig {
   model: string;
@@ -29,7 +40,7 @@ export interface TextNodeData extends Record<string, unknown> {
 }
 
 export interface MergeNodeData extends Record<string, unknown> {
-  context?: Record<string, string>[];
+  context?: Section[];
   problems?: string;
   solution?: string;
   has_issues?: boolean;
@@ -106,7 +117,7 @@ export interface AppState {
   createConnectedNode: (type: NodeTypeNames, sourceId: string) => void;
   promptNodeAction: (id: string) => Promise<void>;
   summaryNodeAction: (id: string) => Promise<void>;
-  mergeNodeAction: (id: string, incomer1: string, incomer2: string) => Promise<void>;
+  mergeNodeAction: (id: string, incomer1: string, incomer2: string, checkStreams: boolean) => Promise<void>;
   mergeNodeResolveAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => void;
   deleteNode: (id: string) => void;

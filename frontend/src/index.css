@@ -163,3 +163,24 @@ body {
     @apply bg-background text-foreground;}
   html {
     @apply font-sans;}}
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /* Add this */
+  input[type="checkbox"],
+  input[type="radio"] {
+    border-color: revert;
+    outline: revert;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

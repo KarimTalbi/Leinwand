@@ -1,172 +1,161 @@
-import React from "react";
+import React, {useState} from "react";
 import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
+import {
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  MessagesSquare,
+  LucideTextCursorInput,
+  MergeIcon,
+  Minimize2, CircleAlert
+} from "lucide-react";
+import {nodeColors} from "@/lib/styles.ts";
+import {Section} from "@/types.ts";
 
-interface PromptNodeProps {
-  stream_id: number;
-  depth: number;
-  prompt: string;
-  response: string;
+
+
+interface MergeContentProps {
+  sections: Section[];
+  onGoToNode?: (nodeId: string) => void;
 }
 
-interface TextNodeProps {
-  stream_id: number;
-  depth: number;
-  text: string;
-}
+const TYPE_META: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+  promptNode:        { label: "CHAT",    color: nodeColors.promptNode,  icon: <MessagesSquare size={10}/>},
+  textNode:          { label: "NOTE",    color: nodeColors.textNode,    icon: <LucideTextCursorInput size={10}/>},
+  mergeNode:         { label: "MERGE",   color: nodeColors.mergeNode,   icon: <MergeIcon className="rotate-90" size={10}/>},
+  summaryNode:       { label: "SUMMARY", color: nodeColors.summaryNode, icon: <Minimize2 className="rotate-135" size={10}/>},
+  problemResolution: { label: "ISSUE",   color: "#ef4444",              icon: <CircleAlert size={10}/>},
+};
 
-interface MergeNodeProps {
-  stream_id: number;
-  depth: number;
-}
-
-interface SummaryNodeProps {
-  stream_id: number;
-  depth: number;
-  response: string;
-}
-
-interface ProblemProps {
-  problems: string;
-  user: string;
-  solution: string;
-}
-
-const Section = ({children}: { children: React.ReactNode }) => (
-  <div className="bg-neutral-100 rounded-sm p-2 my-1">
-    {children}
-  </div>
-)
-
-const SectionHeader = ({stream_id, depth, type}: { stream_id: number, depth: number, type: string }) => (
-  <div className="flex items-center justify-between">
-
-    <div className="flex items-center justify-between gap-1">
-      <p className="text-xs">BRANCH / DEPTH:</p>
-      <p className="text-xs font-bold">{stream_id} / {depth}</p>
-    </div>
-
-    <p className="text-xs">{type}</p>
-
-  </div>
-)
-
-const SectionSeparator = () => (
-  <div className="my-2 h-px bg-black/10"/>
-)
-
-const SectionText = ({text}: { text: string }) => (
-  <NodeDisplayMarkdown content={text}></NodeDisplayMarkdown>
-)
-
-const SectionLabel = ({label}: { label: string }) => (
-  <p className="text-xs font-bold">{label}</p>
-)
-
-const MergeContent = ({sections}: { sections: Record<string, string>[] }) => {
-
-  if (!sections || sections.length === 0) return null;
-
-  const textSection = ({stream_id, depth, text}: TextNodeProps) => (
-    <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="NOTE"/>
-      <SectionSeparator/>
-      <NodeDisplayMarkdown content={text}></NodeDisplayMarkdown>
-    </Section>
-  );
-
-
-  const promptSection = ({stream_id, depth, prompt, response}: PromptNodeProps) => (
-    <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="CHAT"/>
-      <SectionSeparator/>
-      <SectionLabel label="User:"/>
-      <SectionText text={prompt}/>
-      <SectionSeparator/>
-      <SectionLabel label="AI:"/>
-      <SectionText text={response}/>
-    </Section>
-  );
-
-
-  const mergeSection = ({stream_id, depth}: MergeNodeProps) => (
-    <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="MERGE"/>
-    </Section>
-  );
-
-  const summarySection = ({stream_id, depth, response} : SummaryNodeProps) => (
-    <Section>
-      <SectionHeader stream_id={stream_id} depth={depth} type="SUMMARY"/>
-      <SectionSeparator/>
-      <SectionLabel label="Summary:"/>
-      <SectionText text={response}/>
-    </Section>
-  )
-
-  const problemSection = ({problems, user, solution}: ProblemProps) => (
-    <Section>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-xs">Issue</p>
+const SectionContent = ({section}: { section: Section }) => {
+  switch (section.type) {
+    case "promptNode":
+      return (
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-bold opacity-60">User</p>
+          <NodeDisplayMarkdown content={section.prompt ?? ""}/>
+          <p className="text-xs font-bold opacity-60 mt-1">AI</p>
+          <NodeDisplayMarkdown content={section.response ?? ""}/>
         </div>
-        <div className="text-xs">ISSUE</div>
-      </div>
-      <SectionSeparator/>
-      <SectionLabel label="Problems:"/>
-      <SectionText text={problems}/>
-      <SectionSeparator/>
-      <SectionLabel label="User:"/>
-      <SectionText text={user}/>
-      <SectionSeparator/>
-      <SectionLabel label="Solution:"/>
-      <SectionText text={solution}/>
-    </Section>
-  )
+      );
+    case "textNode":
+      return <NodeDisplayMarkdown content={section.text ?? ""}/>;
+    case "summaryNode":
+      return <NodeDisplayMarkdown content={section.response ?? ""}/>;
+    case "problemResolution":
+      return (
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-bold opacity-60">Problem</p>
+          <NodeDisplayMarkdown content={section.problems ?? ""}/>
+          <p className="text-xs font-bold opacity-60 mt-1">Solution</p>
+          <NodeDisplayMarkdown content={section.solution ?? ""}/>
+        </div>
+      );
+    case "mergeNode":
+      return <p className="text-xs opacity-50 italic">Merge node — no content.</p>;
+    default:
+      return null;
+  }
+};
 
-  const buildSectionByType = (section: any) => {
-
-    switch (section.type) {
-      case 'promptNode':
-        return promptSection({
-          stream_id: section.stream_id,
-          depth: section.depth,
-          prompt: section.prompt,
-          response: section.response
-        });
-
-      case 'textNode':
-        return textSection({stream_id: section.stream_id, depth: section.depth, text: section.text});
-
-      case 'mergeNode':
-        return mergeSection({stream_id: section.stream_id, depth: section.depth});
-
-      case 'problemResolution':
-        return problemSection({problems: section.problems, user: section.user, solution: section.solution});
-
-      case 'summaryNode':
-        return summarySection({stream_id: section.stream_id, depth: section.depth, response: section.response});
-
-      default:
-        console.error('Unknown section type:', section);
-        break;
-    }
-  };
+const SectionCard = ({
+                       section,
+                       onGoToNode,
+                     }: {
+  section: Section;
+  onGoToNode?: (id: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const meta = TYPE_META[section.type] ?? {label: section.type, badge: "badge-ghost"};
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <div className="flex-1 w-full text-black  rounded-xl min-h-16 overflow-y-auto nowheel">
 
-        {sections.map((section: any) => (
+    <div className="rounded-md border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
+      <div className="flex items-center justify-between px-2 py-1 gap-1">
 
-          <div key={section.id ?? section.type}>
-            {buildSectionByType(section)}
-          </div>
+        <button
+          className="flex items-center gap-1 flex-1 text-left nodrag"
+          onClick={() => setOpen((v) => !v)}
+        >
+          <span
+            className="badge badge-xs badge-outline"
+            style={{color: meta.color}}
+          >
+            {meta.icon}
+            {meta.label}
+          </span>
 
-        ))}
+          {open ? <ChevronUp size={10} className="ml-auto opacity-40"/> : <ChevronDown size={10} className="ml-auto opacity-40"/>}
+        </button>
+
+        <button
+          className="btn btn-ghost btn-xs px-1 nodrag"
+          onClick={() => onGoToNode?.(section.id)}
+          title="Go to node"
+        >
+          <ExternalLink size={10}/>
+        </button>
 
       </div>
+
+      {open && (
+        <div className="px-2 pb-2 pt-1 border-t border-base-300 max-h-40 overflow-y-auto nowheel">
+          <SectionContent section={section}/>
+        </div>
+      )}
     </div>
-  )
+  );
+};
+
+const BranchColumn = ({
+                        label,
+                        sections,
+                        onGoToNode,
+                      }: {
+  label: string;
+  sections: Section[];
+  onGoToNode?: (id: string) => void;
+}) => (
+  <div className="flex flex-col flex-1 min-w-0">
+    <p className="text-xs font-bold opacity-40 mb-1 px-0.5">{label}</p>
+    <div className="flex flex-col overflow-y-auto nowheel max-h-64">
+      {sections.length === 0
+        ? <p className="text-xs opacity-30 italic px-0.5">No nodes</p>
+        : sections.map((s) => (
+          <SectionCard key={s.id} section={s} onGoToNode={onGoToNode}/>
+        ))
+      }
+    </div>
+  </div>
+);
+
+const MergeContent = ({sections, onGoToNode}: MergeContentProps) => {
+  if (!sections || sections.length === 0) return null;
+
+  const problem = sections.find((s) => s.id === "problem");
+  const streamSections = sections.filter((s) => s.id !== "problem");
+
+  const streamIds = [...new Set(streamSections.map((s) => s.stream_id))].sort();
+  const branch1 = streamSections.filter((s) => s.stream_id === streamIds[0]);
+  const branch2 = streamSections.filter((s) => s.stream_id === streamIds[1]);
+
+  return (
+    <div className="flex flex-col px-2 py-2 gap-2">
+      <div className="flex gap-2">
+        <BranchColumn label="Branch 1" sections={branch1} onGoToNode={onGoToNode}/>
+        <div className="w-px bg-base-300 shrink-0"/>
+        <BranchColumn label="Branch 2" sections={branch2} onGoToNode={onGoToNode}/>
+      </div>
+
+      {problem && (
+        <div className="flex flex-col">
+          <div className="w-full h-px bg-base-300 mb-2"/>
+          <p className="text-xs font-bold opacity-40 mb-1 px-0.5 text-center">Contradiction</p>
+          <SectionCard section={problem} onGoToNode={undefined}/>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default MergeContent;

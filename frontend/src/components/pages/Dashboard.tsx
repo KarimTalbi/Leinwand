@@ -203,7 +203,7 @@ export default function Dashboard() {
                         <ReactFlowProvider>
                           <ReactFlow
                             nodes={canvas.data.nodes}
-                            edges={canvas.data.edges}
+                            edges={[]}
                             nodeTypes={nodeTypes}
                             fitView
                             minZoom={0.1}

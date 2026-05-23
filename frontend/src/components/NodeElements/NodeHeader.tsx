@@ -9,18 +9,21 @@ interface HeaderProps {
   color: string,
   id: string,
   loading?: boolean
-  children?: React.ReactNode
+  icon?: React.ReactNode
+  children? : React.ReactNode
 }
 
-export const NodeHeader = ({title, color, id, loading = false, children}: HeaderProps) => {
+export const NodeHeader = ({title, color, id, loading = false, icon, children}: HeaderProps) => {
   const {deleteNode, moveNode} = useStore();
 
   return (
     <div className="flex items-center justify-between shrink-0 pl-2">
       <div className="flex items-center gap-1.5">
-        {children}
+        {icon}
         <h1 className="flex items-center gap-1 text-sm font-bold">{title}</h1>
       </div>
+
+        {children}
 
       <div className="flex items-center gap-1">
 
