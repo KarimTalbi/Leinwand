@@ -18,8 +18,8 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
   };
 
   return (
-    <div className="bg-neutral-300 rounded-b-full w-8 h-10  translate-x-50 ring-1 ring-neutral-300">
-      <div className="grid grid-cols-1 w-8 bg-white rounded-full ring-1 ring-neutral-200 shadow-none translate-y-2">
+    <div className="translate-x-65">
+      <div className="grid grid-cols-1 w-6 bg-white rounded-full ring-1 ring-neutral-200 shadow-none translate-y-0">
         <div className="relative flex items-center" style={{zIndex: -10}}>
 
           {isOpen ? (
@@ -28,32 +28,32 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
 
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
-                    <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-sm")}>
-                      <MessagesSquare size={16} color={nodeColors.promptNode}/>
+                    <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-xs")}>
+                      <MessagesSquare size={14} color={nodeColors.promptNode}/>
                     </button>
                   </div>
                 </div>
 
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
-                    <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-sm")}>
-                      <LucideTextCursorInput size={16} color={nodeColors.textNode}/>
+                    <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-xs")}>
+                      <LucideTextCursorInput size={14} color={nodeColors.textNode}/>
                     </button>
                   </div>
                 </div>
 
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
-                    <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-sm")}>
-                      <Minimize2 className="rotate-45" size={16} color={nodeColors.summaryNode}/>
+                    <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-xs")}>
+                      <Minimize2 className="rotate-45" size={14} color={nodeColors.summaryNode}/>
                     </button>
                   </div>
                 </div>
 
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
-                    <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-sm")}>
-                      <MergeIcon className="rotate-90" size={16} color={nodeColors.mergeNode}/>
+                    <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-xs")}>
+                      <MergeIcon className="rotate-90" size={14} color={nodeColors.mergeNode}/>
                     </button>
                   </div>
                 </div>
@@ -63,7 +63,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
               <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}
+                  className={cn(outerButtonStyle, "btn-xs bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100 rounded-t-none")}
                 >
                   <X size={14}/>
                 </button>
@@ -76,7 +76,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
             <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Add Node">
               <button
                 onClick={() => setIsOpen(true)}
-                className={cn(outerButtonStyle, "btn-sm bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100")}
+                className={cn(outerButtonStyle, "btn-xs bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100 rounded-t-none")}
               >
                 <Plus size={14}/>
               </button>
