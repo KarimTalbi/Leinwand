@@ -122,6 +122,7 @@ async def resolve_merge(
     context = ancestors.copy()
     context.append(
         {
+            "id": "problem",
             "type": "problemResolution",
             "problems": data.node.data.get("problems"),
             "user": data.node.data.get("solution"),

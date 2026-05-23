@@ -18,6 +18,7 @@ WITH RECURSIVE ancestors AS (
     WHERE n.type != 'mergeNode')
 SELECT a.depth,
        a.stream_id,
+       n.id,
        n.type,
        n.data
 FROM nodes n
