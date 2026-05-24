@@ -8,7 +8,7 @@ import {
   ZoomIn, MouseOff
 } from 'lucide-react'
 import useStore from "@/store.ts";
-import {nodeColors, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
+import {nodeTypeProperties, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
 import {cn} from "@/lib/utils.ts";
 import {useShallow} from "zustand/react/shallow";
 import {useState} from "react";
@@ -130,7 +130,7 @@ export const Controls = () => {
                   <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                     <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
                       <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <MessagesSquare size={16} color={nodeColors.promptNode}/>
+                        <MessagesSquare size={16} color={nodeTypeProperties.promptNode.color}/>
                       </button>
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export const Controls = () => {
                   <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                     <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
                       <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <LucideTextCursorInput size={16} color={nodeColors.textNode}/>
+                        <LucideTextCursorInput size={16} color={nodeTypeProperties.textNode.color}/>
                       </button>
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export const Controls = () => {
                   <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                     <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
                       <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <Minimize2 className="rotate-45" size={16} color={nodeColors.summaryNode}/>
+                        <Minimize2 className="rotate-45" size={16} color={nodeTypeProperties.summaryNode.color}/>
                       </button>
                     </div>
                   </div>
@@ -154,7 +154,7 @@ export const Controls = () => {
                   <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                     <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
                       <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <MergeIcon className="rotate-90" size={16} color={nodeColors.mergeNode}/>
+                        <MergeIcon className="rotate-90" size={16} color={nodeTypeProperties.mergeNode.color}/>
                       </button>
                     </div>
                   </div>

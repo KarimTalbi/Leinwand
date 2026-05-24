@@ -1,16 +1,15 @@
-import React, {useState} from "react";
+import {useState} from "react";
 import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
 import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  MessagesSquare,
-  LucideTextCursorInput,
-  MergeIcon,
-  Minimize2, CircleAlert
+  LucideIcon,
+  LucideCircleAlert
 } from "lucide-react";
-import {nodeColors} from "@/lib/styles.ts";
+import {nodeTypeProperties} from "@/lib/styles.ts";
 import {Section} from "@/types.ts";
+import {getIcon} from "@/components/ui/UiElements.tsx";
 
 
 
@@ -19,12 +18,8 @@ interface MergeContentProps {
   onGoToNode?: (nodeId: string) => void;
 }
 
-const TYPE_META: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  promptNode:        { label: "CHAT",    color: nodeColors.promptNode,  icon: <MessagesSquare size={10}/>},
-  textNode:          { label: "NOTE",    color: nodeColors.textNode,    icon: <LucideTextCursorInput size={10}/>},
-  mergeNode:         { label: "MERGE",   color: nodeColors.mergeNode,   icon: <MergeIcon className="rotate-90" size={10}/>},
-  summaryNode:       { label: "SUMMARY", color: nodeColors.summaryNode, icon: <Minimize2 className="rotate-135" size={10}/>},
-  problemResolution: { label: "ISSUE",   color: "#ef4444",              icon: <CircleAlert size={10}/>},
+const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon }> = {
+  ...nodeTypeProperties, problemResolution: { label: "ISSUE",   color: "#ef4444", icon: LucideCircleAlert},
 };
 
 const SectionContent = ({section}: { section: Section }) => {
@@ -81,7 +76,7 @@ const SectionCard = ({
             className="badge badge-xs badge-outline"
             style={{color: meta.color}}
           >
-            {meta.icon}
+            {getIcon({icon: meta.icon})}
             {meta.label}
           </span>
 

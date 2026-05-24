@@ -11,7 +11,7 @@ import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {
   navbarButtonStyle,
   NodeBackgroundStyle,
-  nodeColors,
+  nodeTypeProperties,
   NodeForegroundStyle,
   pulsingText,
   textareaStyle
@@ -84,10 +84,10 @@ const PromptNode = (
       <NodeHeader
         id={id}
         title="Chat"
-        color={nodeColors.promptNode}
+        color={nodeTypeProperties.promptNode.color}
         loading={loading}
         icon={
-          <MessagesSquare size={14} color={nodeColors.promptNode} strokeWidth={2.5}/>
+          <MessagesSquare size={14} color={nodeTypeProperties.promptNode.color} strokeWidth={2.5}/>
         }
       >
 
@@ -185,7 +185,7 @@ const PromptNode = (
         handleType="target"
         position="top"
         nodeId={id}
-        color={nodeColors.promptNode}
+        color={nodeTypeProperties.promptNode.color}
       />
 
       {nodeState === 'hasResponse' && (
@@ -194,7 +194,7 @@ const PromptNode = (
           handleType="source"
           position="bottom"
           nodeId={id}
-          color={nodeColors.promptNode}
+          color={nodeTypeProperties.promptNode.color}
         >
           <AddConnectedNode sourceId={id}/>
         </ConnectionHandles>

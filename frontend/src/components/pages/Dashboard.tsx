@@ -22,7 +22,7 @@ import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
 import TextNode from '@/components/NodeTypes/TextNode.tsx';
 import MergeNode from '@/components/NodeTypes/MergeNode.tsx';
 import SummaryNode from '@/components/NodeTypes/SummaryNode.tsx';
-import {cn} from "@/lib/utils.ts";
+import {cn, timeAgo} from "@/lib/utils.ts";
 import {navbarButtonStyle} from "@/lib/styles.ts";
 
 const nodeTypes: NodeTypes = {
@@ -243,7 +243,7 @@ export default function Dashboard() {
                             <>
                               <div className="text-sm font-medium truncate">{canvas.name}</div>
                               <div className="text-xs text-gray-400 truncate">
-                                {canvas.data.updated_at ?? 'Never edited'}
+                                {canvas.data.updated_at ? timeAgo(canvas.data.updated_at) : 'Never edited'}
                               </div>
                             </>
                           )}

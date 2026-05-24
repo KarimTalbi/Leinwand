@@ -3,10 +3,8 @@ import {
   ReactFlow,
   Background,
   NodeTypes,
-  Node,
   BackgroundVariant,
   useViewport,
-  useReactFlow
 } from '@xyflow/react';
 
 import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
@@ -21,9 +19,18 @@ import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
 import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
-import {Axis3D, ChevronLeft, Folder, Hexagon, Settings2, Spline} from "lucide-react";
+import {
+  Axis3D,
+  ChevronLeft,
+  Folder,
+  Hexagon,
+  Settings2,
+  Spline
+} from "lucide-react";
 import {navbarButtonStyle, tooltipStyle} from "@/lib/styles.ts";
-import {cn} from "@/lib/utils.ts";
+import {cn, getNodeColor} from "@/lib/utils.ts";
+import {useFlowContextMenu} from "@/hooks/useFlowContextMenu.ts";
+
 
 
 const nodeTypes: NodeTypes = {
@@ -34,14 +41,6 @@ const nodeTypes: NodeTypes = {
 };
 
 
-const nodeColors = {
-  promptNode: '#ec4899',
-  textNode: '#309898',
-  mergeNode: '#f5c45e',
-  summaryNode: '#bf4546',
-};
-
-
 const selector = (state: AppState) => ({
   nodes: state.nodes,
   edges: state.edges,
@@ -49,8 +48,6 @@ const selector = (state: AppState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
-  settingsOpen: state.settingsOpen,
-  setSettingsOpen: state.setSettingsOpen,
   scrollToZoom: state.scrollToZoom,
   exitCanvas: state.exitCanvas,
   setLocked: state.setLocked,
@@ -58,12 +55,15 @@ const selector = (state: AppState) => ({
   currentCanvasName: state.currentCanvasName,
   nodeCount: state.nodes.length,
   edgeCount: state.edges.length,
+  addNode: state.addNode,
 });
+
 
 
 function Flow() {
   const {x, y} = useViewport();
-  const {setViewport} = useReactFlow();
+  const {menu, closeMenu, onPaneContextMenu, setViewport} = useFlowContextMenu()
+
 
   const {
     nodes,
@@ -73,30 +73,14 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    setSettingsOpen,
     exitCanvas,
     currentCanvasName,
     nodeCount,
     edgeCount,
+    addNode,
   } = useStore(
     useShallow(selector)
   );
-
-
-  const nodeColor = (node: Node) => {
-    switch (node.type) {
-      case 'promptNode':
-        return nodeColors.promptNode;
-      case 'textNode':
-        return nodeColors.textNode;
-      case 'mergeNode':
-        return nodeColors.mergeNode;
-      case 'summaryNode':
-        return nodeColors.summaryNode;
-      default:
-        return 'gray';
-    }
-  };
 
 
   return (
@@ -124,7 +108,7 @@ function Flow() {
           colorMode="light"
           zoomOnScroll={scrollToZoom}
           panOnScroll={!scrollToZoom}
-          className="download-image"
+          onPaneContextMenu={onPaneContextMenu}
         >
 
           <Navbar
@@ -181,7 +165,7 @@ function Flow() {
                   <p>Exit</p>
                 </button>
 
-                <button className={cn(navbarButtonStyle)} onClick={() => setSettingsOpen(true)}>
+                <button className={cn(navbarButtonStyle)} onClick={() => null}>
                   <Settings2 size={14}/>
                   <p>Settings</p>
                 </button>
@@ -208,7 +192,7 @@ function Flow() {
             lineWidth={12}
             color="#f5f5f5"
           />
-          {/*#f5f5f5*/}
+
           <Background
             id="1"
             size={4}
@@ -220,11 +204,116 @@ function Flow() {
             style={{strokeDasharray: "20, 20", strokeDashoffset: "20"}}
           />
 
-          <MiniMapZoomSlider nodeColor={nodeColor}/>
+          <MiniMapZoomSlider nodeColor={getNodeColor}/>
 
           <Controls/>
 
+          {menu && (
+            <>
+
+              <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={() => closeMenu()}/>
+
+              <div
+                style={{
+                  position: 'fixed',
+                  top: menu.screenY,
+                  left: menu.screenX,
+                  zIndex: 100,
+                }}
+              >
+
+                <ul className="menu bg-white rounded-box ring-1 ring-neutral-200">
+
+                  <div className="pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-400 select-none">
+                    Add Node
+
+                  <li>
+                    <button
+                      className="btn btn-ghost border-none justify-start"
+                      onClick={() => {
+                        closeMenu()
+                        addNode("promptNode", menu.flowPos)
+                      }}
+                    >
+                      Chat
+                    </button>
+                  </li>
+
+                    <div className="border-t border-gray-100" />
+
+                  <li>
+                    <button
+                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
+                      onClick={() => {
+                        closeMenu()
+                        addNode("textNode", menu.flowPos)
+                      }}
+                    >
+
+                      Note
+                    </button>
+                  </li>
+
+                    <div className="border-t border-gray-100" />
+
+                  <li>
+                    <button
+                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
+                      onClick={() => {
+                        closeMenu()
+                        addNode("summaryNode", menu.flowPos)
+                      }}
+                    >
+                      Summary
+                    </button>
+                  </li>
+
+                    <div className="border-t border-gray-100" />
+
+                  <li>
+                    <button
+                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
+                      onClick={() => {
+                        closeMenu()
+                        addNode("mergeNode", menu.flowPos)
+                      }}
+                    >
+                      merge
+                    </button>
+                  </li>
+
+                  </div>
+
+                  <div className="my-1 border-t-2 border-gray-100" />
+
+                  <div className="px-2 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400 select-none">
+                    Viewport
+
+                  <li>
+                    <button
+                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
+                      onClick={() => {
+                        closeMenu()
+                        void setViewport({x: 0, y: 0, zoom: 1})
+                      }}
+                    >
+                      Return to center
+                    </button>
+                  </li>
+
+                  </div>
+
+                </ul>
+              </div>
+            </>
+          )}
+
         </ReactFlow>
+
+
+
+
+
 
       </div>
     </div>

@@ -222,7 +222,7 @@ const useStore = create<AppState>()((set, get) => ({
         const canvasId = get().currentCanvasId;
         if (!canvasId) return;
 
-        const flowData = {nodes: get().nodes, edges: get().edges}
+        const flowData = {nodes: get().nodes, edges: get().edges, time: String(Date.now())}
 
         await api.post(`/node/sync/${canvasId}/`, flowData);
 

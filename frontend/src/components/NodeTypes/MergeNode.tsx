@@ -8,7 +8,7 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {NodeBackgroundStyle, nodeColors, NodeForegroundStyle, pulsingText, textareaStyle} from "@/lib/styles.ts";
+import {NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, pulsingText, textareaStyle} from "@/lib/styles.ts";
 import {CircleCheck, Info, MergeIcon, TriangleAlert} from "lucide-react";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
 import {cn} from "@/lib/utils.ts";
@@ -134,10 +134,10 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
     <div className={NodeBackgroundStyle}>
       <NodeHeader
         title="Merge"
-        color={nodeColors.mergeNode}
+        color={nodeTypeProperties.mergeNode.color}
         id={id}
         loading={loading}
-        icon={<MergeIcon className="rotate-90" size={14} color={nodeColors.mergeNode} strokeWidth={2.5}/>}
+        icon={<MergeIcon className="rotate-90" size={14} color={nodeTypeProperties.mergeNode.color} strokeWidth={2.5}/>}
       >
         <div className="flex-1 items-center px-2 justify-start">
           {BADGES[nodeState]}

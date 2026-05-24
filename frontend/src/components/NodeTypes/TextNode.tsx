@@ -8,7 +8,7 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {navbarButtonStyle, NodeBackgroundStyle, nodeColors, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
+import {navbarButtonStyle, NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
 import {LucideTextCursorInput} from "lucide-react";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
@@ -50,10 +50,10 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
       <NodeHeader
         title="Note"
         id={id}
-        color={nodeColors.textNode}
+        color={nodeTypeProperties.textNode.color}
         icon={<LucideTextCursorInput
           size={14}
-          color={nodeColors.textNode}
+          color={nodeTypeProperties.textNode.color}
           strokeWidth={2.5}/>
       }
       />
@@ -110,7 +110,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
         handleType="target"
         position="top"
         nodeId={id}
-        color={nodeColors.textNode}
+        color={nodeTypeProperties.textNode.color}
       />
 
       {nodeState !== 'empty' && (
@@ -119,7 +119,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
           handleType="source"
           position="bottom"
           nodeId={id}
-          color={nodeColors.textNode}
+          color={nodeTypeProperties.textNode.color}
         >
           <AddConnectedNode sourceId={id}/>
         </ConnectionHandles>

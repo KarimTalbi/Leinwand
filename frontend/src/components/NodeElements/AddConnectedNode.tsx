@@ -4,7 +4,7 @@ import {NodeTypeNames} from "@/types.ts";
 import {useState} from "react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {nodeColors, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
+import {nodeTypeProperties, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
 
 
 const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
@@ -29,7 +29,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
                     <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <MessagesSquare size={14} color={nodeColors.promptNode}/>
+                      <MessagesSquare size={14} color={nodeTypeProperties.promptNode.color}/>
                     </button>
                   </div>
                 </div>
@@ -37,7 +37,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
                     <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <LucideTextCursorInput size={14} color={nodeColors.textNode}/>
+                      <LucideTextCursorInput size={14} color={nodeTypeProperties.textNode.color}/>
                     </button>
                   </div>
                 </div>
@@ -45,7 +45,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
                     <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <Minimize2 className="rotate-45" size={14} color={nodeColors.summaryNode}/>
+                      <Minimize2 className="rotate-45" size={14} color={nodeTypeProperties.summaryNode.color}/>
                     </button>
                   </div>
                 </div>
@@ -53,7 +53,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
                 <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
                   <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
                     <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <MergeIcon className="rotate-90" size={14} color={nodeColors.mergeNode}/>
+                      <MergeIcon className="rotate-90" size={14} color={nodeTypeProperties.mergeNode.color}/>
                     </button>
                   </div>
                 </div>

@@ -13,14 +13,6 @@ export interface Section {
   solution?: string;
 }
 
-export interface LLMConfig {
-  model: string;
-  temperature: number;
-  max_tokens: number;
-  timeout: number;
-  max_retries: number;
-}
-
 export interface CanvasReadData {
   updated_at: string,
   node_count: number,
