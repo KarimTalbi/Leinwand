@@ -1,5 +1,3 @@
-import datetime
-
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
@@ -57,12 +55,14 @@ async def delete_all_canvases(session: AsyncSession, user_id: str) -> None:
         await delete_canvas(session, canvas.id, user_id)
 
 
-async def update_canvas_data(session: AsyncSession, canvas_id: str, node_count: int) -> None:
+async def update_canvas_data(session: AsyncSession, canvas_id: str, node_count: int, time: str) -> None:
     canvas = await session.get(Canvas, canvas_id)
     if not canvas:
         raise CanvasNotFoundException
 
-    canvas.data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%m/%d/%Y - %H:%M UTC")
+    print(time)
+
+    canvas.data["updated_at"] = time
     canvas.data["node_count"] = node_count
 
     await session.flush()

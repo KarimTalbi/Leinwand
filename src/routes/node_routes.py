@@ -53,5 +53,5 @@ async def sync_data(
     await ns.write_nodes(session, data.nodes, current_user.id, canvas_id)
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
-    await cs.update_canvas_data(session, canvas_id, len(data.nodes))
+    await cs.update_canvas_data(session, canvas_id, len(data.nodes), data.time)
 
