@@ -89,7 +89,7 @@ export const resolveCollisions: CollisionAlgorithm = (
     }
   }
 
-  const newNodes = boxes.map((box) => {
+  return boxes.map((box) => {
     if (box.moved) {
       return {
         ...box.node,
@@ -101,6 +101,4 @@ export const resolveCollisions: CollisionAlgorithm = (
     }
     return box.node;
   });
-
-  return newNodes;
 };
