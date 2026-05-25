@@ -4,7 +4,6 @@ import {
   Background,
   NodeTypes,
   BackgroundVariant,
-  useViewport,
 } from '@xyflow/react';
 
 import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
@@ -20,7 +19,6 @@ import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
 import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
 import {
-  Axis3D,
   ChevronLeft,
   Folder,
   Hexagon,
@@ -61,7 +59,6 @@ const selector = (state: AppState) => ({
 
 
 function Flow() {
-  const {x, y} = useViewport();
   const {menu, closeMenu, onPaneContextMenu, setViewport} = useFlowContextMenu()
 
 
@@ -125,7 +122,7 @@ function Flow() {
 
           <Navbar
 
-            child2={
+            centerChild={
               <div className="flex gap-2 mr-2 text-sm items-center">
 
 
@@ -155,21 +152,8 @@ function Flow() {
 
             }
 
-            child3={
-              <div className="flex-1 justify-start">
-                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Current Viewport Position click to reset to (0, 0)">
-                  <button className={cn(navbarButtonStyle, "flex-1 justify-start")}
-                          onClick={() => setViewport({x: 0, y: 0, zoom: 1})}>
-                    <Axis3D size={14}/>
-                    <p className="tabular-nums text-right">
-                      {Math.round(x)}, {Math.round(y)}
-                    </p>
-                  </button>
-                </div>
-              </div>
-            }
 
-            child4={
+            endChild={
               <div className="flex gap-1 mr-2">
 
                 <button className={cn(navbarButtonStyle)} onClick={exitCanvas}>

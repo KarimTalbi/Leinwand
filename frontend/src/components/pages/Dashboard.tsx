@@ -114,7 +114,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white flex flex-col">
 
       <Navbar
-      child4={
+      endChild={
         <button className={navbarButtonStyle} onClick={logout}>
           <LogOut size={14}/>
           <p>Log out</p>

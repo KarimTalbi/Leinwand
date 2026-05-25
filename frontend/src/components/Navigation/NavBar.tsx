@@ -1,34 +1,24 @@
 import React from "react";
 
-interface NavBarProps {
-  child1?: React.ReactNode,
-  child2?: React.ReactNode,
-  child3?: React.ReactNode,
-  child4?: React.ReactNode,
+interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
+  centerChild?: React.ReactNode,
+  endChild?: React.ReactNode,
 }
 
-export const Navbar = ({child1, child2, child3, child4}: NavBarProps) => {
+export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
   return (
-    <div className="navbar bg-white h-12 shadow-sm z-100 grid grid-cols-5 items-center border-b border-neutral-200">
+    <div className="navbar bg-white h-12 w-full shadow-sm z-100 grid grid-cols-3 items-center border-b border-neutral-200" {...props}>
 
       <div>
         <h1 className="text-lg text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
       </div>
 
       <div className="flex justify-center">
-        {child1 || <div/>}
-      </div>
-
-      <div className="flex justify-center">
-        {child2 || <div/>}
-      </div>
-
-      <div className="flex justify-center">
-        {child3 || <div/>}
+        {centerChild || <div/>}
       </div>
 
       <div className="flex justify-end">
-        {child4 || <div/>}
+        {endChild || <div/>}
       </div>
 
     </div>
