@@ -18,17 +18,11 @@ import '@xyflow/react/dist/style.css';
 import {Navbar} from "@/components/Navigation/NavBar.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
 import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
-import {
-  ChevronLeft,
-  Folder,
-  Hexagon,
-  Settings2,
-  Spline
-} from "lucide-react";
-import {navbarButtonStyle, tooltipStyle} from "@/lib/styles.ts";
-import {cn, getNodeColor} from "@/lib/utils.ts";
+import {LucideChevronLeft, LucideFolder, LucideHexagon, LucideSettings2, LucideSpline} from "lucide-react";
+import {navbarButtonStyle} from "@/lib/styles.ts";
+import {getNodeColor} from "@/lib/utils.ts";
 import {useFlowContextMenu} from "@/hooks/useFlowContextMenu.ts";
-
+import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
 
 
 const nodeTypes: NodeTypes = {
@@ -57,9 +51,16 @@ const selector = (state: AppState) => ({
 });
 
 
-
 function Flow() {
-  const {menu, closeMenu, onPaneContextMenu, setViewport} = useFlowContextMenu()
+
+  const {
+    menu,
+    closeMenu,
+    onPaneContextMenu,
+    menuStyle,
+    contextMenuButtons,
+    viewportButton
+  } = useFlowContextMenu()
 
 
   const {
@@ -74,22 +75,37 @@ function Flow() {
     currentCanvasName,
     nodeCount,
     edgeCount,
-    addNode,
   } = useStore(
     useShallow(selector)
   );
 
-  const menuStyle = (() => {
-    if (!menu) return {};
-    const W = window.innerWidth;
-    const H = window.innerHeight;
-    const MENU_W = 192; // matches min-w-48 below
-    const MENU_H = 260; // rough estimate
-    return {
-      top:  menu.screenY + MENU_H > H ? menu.screenY - MENU_H : menu.screenY,
-      left: menu.screenX + MENU_W > W ? menu.screenX - MENU_W : menu.screenX,
-    };
-  })();
+
+
+
+  const navbarCenterGlobal: Partial<CustomButtonProps> = {
+    disabled: true,
+    tooltipPosition: "bottom",
+    className: navbarButtonStyle
+  }
+
+  const navbarCenterChild: CustomButtonProps[] = [
+    {icon: LucideFolder, tooltipLabel: "Project Title", children: currentCanvasName, ...navbarCenterGlobal},
+    {icon: LucideHexagon, tooltipLabel: "Node Count", children: nodeCount, ...navbarCenterGlobal},
+    {icon: LucideSpline, tooltipLabel: "Edge Count", children: edgeCount, ...navbarCenterGlobal}
+  ]
+
+  const navbarEndGlobal: Partial<CustomButtonProps> = {
+    tooltipDisabled: true,
+    className: navbarButtonStyle
+  }
+
+  const navbarEndChild: CustomButtonProps[] = [
+    {icon: LucideChevronLeft, children: "Exit", onClick: exitCanvas, ...navbarEndGlobal},
+    {
+      icon: LucideSettings2, children: "Settings", onClick: () => {
+      }, ...navbarEndGlobal
+    }
+  ]
 
 
   return (
@@ -124,50 +140,16 @@ function Flow() {
 
             centerChild={
               <div className="flex gap-2 mr-2 text-sm items-center">
-
-
-                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Project Title">
-                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
-                    <Folder size={14}/>
-                    <p>{currentCanvasName}</p>
-                  </button>
-                </div>
-
-                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Node Count">
-                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
-                    <Hexagon size={14}/>
-                    <p>{nodeCount}</p>
-                  </button>
-                </div>
-
-                <div className={cn(tooltipStyle, "tooltip-bottom")} data-tip="Edge Count">
-                  <button className={cn(navbarButtonStyle, "disabled:opacity-100")} disabled={true}>
-                    <Spline size={14}/>
-                    <p>{edgeCount}</p>
-                  </button>
-                </div>
-
-
+                {navbarCenterChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
               </div>
-
             }
-
 
             endChild={
               <div className="flex gap-1 mr-2">
-
-                <button className={cn(navbarButtonStyle)} onClick={exitCanvas}>
-                  <ChevronLeft size={14}/>
-                  <p>Exit</p>
-                </button>
-
-                <button className={cn(navbarButtonStyle)} onClick={() => null}>
-                  <Settings2 size={14}/>
-                  <p>Settings</p>
-                </button>
-
+                {navbarEndChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
               </div>
             }
+
           />
 
 
@@ -207,88 +189,32 @@ function Flow() {
           {menu && (
             <>
 
-              <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={() => closeMenu()}/>
-
+              <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={closeMenu}/>
               <div style={{position: 'fixed', ...menuStyle, zIndex: 100}}>
 
-                <ul className="menu bg-white rounded-box ring-1 ring-neutral-200">
+                <ul className="menu bg-white rounded-box ring-1 ring-neutral-200 w-50">
 
-                  <div className="pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-400 select-none">
+                  <div
+                    className="px-0.5 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-400 select-none">
                     Add Node
 
-                  <li>
-                    <button
-                      className="btn btn-ghost border-none justify-start"
-                      onClick={() => {
-                        closeMenu()
-                        addNode("promptNode", menu.flowPos)
-                      }}
-                    >
-                      Chat
-                    </button>
-                  </li>
-
-                    <div className="border-t border-gray-100" />
-
-                  <li>
-                    <button
-                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
-                      onClick={() => {
-                        closeMenu()
-                        addNode("textNode", menu.flowPos)
-                      }}
-                    >
-
-                      Note
-                    </button>
-                  </li>
-
-                    <div className="border-t border-gray-100" />
-
-                  <li>
-                    <button
-                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
-                      onClick={() => {
-                        closeMenu()
-                        addNode("summaryNode", menu.flowPos)
-                      }}
-                    >
-                      Summary
-                    </button>
-                  </li>
-
-                    <div className="border-t border-gray-100" />
-
-                  <li>
-                    <button
-                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
-                      onClick={() => {
-                        closeMenu()
-                        addNode("mergeNode", menu.flowPos)
-                      }}
-                    >
-                      merge
-                    </button>
-                  </li>
+                    {contextMenuButtons.map((button, index) => (
+                      <li key={index} className="tracking-normal">
+                        <CustomButton {...button}/>
+                      </li>
+                      ))}
 
                   </div>
 
-                  <div className="my-1 border-t-2 border-gray-100" />
+                  <div className="my-1 border-t-2 border-gray-100"/>
 
-                  <div className="px-2 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400 select-none">
+                  <div
+                    className="px-0.5 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400 select-none">
                     Viewport
 
-                  <li>
-                    <button
-                      className="flex flex-row items-center justify-start gap-2 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 tracking-normal"
-                      onClick={() => {
-                        closeMenu()
-                        void setViewport({x: 0, y: 0, zoom: 1})
-                      }}
-                    >
-                      Return to center
-                    </button>
-                  </li>
+                    <li className="tracking-normal">
+                      <CustomButton {...viewportButton}/>
+                    </li>
 
                   </div>
 
@@ -298,10 +224,6 @@ function Flow() {
           )}
 
         </ReactFlow>
-
-
-
-
 
 
       </div>

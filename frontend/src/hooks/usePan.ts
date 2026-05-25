@@ -17,6 +17,7 @@ export const usePan = () => {
   const panDown = () => pan(0, -1 * panAmount);
   const panLeft = () => pan(panAmount, 0);
   const panRight = () => pan(-1 * panAmount, 0);
+  const panHome = () => setViewport({x: 0, y: 0, zoom: 1});
 
   const zoomIn = () => zoomTo(zoom + 0.1, {duration: 200});
   const zoomOut = () => zoomTo(zoom - 0.1, {duration: 200});
@@ -24,5 +25,5 @@ export const usePan = () => {
   const resetZoom = () => zoomTo(1, {duration: 200});
 
 
-  return {panUp, panDown, panLeft, panRight, zoomIn, zoomOut, resetZoom, zoomTo, zoom, minZoom, maxZoom}
+  return {panUp, panDown, panLeft, panRight, zoomIn, zoomOut, resetZoom, zoomTo, panHome, zoom, minZoom, maxZoom}
 }
