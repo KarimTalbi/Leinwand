@@ -1,13 +1,7 @@
 import {useShallow} from 'zustand/react/shallow'
 import {
   ReactFlow,
-  NodeTypes,
 } from '@xyflow/react';
-
-import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
-import TextNode from '@/components/NodeTypes/TextNode.tsx';
-import MergeNode from '@/components/NodeTypes/MergeNode.tsx';
-import SummaryNode from '@/components/NodeTypes/SummaryNode.tsx';
 
 import useStore from '@/store';
 import {AppState} from '@/types'
@@ -20,14 +14,10 @@ import {getNodeColor} from "@/lib/utils.ts";
 import {useFlowContextMenu} from "@/hooks/useFlowContextMenu.ts";
 import ContextMenu from "@/components/Navigation/ContextMenu.tsx";
 import {CustomBackground} from "@/components/ui/CustomBackground.tsx";
+import {nodeTypes} from "@/lib/nodeTypes.ts";
 
 
-const nodeTypes: NodeTypes = {
-  promptNode: PromptNode,
-  textNode: TextNode,
-  mergeNode: MergeNode,
-  summaryNode: SummaryNode,
-};
+
 
 
 const selector = (state: AppState) => ({
@@ -45,6 +35,8 @@ const selector = (state: AppState) => ({
   nodeCount: state.nodes.length,
   edgeCount: state.edges.length,
   addNode: state.addNode,
+  setNodes: state.setNodes,
+  promptNodeAction: state.promptNodeAction,
 });
 
 
@@ -72,6 +64,9 @@ function Flow() {
     useShallow(selector)
   );
 
+
+
+
   return (
     <div className="relative">
 
@@ -83,6 +78,7 @@ function Flow() {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+
           snapToGrid={true}
           snapGrid={[300, 1]}
           onConnect={onConnect}

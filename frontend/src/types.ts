@@ -1,5 +1,6 @@
 import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@xyflow/react";
 
+
 export interface Section {
   id: string;
   type: string;
@@ -16,22 +17,22 @@ export interface Section {
 export interface CanvasReadData {
   updated_at: string,
   node_count: number,
-  nodes: (NodeTypes)[],
+  nodes: (AnyNodeType)[],
   edges: Edge[],
 }
 
-export interface PromptNodeData extends Record<string, unknown> {
+export type PromptNodeType = Node<{
   prompt?: string;
   response?: string;
   closed: boolean;
-}
+}>;
 
-export interface TextNodeData extends Record<string, unknown> {
+export type TextNodeType = Node<{
   text?: string;
   closed: boolean;
-}
+}>;
 
-export interface MergeNodeData extends Record<string, unknown> {
+export type MergeNodeType = Node<{
   context?: Section[];
   problems?: string;
   solution?: string;
@@ -39,20 +40,20 @@ export interface MergeNodeData extends Record<string, unknown> {
   incomer1?: string;
   incomer2?: string;
   closed: boolean;
-}
+}>;
 
-export interface SummaryNodeData extends Record<string, unknown> {
+export type SummaryNodeType = Node<{
   response?: string,
   closed: boolean
-}
+}>;
 
+export type PromptNodeData = PromptNodeType['data'];
+export type SummaryNodeData = SummaryNodeType['data'];
+export type TextNodeData = TextNodeType['data'];
+export type MergeNodeData = MergeNodeType['data'];
+
+export type AnyNodeType = PromptNodeType | TextNodeType | MergeNodeType | SummaryNodeType;
 export type PartialNodeData = Partial<PromptNodeData | TextNodeData | MergeNodeData | SummaryNodeData>;
-
-export type TextNodeType = Node<TextNodeData>;
-export type PromptNodeType = Node<PromptNodeData>;
-export type MergeNodeType = Node<MergeNodeData>;
-export type SummaryNodeType = Node<SummaryNodeData>;
-export type NodeTypes = TextNodeType | PromptNodeType | MergeNodeType | SummaryNodeType;
 export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
 
@@ -69,6 +70,7 @@ export interface CanvasRead {
 
 
 export interface AppState {
+
   // Auth
   token: string | null;
   user: UserRead | null;
@@ -81,7 +83,7 @@ export interface AppState {
   updateCanvas: (id: string, name: string) => Promise<void>;
 
   // Flow state
-  nodes: (NodeTypes)[];
+  nodes: AnyNodeType[];
   edges: Edge[];
   locked: boolean;
   scrollToZoom: boolean;
@@ -116,9 +118,11 @@ export interface AppState {
   updateNodeData: (id: string, data: PartialNodeData) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
-  onNodesChange: OnNodesChange<NodeTypes>;
+  onNodesChange: OnNodesChange<AnyNodeType>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   setLocked: () => void;
   setScrollToZoom: () => void;
+  setNodes: (nodes: AnyNodeType[]) => void;
+  setEdges: (edges: Edge[]) => void;
 }

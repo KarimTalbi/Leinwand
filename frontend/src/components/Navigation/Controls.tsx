@@ -72,25 +72,25 @@ export const Controls = () => {
     buttons: [
       {
         icon: nodeTypeProperties.promptNode.icon,
-        iconColor: nodeTypeProperties.promptNode.color,
+        iconProps: {color: nodeTypeProperties.promptNode.color},
         onClick: () => onCreateNode("promptNode"),
         tooltipLabel: "Add Chat Node",
       },
       {
         icon: nodeTypeProperties.textNode.icon,
-        iconColor: nodeTypeProperties.textNode.color,
+        iconProps: {color: nodeTypeProperties.textNode.color},
         onClick: () => onCreateNode("textNode"),
         tooltipLabel: "Add Note Node",
       },
       {
         icon: nodeTypeProperties.summaryNode.icon,
-        iconColor: nodeTypeProperties.summaryNode.color,
+        iconProps: {color: nodeTypeProperties.summaryNode.color},
         onClick: () => onCreateNode("summaryNode"),
         tooltipLabel: "Add Summary Node"
       },
       {
         icon: nodeTypeProperties.mergeNode.icon,
-        iconColor: nodeTypeProperties.mergeNode.color,
+        iconProps: {color: nodeTypeProperties.mergeNode.color},
         onClick: () => onCreateNode("mergeNode"),
         tooltipLabel: "Add Merge Node"
       }

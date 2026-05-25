@@ -4,6 +4,7 @@ import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} fr
 
 import api, {BASE_URL} from '@/api';
 import {AppState, NodeTypeNames, CanvasRead} from '@/types';
+import {DEFAULT_COLLISION_OPTIONS, resolveCollisions} from "@/lib/resolve-collisions.ts";
 
 
 const nodeInitData = {
@@ -222,6 +223,9 @@ const useStore = create<AppState>()((set, get) => ({
         const canvasId = get().currentCanvasId;
         if (!canvasId) return;
 
+        const resolved = resolveCollisions(get().nodes, DEFAULT_COLLISION_OPTIONS);
+        get().setNodes(resolved)
+
         const flowData = {nodes: get().nodes, edges: get().edges, time: String(Date.now())}
 
         await api.post(`/node/sync/${canvasId}/`, flowData);
@@ -393,7 +397,7 @@ const useStore = create<AppState>()((set, get) => ({
         console.error('Error prompting Node', err);
 
       } finally {
-        void get().syncCanvas()
+        void get().createConnectedNode("promptNode", nodeId)
       }
     },
 
@@ -630,6 +634,9 @@ const useStore = create<AppState>()((set, get) => ({
       void get().syncCanvas()
 
     },
+
+    setNodes: (nodes) => set({nodes: nodes}),
+    setEdges: (edges) => set({edges: edges}),
 
     setLocked: () => set({locked: !get().locked}),
     setSettingsOpen: () => set({settingsOpen: !get().settingsOpen}),
