@@ -34,6 +34,9 @@ export const pulsingText = "text-muted-foreground animate-pulse"
 
 export const outerButtonStyle = "btn btn-circle border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const navbarButtonStyle = "btn border-none shadow-none bg-transparent text-xs text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const controlBarButtonStyle = "btn btn-circle w-10 h-10 border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const controlBarFieldStyle = "grid bg-white h-12 rounded-full ring-1 ring-neutral-200 shadow-md p-1"
+export const miniMapButtonStyle = "btn btn-square btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 
 export const tooltipStyle = [
   "tooltip",

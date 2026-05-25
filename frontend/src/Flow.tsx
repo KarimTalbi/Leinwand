@@ -82,6 +82,18 @@ function Flow() {
     useShallow(selector)
   );
 
+  const menuStyle = (() => {
+    if (!menu) return {};
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+    const MENU_W = 192; // matches min-w-48 below
+    const MENU_H = 260; // rough estimate
+    return {
+      top:  menu.screenY + MENU_H > H ? menu.screenY - MENU_H : menu.screenY,
+      left: menu.screenX + MENU_W > W ? menu.screenX - MENU_W : menu.screenX,
+    };
+  })();
+
 
   return (
     <div className="relative">
@@ -213,14 +225,7 @@ function Flow() {
 
               <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={() => closeMenu()}/>
 
-              <div
-                style={{
-                  position: 'fixed',
-                  top: menu.screenY,
-                  left: menu.screenX,
-                  zIndex: 100,
-                }}
-              >
+              <div style={{position: 'fixed', ...menuStyle, zIndex: 100}}>
 
                 <ul className="menu bg-white rounded-box ring-1 ring-neutral-200">
 

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import {nodeTypeProperties} from "@/lib/styles.ts";
 import {Section} from "@/types.ts";
-import {getIcon} from "@/components/ui/UiElements.tsx";
+import getIcon from "@/lib/icons.tsx";
 
 
 

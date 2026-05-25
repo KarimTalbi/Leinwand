@@ -100,7 +100,7 @@ export interface AppState {
   deleteCanvas: (canvasId: string) => Promise<void>;
   exitCanvas: () => void;
   settingsOpen: boolean;
-  setSettingsOpen: (status: boolean) => void;
+  setSettingsOpen: () => void;
 
   // Flow actions
   syncCanvas: () => Promise<void>;
@@ -119,6 +119,6 @@ export interface AppState {
   onNodesChange: OnNodesChange<NodeTypes>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
-  setLocked: (status: boolean) => void;
-  setScrollToZoom: (status: boolean) => void;
+  setLocked: () => void;
+  setScrollToZoom: () => void;
 }

@@ -1,25 +1,21 @@
-import {Panel, useReactFlow, useViewport} from '@xyflow/react'
+import {Panel, useReactFlow} from '@xyflow/react'
 import {
-  LockOpen,
-  Lock,
-  Mouse,
-  MessagesSquare,
-  LucideTextCursorInput, Minimize2, MergeIcon, X, Plus, ArrowUp, ArrowLeft, ArrowRight, ArrowDown, ZoomOut,
-  ZoomIn, MouseOff
+  LucideLockOpen, LucideLock, LucideMouseOff, LucideMouse, LucideZoomIn, LucideZoomOut, LucideArrowUp, LucideArrowDown,
+  LucideArrowLeft, LucideArrowRight
 } from 'lucide-react'
 import useStore from "@/store.ts";
-import {nodeTypeProperties, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
-import {cn} from "@/lib/utils.ts";
+import {
+  nodeTypeProperties,
+} from "@/lib/styles.ts";
 import {useShallow} from "zustand/react/shallow";
-import {useState} from "react";
 import {NodeTypeNames} from "@/types.ts";
+import {ControlBarField, ControlBarFieldProps} from "@/components/ui/UiElements.tsx";
+import {usePan} from "@/hooks/usePan.ts";
 
-const PAN_AMOUNT = 300
 
 export const Controls = () => {
-  const {zoom} = useViewport();
-  const {getViewport, setViewport, screenToFlowPosition, zoomTo} = useReactFlow()
-  const [isOpen, setIsOpen] = useState(false);
+  const {screenToFlowPosition} = useReactFlow()
+  const {panUp, panDown, panLeft, panRight, zoomOut, zoomIn} = usePan();
 
   const {locked, setLocked, scrollToZoom, setScrollToZoom, addNode} = useStore(useShallow((state) => ({
     locked: state.locked,
@@ -29,158 +25,87 @@ export const Controls = () => {
     addNode: state.addNode,
   })))
 
+
   const onCreateNode = async (type: NodeTypeNames) => {
 
     const position = screenToFlowPosition(
       {x: window.innerWidth / 2, y: window.innerHeight / 2}
     );
     addNode(type, position);
-    setIsOpen(false);
   }
 
-  const pan = (dx: number, dy: number) => {
-    const {x, y, zoom} = getViewport()
-    void setViewport({x: x + dx, y: y + dy, zoom})
+  const lockButton = locked ? LucideLockOpen : LucideLock
+  const lockTip = locked ? "Unlock Canvas" : "Lock Canvas"
+
+  const scrollButton = scrollToZoom ? LucideMouseOff : LucideMouse
+  const scrollTip = scrollToZoom ? "Disable scroll to zoom" : "Enable scroll to zoom"
+
+
+  const lockControls: ControlBarFieldProps = {
+    buttons: [
+      {icon: lockButton, onClick: setLocked, tooltipLabel: lockTip},
+      {icon: scrollButton, onClick: setScrollToZoom, tooltipLabel: scrollTip}
+    ]
+  }
+
+  const zoomControls: ControlBarFieldProps = {
+    buttons: [
+      {icon: LucideZoomIn, onClick: zoomIn, tooltipLabel: "Zoom In"},
+      {icon: LucideZoomOut, onClick: zoomOut, tooltipLabel: "Zoom Out"}
+    ],
+  }
+
+  const panVerticalControls: ControlBarFieldProps = {
+    buttons: [
+      {icon: LucideArrowUp, onClick: panUp, tooltipLabel: "Pan Up"},
+      {icon: LucideArrowDown, onClick: panDown, tooltipLabel: "Pan Down"}],
+  }
+
+  const panHorizontalControls: ControlBarFieldProps = {
+    buttons: [
+      {icon: LucideArrowLeft, onClick: panLeft, tooltipLabel: "Pan Left"},
+      {icon: LucideArrowRight, onClick: panRight, tooltipLabel: "Pan Right"}
+    ],
+  }
+
+  const openAddNodeMenu: ControlBarFieldProps = {
+    buttons: [
+      {
+        icon: nodeTypeProperties.promptNode.icon,
+        iconColor: nodeTypeProperties.promptNode.color,
+        onClick: () => onCreateNode("promptNode"),
+        tooltipLabel: "Add Chat Node",
+      },
+      {
+        icon: nodeTypeProperties.textNode.icon,
+        iconColor: nodeTypeProperties.textNode.color,
+        onClick: () => onCreateNode("textNode"),
+        tooltipLabel: "Add Note Node",
+      },
+      {
+        icon: nodeTypeProperties.summaryNode.icon,
+        iconColor: nodeTypeProperties.summaryNode.color,
+        onClick: () => onCreateNode("summaryNode"),
+        tooltipLabel: "Add Summary Node"
+      },
+      {
+        icon: nodeTypeProperties.mergeNode.icon,
+        iconColor: nodeTypeProperties.mergeNode.color,
+        onClick: () => onCreateNode("mergeNode"),
+        tooltipLabel: "Add Merge Node"
+      }
+    ],
   }
 
   return (
-    <div>
+    <Panel position="bottom-center" className="flex flex-row gap-2">
 
-      {/* Overlay for closing the panel when clicking outside it */}
-      {isOpen && (
-        <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={() => setIsOpen(false)}/>
-      )}
+      <ControlBarField className="grid-cols-2 shrink-0" {...lockControls}/>
+      <ControlBarField className="grid-cols-2 shrink-0" {...zoomControls}/>
+      <ControlBarField className="grid-cols-2 shrink-0" {...panVerticalControls}/>
+      <ControlBarField className="grid-cols-2 shrink-0" {...panHorizontalControls}/>
+      <ControlBarField className="grid-cols-4 shrink-0" {...openAddNodeMenu}/>
 
-      <Panel position="bottom-center" className="flex flex-row gap-2 p-2" style={{zIndex: 20}}>
-
-        <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip={locked ? "Unlock Canvas" : "Lock Canvas"}>
-            <button className={cn(outerButtonStyle)} onClick={() => setLocked(!locked)}>
-              {locked ? <LockOpen size={14}/> : <Lock size={14}/>}
-            </button>
-          </div>
-
-          <div className={cn(tooltipStyle, "tooltip-top")}
-               data-tip={scrollToZoom ? "Disable scroll to zoom" : "Enable scroll to zoom"}>
-            <button className={cn(outerButtonStyle)} onClick={() => setScrollToZoom(!scrollToZoom)}>
-              {!scrollToZoom ? <Mouse size={14}></Mouse> : <MouseOff size={14}/>}
-            </button>
-          </div>
-
-        </div>
-
-        <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Zoom Out">
-            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom - 0.1, {duration: 200})}
-                    disabled={zoom <= 0.5}>
-              <ZoomOut size={14}/>
-            </button>
-          </div>
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Zoom In">
-            <button className={cn(outerButtonStyle)} onClick={() => zoomTo(zoom + 0.1, {duration: 200})}
-                    disabled={zoom >= 1.5}>
-              <ZoomIn size={14}/>
-            </button>
-          </div>
-
-        </div>
-
-        <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Pan Up">
-            <button className={cn(outerButtonStyle)} onClick={() => pan(0, PAN_AMOUNT)}>
-              <ArrowUp size={14}/>
-            </button>
-          </div>
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Pan Down">
-            <button className={cn(outerButtonStyle)} onClick={() => pan(0, -1 * PAN_AMOUNT)}>
-              <ArrowDown size={14}/>
-            </button>
-          </div>
-
-        </div>
-
-        <div className="grid grid-cols-2 bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1">
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Pan Left">
-            <button className={cn(outerButtonStyle)} onClick={() => pan(PAN_AMOUNT, 0)}>
-              <ArrowLeft size={14}/>
-            </button>
-          </div>
-
-          <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Pan Right">
-            <button className={cn(outerButtonStyle)} onClick={() => pan(-1 * PAN_AMOUNT, 0)}>
-              <ArrowRight size={14}/>
-            </button>
-          </div>
-
-        </div>
-
-        <div className="grid grid-cols-1 bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-          <div className="relative flex items-center" style={{zIndex: 21}}>
-
-            {isOpen ? (
-              <div>
-                <div className="absolute bottom-full pb-2 flex flex-col gap-2">
-
-                  <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                    <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
-                      <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <MessagesSquare size={16} color={nodeTypeProperties.promptNode.color}/>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                    <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
-                      <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <LucideTextCursorInput size={16} color={nodeTypeProperties.textNode.color}/>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                    <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
-                      <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <Minimize2 className="rotate-45" size={16} color={nodeTypeProperties.summaryNode.color}/>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                    <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
-                      <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-lg")}>
-                        <MergeIcon className="rotate-90" size={16} color={nodeTypeProperties.mergeNode.color}/>
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
-                  <button onClick={() => setIsOpen(false)} className={cn(outerButtonStyle, "btn-lg")}>
-                    <X size={14}/>
-                  </button>
-                </div>
-
-              </div>
-
-            ) : (
-
-              <div className={cn(tooltipStyle, "tooltip-top")} data-tip="Add Node">
-                <button onClick={() => setIsOpen(true)} className={cn(outerButtonStyle, "btn-lg")}>
-                  <Plus size={14}/>
-                </button>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </Panel>
-    </div>
+    </Panel>
   )
 }

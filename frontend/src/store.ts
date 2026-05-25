@@ -631,9 +631,9 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
-    setLocked: (status) => set({locked: status}),
-    setSettingsOpen: (status) => set({settingsOpen: status}),
-    setScrollToZoom: (status) => set({scrollToZoom: status}),
+    setLocked: () => set({locked: !get().locked}),
+    setSettingsOpen: () => set({settingsOpen: !get().settingsOpen}),
+    setScrollToZoom: () => set({scrollToZoom: !get().scrollToZoom}),
 
   }),
 );
