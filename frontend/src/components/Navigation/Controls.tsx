@@ -43,28 +43,28 @@ export const Controls = () => {
 
   const lockControls: ControlBarFieldProps = {
     buttons: [
-      {icon: lockButton, onClick: setLocked, tooltipLabel: lockTip},
-      {icon: scrollButton, onClick: setScrollToZoom, tooltipLabel: scrollTip}
+      {icon: lockButton, onClick: setLocked, tooltipLabel: lockTip, iconProps: {size: 12}},
+      {icon: scrollButton, onClick: setScrollToZoom, tooltipLabel: scrollTip, iconProps: {size: 12}}
     ]
   }
 
   const zoomControls: ControlBarFieldProps = {
     buttons: [
-      {icon: LucideZoomIn, onClick: zoomIn, tooltipLabel: "Zoom In"},
-      {icon: LucideZoomOut, onClick: zoomOut, tooltipLabel: "Zoom Out"}
+      {icon: LucideZoomIn, onClick: zoomIn, tooltipLabel: "Zoom In", iconProps: {size: 12}},
+      {icon: LucideZoomOut, onClick: zoomOut, tooltipLabel: "Zoom Out", iconProps: {size: 12}}
     ],
   }
 
   const panVerticalControls: ControlBarFieldProps = {
     buttons: [
-      {icon: LucideArrowUp, onClick: panUp, tooltipLabel: "Pan Up"},
-      {icon: LucideArrowDown, onClick: panDown, tooltipLabel: "Pan Down"}],
+      {icon: LucideArrowUp, onClick: panUp, tooltipLabel: "Pan Up", iconProps: {size: 12}},
+      {icon: LucideArrowDown, onClick: panDown, tooltipLabel: "Pan Down", iconProps: {size: 12}}],
   }
 
   const panHorizontalControls: ControlBarFieldProps = {
     buttons: [
-      {icon: LucideArrowLeft, onClick: panLeft, tooltipLabel: "Pan Left"},
-      {icon: LucideArrowRight, onClick: panRight, tooltipLabel: "Pan Right"}
+      {icon: LucideArrowLeft, onClick: panLeft, tooltipLabel: "Pan Left", iconProps: {size: 12}},
+      {icon: LucideArrowRight, onClick: panRight, tooltipLabel: "Pan Right", iconProps: {size: 12}}
     ],
   }
 
@@ -72,25 +72,25 @@ export const Controls = () => {
     buttons: [
       {
         icon: nodeTypeProperties.promptNode.icon,
-        iconProps: {color: nodeTypeProperties.promptNode.color},
+        iconProps: {color: nodeTypeProperties.promptNode.color, size: 12},
         onClick: () => onCreateNode("promptNode"),
         tooltipLabel: "Add Chat Node",
       },
       {
         icon: nodeTypeProperties.textNode.icon,
-        iconProps: {color: nodeTypeProperties.textNode.color},
+        iconProps: {color: nodeTypeProperties.textNode.color, size: 12},
         onClick: () => onCreateNode("textNode"),
         tooltipLabel: "Add Note Node",
       },
       {
         icon: nodeTypeProperties.summaryNode.icon,
-        iconProps: {color: nodeTypeProperties.summaryNode.color},
+        iconProps: {color: nodeTypeProperties.summaryNode.color, size: 12},
         onClick: () => onCreateNode("summaryNode"),
         tooltipLabel: "Add Summary Node"
       },
       {
         icon: nodeTypeProperties.mergeNode.icon,
-        iconProps: {color: nodeTypeProperties.mergeNode.color},
+        iconProps: {color: nodeTypeProperties.mergeNode.color, size: 12},
         onClick: () => onCreateNode("mergeNode"),
         tooltipLabel: "Add Merge Node"
       }

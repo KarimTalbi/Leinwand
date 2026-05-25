@@ -32,10 +32,9 @@ export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
 export const FlowNavBar = () => {
   const {navbarCenterChild, navbarEndChild} = useNavbar()
 
-
   return (
     <Navbar centerChild={
-      <div className="flex text-sm items-center">
+      <div className="flex items-center">
         {navbarCenterChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
       </div>
     } endChild={

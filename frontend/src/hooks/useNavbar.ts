@@ -7,12 +7,14 @@ import {useShallow} from "zustand/react/shallow";
 const navbarCenterGlobal: Partial<CustomButtonProps> = {
   disabled: true,
   tooltipPosition: "bottom",
-  className: navbarButtonStyle
+  className: navbarButtonStyle,
+  iconProps: {size: 12}
 }
 
 const navbarEndGlobal: Partial<CustomButtonProps> = {
   tooltipDisabled: true,
-  className: navbarButtonStyle
+  className: navbarButtonStyle,
+  iconProps: {size: 12}
 }
 
 export const useNavbar = () => {
