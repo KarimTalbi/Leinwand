@@ -64,9 +64,6 @@ function Flow() {
     useShallow(selector)
   );
 
-
-
-
   return (
     <div className="relative">
 
@@ -88,7 +85,7 @@ function Flow() {
           nodesDraggable={!locked}
           nodesConnectable={!locked}
           elementsSelectable={!locked}
-          defaultEdgeOptions={{style: {strokeWidth: 2, strokeColor: "black"}}}
+          defaultEdgeOptions={{style: {strokeWidth: 2, stroke: "#a1a1a1"}}}
           proOptions={{hideAttribution: true}}
           colorMode="light"
           zoomOnScroll={scrollToZoom}

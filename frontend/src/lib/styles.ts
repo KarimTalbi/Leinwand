@@ -25,7 +25,7 @@ export const nodeTypeProperties: Record<NodeTypeNames, nodeTypeProps> = {
 // ——— Node Component Styles ———————————————————————————————————————————————————————————————————————————————————————— //
 
 
-export const NodeBackgroundStyle = "flex flex-col bg-white shadow-md ring-1 ring-neutral-200 w-130 rounded-xl px-1"
+export const NodeBackgroundStyle = "flex flex-col bg-white ring-1 ring-neutral-300 w-130 rounded-lg px-1"
 export const NodeForegroundStyle = "flex flex-col flex-1 min-h-0 p-2 rounded-lg"
 export const textareaStyle = "textarea textarea-md nodrag w-auto resize-none bg-neutral-100 rounded-md outline-none"
 export const pulsingText = "text-muted-foreground animate-pulse"
@@ -35,7 +35,7 @@ export const pulsingText = "text-muted-foreground animate-pulse"
 
 
 export const outerButtonStyle = "btn btn-circle border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
-export const navbarButtonStyle = "btn border-none shadow-none bg-transparent text-xs text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const navbarButtonStyle = "btn border-none shadow-none bg-transparent text-xs text-neutral-500 font-normal hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const controlBarButtonStyle = "btn btn-circle w-10 h-10 border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const controlBarFieldStyle = "grid bg-white h-12 rounded-full ring-1 ring-neutral-200 shadow-md p-1"
 export const miniMapButtonStyle = "btn btn-square btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
@@ -68,7 +68,7 @@ interface CustomBackgroundProps {
 }
 
 export const CustomBackgrounds: Partial<CustomBackgroundProps>[] = [
-  {id: "1", bgColor: "#f5f5f5", size: 4, gap: [60, 60], offset: 162},
-  {id: "2", size: 6, gap: [300, 300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 12, color: "#f5f5f5"},
-  {id: "3", size: 4, gap: [300,300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 2, color: "#e5e5e5", style: {strokeDasharray: "20, 20", strokeDashoffset: "20"}}
+  {id: "1", bgColor: "white", size: 4, gap: [60, 60], offset: 162, color: "#e5e5e5"},
+  {id: "2", size: 6, gap: [300, 300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 12, color: "white"},
+  {id: "3", size: 4, gap: [300,300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 1, color: "#e5e5e5", style: {strokeDasharray: "15, 10", strokeDashoffset: "20"}}
 ];
