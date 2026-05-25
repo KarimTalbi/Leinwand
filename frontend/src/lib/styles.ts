@@ -24,6 +24,7 @@ export const nodeTypeProperties: Record<NodeTypeNames, nodeTypeProps> = {
 
 // ——— Node Component Styles ———————————————————————————————————————————————————————————————————————————————————————— //
 
+export const defaultButtonSize = 12
 
 export const NodeBackgroundStyle = "flex flex-col bg-white ring-1 ring-neutral-300 w-130 rounded-lg px-1"
 export const NodeForegroundStyle = "flex flex-col flex-1 min-h-0 p-2 rounded-lg"
@@ -35,19 +36,18 @@ export const pulsingText = "text-muted-foreground animate-pulse"
 
 
 export const outerButtonStyle = "btn btn-circle border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
-export const navbarButtonStyle = "btn btn-xs border-none shadow-none bg-transparent text-xs text-neutral-500 font-normal hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const navbarButtonStyle = "btn btn-xs border-none gap-1 shadow-none bg-transparent text-[10px] text-neutral-500 font-normal hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const controlBarButtonStyle = "btn btn-circle m-1 btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const controlBarFieldStyle = "grid bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1"
-export const miniMapButtonStyle = "btn btn-square btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const miniMapButtonStyle = "font-normal text-[10px] btn btn-square btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 
 export const tooltipStyle = [
   "tooltip",
-  "[--tt-bg:#a1a1a1]",
+  "[--tt-bg:#e5e5e5]",
   "[&::before]:bg-[--tt-bg]",
   "[&::after]:border-b-[--tt-bg]",
-  "[&::before]:font-semibold",
-  "[&::before]:text-xs",
-  "[&::before]:text-white",
+  "[&::before]:text-[11px]",
+  "[&::before]:text-[#737373]",
   "[&::before]:delay-500",
   "[&::after]:delay-500",
 ].join(" ");

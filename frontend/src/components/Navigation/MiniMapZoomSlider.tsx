@@ -5,7 +5,6 @@ import {MiniMap, Panel} from "@xyflow/react";
 import {miniMapButtonStyle} from "@/lib/styles.ts";
 import {CustomButton} from "@/components/ui/UiElements.tsx";
 import {usePan} from "@/hooks/usePan.ts";
-import {cn} from "@/lib/utils.ts";
 
 export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string}) {
   const {resetZoom, zoom, zoomTo, minZoom, maxZoom} = usePan()
@@ -42,7 +41,7 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
               className="range range-xs text-neutral-400 [--range-fill:0] w-full [--range-bg:#e5e5e5] [--range-thumb:white] mr-1"
             />
 
-            <CustomButton className={cn(miniMapButtonStyle, "font-normal text-[10px]")} disabled={true} tooltipDisabled={true}>
+            <CustomButton className={miniMapButtonStyle} disabled={true}>
               {(100 * zoom).toFixed(0)}%
             </CustomButton>
 

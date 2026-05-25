@@ -20,7 +20,7 @@ export const NodeHeader = ({title, color, id, loading = false, icon, children}: 
     <div className="flex items-center justify-between shrink-0 pl-2">
       <div className="flex items-center gap-1.5">
         {icon}
-        <h1 className="flex items-center gap-1 text-sm font-bold">{title}</h1>
+        <h1 className="flex items-center gap-1 text-xs font-semibold">{title}</h1>
       </div>
 
         {children}
@@ -31,20 +31,20 @@ export const NodeHeader = ({title, color, id, loading = false, icon, children}: 
           className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
           onClick={() => moveNode(id, "left")} disabled={loading}
         >
-          <ChevronLeft size={14} color={color}/>
+          <ChevronLeft size={12} color={color}/>
         </button>
 
         <button
           className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
           onClick={() => moveNode(id, "right")} disabled={loading}
         >
-          <ChevronRight size={14} color={color}/>
+          <ChevronRight size={12} color={color}/>
         </button>
 
         <button className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
                 onClick={() => deleteNode(id)} disabled={loading}
         >
-          <X size={14} color={color}/>
+          <X size={12} color={color}/>
         </button>
 
       </div>

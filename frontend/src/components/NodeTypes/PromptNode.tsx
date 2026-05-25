@@ -87,7 +87,7 @@ const PromptNode = (
         color={nodeTypeProperties.promptNode.color}
         loading={loading}
         icon={
-          <MessagesSquare size={14} color={nodeTypeProperties.promptNode.color} strokeWidth={2.5}/>
+          <MessagesSquare size={12} color={nodeTypeProperties.promptNode.color} strokeWidth={2.5}/>
         }
       >
 

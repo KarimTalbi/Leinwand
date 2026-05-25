@@ -1,7 +1,7 @@
 import {LucideIcon, LucideProps} from "lucide-react";
 import React from "react";
 import {cn} from "@/lib/utils.ts";
-import {controlBarButtonStyle, controlBarFieldStyle, tooltipStyle} from "@/lib/styles.ts";
+import {controlBarButtonStyle, controlBarFieldStyle, defaultButtonSize, tooltipStyle} from "@/lib/styles.ts";
 import getIcon from "@/lib/icons.tsx";
 
 type toolTipPosition = "top" | "bottom" | "left" | "right"
@@ -15,9 +15,8 @@ const TipPos: Record<toolTipPosition, string> = {
 
 
 interface ToolTipProps extends React.ComponentPropsWithRef<"div"> {
-  label: string,
+  label?: string,
   position?: toolTipPosition,
-  disabled?: boolean,
 }
 
 export interface CustomButtonProps extends React.ComponentPropsWithRef<"button"> {
@@ -33,8 +32,8 @@ export interface ControlBarFieldProps extends React.ComponentPropsWithRef<"div">
 }
 
 
-export const ToolTip = ({position, children, className, label, disabled, ...props}: ToolTipProps) => {
-  if (disabled) return (
+export const ToolTip = ({position, children, className, label, ...props}: ToolTipProps) => {
+  if (!label) return (
     <>
       {children}
     </>
@@ -66,9 +65,9 @@ export const CustomButton = (
   const iconColor = iconProps?.color;
 
   return (
-    <ToolTip position={tooltipPosition} label={tooltipLabel || ""} disabled={tooltipDisabled}>
+    <ToolTip position={tooltipPosition} label={tooltipLabel || ""}>
       <button className={className} onClick={onClick} {...props}>
-        {icon && (getIcon({icon, size: iconSize || 14, color: iconColor, ...iconProps}))}
+        {icon && (getIcon({icon, size: iconSize || defaultButtonSize, color: iconColor, ...iconProps}))}
         {children}
       </button>
     </ToolTip>

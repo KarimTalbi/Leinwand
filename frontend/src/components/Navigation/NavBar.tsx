@@ -1,6 +1,9 @@
 import React from "react";
-import {CustomButton} from "@/components/ui/UiElements.tsx";
-import {useNavbar} from "@/hooks/useNavbar.ts";
+import {CustomButton, CustomButtonProps, ToolTip} from "@/components/ui/UiElements.tsx";
+import useStore from "@/store.ts";
+import {useShallow} from "zustand/react/shallow";
+import {Folder, Hexagon, LucideChevronLeft, LucideSettings2, LucideSpline} from "lucide-react";
+import {navbarButtonStyle} from "@/lib/styles.ts";
 
 interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
   centerChild?: React.ReactNode,
@@ -9,11 +12,12 @@ interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
 
 export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
   return (
-    <div style={{height: 50, maxHeight: 50, minHeight: 50, zIndex: 1000, position: "sticky", top: 0, left: 0, right: 0,}}
+    <div
+      style={{height: 50, maxHeight: 50, minHeight: 50, zIndex: 1000, position: "sticky", top: 0, left: 0, right: 0,}}
       className="bg-white w-full shadow-xs z-100 grid grid-cols-3 items-center border-b border-neutral-200" {...props}>
 
       <div>
-        <h1 className="text-lg text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
+        <h1 className="text-sm text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
       </div>
 
       <div className="flex justify-center">
@@ -29,18 +33,54 @@ export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
 };
 
 
+const navbarButtonProps: Partial<CustomButtonProps> = {
+  tooltipDisabled: true,
+  className: navbarButtonStyle,
+  iconProps: {size: 12}
+}
+
 export const FlowNavBar = () => {
-  const {navbarCenterChild, navbarEndChild} = useNavbar()
+  const {currentCanvasName, nodeCount, edgeCount, exitCanvas} = useStore(useShallow(s => ({
+    currentCanvasName: s.currentCanvasName,
+    nodeCount: s.nodes.length,
+    edgeCount: s.edges.length,
+    exitCanvas: s.exitCanvas,
+  })));
 
   return (
     <Navbar centerChild={
-      <div className="flex items-center">
-        {navbarCenterChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
+
+      <div className="flex items-center gap-3 text-[10px] text-neutral-500">
+
+        <ToolTip label="Project Title" position="bottom">
+          <div className="flex items-center gap-1">
+            <Folder size={10}/><p>{currentCanvasName}</p>
+          </div>
+        </ToolTip>
+
+        <ToolTip label="Node Count" position="bottom">
+          <div className="flex items-center gap-1">
+            <Hexagon size={10}/><p>{nodeCount}</p>
+          </div>
+        </ToolTip>
+
+        <ToolTip label="Edge Count" position="bottom">
+          <div className="flex items-center gap-1">
+            <LucideSpline size={10}/><p>{edgeCount}</p>
+          </div>
+        </ToolTip>
+
       </div>
+
     } endChild={
+
       <div className="flex gap-1 mr-2">
-        {navbarEndChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
+
+        <CustomButton icon={LucideChevronLeft} onClick={exitCanvas} {...navbarButtonProps}>Exit</CustomButton>
+        <CustomButton icon={LucideSettings2} {...navbarButtonProps}>Settings</CustomButton>
+
       </div>
+
     }/>
   )
 }
