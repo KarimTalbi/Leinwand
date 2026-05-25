@@ -1,5 +1,7 @@
 import {LucideIcon, LucideMerge, LucideMessageSquare, LucideMinimize2, LucideNotebook} from "lucide-react";
 import {NodeTypeNames} from "@/types.ts";
+import {BackgroundVariant} from "@xyflow/react";
+import React from "react";
 
 
 // ——— Node Styles —————————————————————————————————————————————————————————————————————————————————————————————————— //
@@ -51,4 +53,22 @@ export const tooltipStyle = [
 ].join(" ");
 
 
+// ——— UI Styles ———————————————————————————————————————————————————————————————————————————————————————————————————— //
 
+interface CustomBackgroundProps {
+  id: string,
+  bgColor: string,
+  size: number,
+  gap: [number, number],
+  offset: number,
+  variant?: BackgroundVariant,
+  lineWidth?: number,
+  color?: string,
+  style?: React.CSSProperties,
+}
+
+export const CustomBackgrounds: Partial<CustomBackgroundProps>[] = [
+  {id: "1", bgColor: "#f5f5f5", size: 4, gap: [60, 60], offset: 162},
+  {id: "2", size: 6, gap: [300, 300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 12, color: "#f5f5f5"},
+  {id: "3", size: 4, gap: [300,300], offset: 190, variant: BackgroundVariant.Lines, lineWidth: 2, color: "#e5e5e5", style: {strokeDasharray: "20, 20", strokeDashoffset: "20"}}
+];

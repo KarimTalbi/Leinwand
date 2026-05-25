@@ -1,4 +1,6 @@
 import React from "react";
+import {CustomButton} from "@/components/ui/UiElements.tsx";
+import {useNavbar} from "@/hooks/useNavbar.ts";
 
 interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
   centerChild?: React.ReactNode,
@@ -24,3 +26,21 @@ export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
     </div>
   );
 };
+
+
+export const FlowNavBar = () => {
+  const {navbarCenterChild, navbarEndChild} = useNavbar()
+
+
+  return (
+    <Navbar centerChild={
+      <div className="flex gap-2 mr-2 text-sm items-center">
+        {navbarCenterChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
+      </div>
+    } endChild={
+      <div className="flex gap-1 mr-2">
+        {navbarEndChild.map((props, i) => (<CustomButton key={i} {...props}/>))}
+      </div>
+    }/>
+  )
+}

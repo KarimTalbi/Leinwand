@@ -7,7 +7,7 @@ import {nodeTypeProperties} from "@/lib/styles.ts";
 import {LucideHouse} from "lucide-react";
 import {usePan} from "@/hooks/usePan.ts";
 
-interface ContextMenuState {
+export interface ContextMenuState {
   screenX: number;
   screenY: number;
   flowPos: XYPosition;
