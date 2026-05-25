@@ -16,7 +16,6 @@ import {
   pulsingText,
   textareaStyle
 } from "@/lib/styles.ts";
-import {MessagesSquare} from "lucide-react";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
 
@@ -86,12 +85,8 @@ const PromptNode = (
         title="Chat"
         color={nodeTypeProperties.promptNode.color}
         loading={loading}
-        icon={
-          <MessagesSquare size={12} color={nodeTypeProperties.promptNode.color} strokeWidth={2.5}/>
-        }
-      >
-
-      </NodeHeader>
+        icon={nodeTypeProperties.promptNode.icon}
+      />
 
       <div className={NodeForegroundStyle}>
 

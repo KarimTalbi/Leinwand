@@ -9,7 +9,6 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {navbarButtonStyle, NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
-import {LucideTextCursorInput} from "lucide-react";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
 
@@ -51,11 +50,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
         title="Note"
         id={id}
         color={nodeTypeProperties.textNode.color}
-        icon={<LucideTextCursorInput
-          size={14}
-          color={nodeTypeProperties.textNode.color}
-          strokeWidth={2.5}/>
-      }
+        icon={nodeTypeProperties.textNode.icon}
       />
 
 

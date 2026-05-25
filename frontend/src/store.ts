@@ -260,13 +260,12 @@ const useStore = create<AppState>()((set, get) => ({
 
     },
 
-    moveNode: (nodeId: string, direction: string) => {
+    moveNode: (nodeId: string, position) => {
       const node = get().nodes.find((node) => node.id === nodeId)
-      if (!node) return null
+      if (!node || !position) return null
 
-      const offset = direction === "left" ? -300 : 300
-
-      node.position.x = node.position.x + offset
+      node.position.y = node.position.y + position.y
+      node.position.x = node.position.x + position.x
 
       set({
         nodes: get().nodes.map((n) =>

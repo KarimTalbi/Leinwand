@@ -9,7 +9,7 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {navbarButtonStyle, NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, pulsingText} from "@/lib/styles.ts";
-import {Info, Minimize2, TriangleAlert} from "lucide-react";
+import {Info, TriangleAlert} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
 type NodeState =
@@ -82,7 +82,7 @@ const SummaryNode = (
         color={nodeTypeProperties.summaryNode.color}
         id={id}
         loading={loading}
-        icon={<Minimize2 className="rotate-135" size={14} color={nodeTypeProperties.summaryNode.color} strokeWidth={2.5}/>}
+        icon={nodeTypeProperties.summaryNode.icon}
       >
 
         <div className="flex-1 items-center px-2 justify-start">

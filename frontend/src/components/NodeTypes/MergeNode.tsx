@@ -9,7 +9,7 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, pulsingText, textareaStyle} from "@/lib/styles.ts";
-import {CircleCheck, Info, MergeIcon, TriangleAlert} from "lucide-react";
+import {CircleCheck, Info, TriangleAlert} from "lucide-react";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
 import {cn} from "@/lib/utils.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
@@ -137,7 +137,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         color={nodeTypeProperties.mergeNode.color}
         id={id}
         loading={loading}
-        icon={<MergeIcon className="rotate-90" size={14} color={nodeTypeProperties.mergeNode.color} strokeWidth={2.5}/>}
+        icon={nodeTypeProperties.mergeNode.icon}
       >
         <div className="flex-1 items-center px-2 justify-start">
           {BADGES[nodeState]}

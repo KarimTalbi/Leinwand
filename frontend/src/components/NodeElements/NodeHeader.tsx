@@ -1,25 +1,44 @@
-import {ChevronLeft, ChevronRight, X} from "lucide-react";
-import useStore from "@/store.ts";
-import {cn} from "@/lib/utils.ts";
-import {outerButtonStyle} from "@/lib/styles.ts";
+import {
+  LucideChevronDown,
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideChevronUp,
+  LucideIcon,
+  LucideProps,
+  LucideX,
+} from "lucide-react";
+import {nodeHeaderButtonStyle} from "@/lib/styles.ts";
 import React from "react";
+import getIcon from "@/lib/icons.tsx";
+import {CustomButton} from "@/components/ui/UiElements.tsx";
+import {useNodeMove} from "@/hooks/useNodeMove.ts";
+import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 interface HeaderProps {
   title: string,
   color: string,
   id: string,
   loading?: boolean
-  icon?: React.ReactNode
+  icon?: LucideIcon,
+  iconProps?: LucideProps,
   children? : React.ReactNode
 }
 
-export const NodeHeader = ({title, color, id, loading = false, icon, children}: HeaderProps) => {
-  const {deleteNode, moveNode} = useStore();
+export const NodeHeader = ({title, color, id, loading = false, icon, iconProps, children}: HeaderProps) => {
+  const {deleteNodeAction} = useStoreWithId(id);
+  const {moveUp, moveLeft, moveRight, moveDown} = useNodeMove(id)
+
+  const iconSize = iconProps?.size || 12;
+  const iconColor = iconProps?.color || color;
+
+  const iconPropsEnd = {size: iconSize, color: iconColor, ...iconProps}
 
   return (
     <div className="flex items-center justify-between shrink-0 pl-2">
       <div className="flex items-center gap-1.5">
-        {icon}
+
+        {icon ? getIcon({icon: icon, ...iconPropsEnd}) : null}
+
         <h1 className="flex items-center gap-1 text-xs font-semibold">{title}</h1>
       </div>
 
@@ -27,25 +46,43 @@ export const NodeHeader = ({title, color, id, loading = false, icon, children}: 
 
       <div className="flex items-center gap-1">
 
-        <button
-          className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
-          onClick={() => moveNode(id, "left")} disabled={loading}
-        >
-          <ChevronLeft size={12} color={color}/>
-        </button>
+        <CustomButton
+          icon={LucideChevronUp}
+          iconProps={iconPropsEnd}
+          className={nodeHeaderButtonStyle}
+          onClick={moveUp} disabled={loading}
+        />
 
-        <button
-          className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
-          onClick={() => moveNode(id, "right")} disabled={loading}
-        >
-          <ChevronRight size={12} color={color}/>
-        </button>
+        <CustomButton
+          icon={LucideChevronDown}
+          iconProps={iconPropsEnd}
+          className={nodeHeaderButtonStyle}
+          onClick={moveDown} disabled={loading}
+        />
 
-        <button className={cn(outerButtonStyle, "btn-sm border-none bg-transparent shadow-none")}
-                onClick={() => deleteNode(id)} disabled={loading}
+        <CustomButton
+          icon={LucideChevronLeft}
+          iconProps={iconPropsEnd}
+          className={nodeHeaderButtonStyle}
+          onClick={moveLeft} disabled={loading}
+        />
+
+
+        <CustomButton
+          icon={LucideChevronRight}
+          iconProps={iconPropsEnd}
+          className={nodeHeaderButtonStyle}
+          onClick={moveRight} disabled={loading}
+        />
+
+
+        <CustomButton
+          icon={LucideX}
+          className={nodeHeaderButtonStyle}
+          iconProps={iconPropsEnd}
+          onClick={deleteNodeAction} disabled={loading}
         >
-          <X size={12} color={color}/>
-        </button>
+        </CustomButton>
 
       </div>
     </div>
