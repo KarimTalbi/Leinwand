@@ -13,20 +13,21 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
   return (
     <Panel position="bottom-right">
 
-      <div className="bg-white w-52.5 h-42.5 rounded-lg ring-1 ring-neutral-200 shadow-md">
+      <div className="bg-white w-40 h-32 rounded-lg ring-1 ring-neutral-200 shadow-md">
 
         <MiniMap
-          className="rounded-md w-50 h-32.5 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
+          className="rounded-md w-37.5 h-25 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
           zoomable
           pannable
           bgColor={"transparent"}
           maskColor={"rgb(161, 161, 161, 0.2)"}
           nodeColor={nodeColor}
           nodeBorderRadius={50}
+          offsetScale={0}
         />
 
-        <div style={{position: "absolute", bottom: 140, left: 9}}>
-          <div className="flex gap-2 flex-row items-center w-48">
+        <div style={{position: "absolute", bottom: 104, right: 10, zIndex: 1000}}>
+          <div className="flex gap-2 flex-row items-center w-37">
 
             <CustomButton className={miniMapButtonStyle} icon={LucideMaximize} onClick={resetZoom} tooltipLabel="Reset Zoom"/>
 
