@@ -33,9 +33,8 @@ const PromptNode = (
 ) => {
 
   const {localText, handleTextChange, textareaRef} = useTextarea(id, data.prompt || "", "prompt")
-  const {promptNodeAction, createConnectedNode} = useStore(useShallow((s) => ({
+  const {promptNodeAction} = useStore(useShallow((s) => ({
     promptNodeAction: s.promptNodeAction,
-    createConnectedNode: s.createConnectedNode,
   })));
 
   const handleClick = async () => {
@@ -161,13 +160,6 @@ const PromptNode = (
 
             </div>
 
-            <div className="flex justify-end pt-1">
-
-              <button
-                className={nodeFooterButtonStyle} onClick={() => createConnectedNode("promptNode", id)}>
-                Reply
-              </button>
-            </div>
           </>
         )}
 

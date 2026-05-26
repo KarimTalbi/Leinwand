@@ -10,7 +10,7 @@ const selector = (state: AppState) => ({
 });
 
 export const useStoreWithId = (nodeId: string) => {
-  const {createConnectedNode, promptNodeAction, summaryNodeAction, deleteNode} = useStore(useShallow(selector))
+  const {createConnectedNode, deleteNode} = useStore(useShallow(selector))
 
   const conPrompt = () => createConnectedNode("promptNode", nodeId)
   const conSummary = () => createConnectedNode("summaryNode", nodeId)
@@ -19,9 +19,6 @@ export const useStoreWithId = (nodeId: string) => {
 
   const deleteNodeAction = () => deleteNode(nodeId)
 
-  const promptAction = () => promptNodeAction(nodeId)
-  const summaryAction = () => summaryNodeAction(nodeId)
-
-  return {conPrompt, conSummary, conText, conMerge, deleteNodeAction, promptAction, summaryAction}
+  return {conPrompt, conSummary, conText, conMerge, deleteNodeAction}
 
 }
