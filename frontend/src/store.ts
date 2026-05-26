@@ -103,6 +103,8 @@ const useStore = create<AppState>()((set, get) => ({
         const res = await api.get<CanvasRead[]>('/canvas/list/');
         set({canvases: res.data});
 
+        console.log(res.data)
+
       } catch (err) {
 
         console.error('Error loading canvases:', err);
@@ -163,10 +165,17 @@ const useStore = create<AppState>()((set, get) => ({
     createCanvas: async (name) => {
 
       const newCanvasId = String(uuidv4());
+      const createdAt = Date.now()
 
       try {
 
-        await api.post<CanvasRead>('/canvas/create/', {id: newCanvasId, name: name, data: {}});
+        await api.post<CanvasRead>('/canvas/create/', {
+          id: newCanvasId,
+          name: name,
+          updated_at: createdAt,
+          data: {}
+        });
+
         await get().loadCanvases()
 
       } catch (err) {
@@ -226,7 +235,7 @@ const useStore = create<AppState>()((set, get) => ({
         const resolved = resolveCollisions(get().nodes, DEFAULT_COLLISION_OPTIONS);
         get().setNodes(resolved)
 
-        const flowData = {nodes: get().nodes, edges: get().edges, time: String(Date.now())}
+        const flowData = {nodes: get().nodes, edges: get().edges, time: Date.now()}
 
         await api.post(`/node/sync/${canvasId}/`, flowData);
 

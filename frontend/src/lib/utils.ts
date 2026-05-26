@@ -7,9 +7,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function timeAgo(dateStr: string): string {
-  console.log(dateStr)
-  const diff = Date.now() - new Date(Number(dateStr)).getTime();
+export function timeAgo(date: number): string {
+  const diff = Date.now() - new Date(date).getTime();
   const minutes = Math.floor(diff / 60_000);
   if (minutes < 1) return 'Just now';
   if (minutes < 60) return `${minutes}m ago`;

@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(0);
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [sortBy, setSortBy] = useState<'date' | 'title'>('date');
 
   const updateCanvas = useStore((s) => s.updateCanvas);
 
@@ -60,9 +61,16 @@ export default function Dashboard() {
     void loadCanvases();
   }, [loadCanvases]);
 
-  const filteredCanvases = canvases.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCanvases = canvases
+    .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === 'title') {
+        return a.name.localeCompare(b.name);
+      }
+      const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+      const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+      return bTime - aTime;
+    });
 
   const totalPages = Math.ceil(filteredCanvases.length / ITEMS_PER_PAGE);
   const paginatedCanvases = filteredCanvases.slice(
@@ -116,16 +124,51 @@ export default function Dashboard() {
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-10">
 
+
         {/* Toolbar */}
         <form onSubmit={handleCreate} className="flex items-center gap-2 mb-6">
+
+          <div className="flex items-center gap-0.5 ring-1 ring-neutral-200 rounded-sm p-0.5 h-7">
+            <button
+              type="button"
+              onClick={() => {
+                setSortBy('date');
+                setCurrentPage(0);
+              }}
+              className={cn(
+                "px-2 py-1 text-xs rounded-sm transition-colors",
+                sortBy === 'date'
+                  ? "bg-neutral-200 text-neutral-800"
+                  : "text-neutral-400 hover:text-neutral-600"
+              )}
+            >
+              Recent
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSortBy('title');
+                setCurrentPage(0);
+              }}
+              className={cn(
+                "px-2 py-1 text-xs rounded-sm transition-colors",
+                sortBy === 'title'
+                  ? "bg-neutral-200 text-neutral-800"
+                  : "text-neutral-400 hover:text-neutral-600"
+              )}
+            >
+              Title
+            </button>
+          </div>
+
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
             <input
               type="text"
               value={search}
               onChange={handleSearch}
               placeholder="Search..."
-              className="max-w-40 pl-8 pr-3 py-1.5 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
+              className="max-w-40 h-7 pl-8 pr-3 py-1 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
             />
           </div>
 
@@ -136,16 +179,18 @@ export default function Dashboard() {
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Project name..."
               autoFocus
-              className="max-w-40 flex-1 ml-auto px-3 py-1.5 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
+              className="max-w-40 h-7 flex-1 ml-auto px-3 py-1.5 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
             />
           )}
+
+
 
           <button
             type={showCreate ? 'submit' : 'button'}
             disabled={showCreate && (creating || !newName.trim())}
             onClick={showCreate ? undefined : () => setShowCreate(true)}
             className={cn(
-              "btn btn-sm flex items-center gap-1 border-none shadow-none font-normal bg-neutral-200 hover:bg-neutral-300",
+              "btn btn-sm h-7 flex items-center gap-1 border-none shadow-none font-normal bg-neutral-200 hover:bg-neutral-300",
               !showCreate ? "ml-auto" : "ml-2"
               )}
           >
@@ -235,7 +280,7 @@ export default function Dashboard() {
                             <>
                               <div className="text-xs font-medium truncate text-neutral-600">{canvas.name}</div>
                               <div className="text-[10px] text-neutral-400 truncate">
-                                {canvas.data.updated_at ? timeAgo(canvas.data.updated_at) : 'Never edited'}
+                                {!!canvas.updatedAt ? timeAgo(canvas.updatedAt) : 'Never edited'}
                               </div>
                             </>
                           )}

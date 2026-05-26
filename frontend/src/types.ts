@@ -15,8 +15,6 @@ export interface Section {
 }
 
 export interface CanvasReadData {
-  updated_at: string,
-  node_count: number,
   nodes: (AnyNodeType)[],
   edges: Edge[],
 }
@@ -65,6 +63,7 @@ export interface UserRead {
 export interface CanvasRead {
   id: string;
   name: string;
+  updatedAt: number;
   data: CanvasReadData;
 }
 
