@@ -55,15 +55,13 @@ async def delete_all_canvases(session: AsyncSession, user_id: str) -> None:
         await delete_canvas(session, canvas.id, user_id)
 
 
-async def update_canvas_data(session: AsyncSession, canvas_id: str, node_count: int, time: str) -> None:
+async def update_canvas_data(session: AsyncSession, canvas_id: str, updated_at: int) -> None:
     canvas = await session.get(Canvas, canvas_id)
+
     if not canvas:
         raise CanvasNotFoundException
 
-    print(time)
-
-    canvas.data["updated_at"] = time
-    canvas.data["node_count"] = node_count
+    canvas.updated_at = updated_at
 
     await session.flush()
 

@@ -32,7 +32,7 @@ class NodeRead(BaseModel):
 class LoadDataResponse(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
-    time: str | None = None
+    time: int | None = None
 
 
 class EdgeRead(BaseModel):
@@ -53,6 +53,7 @@ class EdgeRead(BaseModel):
 class CanvasRead(BaseModel):
     id: UUID4Str
     name: str
+    updated_at: int
     data: dict[str, Any]
 
     model_config = ConfigDict(

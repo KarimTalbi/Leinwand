@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, Integer, BigInteger
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -46,6 +46,7 @@ class Canvas(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String)
+    updated_at: Mapped[int] = mapped_column(BigInteger)
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
