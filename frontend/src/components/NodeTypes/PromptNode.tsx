@@ -9,12 +9,11 @@ import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {
-  navbarButtonStyle,
   NodeBackgroundStyle,
   nodeTypeProperties,
   NodeForegroundStyle,
   pulsingText,
-  textareaStyle
+  textareaStyle, nodeFooterButtonStyle
 } from "@/lib/styles.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
@@ -133,12 +132,12 @@ const PromptNode = (
               <div className="flex justify-end pt-1">
 
                 <button
-                  className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
+                  className={nodeFooterButtonStyle} onClick={() => null}>
                   Settings
                 </button>
 
                 <button
-                  className={cn(navbarButtonStyle, "btn-xs")} onClick={handleClick} disabled={!data.prompt || loading}>
+                  className={nodeFooterButtonStyle} onClick={handleClick} disabled={!data.prompt || loading}>
                   Send
                 </button>
 
@@ -165,7 +164,7 @@ const PromptNode = (
             <div className="flex justify-end pt-1">
 
               <button
-                className={cn(navbarButtonStyle, "btn-xs")} onClick={() => createConnectedNode("promptNode", id)}>
+                className={nodeFooterButtonStyle} onClick={() => createConnectedNode("promptNode", id)}>
                 Reply
               </button>
             </div>

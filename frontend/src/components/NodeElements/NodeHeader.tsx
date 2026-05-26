@@ -10,7 +10,7 @@ import {
 import {nodeHeaderButtonStyle} from "@/lib/styles.ts";
 import React from "react";
 import getIcon from "@/lib/icons.tsx";
-import {CustomButton} from "@/components/ui/UiElements.tsx";
+import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
 import {useNodeMove} from "@/hooks/useNodeMove.ts";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
@@ -21,7 +21,7 @@ interface HeaderProps {
   loading?: boolean
   icon?: LucideIcon,
   iconProps?: LucideProps,
-  children? : React.ReactNode
+  children?: React.ReactNode
 }
 
 export const NodeHeader = ({title, color, id, loading = false, icon, iconProps, children}: HeaderProps) => {
@@ -33,6 +33,21 @@ export const NodeHeader = ({title, color, id, loading = false, icon, iconProps, 
 
   const iconPropsEnd = {size: iconSize, color: iconColor, ...iconProps}
 
+  const globalButtonProps: CustomButtonProps = {
+    className: nodeHeaderButtonStyle,
+    iconProps: {size: iconSize, color: iconColor, ...iconProps},
+    disabled: loading
+  }
+
+  const buttonProps: CustomButtonProps[] = [
+    {icon: LucideChevronUp, onClick: moveUp, ...globalButtonProps},
+    {icon: LucideChevronDown, onClick: moveDown, ...globalButtonProps},
+    {icon: LucideChevronLeft, onClick: moveLeft, ...globalButtonProps},
+    {icon: LucideChevronRight, onClick: moveRight, ...globalButtonProps},
+    {icon: LucideX, onClick: deleteNodeAction, ...globalButtonProps}
+  ]
+
+
   return (
     <div className="flex items-center justify-between shrink-0 pl-2">
       <div className="flex items-center gap-1.5">
@@ -42,47 +57,13 @@ export const NodeHeader = ({title, color, id, loading = false, icon, iconProps, 
         <h1 className="flex items-center gap-1 text-xs font-semibold">{title}</h1>
       </div>
 
-        {children}
+      {children}
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center">
 
-        <CustomButton
-          icon={LucideChevronUp}
-          iconProps={iconPropsEnd}
-          className={nodeHeaderButtonStyle}
-          onClick={moveUp} disabled={loading}
-        />
-
-        <CustomButton
-          icon={LucideChevronDown}
-          iconProps={iconPropsEnd}
-          className={nodeHeaderButtonStyle}
-          onClick={moveDown} disabled={loading}
-        />
-
-        <CustomButton
-          icon={LucideChevronLeft}
-          iconProps={iconPropsEnd}
-          className={nodeHeaderButtonStyle}
-          onClick={moveLeft} disabled={loading}
-        />
-
-
-        <CustomButton
-          icon={LucideChevronRight}
-          iconProps={iconPropsEnd}
-          className={nodeHeaderButtonStyle}
-          onClick={moveRight} disabled={loading}
-        />
-
-
-        <CustomButton
-          icon={LucideX}
-          className={nodeHeaderButtonStyle}
-          iconProps={iconPropsEnd}
-          onClick={deleteNodeAction} disabled={loading}
-        >
-        </CustomButton>
+        {buttonProps.map((button, index) => (
+          <CustomButton key={index} {...button}/>
+        ))}
 
       </div>
     </div>

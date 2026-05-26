@@ -42,7 +42,6 @@ export function useFlowContextMenu() {
     closeMenu()
   }
 
-
   const contextMenuGlobal: Partial<CustomButtonProps> = {
     className: "btn btn-ghost border-none justify-start gap-4",
     tooltipDisabled: true
@@ -87,6 +86,7 @@ export function useFlowContextMenu() {
   }
 
 
+
   const onPaneContextMenu = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -116,5 +116,5 @@ export function useFlowContextMenu() {
   })();
 
 
-  return { menu, setMenu, closeMenu, onPaneContextMenu, setViewport, menuStyle, contextMenuButtons, viewportButton};
+  return { menu, setMenu, closeMenu, onPaneContextMenu, setViewport, menuStyle, viewportButton, contextMenuButtons};
 }
