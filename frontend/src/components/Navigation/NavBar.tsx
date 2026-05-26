@@ -39,11 +39,12 @@ const flowNavbarButtonProps: Partial<CustomButtonProps> = {
 }
 
 export const FlowNavBar = () => {
-  const {currentCanvasName, nodeCount, edgeCount, exitCanvas} = useStore(useShallow(s => ({
+  const {currentCanvasName, nodeCount, edgeCount, exitCanvas, setSettingsOpen} = useStore(useShallow(s => ({
     currentCanvasName: s.currentCanvasName,
     nodeCount: s.nodes.length,
     edgeCount: s.edges.length,
     exitCanvas: s.exitCanvas,
+    setSettingsOpen: s.setSettingsOpen,
   })));
 
   return (
@@ -76,7 +77,7 @@ export const FlowNavBar = () => {
       <div className="flex gap-1">
 
         <CustomButton icon={LucideChevronLeft} onClick={exitCanvas} {...flowNavbarButtonProps}>Exit</CustomButton>
-        <CustomButton icon={LucideSettings2} {...flowNavbarButtonProps}>Settings</CustomButton>
+        <CustomButton icon={LucideSettings2} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Settings</CustomButton>
 
       </div>
 
@@ -86,13 +87,27 @@ export const FlowNavBar = () => {
 
 
 export const DashboardNavbar = () => {
-  const {logout} = useStore(useShallow(s => ({logout: s.logout})));
+  const {logout, setSettingsOpen} = useStore(useShallow(s => ({logout: s.logout, setSettingsOpen: s.setSettingsOpen,})));
 
   return (
     <Navbar
       endChild={
+      <>
         <CustomButton icon={LucideLogOut} className={navbarButtonStyle} onClick={logout}>Log Out</CustomButton>
+        <CustomButton icon={LucideSettings2} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Settings</CustomButton>
+      </>
       }
+    />
+  )
+}
+
+export const SettingsNavbar = () => {
+  const {setSettingsOpen} = useStore(useShallow(s => ({setSettingsOpen: s.setSettingsOpen,})));
+  return (
+    <Navbar
+    endChild={
+      <CustomButton icon={LucideChevronLeft} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Exit</CustomButton>
+    }
     />
   )
 }
