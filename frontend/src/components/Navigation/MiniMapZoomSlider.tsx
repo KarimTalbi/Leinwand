@@ -7,7 +7,7 @@ import {CustomButton} from "@/components/ui/UiElements.tsx";
 import {usePan} from "@/hooks/usePan.ts";
 
 export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string}) {
-  const {resetZoom, zoom, zoomTo, minZoom, maxZoom} = usePan()
+  const {resetZoom, zoom, zoomTo, minZoom, maxZoom, zoomPercent} = usePan()
 
 
   return (
@@ -42,7 +42,7 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
             />
 
             <CustomButton className={miniMapButtonStyle} disabled={true}>
-              {(100 * zoom).toFixed(0)}%
+              {zoomPercent}%
             </CustomButton>
 
           </div>

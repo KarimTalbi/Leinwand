@@ -13,6 +13,8 @@ export const usePan = () => {
   const maxZoom = useStore((state) => state.maxZoom);
   const panAmount = useStore((state) => state.snapGrid[0])
 
+  const zoomPercent = (100 * zoom).toFixed(0)
+
   const panUp = () => pan(0, panAmount);
   const panDown = () => pan(0, -1 * panAmount);
   const panLeft = () => pan(panAmount, 0);
@@ -25,5 +27,5 @@ export const usePan = () => {
   const resetZoom = () => zoomTo(1, {duration: 200});
 
 
-  return {panUp, panDown, panLeft, panRight, zoomIn, zoomOut, resetZoom, zoomTo, panHome, zoom, minZoom, maxZoom}
+  return {panUp, panDown, panLeft, panRight, zoomIn, zoomOut, resetZoom, zoomTo, panHome, zoom, minZoom, maxZoom, zoomPercent}
 }
