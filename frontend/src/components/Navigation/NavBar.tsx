@@ -2,7 +2,7 @@ import React from "react";
 import {CustomButton, CustomButtonProps, ToolTip} from "@/components/ui/UiElements.tsx";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {Folder, Hexagon, LucideChevronLeft, LucideSettings2, LucideSpline} from "lucide-react";
+import {Folder, Hexagon, LucideChevronLeft, LucideLogOut, LucideSettings2, LucideSpline} from "lucide-react";
 import {navbarButtonStyle} from "@/lib/styles.ts";
 
 interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
@@ -24,7 +24,7 @@ export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
         {centerChild || <div/>}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mr-2">
         {endChild || <div/>}
       </div>
 
@@ -33,10 +33,9 @@ export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
 };
 
 
-const navbarButtonProps: Partial<CustomButtonProps> = {
+const flowNavbarButtonProps: Partial<CustomButtonProps> = {
   tooltipDisabled: true,
   className: navbarButtonStyle,
-  iconProps: {size: 12}
 }
 
 export const FlowNavBar = () => {
@@ -74,13 +73,26 @@ export const FlowNavBar = () => {
 
     } endChild={
 
-      <div className="flex gap-1 mr-2">
+      <div className="flex gap-1">
 
-        <CustomButton icon={LucideChevronLeft} onClick={exitCanvas} {...navbarButtonProps}>Exit</CustomButton>
-        <CustomButton icon={LucideSettings2} {...navbarButtonProps}>Settings</CustomButton>
+        <CustomButton icon={LucideChevronLeft} onClick={exitCanvas} {...flowNavbarButtonProps}>Exit</CustomButton>
+        <CustomButton icon={LucideSettings2} {...flowNavbarButtonProps}>Settings</CustomButton>
 
       </div>
 
     }/>
+  )
+}
+
+
+export const DashboardNavbar = () => {
+  const {logout} = useStore(useShallow(s => ({logout: s.logout})));
+
+  return (
+    <Navbar
+      endChild={
+        <CustomButton icon={LucideLogOut} className={navbarButtonStyle} onClick={logout}>Log Out</CustomButton>
+      }
+    />
   )
 }

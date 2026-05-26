@@ -10,11 +10,11 @@ import {
   ChevronRight,
   Search,
   X,
-  LogOut, Hexagon
+  Hexagon
 } from 'lucide-react';
 import useStore from '@/store';
 import { CanvasRead } from '@/types';
-import { Navbar } from '@/components/Navigation/NavBar.tsx';
+import {DashboardNavbar} from '@/components/Navigation/NavBar.tsx';
 import {NodeTypes, Panel, ReactFlow, ReactFlowProvider} from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -23,7 +23,6 @@ import TextNode from '@/components/NodeTypes/TextNode.tsx';
 import MergeNode from '@/components/NodeTypes/MergeNode.tsx';
 import SummaryNode from '@/components/NodeTypes/SummaryNode.tsx';
 import {cn, timeAgo} from "@/lib/utils.ts";
-import {navbarButtonStyle} from "@/lib/styles.ts";
 
 const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
@@ -46,7 +45,7 @@ export default function Dashboard() {
 
   const updateCanvas = useStore((s) => s.updateCanvas);
 
-  const { canvases, loadCanvases, createCanvas, deleteCanvas, selectCanvas, logout } = useStore(
+  const { canvases, loadCanvases, createCanvas, deleteCanvas, selectCanvas } = useStore(
     useShallow((s) => ({
       canvases: s.canvases,
       loadCanvases: s.loadCanvases,
@@ -113,14 +112,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
 
-      <Navbar
-      endChild={
-        <button className={navbarButtonStyle} onClick={logout}>
-          <LogOut size={14}/>
-          <p>Log out</p>
-        </button>
-      }
-      />
+      <DashboardNavbar/>
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-10">
 
