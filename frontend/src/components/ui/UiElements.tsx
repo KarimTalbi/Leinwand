@@ -61,13 +61,13 @@ export const CustomButton = (
   }: CustomButtonProps
 ) => {
 
-  const iconSize = iconProps?.size;
-  const iconColor = iconProps?.color;
+  const iconSize = iconProps?.size || defaultButtonSize;
+  const iconColor = iconProps?.color || "#737373";
 
   return (
     <ToolTip position={tooltipPosition} label={tooltipLabel || ""}>
       <button className={className} onClick={onClick} {...props}>
-        {icon && (getIcon({icon, size: iconSize || defaultButtonSize, color: iconColor, ...iconProps}))}
+        {icon && (getIcon({icon, size: iconSize, color: iconColor, ...iconProps}))}
         {children}
       </button>
     </ToolTip>

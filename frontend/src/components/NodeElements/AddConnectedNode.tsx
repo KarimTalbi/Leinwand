@@ -1,90 +1,50 @@
-import {cn} from "@/lib/utils.ts";
-import {LucideTextCursorInput, MergeIcon, MessagesSquare, Minimize2, Plus, X} from "lucide-react";
-import {NodeTypeNames} from "@/types.ts";
-import {useState} from "react";
-import useStore from "@/store.ts";
-import {useShallow} from "zustand/react/shallow";
-import {nodeTypeProperties, outerButtonStyle, tooltipStyle} from "@/lib/styles.ts";
+import {nodeTypeProperties} from "@/lib/styles.ts";
+import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
+import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 
 const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const {createConnectedNode} = useStore(useShallow((state) => ({createConnectedNode: state.createConnectedNode,})));
+  const {conPrompt, conText, conMerge, conSummary} = useStoreWithId(sourceId)
 
-
-  const onCreateNode = async (type: NodeTypeNames) => {
-    createConnectedNode(type, sourceId);
-    setIsOpen(false);
-  };
+  const addNodeMenu: CustomButtonProps[] = [
+    {
+      icon: nodeTypeProperties.promptNode.icon,
+      iconProps: {color: nodeTypeProperties.promptNode.color, size: 10},
+      onClick: conPrompt,
+      tooltipLabel: "Add Chat Node",
+      tooltipPosition: "bottom",
+    },
+    {
+      icon: nodeTypeProperties.textNode.icon,
+      iconProps: {color: nodeTypeProperties.textNode.color, size: 10},
+      onClick: conText,
+      tooltipLabel: "Add Note Node",
+      tooltipPosition: "bottom",
+    },
+    {
+      icon: nodeTypeProperties.summaryNode.icon,
+      iconProps: {color: nodeTypeProperties.summaryNode.color, size: 10},
+      onClick: () => conSummary(),
+      tooltipLabel: "Add Summary Node",
+      tooltipPosition: "bottom",
+    },
+    {
+      icon: nodeTypeProperties.mergeNode.icon,
+      iconProps: {color: nodeTypeProperties.mergeNode.color, size: 10},
+      onClick: () => conMerge(),
+      tooltipLabel: "Add Merge Node",
+      tooltipPosition: "bottom",
+    }
+  ]
 
   return (
-    <div className="translate-x-65">
-      <div className="grid grid-cols-1 w-6 bg-white rounded-full ring-1 ring-neutral-200 shadow-none translate-y-0">
-        <div className="relative flex items-center" style={{zIndex: -10}}>
+    <div className="translate-x-45">
+      <div className="flex flex-row items-center justify-around bg-neutral-100 ring-1 ring-neutral-200 rounded-b-md w-25">
 
-          {isOpen ? (
-            <div>
-              <div className="absolute top-full pt-2 flex flex-col gap-2">
+        {addNodeMenu.map((button, index) => (
+          <CustomButton key={index} className={"px-1 cursor-pointer"} {...button}/>
+        ))}
 
-                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Chat">
-                    <button onClick={() => onCreateNode("promptNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <MessagesSquare size={14} color={nodeTypeProperties.promptNode.color}/>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Note">
-                    <button onClick={() => onCreateNode("textNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <LucideTextCursorInput size={14} color={nodeTypeProperties.textNode.color}/>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Summary">
-                    <button onClick={() => onCreateNode("summaryNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <Minimize2 className="rotate-45" size={14} color={nodeTypeProperties.summaryNode.color}/>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-full ring-1 ring-neutral-200 shadow-md">
-                  <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Merge">
-                    <button onClick={() => onCreateNode("mergeNode")} className={cn(outerButtonStyle, "btn-xs")}>
-                      <MergeIcon className="rotate-90" size={14} color={nodeTypeProperties.mergeNode.color}/>
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-
-              <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Close">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className={cn(outerButtonStyle, "btn-xs bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100 rounded-t-none")}
-                >
-                  <X size={14}/>
-                </button>
-              </div>
-
-            </div>
-
-          ) : (
-
-            <div className={cn(tooltipStyle, "tooltip-right")} data-tip="Add Node">
-              <button
-                onClick={() => setIsOpen(true)}
-                className={cn(outerButtonStyle, "btn-xs bg-neutral-300 shadow-none ring-1 ring-neutral-300 hover:scale-100 rounded-t-none")}
-              >
-                <Plus size={14}/>
-              </button>
-            </div>
-
-          )}
-
-        </div>
       </div>
     </div>
   )
