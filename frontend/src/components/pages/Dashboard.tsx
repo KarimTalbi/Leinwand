@@ -125,7 +125,7 @@ export default function Dashboard() {
               value={search}
               onChange={handleSearch}
               placeholder="Search..."
-              className="max-w-40 pl-8 pr-3 py-2 border border-gray-300 rounded-lg shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="max-w-40 pl-8 pr-3 py-1.5 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
             />
           </div>
 
@@ -136,7 +136,7 @@ export default function Dashboard() {
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Project name..."
               autoFocus
-              className="max-w-40 flex-1 ml-auto px-3 py-2 border border-gray-300 rounded-lg shadow-inner text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="max-w-40 flex-1 ml-auto px-3 py-1.5 ring-1 ring-neutral-200 rounded-sm text-xs focus:outline-none focus:ring-neutral-300"
             />
           )}
 
@@ -145,11 +145,11 @@ export default function Dashboard() {
             disabled={showCreate && (creating || !newName.trim())}
             onClick={showCreate ? undefined : () => setShowCreate(true)}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-full hover:bg-gray-700 disabled:opacity-50 transition-colors cursor-pointer whitespace-nowrap",
+              "btn btn-sm flex items-center gap-1 border-none shadow-none font-normal bg-neutral-200 hover:bg-neutral-300",
               !showCreate ? "ml-auto" : "ml-2"
               )}
           >
-            <Plus className="size-3.5" />
+            <Plus className="size-3" />
             {showCreate ? (creating ? 'Creating…' : 'Create') : 'New project'}
           </button>
 
@@ -157,25 +157,25 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => { setShowCreate(false); setNewName(''); }}
-              className="p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+              className="p-2 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
             >
-              <X className="size-4" />
+              <X className="size-3" />
             </button>
           )}
         </form>
 
         {/* Empty state */}
         {canvases.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <FolderOpen className="size-10 mx-auto mb-3 opacity-40" />
-            <p className="text-sm">No projects yet. Create one to get started.</p>
+          <div className="text-center py-16 text-neutral-400">
+            <FolderOpen className="size-8 mx-auto mb-2 opacity-50" />
+            <p className="text-xs">No projects yet. Create one to get started.</p>
           </div>
         ) : (
           <>
             {filteredCanvases.length === 0 ? (
-              <div className="text-center py-16 text-gray-400">
-                <Search className="size-8 mx-auto mb-3 opacity-40" />
-                <p className="text-sm">No projects match "{search}".</p>
+              <div className="text-center py-16 text-neutral-400">
+                <Search className="size-8 mx-auto mb-2 opacity-50" />
+                <p className="text-xs">No projects match "{search}".</p>
               </div>
             ) : (
               <>
@@ -184,11 +184,11 @@ export default function Dashboard() {
                   {paginatedCanvases.map((canvas: CanvasRead) => (
                     <div
                       key={canvas.id}
-                      className="border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
+                      className="ring-1 ring-neutral-200 rounded-md overflow-hidden hover:shadow-xs hover:border-gray-300 transition-all"
                     >
                       {/* Canvas preview */}
                       <div
-                        className="relative bg-gray-50 cursor-pointer"
+                        className="relative bg-neutral-50 cursor-pointer hover:bg-neutral-100"
                         style={{ height: 160 }}
                         onClick={() => void selectCanvas(canvas.id, canvas.name)}
                       >
@@ -210,7 +210,7 @@ export default function Dashboard() {
                             panOnDrag={false}
                           >
                             <Panel position="top-right">
-                              <div className="flex items-center gap-1 px-2 py-1 bg-neutral-500 text-white text-[10px] font-bold rounded-full translate-x-2 -translate-y-2">
+                              <div className="flex items-center gap-1 px-2 py-0.5 bg-neutral-400 text-white text-[10px] font-bold rounded-full translate-x-2 -translate-y-2">
                                 <Hexagon size={10} ></Hexagon>
                                 <p>{canvas.data.nodes.length}</p>
                               </div>
@@ -220,7 +220,7 @@ export default function Dashboard() {
                       </div>
 
                       {/* Card footer */}
-                      <div className="border-t border-gray-200 px-3 py-2.5 bg-white flex items-center justify-between gap-2">
+                      <div className="border-t border-neutral-200 px-3 py-2 bg-white flex items-center justify-between gap-2 h-12">
                         <div className="min-w-0 flex-1 items-center">
                           {selectedEdit === canvas.id ? (
                             <input
@@ -229,12 +229,12 @@ export default function Dashboard() {
                               onChange={(e) => setNameEdit(e.target.value)}
                               autoFocus
                               onClick={(e) => e.stopPropagation()}
-                              className="text-sm font-medium border border-gray-300 rounded px-1.5 py-1.75 w-full focus:outline-none focus:ring-1 focus:ring-gray-400"
+                              className="text-xs text-neutral-500 border ring-1 ring-neutral-200 rounded px-1.5 my-1 w-full focus:outline-none focus:ring-neutral-300"
                             />
                           ) : (
                             <>
-                              <div className="text-sm font-medium truncate">{canvas.name}</div>
-                              <div className="text-xs text-gray-400 truncate">
+                              <div className="text-xs font-medium truncate text-neutral-600">{canvas.name}</div>
+                              <div className="text-[10px] text-neutral-400 truncate">
                                 {canvas.data.updated_at ? timeAgo(canvas.data.updated_at) : 'Never edited'}
                               </div>
                             </>
@@ -248,17 +248,17 @@ export default function Dashboard() {
                                 ? handleSaveEdit
                                 : () => handleStartEdit(canvas)
                             }
-                            className="btn btn-square btn-xs btn-ghost border-none shadow-none"
+                            className="btn btn-square btn-xs btn-ghost border-none shadow-none text-neutral-500 hover:text-neutral-800 hover:bg-transparent"
                           >
-                            {selectedEdit === canvas.id ? <Save size={13} /> : <Pen size={13} />}
+                            {selectedEdit === canvas.id ? <Save size={12} /> : <Pen size={12} />}
                           </button>
 
                           <button
                             onClick={(e) => void handleDelete(e, canvas.id)}
                             disabled={deletingId === canvas.id}
-                            className="btn btn-square btn-xs btn-ghost border-none shadow-none"
+                            className="btn btn-square btn-xs btn-ghost border-none shadow-none text-neutral-500 hover:text-neutral-800 hover:bg-transparent"
                           >
-                            <Trash2 size={13} />
+                            <Trash2 size={12} />
                           </button>
 
                         </div>
@@ -273,21 +273,21 @@ export default function Dashboard() {
                     <button
                       onClick={() => setCurrentPage((p) => p - 1)}
                       disabled={currentPage === 0}
-                      className="btn btn-circle btn-sm bg-transparent border border-gray-300 text-gray-500 hover:bg-gray-900 hover:text-white disabled:opacity-30"
+                      className="btn btn-circle btn-xs bg-transparent border border-neutral-300 hover:border-neutral-400 text-neutral-500 hover:text-neutral-900 disabled:opacity-30"
                     >
-                      <ChevronLeft size={14} />
+                      <ChevronLeft size={12} />
                     </button>
 
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs text-neutral-500">
                   {currentPage + 1} / {totalPages}
                 </span>
 
                     <button
                       onClick={() => setCurrentPage((p) => p + 1)}
                       disabled={currentPage === totalPages - 1}
-                      className="btn btn-circle btn-sm bg-transparent border border-gray-300 text-gray-500 hover:bg-gray-900 hover:text-white disabled:opacity-30"
+                      className="btn btn-circle btn-xs bg-transparent border border-neutral-300 hover:border-neutral-400 text-neutral-500 hover:text-neutral-900 disabled:opacity-30"
                     >
-                      <ChevronRight size={14} />
+                      <ChevronRight size={12} />
                     </button>
                   </div>
                 )}
