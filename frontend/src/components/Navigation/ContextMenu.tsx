@@ -16,9 +16,6 @@ const ContextMenu = (
   ContextMenuProps
 ) => {
 
-
-
-
   return (
     <>
       {menu && (
@@ -26,15 +23,17 @@ const ContextMenu = (
           <div style={{position: 'fixed', inset: 0, zIndex: 10}} onMouseDown={closeMenu}/>
           <div style={{position: 'fixed', ...menuStyle, zIndex: 100}}>
 
-            <ul className="menu bg-white rounded-box ring-1 ring-neutral-200 w-50">
+            <ul className="menu bg-white rounded-box ring-1 ring-neutral-300">
 
               <div
-                className="px-0.5 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-400 select-none">
+                className="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 select-none">
                 Add Node
 
                 {contextMenuButtons.map((button, index) => (
                   <li key={index} className="tracking-normal">
-                    <CustomButton {...button}/>
+
+                      <CustomButton {...button}/>
+
                   </li>
                 ))}
 
@@ -43,7 +42,7 @@ const ContextMenu = (
               <div className="my-1 border-t-2 border-gray-100"/>
 
               <div
-                className="px-0.5 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-widest text-gray-400 select-none">
+                className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 select-none">
                 Viewport
 
                 <li className="tracking-normal">

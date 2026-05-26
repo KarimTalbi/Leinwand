@@ -3,7 +3,7 @@ import {useReactFlow, XYPosition} from "@xyflow/react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 import {CustomButtonProps} from "@/components/ui/UiElements.tsx";
-import {nodeTypeProperties} from "@/lib/styles.ts";
+import {contextMenuButtonStyle, nodeTypeProperties} from "@/lib/styles.ts";
 import {LucideHouse} from "lucide-react";
 import {usePan} from "@/hooks/usePan.ts";
 
@@ -43,7 +43,7 @@ export function useFlowContextMenu() {
   }
 
   const contextMenuGlobal: Partial<CustomButtonProps> = {
-    className: "btn btn-ghost border-none justify-start gap-4",
+    className: contextMenuButtonStyle,
     tooltipDisabled: true
   }
 

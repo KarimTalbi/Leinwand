@@ -32,6 +32,7 @@ export const textareaStyle = "textarea textarea-md nodrag w-auto resize-none bg-
 export const pulsingText = "text-muted-foreground animate-pulse"
 
 
+
 // ——— Button Styles ———————————————————————————————————————————————————————————————————————————————————————————————— //
 
 
@@ -41,7 +42,9 @@ export const controlBarButtonStyle = "btn btn-circle m-1 btn-xs border-none shad
 export const controlBarFieldStyle = "grid bg-white rounded-full ring-1 ring-neutral-200 shadow-md p-1"
 export const miniMapButtonStyle = "font-normal text-[10px] btn btn-square btn-xs border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-100 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
 export const nodeHeaderButtonStyle = "btn btn-circle btn-sm border-none shadow-none bg-transparent text-neutral-500 hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
-export const nodeFooterButtonStyle = "btn btn-xs border-none gap-1 shadow-none bg-transparent text-[10px] text-neutral-500 font-normal hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const nodeFooterButtonStyle = "btn btn-xs border-none gap-1 shadow-none bg-transparent text-xs text-neutral-500 font-normal hover:text-neutral-800 hover:scale-105 transition-transform disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:text-neutral-500";
+export const contextMenuButtonStyle = "btn btn-ghost btn-sm btn-wide border-none justify-start gap-2 font-normal text-xs hover:bg-neutral-200 p-1"
+
 
 export const tooltipStyle = [
   "tooltip",
