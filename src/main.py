@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data import Base, engine
 from exceptions import register_exception_handlers
-from routes import canvas_router, node_router, user_router, llm_router
+from routes import canvas_router, node_router, user_router, llm_router, api_key_router
 from utils import setup_logging
 
 DROP_AND_CREATE_DB = False
@@ -51,6 +51,8 @@ app.include_router(user_router)
 app.include_router(canvas_router)
 app.include_router(node_router)
 app.include_router(llm_router)
+
+app.include_router(api_key_router)
 
 
 # PYTHONPATH=src fastapi dev src/main.py

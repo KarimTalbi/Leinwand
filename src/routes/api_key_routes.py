@@ -9,12 +9,13 @@ from service import get_current_active_user, api_key_service as aks
 api_key_router = APIRouter(prefix="/api_key", tags=["api_key"])
 
 
-@api_key_router.get("/list/", response_model=ApiKeyRead)
+@api_key_router.get("/list/", response_model=list[ApiKeyRead])
 async def list_api_keys(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     session: AsyncSession = Depends(get_async_session)
 ):
-    return await aks.list_keys(session, current_user.id)
+    result = await aks.list_keys(session, current_user.id)
+    return result
 
 
 @api_key_router.post("/create/")
