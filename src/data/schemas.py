@@ -1,8 +1,10 @@
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field, SecretStr
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
+
+from utils import decrypt_key
 
 
 def check_uuid4(v: str) -> str:
@@ -148,6 +150,25 @@ class ApiKeyRead(BaseModel):
     key: str
     models: list[str] | None = None
     model_provider: str | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        extra="ignore",
+    )
+
+class ApiKeyReturn(BaseModel):
+    id: UUID4Str
+    key: str
+    models: list[str] | None = None
+    model_provider: str | None = None
+
+    @field_validator("key", mode="after")
+    @classmethod
+    def mask_key(cls, v: str) -> str:
+        decrypted_key = decrypt_key(v)
+        return decrypted_key[:6] + "..." + decrypted_key[-4:]
 
     model_config = ConfigDict(
         from_attributes=True,

@@ -21,6 +21,7 @@ from .schemas import (
     UserInDb,
     UserRead,
 ApiKeyRead,
+ApiKeyReturn
 )
 
 __all__ = [
@@ -51,4 +52,5 @@ __all__ = [
     "MergeAnswer",
     "LLMModelConfig",
     "ApiKeyRead",
+    "ApiKeyReturn"
 ]

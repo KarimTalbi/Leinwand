@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import ForeignKey, String, BigInteger
+from sqlalchemy import ForeignKey, String, BigInteger, ARRAY, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -16,6 +16,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String, index=True, unique=True)
     hashed_password: Mapped[str] = mapped_column(String)
     disabled: Mapped[bool] = mapped_column(default=False)
+    user_data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
 class Node(Base):
@@ -57,5 +58,5 @@ class ApiKey(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     key: Mapped[str] = mapped_column(String)
-    models: Mapped[list[str] | None] = mapped_column(MutableDict.as_mutable(JSONB))
+    models: Mapped[list[str] | None] = mapped_column(ARRAY(Text), default=list)
     model_provider: Mapped[str | None] = mapped_column(String)
