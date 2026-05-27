@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} from "@xyflow/react";
 
 import api, {BASE_URL} from '@/api';
-import {AppState, NodeTypeNames, CanvasRead} from '@/types';
+import {AppState, NodeTypeNames, CanvasRead, ApiKeyRead} from '@/types';
 import {DEFAULT_COLLISION_OPTIONS, resolveCollisions} from "@/lib/resolve-collisions.ts";
 
 
@@ -14,7 +14,8 @@ const nodeInitData = {
   summaryNode: {response: '', closed: false},
 };
 
-const useStore = create<AppState>()((set, get) => ({
+const useStore = create<AppState>()((set, get) => (
+  {
     // Auth state — restore token from localStorage on init
     token: localStorage.getItem('token'),
     user: null,
@@ -33,6 +34,9 @@ const useStore = create<AppState>()((set, get) => ({
 
     settingsOpen: false,
     // state
+
+    apiKeys: [],
+    defaultModel: null,
 
 
     // ── Auth actions ──────────────────────────────────────────────────────────
@@ -69,7 +73,16 @@ const useStore = create<AppState>()((set, get) => ({
     logout: () => {
       localStorage.removeItem('token');
 
-      set({token: null, user: null, canvases: [], currentCanvasId: null, currentCanvasName: null, nodes: [], edges: []});
+      set({
+        token: null,
+        user: null,
+        canvases: [],
+        currentCanvasId: null,
+        currentCanvasName: null,
+        nodes: [],
+        edges: [],
+        apiKeys: [],
+      });
     },
 
     register: async (username, password) => {
@@ -103,12 +116,8 @@ const useStore = create<AppState>()((set, get) => ({
         const res = await api.get<CanvasRead[]>('/canvas/list/');
         set({canvases: res.data});
 
-        console.log(res.data)
-
       } catch (err) {
-
         console.error('Error loading canvases:', err);
-
       }
     },
 
@@ -220,6 +229,48 @@ const useStore = create<AppState>()((set, get) => ({
     },
 
     exitCanvas: () => set({currentCanvasId: null, currentCanvasName: null, nodes: [], edges: []}),
+
+    // ── Api Key management actions ─────────────────────────────────────────────
+
+    loadApiKeys: async () => {
+      try {
+
+        const res = await api.get<ApiKeyRead[]>('/api_key/list/')
+        set({apiKeys: res.data})
+
+      } catch (err) {
+        console.log("Error retrieving API Keys" ,err)
+      }
+    },
+
+
+    createApiKey: async (key) => {
+      const newKeyId = uuidv4()
+      const newKey: ApiKeyRead = {
+        id: newKeyId,
+        key: key
+      }
+
+      try {
+        await api.post<ApiKeyRead>('/api_key/create/', newKey)
+        void get().loadApiKeys()
+
+      } catch (err) {
+        console.log("Error creating API Key" ,err)
+      }
+    },
+
+
+    deleteApiKey: async (id) => {
+      try {
+
+        await api.delete(`/api_key/${id}/delete/`)
+        void get().loadApiKeys()
+
+      } catch (err) {
+        console.log("Error deleting API Key" ,err)
+      }
+    },
 
 
     // ── Flow actions ──────────────────────────────────────────────────────────

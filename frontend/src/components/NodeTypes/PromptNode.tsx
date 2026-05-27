@@ -32,10 +32,16 @@ const PromptNode = (
   }: NodeProps<PromptNodeType>
 ) => {
 
-  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.prompt || "", "prompt")
-  const {promptNodeAction} = useStore(useShallow((s) => ({
+  const {promptNodeAction, updateNodeData} = useStore(useShallow((s) => ({
     promptNodeAction: s.promptNodeAction,
+    updateNodeData: s.updateNodeData,
   })));
+
+  const {localText, handleTextChange, textareaRef} = useTextarea(
+    data.prompt || "",
+    (value) => updateNodeData(id, {prompt: value})
+    );
+
 
   const handleClick = async () => {
     setLoading(true);

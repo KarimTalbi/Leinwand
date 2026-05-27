@@ -14,10 +14,6 @@ export interface Section {
   solution?: string;
 }
 
-export interface CanvasReadData {
-  nodes: (AnyNodeType)[],
-  edges: Edge[],
-}
 
 export type PromptNodeType = Node<{
   prompt?: string;
@@ -60,11 +56,24 @@ export interface UserRead {
   disabled: boolean;
 }
 
+export interface CanvasReadData {
+  nodes: (AnyNodeType)[],
+  edges: Edge[],
+}
+
 export interface CanvasRead {
   id: string;
   name: string;
   updatedAt: number;
   data: CanvasReadData;
+}
+
+
+export interface ApiKeyRead {
+  id: string;
+  key: string;
+  provider?: string;
+  models?: string[];
 }
 
 
@@ -93,6 +102,9 @@ export interface AppState {
   register: (username: string, password: string) => Promise<void>;
   clearAuthError: () => void;
 
+  apiKeys: ApiKeyRead[];
+  defaultModel: ApiKeyRead | null;
+
 
   // Canvas management actions
   loadCanvases: () => Promise<void>;
@@ -102,6 +114,11 @@ export interface AppState {
   exitCanvas: () => void;
   settingsOpen: boolean;
   setSettingsOpen: () => void;
+
+  // Api key management actions
+  loadApiKeys: () => Promise<void>;
+  createApiKey: (key: string) => Promise<void>;
+  deleteApiKey: (id: string) => Promise<void>;
 
   // Flow actions
   syncCanvas: () => Promise<void>;

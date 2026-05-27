@@ -12,9 +12,7 @@ interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
 
 export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
   return (
-    <div
-      style={{height: 50, maxHeight: 50, minHeight: 50, zIndex: 1000, position: "sticky", top: 0, left: 0, right: 0,}}
-      className="bg-white w-full shadow-xs z-100 grid grid-cols-3 items-center border-b border-neutral-200" {...props}>
+    <div className="navbar bg-white w-full shadow-xs z-100 grid grid-cols-3 items-center border-b border-neutral-200" {...props}>
 
       <div>
         <h1 className="text-sm text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>

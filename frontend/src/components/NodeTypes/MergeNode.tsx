@@ -8,7 +8,13 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, pulsingText, textareaStyle} from "@/lib/styles.ts";
+import {
+  NodeBackgroundStyle,
+  nodeTypeProperties,
+  NodeForegroundStyle,
+  pulsingText,
+  textareaStyle
+} from "@/lib/styles.ts";
 import {CircleCheck, Info, TriangleAlert} from "lucide-react";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
 import {cn} from "@/lib/utils.ts";
@@ -25,13 +31,17 @@ type NodeState =
 
 const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
   const {setCenter} = useReactFlow();
-  const {mergeNodeAction, mergeNodeResolveAction} = useStore(useShallow((state) => ({
+  const {mergeNodeAction, mergeNodeResolveAction, updateNodeData} = useStore(useShallow((state) => ({
     mergeNodeAction: state.mergeNodeAction,
     mergeNodeResolveAction: state.mergeNodeResolveAction,
+    updateNodeData: state.updateNodeData,
   })));
   const [loading, setLoading] = useState(false);
   const [checkStreams, setCheckStreams] = useState(true);
-  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.solution || "", "solution")
+  const {localText, handleTextChange, textareaRef} = useTextarea(
+    data.solution || "",
+    (value) => updateNodeData(id, {solution: value})
+  );
 
   const isClosed = data.closed;
   const hasProblem = data.has_issues;

@@ -14,12 +14,12 @@ const TipPos: Record<toolTipPosition, string> = {
 }
 
 
-interface ToolTipProps extends React.ComponentPropsWithRef<"div"> {
+interface ToolTipProps extends React.ComponentPropsWithoutRef<"div"> {
   label?: string,
   position?: toolTipPosition,
 }
 
-export interface CustomButtonProps extends React.ComponentPropsWithRef<"button"> {
+export interface CustomButtonProps extends React.ComponentPropsWithoutRef<"button"> {
   icon?: LucideIcon,
   iconProps?: LucideProps,
   tooltipDisabled?: boolean,
@@ -27,7 +27,7 @@ export interface CustomButtonProps extends React.ComponentPropsWithRef<"button">
   tooltipPosition?: toolTipPosition,
 }
 
-export interface ControlBarFieldProps extends React.ComponentPropsWithRef<"div"> {
+export interface ControlBarFieldProps extends React.ComponentPropsWithoutRef<"div"> {
   buttons: CustomButtonProps[];
 }
 

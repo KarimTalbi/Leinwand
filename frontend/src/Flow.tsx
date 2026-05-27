@@ -17,9 +17,6 @@ import {CustomBackground} from "@/components/ui/CustomBackground.tsx";
 import {nodeTypes} from "@/lib/nodeTypes.ts";
 
 
-
-
-
 const selector = (state: AppState) => ({
   nodes: state.nodes,
   edges: state.edges,

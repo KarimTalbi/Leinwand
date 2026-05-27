@@ -18,13 +18,17 @@ type NodeState =
   | 'empty';
 
 const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
-
-  const {localText, handleTextChange, textareaRef} = useTextarea(id, data.text || "", "text")
   const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})));
+
+  const {localText, handleTextChange, textareaRef} = useTextarea(
+    data.text || "",
+    (value) => updateNodeData(id, {text: value})
+  );
+
 
   const handleClick = () => {
     updateNodeData(id, {closed: !data.closed})
-  }
+  };
 
   useLayoutEffect(() => {
     if (textareaRef.current) {

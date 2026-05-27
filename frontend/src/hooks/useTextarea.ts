@@ -1,17 +1,19 @@
 import React, {useRef, useState} from "react";
-import useStore from "@/store.ts";
 import {useDebouncedCallback} from "use-debounce";
 
 
-export const useTextarea = (id: string, initialValue: string, dataKey: string) => {
+export const useTextarea = (
+  initialValue: string,
+  onChange?: (value: string) => void,
+  debounceMs = 500,
+) => {
   const [localText, setLocalText] = useState(initialValue || "");
-  const {updateNodeData} = useStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 
   const debouncedUpdate = useDebouncedCallback((value: string) => {
-    updateNodeData(id, {[dataKey]: value});
-  }, 500);
+    onChange?.(value);
+  }, debounceMs);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLocalText(e.target.value);
