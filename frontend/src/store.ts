@@ -36,7 +36,7 @@ const useStore = create<AppState>()((set, get) => (
     // state
 
     apiKeys: [],
-    defaultModel: null,
+    defaultModel: {model: "", key_id: ""},
 
 
     // ── Auth actions ──────────────────────────────────────────────────────────
@@ -82,6 +82,7 @@ const useStore = create<AppState>()((set, get) => (
         nodes: [],
         edges: [],
         apiKeys: [],
+        defaultModel: {model: "", key_id: ""}
       });
     },
 
@@ -228,7 +229,11 @@ const useStore = create<AppState>()((set, get) => (
       }
     },
 
-    exitCanvas: () => set({currentCanvasId: null, currentCanvasName: null, nodes: [], edges: []}),
+    exitCanvas: () => set({
+      currentCanvasId: null,
+      currentCanvasName: null,
+      nodes: [], edges: [],
+    }),
 
     // ── Api Key management actions ─────────────────────────────────────────────
 
@@ -245,7 +250,7 @@ const useStore = create<AppState>()((set, get) => (
 
 
     createApiKey: async (key) => {
-      const newKeyId = uuidv4()
+      const newKeyId = String(uuidv4())
       const newKey: ApiKeyRead = {
         id: newKeyId,
         key: key
@@ -264,12 +269,16 @@ const useStore = create<AppState>()((set, get) => (
     deleteApiKey: async (id) => {
       try {
 
-        await api.delete(`/api_key/${id}/delete/`)
+        await api.delete(`/api_key/delete/${id}/`)
         void get().loadApiKeys()
 
       } catch (err) {
         console.log("Error deleting API Key" ,err)
       }
+    },
+
+    setDefaultApiKey: (model, key_id) => {
+      set({defaultModel: {model: model, key_id: key_id}})
     },
 
 

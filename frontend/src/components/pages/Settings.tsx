@@ -1,19 +1,23 @@
 import {SettingsNavbar} from "@/components/Navigation/NavBar.tsx";
 import {useEffect, useState} from "react";
-import {KeyRound, Trash2} from "lucide-react";
+import {Check, KeyRound, Trash2} from "lucide-react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
 
 
 export default function Settings() {
-  const {apiKeys, deleteApiKey, loadApiKeys, createApiKey} = useStore(useShallow((state) => ({
+  const {apiKeys, deleteApiKey, loadApiKeys, createApiKey, setDefaultApiKey, defaultModel} = useStore(useShallow((state) => ({
     apiKeys: state.apiKeys,
     loadApiKeys: state.loadApiKeys,
     createApiKey: state.createApiKey,
     deleteApiKey: state.deleteApiKey,
+    setDefaultApiKey: state.setDefaultApiKey,
+    defaultModel: state.defaultModel,
   })));
 
   const [newKey, setNewKey] = useState("");
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [key_id, setKeyId] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -34,14 +38,18 @@ export default function Settings() {
       <SettingsNavbar/>
       <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-10">
 
-
         <form onSubmit={handleCreate}>
 
-          <div className="join flex items-center justify-end mb-4">
+          <div className="join flex items-center justify-between mb-4">
 
+            <div className="text-xs uppercase font-semibold opacity-60 tracking-wide">
+              Current Default:
+              <div className="badge badge-outline badge-xs badge-info ml-2">{defaultModel.model || "no default set"}</div>
+            </div>
+            <div className="flex flex-row justify-around">
             <div>
 
-              <label className="input input-sm validator join-item">
+              <label className="input input-sm validator rounded-l-md join-item flex flex-end">
                 <KeyRound size={12}/>
                 <input
                   type="password"
@@ -50,14 +58,18 @@ export default function Settings() {
                   onChange={(e) => setNewKey(e.target.value
                   )}
                 />
-              </label>
 
+              </label>
+              <p className="label text-[10px] text-neutral-500">only OpenAi, Google and Anthropic are supported</p>
             </div>
+
+
 
             <button className="btn btn-sm join-item">
               Add
             </button>
 
+          </div>
           </div>
 
         </form>
@@ -68,29 +80,42 @@ export default function Settings() {
             <p className="text-xs">No API-Keys yet. Add one to get started.</p>
           </div>
         ) : (
-          <ul className="list bg-base-100 rounded-box shadow-md">
+          <ul className="list bg-base-100">
 
             <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Your API-Keys:</li>
 
-            <div className="divider px-4 py-2 text-xs opacity-60 tracking-wide"/>
-
             {apiKeys.map((key) => (
 
-            <li className="list-row">
-              <div>
-                <div>...{key.key}</div>
-                <div className="text-xs uppercase font-semibold opacity-60">{key.provider || "no provider found"}</div>
-              </div>
-              <select className="select" defaultValue="See Available Models">
-                {key.models?.map((model) => (
-                  <option>{model}</option>
-                ))}
-              </select>
-              <div className="px-5">{key.key}</div>
-              <button className="btn btn-sm btn-square btn-error mr-2">
-                <Trash2 size={14} onClick={() => deleteApiKey(key.id)}/>
-              </button>
-            </li>
+              <li className="list-row">
+                <div>
+                  <div>{key.key}</div>
+                  <div
+                    className="text-xs uppercase font-semibold opacity-60">{key.modelProvider || "no provider found"}</div>
+                </div>
+                <div className="flex items-center justify-center">
+                  <select
+                    onChange={(e) => {
+                    setSelectedModel(e.target.value)
+                    setKeyId(key.id)
+                  }}
+                    className="select select-sm focus:outline-none"
+                    defaultValue="placeholder">
+                    <option value="placeholder" disabled>Models</option>
+                    {key.models?.map((model) => (
+                      <option value={model} className="disabled:text-neutral-600">{model}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <button className="btn btn-sm btn-square btn-success mr-2" disabled={key_id !== key.id}>
+                    <Check size={14} onClick={() => setDefaultApiKey(selectedModel || "", key.id)}/>
+                  </button>
+                  <button className="btn btn-sm btn-square btn-error mr-2">
+                    <Trash2 size={14} onClick={() => deleteApiKey(key.id)}/>
+                  </button>
+
+                </div>
+              </li>
 
             ))}
 

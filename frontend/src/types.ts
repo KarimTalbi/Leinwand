@@ -72,7 +72,7 @@ export interface CanvasRead {
 export interface ApiKeyRead {
   id: string;
   key: string;
-  provider?: string;
+  modelProvider?: string;
   models?: string[];
 }
 
@@ -103,7 +103,8 @@ export interface AppState {
   clearAuthError: () => void;
 
   apiKeys: ApiKeyRead[];
-  defaultModel: ApiKeyRead | null;
+  defaultModel: {model: string, key_id: string};
+  setDefaultApiKey: (model: string, key_id: string) => void;
 
 
   // Canvas management actions
