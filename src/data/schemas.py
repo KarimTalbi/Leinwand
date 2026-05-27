@@ -145,7 +145,7 @@ class LLMModelConfig(BaseModel):
 
 class ApiKeyRead(BaseModel):
     id: UUID4Str
-    key: SecretStr
+    key: str
     models: list[str] | None = None
     model_provider: str | None = None
 
