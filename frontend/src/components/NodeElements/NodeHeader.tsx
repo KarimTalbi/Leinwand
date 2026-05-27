@@ -10,7 +10,7 @@ import {
 import {nodeHeaderButtonStyle} from "@/lib/styles.ts";
 import React from "react";
 import getIcon from "@/lib/icons.tsx";
-import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
+import {CustomButton, CustomButtonProps} from "@/components/ui/CustomButtons.tsx";
 import {useNodeMove} from "@/hooks/useNodeMove.ts";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 

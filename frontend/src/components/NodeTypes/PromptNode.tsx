@@ -98,7 +98,7 @@ const PromptNode = (
             </div>
 
             <div className="chat chat-start">
-              <div className="chat-bubble text-sm!">
+              <div className="chat-bubble text-sm">
                 <span className={pulsingText}>
                   Thinking...
                 </span>

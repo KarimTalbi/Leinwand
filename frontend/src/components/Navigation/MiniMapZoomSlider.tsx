@@ -3,7 +3,7 @@ import {LucideMaximize} from "lucide-react";
 import {MiniMap, Panel} from "@xyflow/react";
 
 import {miniMapButtonStyle} from "@/lib/styles.ts";
-import {CustomButton} from "@/components/ui/UiElements.tsx";
+import {CustomButton} from "@/components/ui/CustomButtons.tsx";
 import {usePan} from "@/hooks/usePan.ts";
 
 export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string}) {

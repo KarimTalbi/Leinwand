@@ -9,7 +9,7 @@ import {
 } from "@/lib/styles.ts";
 import {useShallow} from "zustand/react/shallow";
 import {NodeTypeNames} from "@/types.ts";
-import {ControlBarField, ControlBarFieldProps} from "@/components/ui/UiElements.tsx";
+import {ControlBarField, ControlBarFieldProps} from "@/components/ui/CustomButtons.tsx";
 import {usePan} from "@/hooks/usePan.ts";
 
 

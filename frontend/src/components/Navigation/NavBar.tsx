@@ -1,5 +1,5 @@
 import React from "react";
-import {CustomButton, CustomButtonProps, ToolTip} from "@/components/ui/UiElements.tsx";
+import {CustomButton, CustomButtonProps, ToolTip} from "@/components/ui/CustomButtons.tsx";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
 import {Folder, Hexagon, LucideChevronLeft, LucideLogOut, LucideSettings2, LucideSpline} from "lucide-react";

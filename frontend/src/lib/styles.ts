@@ -28,7 +28,7 @@ export const defaultButtonSize = 12
 
 export const NodeBackgroundStyle = "flex flex-col bg-white ring-1 ring-neutral-300 w-130 rounded-lg px-1"
 export const NodeForegroundStyle = "flex flex-col flex-1 min-h-0 p-2 rounded-lg"
-export const textareaStyle = "textarea textarea-md nodrag w-auto resize-none bg-neutral-100 rounded-md outline-none"
+export const textareaStyle = "textarea textarea-md nodrag w-auto resize-none bg-neutral-100 rounded-sm outline-none"
 export const pulsingText = "text-muted-foreground animate-pulse"
 
 

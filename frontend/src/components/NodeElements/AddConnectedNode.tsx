@@ -1,5 +1,5 @@
 import {nodeTypeProperties} from "@/lib/styles.ts";
-import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
+import {CustomButton, CustomButtonProps} from "@/components/ui/CustomButtons.tsx";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 

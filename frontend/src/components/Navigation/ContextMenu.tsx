@@ -1,4 +1,4 @@
-import {CustomButton, CustomButtonProps} from "@/components/ui/UiElements.tsx";
+import {CustomButton, CustomButtonProps} from "@/components/ui/CustomButtons.tsx";
 import React from "react";
 import {ContextMenuState} from "@/hooks/useFlowContextMenu.ts"
 
