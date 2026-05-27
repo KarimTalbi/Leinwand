@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import ForeignKey, String, Integer, BigInteger
+from sqlalchemy import ForeignKey, String, BigInteger
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -25,7 +25,7 @@ class Node(Base):
     canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id"), index=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     type: Mapped[str] = mapped_column(String, index=True)
-    position: Mapped[dict[str, float]] = mapped_column(MutableDict.as_mutable(JSONB))
+    position: Mapped[dict[str, float | int]] = mapped_column(MutableDict.as_mutable(JSONB))
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
@@ -46,16 +46,9 @@ class Canvas(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     updated_at: Mapped[int] = mapped_column(BigInteger)
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
-
-
-class Owner(Base):
-    __tablename__ = "owner"
-
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), primary_key=True)
-    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id"), primary_key=True)
-    role: Mapped[str] = mapped_column(String)
 
 
 class ApiKey(Base):
@@ -64,5 +57,5 @@ class ApiKey(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
     key: Mapped[str] = mapped_column(String)
-    models: Mapped[list[str]] = mapped_column(MutableDict.as_mutable(JSONB))
-    model_provider: Mapped[str] = mapped_column(String)
+    models: Mapped[list[str] | None] = mapped_column(MutableDict.as_mutable(JSONB))
+    model_provider: Mapped[str | None] = mapped_column(String)

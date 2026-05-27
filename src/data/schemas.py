@@ -1,7 +1,7 @@
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, SecretStr
 from pydantic.alias_generators import to_camel
 
 
@@ -136,8 +136,22 @@ class MergeAnswer(BaseModel):
 class LLMModelConfig(BaseModel):
     model: str
     model_provider: str
-    temperature: Annotated[float, Field(ge=0.0, le=2.0)] | None = None
+    temperature: Annotated[float | int, Field(ge=0.0, le=2.0)] | None = None
     max_tokens: Annotated[int, Field(ge=0)] | None = None
     timeout: Annotated[int, Field(ge=0)] | None = None
     max_retries: Annotated[int, Field(ge=0)] | None = None
     model_kwargs: dict[str, Any] | None = None
+
+
+class ApiKeyRead(BaseModel):
+    id: UUID4Str
+    key: SecretStr
+    models: list[str] | None = None
+    model_provider: str | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        extra="ignore",
+    )

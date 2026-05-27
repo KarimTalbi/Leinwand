@@ -1,4 +1,4 @@
-from .db_models import Base, Canvas, Edge, Node, Owner, User
+from .db_models import Base, Canvas, Edge, Node, User
 from .db_session import engine, get_async_session
 from .queries.load_query import get_ancestors_recursive
 from .schemas import (
@@ -20,6 +20,7 @@ from .schemas import (
     UserCreate,
     UserInDb,
     UserRead,
+ApiKeyRead,
 )
 
 __all__ = [
@@ -29,7 +30,6 @@ __all__ = [
     "Edge",
     "Node",
     "User",
-    "Owner",
     "engine",
     "get_async_session",
     "get_ancestors_recursive",
@@ -50,4 +50,5 @@ __all__ = [
     "ChatRequest",
     "MergeAnswer",
     "LLMModelConfig",
+    "ApiKeyRead",
 ]
