@@ -33,7 +33,7 @@ export const Controls = () => {
   const {createPromptNode, createSummaryNode, createTextNode, createMergeNode} = useCreateNode()
 
   return (
-    <Panel position="bottom-center" className="flex flex-row gap-2 shrink-0" style={{zIndex: 1000}}>
+    <Panel position="bottom-center" className="flex flex-row shrink-0" style={{zIndex: 1000}}>
 
       <div
         className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
@@ -50,7 +50,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="border-r border-black/20 h-4 w-px mx-2"/>
+        <div className="divider divider-horizontal m-0 my-2"/>
 
         <div className="tooltip" data-tip="Zoom In">
           <button className={controlButtonStyle} onClick={zoomIn}>
@@ -64,7 +64,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="border-r border-black/20 h-4 w-px mx-2"/>
+        <div className="divider divider-horizontal m-0 my-2"/>
 
         <div className="tooltip" data-tip="Pan Up">
           <button className={controlButtonStyle} onClick={panUp}>
@@ -78,7 +78,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="border-r border-black/20 h-4 w-px mx-2"/>
+        <div className="divider divider-horizontal m-0 my-2"/>
 
         <div className="tooltip" data-tip="Pan Left">
           <button className={controlButtonStyle} onClick={panLeft}>

@@ -184,7 +184,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
             </div>
 
-            <div className="flex justify-around w-full items-end gap-1.5 px-2 pt-2">
+            <div className="flex justify-end w-full items-center gap-1.5 px-2 pt-2">
               <button className={nodeFooterButtonStyle} onClick={() => null}>Settings</button>
               <button className={nodeFooterButtonStyle} onClick={handleMerge}
                       disabled={nodeState === 'needs_connections'}>Merge
