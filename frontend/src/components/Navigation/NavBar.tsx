@@ -1,10 +1,7 @@
 import React from "react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {
-  ChevronLeft, LogOut,
-  Settings2
-} from "lucide-react";
+import {ChevronLeft, LogOut, Settings2} from "lucide-react";
 
 
 export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div">) => {
@@ -23,6 +20,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
     </div>
   );
 };
+
 
 export const FlowNavBar = () => {
   const {exitCanvas, setSettingsOpen} = useStore(useShallow(s => ({
@@ -80,6 +78,7 @@ export const DashboardNavbar = () => {
     </Navbar>
   )
 }
+
 
 export const SettingsNavbar = () => {
   const {setSettingsOpen} = useStore(useShallow(s => ({setSettingsOpen: s.setSettingsOpen,})));

@@ -23,7 +23,9 @@ const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon
 };
 
 const SectionContent = ({section}: { section: Section }) => {
+
   switch (section.type) {
+
     case "promptNode":
       return (
         <div className="flex flex-col gap-1">
@@ -33,10 +35,13 @@ const SectionContent = ({section}: { section: Section }) => {
           <NodeDisplayMarkdown content={section.response ?? ""}/>
         </div>
       );
+
     case "textNode":
       return <NodeDisplayMarkdown content={section.text ?? ""}/>;
+
     case "summaryNode":
       return <NodeDisplayMarkdown content={section.response ?? ""}/>;
+
     case "problemResolution":
       return (
         <div className="flex flex-col gap-1">
@@ -46,17 +51,16 @@ const SectionContent = ({section}: { section: Section }) => {
           <NodeDisplayMarkdown content={section.solution ?? ""}/>
         </div>
       );
+
     case "mergeNode":
       return <p className="text-xs opacity-50 italic">Merge node — no content.</p>;
+
     default:
       return null;
   }
 };
 
-const SectionCard = ({
-                       section,
-                       onGoToNode,
-                     }: {
+const SectionCard = ({section, onGoToNode,}: {
   section: Section;
   onGoToNode?: (id: string) => void;
 }) => {
@@ -64,7 +68,6 @@ const SectionCard = ({
   const meta = TYPE_META[section.type] ?? {label: section.type, badge: "badge-ghost"};
 
   return (
-
     <div className="rounded-md border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
       <div className="flex items-center justify-between px-2 py-1 gap-1">
 
@@ -72,6 +75,7 @@ const SectionCard = ({
           className="flex items-center gap-1 flex-1 text-left nodrag"
           onClick={() => setOpen((v) => !v)}
         >
+
           <span
             className="badge badge-xs badge-outline"
             style={{color: meta.color}}
@@ -102,24 +106,23 @@ const SectionCard = ({
   );
 };
 
-const BranchColumn = ({
-                        label,
-                        sections,
-                        onGoToNode,
-                      }: {
+const BranchColumn = ({label, sections, onGoToNode}: {
   label: string;
   sections: Section[];
   onGoToNode?: (id: string) => void;
 }) => (
+
   <div className="flex flex-col flex-1 min-w-0">
     <p className="text-xs font-bold opacity-40 mb-1 px-0.5">{label}</p>
     <div className="flex flex-col overflow-y-auto nowheel max-h-64">
+
       {sections.length === 0
         ? <p className="text-xs opacity-30 italic px-0.5">No nodes</p>
         : sections.map((s) => (
           <SectionCard key={s.id} section={s} onGoToNode={onGoToNode}/>
         ))
       }
+
     </div>
   </div>
 );

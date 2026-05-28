@@ -1,12 +1,18 @@
 import {Panel} from '@xyflow/react'
 import {
-  LucideLock, LucideMouseOff, LucideMouse,
-  LockOpen, ZoomIn, ZoomOut, ArrowUp, ArrowDown, ArrowRight, ArrowLeft,
+  LucideLock,
+  LucideMouseOff,
+  LucideMouse,
+  LockOpen,
+  ZoomIn,
+  ZoomOut,
+  ArrowUp,
+  ArrowDown,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react'
 import useStore from "@/store.ts";
-import {
-  typeProps,
-} from "@/lib/styles.ts";
+import {typeProps} from "@/lib/styles.ts";
 import {useShallow} from "zustand/react/shallow";
 import {AppState} from "@/types.ts";
 import {usePan} from "@/hooks/usePan.ts";
