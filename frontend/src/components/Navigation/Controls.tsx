@@ -12,7 +12,7 @@ import {AppState} from "@/types.ts";
 import {usePan} from "@/hooks/usePan.ts";
 import {useCreateNode} from "@/hooks/useCreateNode.ts";
 
-const controlButtonStyle = "btn btn-square btn-neutral btn-sm"
+const controlButtonStyle = "btn btn-ghost btn-square btn-sm"
 
 const selector = (state: AppState) => ({
   locked: state.locked,
@@ -27,10 +27,10 @@ export const Controls = () => {
   const {createPromptNode, createSummaryNode, createTextNode, createMergeNode} = useCreateNode()
 
   return (
-    <Panel position="bottom-center" className="flex flex-row gap-2" style={{zIndex: 1000}}>
+    <Panel position="bottom-center" className="flex flex-row gap-2 shrink-0" style={{zIndex: 1000}}>
 
       <div
-        className="flex flex-row gap-1 items-center justify-center bg-neutral-100 ring-1 ring-neutral-200 p-0.5 rounded-sm">
+        className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
 
         <div className="tooltip" data-tip="Toggle Canvas Lock">
           <button className={controlButtonStyle} onClick={setLocked}>
@@ -44,7 +44,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div/>
+        <div className="border-r border-black/20 h-4 w-px mx-2"/>
 
         <div className="tooltip" data-tip="Toggle Canvas Lock">
           <button className={controlButtonStyle} onClick={zoomIn}>
@@ -58,7 +58,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div/>
+        <div className="border-r border-black/20 h-4 w-px mx-2"/>
 
         <div className="tooltip" data-tip="Toggle Canvas Lock">
           <button className={controlButtonStyle} onClick={panUp}>
@@ -72,7 +72,7 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div/>
+        <div className="border-r border-black/20 h-4 w-px mx-2"/>
 
         <div className="tooltip" data-tip="Toggle Canvas Lock">
           <button className={controlButtonStyle} onClick={panLeft}>
@@ -88,7 +88,7 @@ export const Controls = () => {
       </div>
 
       <div
-        className="flex flex-row gap-1 items-center justify-center bg-neutral-100 ring-1 ring-neutral-200 p-0.5 rounded-sm">
+        className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
 
         <div className="tooltip" data-tip="Add Node">
           <button className={controlButtonStyle} onClick={createPromptNode}>

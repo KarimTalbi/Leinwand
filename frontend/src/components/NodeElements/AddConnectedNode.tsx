@@ -39,7 +39,7 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
 
   return (
     <div className="translate-x-45">
-      <div className="flex flex-row items-center justify-around bg-neutral-100 ring-1 ring-neutral-200 rounded-b-md w-25">
+      <div className="flex flex-row items-center justify-around bg-neutral-50 ring-1 ring-neutral-200 rounded-b-md w-25">
 
         {addNodeMenu.map((button, index) => (
           <CustomButton key={index} className={"px-1 cursor-pointer"} {...button}/>

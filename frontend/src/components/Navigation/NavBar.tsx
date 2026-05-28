@@ -11,7 +11,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
   return (
     <div
       style={{zIndex: 100, position: "sticky", top: 0, left: 0, right: 0, height: "55px"}}
-      className="nodrag nowheel bg-base-100 shadow-sm flex flex-row items-center justify-between"
+      className="nodrag nowheel bg-neutral-50 shadow-sm flex flex-row items-center justify-between"
       {...props}
     >
       <div>

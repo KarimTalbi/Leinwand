@@ -1,9 +1,4 @@
-import {LucideMaximize} from "lucide-react";
-
 import {MiniMap, Panel} from "@xyflow/react";
-
-import {miniMapButtonStyle} from "@/lib/styles.ts";
-import {CustomButton} from "@/components/ui/CustomButtons.tsx";
 import {usePan} from "@/hooks/usePan.ts";
 
 export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string}) {
@@ -13,10 +8,10 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
   return (
     <Panel position="bottom-right">
 
-      <div className="bg-white w-40 h-32 rounded-lg ring-1 ring-base-200 shadow-md">
+      <div className="bg-neutral-50 w-50 h-40 rounded-lg ring-1 ring-neutral-200 shadow-md">
 
         <MiniMap
-          className="rounded-md w-37.5 h-25 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-base-200"
+          className="rounded-md w-48 h-30 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
           zoomable
           pannable
           bgColor={"transparent"}
@@ -26,12 +21,9 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
           offsetScale={0}
         />
 
-        <div style={{position: "absolute", bottom: 104, right: 5, zIndex: 1000}}>
-          <div className="flex gap-1 flex-row items-center w-38.5">
+        <div style={{position: "absolute", bottom: 130, right: 7, zIndex: 1000}}>
+          <div className="flex gap-2 flex-row items-center w-46.5">
 
-            <button className="btn btn-square btn-xs">
-              <LucideMaximize size={12} onClick={resetZoom}/>
-            </button>
 
             <input
               type="range"
@@ -40,12 +32,12 @@ export function MiniMapZoomSlider({nodeColor}:{nodeColor?: (node: any) => string
               step={0.1}
               value={zoom}
               onChange={(e) => zoomTo(Number(e.target.value))}
-              className="range range-xs text-neutral-400 [--range-fill:0] w-full [--range-bg:#e5e5e5] [--range-thumb:white] mr-1"
+              className="range range-xs text-neutral-600 [--range-fill:0] [--range-thumb:white]"
             />
 
-            <CustomButton className={miniMapButtonStyle} disabled={true}>
+            <button className="btn btn-xs" onClick={resetZoom}>
               {zoomPercent}%
-            </CustomButton>
+            </button>
 
           </div>
         </div>
