@@ -16,7 +16,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String, index=True, unique=True)
     hashed_password: Mapped[str] = mapped_column(String)
     disabled: Mapped[bool] = mapped_column(default=False)
-    user_data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
+    user_data: Mapped[dict[str, Any] | None] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
 class Node(Base):

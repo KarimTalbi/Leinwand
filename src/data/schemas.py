@@ -92,6 +92,7 @@ class UserInDb(UserBase):
 
 class UserRead(UserBase):
     username: str
+    data: dict[str, Any] | None = None
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
 
