@@ -2,7 +2,7 @@ import React, {memo, useLayoutEffect, useState} from 'react';
 import {NodeProps, useEdges, useNodeConnections, useNodes, useReactFlow} from "@xyflow/react";
 
 import useStore from '@/store.ts';
-import {MergeNodeType} from "@/types.ts";
+import {AppState, MergeNodeType} from "@/types.ts";
 import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
 import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
@@ -29,13 +29,15 @@ type NodeState =
   | 'merged'
   | 'solved';
 
+const selector = (state: AppState) => ({
+  mergeNodeAction: state.mergeNodeAction,
+  mergeNodeResolveAction: state.mergeNodeResolveAction,
+  updateNodeData: state.updateNodeData,
+})
+
 const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
   const {setCenter} = useReactFlow();
-  const {mergeNodeAction, mergeNodeResolveAction, updateNodeData} = useStore(useShallow((state) => ({
-    mergeNodeAction: state.mergeNodeAction,
-    mergeNodeResolveAction: state.mergeNodeResolveAction,
-    updateNodeData: state.updateNodeData,
-  })));
+  const {mergeNodeAction, mergeNodeResolveAction, updateNodeData} = useStore(useShallow((selector)));
   const [loading, setLoading] = useState(false);
   const [checkStreams, setCheckStreams] = useState(true);
   const {localText, handleTextChange, textareaRef} = useTextarea(
@@ -118,21 +120,25 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         <Info size={12}/> {missingConnections} more connection(s) required
       </div>
     ),
+
     ready: (
       <div className="badge badge-outline badge-warning badge-sm px-2 gap-1">
         <CircleCheck size={12}/> Ready
       </div>
     ),
+
     merged: (
       <div className="badge badge-outline badge-info badge-sm px-2 gap-1">
         <CircleCheck size={12}/> No issues detected
       </div>
     ),
+
     has_problem: (
       <div className="badge badge-outline badge-error badge-sm px-1 gap-1">
         <TriangleAlert size={12}/> Issue detected
       </div>
     ),
+
     solved: (
       <div className="badge badge-outline badge-success badge-sm px-1 gap-1">
         <CircleCheck size={12}/> All issues solved
@@ -146,12 +152,13 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         title="Merge"
         color={typeProps.mergeNode.color}
         id={id}
-        loading={loading}
         icon={typeProps.mergeNode.icon}
       >
+
         <div className="flex-1 items-center px-2 justify-start">
           {BADGES[nodeState]}
         </div>
+
       </NodeHeader>
 
       <div className={NodeForegroundStyle}>
@@ -165,20 +172,25 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         {(nodeState === 'ready' || nodeState === 'needs_connections') && (
           <div className="flex flex-col flex-1 nodrag select-text cursor-text">
             <div className="flex justify-between items-center px-10 py-2">
+
               <NodeDisplayMarkdown content={"Check streams for inconsistencies"}/>
+
               <input
                 type="checkbox"
                 checked={checkStreams}
                 onChange={(e) => setCheckStreams(e.target.checked)}
                 className="toggle toggle-xs w-8 h-5 border rounded-full"
               />
+
             </div>
+
             <div className="flex justify-around w-full items-center gap-1.5 px-2 pt-2">
               <button className="btn btn-ghost btn-sm" onClick={() => null}>Settings</button>
               <button className="btn btn-ghost btn-sm" onClick={handleMerge}
                       disabled={nodeState === 'needs_connections'}>Merge
               </button>
             </div>
+
           </div>
         )}
 
@@ -196,11 +208,13 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
               />
 
             </div>
+
             <div className="flex justify-around w-full items-center px-2 pt-2 shrink-0">
               <button className="btn btn-ghost btn-sm" onClick={handleResolve} disabled={!data.solution}>
                 Solve
               </button>
             </div>
+
           </div>
         )}
 

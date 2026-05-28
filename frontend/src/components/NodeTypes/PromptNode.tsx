@@ -8,15 +8,8 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {
-  NodeBackgroundStyle,
-  typeProps,
-  NodeForegroundStyle,
-  pulsingText,
-  textareaStyle, nodeFooterButtonStyle
-} from "@/lib/styles.ts";
+import {typeProps, pulsingText,} from "@/lib/styles.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
-import {cn} from "@/lib/utils.ts";
 
 type NodeState =
   | 'loading'
@@ -82,17 +75,16 @@ const PromptNode = (
 
 
   return (
-    <div className={NodeBackgroundStyle}>
+    <div className="flex flex-col bg-white ring-1 ring-neutral-300 w-130 rounded-lg px-1">
 
       <NodeHeader
         id={id}
         title="Chat"
         color={typeProps.promptNode.color}
-        loading={loading}
         icon={typeProps.promptNode.icon}
       />
 
-      <div className={NodeForegroundStyle}>
+      <div className="flex flex-col flex-1 min-h-0 p-2 rounded-lg">
 
         {nodeState === 'loading' && (
           <div className="flex flex-col flex-1 justify-between gap-5">
@@ -130,19 +122,19 @@ const PromptNode = (
                 ref={textareaRef}
                 value={localText}
                 onChange={handleTextChange}
-                className={cn(textareaStyle, "min-h-0")}
+                className="textarea textarea-sm min-h-0 w-full border-none bg-neutral-50 resize-none focus:outline-none ring-1 ring-neutral-300 focus:ring-neutral-500"
                 placeholder="Enter your prompt..."
               />
 
               <div className="flex justify-end pt-1">
 
                 <button
-                  className={nodeFooterButtonStyle} onClick={() => null}>
+                  className="btn btn-ghost btn-sm font-normal" onClick={() => null}>
                   Settings
                 </button>
 
                 <button
-                  className={nodeFooterButtonStyle} onClick={handleClick} disabled={!data.prompt || loading}>
+                  className="btn btn-ghost btn-sm font-normal" onClick={handleClick} disabled={!data.prompt || loading}>
                   Send
                 </button>
 
