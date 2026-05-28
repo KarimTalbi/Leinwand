@@ -8,7 +8,13 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {navbarButtonStyle, NodeBackgroundStyle, typeProps, NodeForegroundStyle, pulsingText} from "@/lib/styles.ts";
+import {
+  NodeBackgroundStyle,
+  typeProps,
+  NodeForegroundStyle,
+  pulsingText,
+  nodeFooterButtonStyle
+} from "@/lib/styles.ts";
 import {Info, TriangleAlert} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
@@ -19,13 +25,7 @@ type NodeState =
   | 'ready'
   | 'needs_connection';
 
-const SummaryNode = (
-  {
-    id,
-    data,
-  }: NodeProps<SummaryNodeType>
-) => {
-
+const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
   const {summaryNodeAction} = useStore(useShallow((s) => ({
     summaryNodeAction: s.summaryNodeAction,
   })));
@@ -63,13 +63,13 @@ const SummaryNode = (
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connection: (
-      <div className="badge badge-outline badge-secondary badge-sm px-2 gap-1">
+      <div className="badge badge-outline badge-secondary badge-xs px-2 gap-1">
         <Info size={12}/> Connection required
       </div>
     ),
 
     sourceIsSummary: (
-      <div className="badge badge-outline badge-error badge-sm px-1 gap-1">
+      <div className="badge badge-outline badge-error badge-xs px-1 gap-1">
         <TriangleAlert size={12}/> Source can't be a summary
       </div>
     ),
@@ -81,7 +81,6 @@ const SummaryNode = (
         title="Summary"
         color={typeProps.summaryNode.color}
         id={id}
-        loading={loading}
         icon={typeProps.summaryNode.icon}
       >
 
@@ -94,15 +93,15 @@ const SummaryNode = (
       <div className={NodeForegroundStyle}>
 
         {(nodeState === 'ready' || nodeState === 'needs_connection' || nodeState === 'sourceIsSummary') && (
-          <div className="flex justify-around pt-1">
+          <div className="flex justify-end pt-1">
 
             <button
-              className={cn(navbarButtonStyle, "btn-xs")} onClick={() => null}>
+              className={nodeFooterButtonStyle} onClick={() => null}>
               Settings
             </button>
 
             <button
-              className={cn(navbarButtonStyle, "btn-xs")}
+              className={nodeFooterButtonStyle}
               onClick={handleClick}
               disabled={nodeState === 'sourceIsSummary' || nodeState === 'needs_connection'}
             >

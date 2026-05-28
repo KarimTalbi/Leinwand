@@ -13,7 +13,7 @@ import {
   typeProps,
   NodeForegroundStyle,
   pulsingText,
-  textareaStyle
+  textareaStyle, nodeFooterButtonStyle
 } from "@/lib/styles.ts";
 import {CircleCheck, Info, TriangleAlert} from "lucide-react";
 import MergeContent from "@/components/NodeElements/MergeSections.tsx";
@@ -184,9 +184,9 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
             </div>
 
-            <div className="flex justify-around w-full items-center gap-1.5 px-2 pt-2">
-              <button className="btn btn-ghost btn-sm" onClick={() => null}>Settings</button>
-              <button className="btn btn-ghost btn-sm" onClick={handleMerge}
+            <div className="flex justify-around w-full items-end gap-1.5 px-2 pt-2">
+              <button className={nodeFooterButtonStyle} onClick={() => null}>Settings</button>
+              <button className={nodeFooterButtonStyle} onClick={handleMerge}
                       disabled={nodeState === 'needs_connections'}>Merge
               </button>
             </div>
@@ -209,8 +209,8 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
             </div>
 
-            <div className="flex justify-around w-full items-center px-2 pt-2 shrink-0">
-              <button className="btn btn-ghost btn-sm" onClick={handleResolve} disabled={!data.solution}>
+            <div className="flex justify-end w-full items-center px-2 pt-2 shrink-0">
+              <button className={nodeFooterButtonStyle} onClick={handleResolve} disabled={!data.solution}>
                 Solve
               </button>
             </div>

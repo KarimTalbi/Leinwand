@@ -8,7 +8,13 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {typeProps, pulsingText,} from "@/lib/styles.ts";
+import {
+  typeProps,
+  pulsingText,
+  NodeForegroundStyle,
+  NodeBackgroundStyle,
+  nodeFooterButtonStyle, textareaStyle,
+} from "@/lib/styles.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 
 type NodeState =
@@ -75,7 +81,7 @@ const PromptNode = (
 
 
   return (
-    <div className="flex flex-col bg-white ring-1 ring-neutral-300 w-130 rounded-lg px-1">
+    <div className={NodeBackgroundStyle}>
 
       <NodeHeader
         id={id}
@@ -84,7 +90,7 @@ const PromptNode = (
         icon={typeProps.promptNode.icon}
       />
 
-      <div className="flex flex-col flex-1 min-h-0 p-2 rounded-lg">
+      <div className={NodeForegroundStyle}>
 
         {nodeState === 'loading' && (
           <div className="flex flex-col flex-1 justify-between gap-5">
@@ -122,19 +128,19 @@ const PromptNode = (
                 ref={textareaRef}
                 value={localText}
                 onChange={handleTextChange}
-                className="textarea textarea-sm min-h-0 w-full border-none bg-neutral-50 resize-none focus:outline-none ring-1 ring-neutral-300 focus:ring-neutral-500"
+                className={textareaStyle}
                 placeholder="Enter your prompt..."
               />
 
               <div className="flex justify-end pt-1">
 
                 <button
-                  className="btn btn-ghost btn-sm font-normal" onClick={() => null}>
+                  className={nodeFooterButtonStyle} onClick={() => null}>
                   Settings
                 </button>
 
                 <button
-                  className="btn btn-ghost btn-sm font-normal" onClick={handleClick} disabled={!data.prompt || loading}>
+                  className={nodeFooterButtonStyle} onClick={handleClick} disabled={!data.prompt || loading}>
                   Send
                 </button>
 

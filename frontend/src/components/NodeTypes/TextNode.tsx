@@ -8,9 +8,14 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {navbarButtonStyle, NodeBackgroundStyle, typeProps, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
+import {
+  NodeBackgroundStyle,
+  typeProps,
+  NodeForegroundStyle,
+  textareaStyle,
+  nodeFooterButtonStyle
+} from "@/lib/styles.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
-import {cn} from "@/lib/utils.ts";
 
 type NodeState =
   | 'closed'
@@ -65,14 +70,14 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
               ref={textareaRef}
               value={localText}
               onChange={handleTextChange}
-              className={cn(textareaStyle, "min-h-0")}
+              className={textareaStyle}
               placeholder="Enter your note..."
             />
 
-            <div className="flex justify-center pt-1">
+            <div className="flex justify-end pt-1">
 
               <button
-                className={cn(navbarButtonStyle, "btn-xs")}
+                className={nodeFooterButtonStyle}
                 onClick={handleClick}
                 disabled={nodeState === 'empty'}
               >
@@ -88,10 +93,10 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
 
             <NodeDisplayMarkdown content={data.text || ""} className="px-2"/>
 
-            <div className="flex justify-center pt-1">
+            <div className="flex justify-end pt-1">
 
               <button
-                className={cn(navbarButtonStyle, "btn-xs")}
+                className={nodeFooterButtonStyle}
                 onClick={handleClick}
                 disabled={!data.text}
               >
