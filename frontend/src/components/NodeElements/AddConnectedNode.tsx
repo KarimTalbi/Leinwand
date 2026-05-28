@@ -1,49 +1,38 @@
 import {typeProps} from "@/lib/styles.ts";
-import {CustomButton, CustomButtonProps} from "@/components/ui/CustomButtons.tsx";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 
 const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
   const {conPrompt, conText, conMerge, conSummary} = useStoreWithId(sourceId)
 
-  const addNodeMenu: CustomButtonProps[] = [
-    {
-      icon: typeProps.promptNode.icon,
-      iconProps: {color: typeProps.promptNode.color, size: 10},
-      onClick: conPrompt,
-      tooltipLabel: "Add Chat Node",
-      tooltipPosition: "bottom",
-    },
-    {
-      icon: typeProps.textNode.icon,
-      iconProps: {color: typeProps.textNode.color, size: 10},
-      onClick: conText,
-      tooltipLabel: "Add Note Node",
-      tooltipPosition: "bottom",
-    },
-    {
-      icon: typeProps.summaryNode.icon,
-      iconProps: {color: typeProps.summaryNode.color, size: 10},
-      onClick: () => conSummary(),
-      tooltipLabel: "Add Summary Node",
-      tooltipPosition: "bottom",
-    },
-    {
-      icon: typeProps.mergeNode.icon,
-      iconProps: {color: typeProps.mergeNode.color, size: 10},
-      onClick: () => conMerge(),
-      tooltipLabel: "Add Merge Node",
-      tooltipPosition: "bottom",
-    }
-  ]
-
   return (
     <div className="translate-x-45">
-      <div className="flex flex-row items-center justify-around bg-neutral-50 ring-1 ring-neutral-200 rounded-b-md w-25">
+      <div
+        className="flex flex-row items-center justify-around bg-neutral-50 ring-1 ring-neutral-200 rounded-b-md w-25">
 
-        {addNodeMenu.map((button, index) => (
-          <CustomButton key={index} className={"px-1 cursor-pointer"} {...button}/>
-        ))}
+        <div className="tooltip tooltip-bottom" data-tip="Prompt Node">
+          <button className="btn btn-ghost btn-square btn-xs" onClick={conPrompt}>
+            <typeProps.promptNode.icon size={10} color={typeProps.promptNode.color}/>
+          </button>
+        </div>
+
+        <div className="tooltip tooltip-bottom" data-tip="Text Node">
+          <button className="btn btn-ghost btn-square btn-xs" onClick={conText}>
+            <typeProps.textNode.icon size={10} color={typeProps.textNode.color}/>
+          </button>
+        </div>
+
+        <div className="tooltip tooltip-bottom" data-tip="Summary Node">
+          <button className="btn btn-ghost btn-square btn-xs" onClick={conSummary}>
+            <typeProps.summaryNode.icon size={10} color={typeProps.summaryNode.color}/>
+          </button>
+        </div>
+
+        <div className="tooltip tooltip-bottom" data-tip="Merge Node">
+          <button className="btn btn-ghost btn-square btn-xs" onClick={conMerge}>
+            <typeProps.mergeNode.icon size={10} color={typeProps.mergeNode.color}/>
+          </button>
+        </div>
 
       </div>
     </div>
