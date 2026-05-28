@@ -10,7 +10,7 @@ import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {
   NodeBackgroundStyle,
-  nodeTypeProperties,
+  typeProps,
   NodeForegroundStyle,
   pulsingText,
   textareaStyle, nodeFooterButtonStyle
@@ -87,9 +87,9 @@ const PromptNode = (
       <NodeHeader
         id={id}
         title="Chat"
-        color={nodeTypeProperties.promptNode.color}
+        color={typeProps.promptNode.color}
         loading={loading}
-        icon={nodeTypeProperties.promptNode.icon}
+        icon={typeProps.promptNode.icon}
       />
 
       <div className={NodeForegroundStyle}>
@@ -177,7 +177,7 @@ const PromptNode = (
         handleType="target"
         position="top"
         nodeId={id}
-        color={nodeTypeProperties.promptNode.color}
+        color={typeProps.promptNode.color}
       />
 
       {nodeState === 'hasResponse' && (
@@ -186,7 +186,7 @@ const PromptNode = (
           handleType="source"
           position="bottom"
           nodeId={id}
-          color={nodeTypeProperties.promptNode.color}
+          color={typeProps.promptNode.color}
         >
           <AddConnectedNode sourceId={id}/>
         </ConnectionHandles>

@@ -8,7 +8,7 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {navbarButtonStyle, NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
+import {navbarButtonStyle, NodeBackgroundStyle, typeProps, NodeForegroundStyle, textareaStyle} from "@/lib/styles.ts";
 import {useTextarea} from "@/hooks/useTextarea.ts";
 import {cn} from "@/lib/utils.ts";
 
@@ -53,8 +53,8 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
       <NodeHeader
         title="Note"
         id={id}
-        color={nodeTypeProperties.textNode.color}
-        icon={nodeTypeProperties.textNode.icon}
+        color={typeProps.textNode.color}
+        icon={typeProps.textNode.icon}
       />
 
 
@@ -109,7 +109,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
         handleType="target"
         position="top"
         nodeId={id}
-        color={nodeTypeProperties.textNode.color}
+        color={typeProps.textNode.color}
       />
 
       {nodeState !== 'empty' && (
@@ -118,7 +118,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
           handleType="source"
           position="bottom"
           nodeId={id}
-          color={nodeTypeProperties.textNode.color}
+          color={typeProps.textNode.color}
         >
           <AddConnectedNode sourceId={id}/>
         </ConnectionHandles>

@@ -8,7 +8,7 @@ import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
 import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
 import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
-import {navbarButtonStyle, NodeBackgroundStyle, nodeTypeProperties, NodeForegroundStyle, pulsingText} from "@/lib/styles.ts";
+import {navbarButtonStyle, NodeBackgroundStyle, typeProps, NodeForegroundStyle, pulsingText} from "@/lib/styles.ts";
 import {Info, TriangleAlert} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
@@ -79,10 +79,10 @@ const SummaryNode = (
     <div className={NodeBackgroundStyle}>
       <NodeHeader
         title="Summary"
-        color={nodeTypeProperties.summaryNode.color}
+        color={typeProps.summaryNode.color}
         id={id}
         loading={loading}
-        icon={nodeTypeProperties.summaryNode.icon}
+        icon={typeProps.summaryNode.icon}
       >
 
         <div className="flex-1 items-center px-2 justify-start">

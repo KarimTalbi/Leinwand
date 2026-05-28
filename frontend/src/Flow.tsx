@@ -11,8 +11,6 @@ import {FlowNavBar} from "@/components/Navigation/NavBar.tsx";
 import {Controls} from "./components/Navigation/Controls.tsx";
 import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
 import {getNodeColor} from "@/lib/utils.ts";
-import {useFlowContextMenu} from "@/hooks/useFlowContextMenu.ts";
-import ContextMenu from "@/components/Navigation/ContextMenu.tsx";
 import {CustomBackground} from "@/components/ui/CustomBackground.tsx";
 import {nodeTypes} from "@/lib/nodeTypes.ts";
 
@@ -38,16 +36,6 @@ const selector = (state: AppState) => ({
 
 
 function Flow() {
-
-  const {
-    closeMenu,
-    menuStyle,
-    contextMenuButtons,
-    viewportButton,
-    menu,
-    onPaneContextMenu
-  } = useFlowContextMenu()
-
 
   const {
     nodes,
@@ -87,15 +75,12 @@ function Flow() {
           colorMode="light"
           zoomOnScroll={scrollToZoom}
           panOnScroll={!scrollToZoom}
-          onPaneContextMenu={onPaneContextMenu as any}
         >
 
           <FlowNavBar/>
           <CustomBackground/>
           <MiniMapZoomSlider nodeColor={getNodeColor}/>
           <Controls/>
-          <ContextMenu menu={menu} closeMenu={closeMenu} menuStyle={menuStyle} contextMenuButtons={contextMenuButtons}
-                       viewportButton={viewportButton}/>
 
         </ReactFlow>
 

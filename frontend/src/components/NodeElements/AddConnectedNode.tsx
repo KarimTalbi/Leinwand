@@ -1,4 +1,4 @@
-import {nodeTypeProperties} from "@/lib/styles.ts";
+import {typeProps} from "@/lib/styles.ts";
 import {CustomButton, CustomButtonProps} from "@/components/ui/CustomButtons.tsx";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
@@ -8,29 +8,29 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
 
   const addNodeMenu: CustomButtonProps[] = [
     {
-      icon: nodeTypeProperties.promptNode.icon,
-      iconProps: {color: nodeTypeProperties.promptNode.color, size: 10},
+      icon: typeProps.promptNode.icon,
+      iconProps: {color: typeProps.promptNode.color, size: 10},
       onClick: conPrompt,
       tooltipLabel: "Add Chat Node",
       tooltipPosition: "bottom",
     },
     {
-      icon: nodeTypeProperties.textNode.icon,
-      iconProps: {color: nodeTypeProperties.textNode.color, size: 10},
+      icon: typeProps.textNode.icon,
+      iconProps: {color: typeProps.textNode.color, size: 10},
       onClick: conText,
       tooltipLabel: "Add Note Node",
       tooltipPosition: "bottom",
     },
     {
-      icon: nodeTypeProperties.summaryNode.icon,
-      iconProps: {color: nodeTypeProperties.summaryNode.color, size: 10},
+      icon: typeProps.summaryNode.icon,
+      iconProps: {color: typeProps.summaryNode.color, size: 10},
       onClick: () => conSummary(),
       tooltipLabel: "Add Summary Node",
       tooltipPosition: "bottom",
     },
     {
-      icon: nodeTypeProperties.mergeNode.icon,
-      iconProps: {color: nodeTypeProperties.mergeNode.color, size: 10},
+      icon: typeProps.mergeNode.icon,
+      iconProps: {color: typeProps.mergeNode.color, size: 10},
       onClick: () => conMerge(),
       tooltipLabel: "Add Merge Node",
       tooltipPosition: "bottom",

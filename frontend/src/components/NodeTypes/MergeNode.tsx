@@ -10,7 +10,7 @@ import {useShallow} from "zustand/react/shallow";
 import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
 import {
   NodeBackgroundStyle,
-  nodeTypeProperties,
+  typeProps,
   NodeForegroundStyle,
   pulsingText,
   textareaStyle
@@ -144,10 +144,10 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
     <div className={NodeBackgroundStyle}>
       <NodeHeader
         title="Merge"
-        color={nodeTypeProperties.mergeNode.color}
+        color={typeProps.mergeNode.color}
         id={id}
         loading={loading}
-        icon={nodeTypeProperties.mergeNode.icon}
+        icon={typeProps.mergeNode.icon}
       >
         <div className="flex-1 items-center px-2 justify-start">
           {BADGES[nodeState]}

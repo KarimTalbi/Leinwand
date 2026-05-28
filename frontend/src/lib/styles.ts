@@ -14,7 +14,7 @@ interface nodeTypeProps {
   iconStyle?: string
 }
 
-export const nodeTypeProperties: Record<NodeTypeNames, nodeTypeProps> = {
+export const typeProps: Record<NodeTypeNames, nodeTypeProps> = {
   promptNode:   {label: "Chat",     color: '#ec4899',   icon: LucideMessageSquare,   iconStyle: ""           },
   textNode:     {label: "Note",     color: '#309898',   icon: LucideNotebook,        iconStyle: ""           },
   mergeNode:    {label: "merge",    color: '#f5c45e',   icon: LucideMerge,           iconStyle: "rotate-90"  },

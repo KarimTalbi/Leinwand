@@ -7,7 +7,7 @@ import {
   LucideIcon,
   LucideCircleAlert
 } from "lucide-react";
-import {nodeTypeProperties} from "@/lib/styles.ts";
+import {typeProps} from "@/lib/styles.ts";
 import {Section} from "@/types.ts";
 import getIcon from "@/lib/icons.tsx";
 
@@ -19,7 +19,7 @@ interface MergeContentProps {
 }
 
 const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  ...nodeTypeProperties, problemResolution: { label: "ISSUE",   color: "#ef4444", icon: LucideCircleAlert},
+  ...typeProps, problemResolution: { label: "ISSUE",   color: "#ef4444", icon: LucideCircleAlert},
 };
 
 const SectionContent = ({section}: { section: Section }) => {

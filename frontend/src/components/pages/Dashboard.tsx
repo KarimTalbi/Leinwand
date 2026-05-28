@@ -118,7 +118,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="bg-white flex flex-col">
 
       <DashboardNavbar/>
 

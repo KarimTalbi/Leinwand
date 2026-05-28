@@ -1,111 +1,99 @@
 import React from "react";
-import {CustomButton, CustomButtonProps, ToolTip} from "@/components/ui/CustomButtons.tsx";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
-import {Folder, Hexagon, LucideChevronLeft, LucideLogOut, LucideSettings2, LucideSpline} from "lucide-react";
-import {navbarButtonStyle} from "@/lib/styles.ts";
+import {
+  ChevronLeft, LogOut,
+  Settings2
+} from "lucide-react";
 
-interface NavBarProps extends React.ComponentPropsWithRef<"div"> {
-  centerChild?: React.ReactNode,
-  endChild?: React.ReactNode,
-}
 
-export const Navbar = ({centerChild, endChild, ...props}: NavBarProps) => {
+export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div">) => {
   return (
-    <div className="navbar bg-white w-full shadow-xs z-100 grid grid-cols-3 items-center border-b border-neutral-200" {...props}>
-
+    <div
+      style={{zIndex: 100, position: "sticky", top: 0, left: 0, right: 0, height: "55px"}}
+      className="nodrag nowheel bg-base-100 shadow-sm flex flex-row items-center justify-between"
+      {...props}
+    >
       <div>
-        <h1 className="text-sm text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
+        <h1 className="text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
       </div>
 
-      <div className="flex justify-center">
-        {centerChild || <div/>}
-      </div>
-
-      <div className="flex justify-end mr-2">
-        {endChild || <div/>}
-      </div>
+      {children}
 
     </div>
   );
 };
 
-
-const flowNavbarButtonProps: Partial<CustomButtonProps> = {
-  tooltipDisabled: true,
-  className: navbarButtonStyle,
-}
-
 export const FlowNavBar = () => {
-  const {currentCanvasName, nodeCount, edgeCount, exitCanvas, setSettingsOpen} = useStore(useShallow(s => ({
-    currentCanvasName: s.currentCanvasName,
-    nodeCount: s.nodes.length,
-    edgeCount: s.edges.length,
+  const {exitCanvas, setSettingsOpen} = useStore(useShallow(s => ({
     exitCanvas: s.exitCanvas,
     setSettingsOpen: s.setSettingsOpen,
   })));
 
   return (
-    <Navbar centerChild={
+    <Navbar>
 
-      <div className="flex items-center gap-3 text-[10px] text-neutral-500">
+      <div className="flex gap-2 mr-2">
 
-        <ToolTip label="Project Title" position="bottom">
-          <div className="flex items-center gap-1">
-            <Folder size={10}/><p>{currentCanvasName}</p>
-          </div>
-        </ToolTip>
+        <div className="tooltip tooltip-bottom" data-tip="Exit Project">
+          <button className="btn btn-square btn-sm" onClick={exitCanvas}>
+            <ChevronLeft size={14} color="#737373"/>
+          </button>
+        </div>
 
-        <ToolTip label="Node Count" position="bottom">
-          <div className="flex items-center gap-1">
-            <Hexagon size={10}/><p>{nodeCount}</p>
-          </div>
-        </ToolTip>
-
-        <ToolTip label="Edge Count" position="bottom">
-          <div className="flex items-center gap-1">
-            <LucideSpline size={10}/><p>{edgeCount}</p>
-          </div>
-        </ToolTip>
+        <div className="tooltip tooltip-bottom" data-tip="Settings">
+          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+            <Settings2 size={14} color="#737373"/>
+          </button>
+        </div>
 
       </div>
 
-    } endChild={
-
-      <div className="flex gap-1">
-
-        <CustomButton icon={LucideChevronLeft} onClick={exitCanvas} {...flowNavbarButtonProps}>Exit</CustomButton>
-        <CustomButton icon={LucideSettings2} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Settings</CustomButton>
-
-      </div>
-
-    }/>
+    </Navbar>
   )
 }
 
 
 export const DashboardNavbar = () => {
-  const {logout, setSettingsOpen} = useStore(useShallow(s => ({logout: s.logout, setSettingsOpen: s.setSettingsOpen,})));
+  const {logout, setSettingsOpen} = useStore(useShallow(s => ({
+    logout: s.logout,
+    setSettingsOpen: s.setSettingsOpen,
+  })));
 
   return (
-    <Navbar
-      endChild={
-      <>
-        <CustomButton icon={LucideLogOut} className={navbarButtonStyle} onClick={logout}>Log Out</CustomButton>
-        <CustomButton icon={LucideSettings2} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Settings</CustomButton>
-      </>
-      }
-    />
+    <Navbar>
+      <div className="flex gap-2 mr-2">
+
+        <div className="tooltip tooltip-bottom" data-tip="Log Out">
+          <button className="btn btn-square btn-sm" onClick={logout}>
+            <LogOut size={14} color="#737373"/>
+          </button>
+        </div>
+
+        <div className="tooltip tooltip-bottom" data-tip="Settings">
+          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+            <Settings2 size={14} color="#737373"/>
+          </button>
+        </div>
+
+      </div>
+    </Navbar>
   )
 }
 
 export const SettingsNavbar = () => {
   const {setSettingsOpen} = useStore(useShallow(s => ({setSettingsOpen: s.setSettingsOpen,})));
   return (
-    <Navbar
-    endChild={
-      <CustomButton icon={LucideChevronLeft} onClick={setSettingsOpen} {...flowNavbarButtonProps}>Exit</CustomButton>
-    }
-    />
+    <Navbar>
+      <div className="flex gap-2 mr-2">
+
+        <div className="tooltip tooltip-bottom" data-tip="Back">
+          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+            <ChevronLeft size={14} color="#737373"/>
+          </button>
+        </div>
+
+      </div>
+    </Navbar>
   )
 }

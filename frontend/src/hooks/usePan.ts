@@ -2,7 +2,7 @@ import {useReactFlow, useStore, useViewport} from "@xyflow/react";
 
 export const usePan = () => {
   const {zoom} = useViewport();
-  const {getViewport, setViewport, zoomTo} = useReactFlow();
+  const {getViewport, setViewport, zoomTo, screenToFlowPosition} = useReactFlow();
 
   const pan = (dx: number, dy: number) => {
     const {x, y, zoom} = getViewport()
@@ -27,5 +27,20 @@ export const usePan = () => {
   const resetZoom = () => zoomTo(1, {duration: 200});
 
 
-  return {panUp, panDown, panLeft, panRight, zoomIn, zoomOut, resetZoom, zoomTo, panHome, zoom, minZoom, maxZoom, zoomPercent}
+  return {
+    panUp,
+    panDown,
+    panLeft,
+    panRight,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    zoomTo,
+    panHome,
+    zoom,
+    minZoom,
+    maxZoom,
+    zoomPercent,
+    screenToFlowPosition
+  }
 }
