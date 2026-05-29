@@ -1,25 +1,30 @@
 import {Panel} from '@xyflow/react'
 import {
-  LucideLock,
-  LucideMouseOff,
-  LucideMouse,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Lock,
   LockOpen,
+  Mouse,
+  MouseOff,
   ZoomIn,
   ZoomOut,
-  ArrowUp,
-  ArrowDown,
-  ArrowRight,
-  ArrowLeft,
 } from 'lucide-react'
-import useStore from "@/store.ts";
-import {typeProps} from "@/lib/styles.ts";
-import {useShallow} from "zustand/react/shallow";
-import {AppState} from "@/types.ts";
-import {usePan} from "@/hooks/usePan.ts";
-import {useCreateNode} from "@/hooks/useCreateNode.ts";
+import {useShallow} from 'zustand/react/shallow'
+import {useCreateNode} from '@/hooks/useCreateNode'
+import {usePan} from '@/hooks/usePan'
+import {controlBarStyle, controlButtonStyle, typeProps} from '@/lib/styles'
+import useStore from '@/store'
+import {AppState} from '@/types'
 
-const controlButtonStyle = "btn btn-ghost btn-square btn-sm"
-
+/**
+ * Zustand selector for picking state and actions from the store.
+ * This selector is optimized with `useShallow` to prevent unnecessary re-renders.
+ *
+ * @param state - The global application state.
+ * @returns An object containing the selected state and actions.
+ */
 const selector = (state: AppState) => ({
   locked: state.locked,
   setLocked: state.setLocked,
@@ -27,26 +32,37 @@ const selector = (state: AppState) => ({
   setScrollToZoom: state.setScrollToZoom,
 })
 
+
+/**
+ * Renders a control bar at the bottom of the canvas.
+ * This component provides UI controls for canvas interaction, such as panning, zooming,
+ * locking the canvas, and toggling scroll-to-zoom behavior. It also includes
+ * buttons for creating different types of nodes on the canvas.
+ *
+ * @returns The control bar component.
+ */
 export const Controls = () => {
   const {locked, setLocked, scrollToZoom, setScrollToZoom} = useStore(useShallow(selector))
-  const {panUp, panDown, panLeft, panRight, zoomOut, zoomIn} = usePan();
+  const {panUp, panDown, panLeft, panRight, zoomOut, zoomIn} = usePan()
   const {createPromptNode, createSummaryNode, createTextNode, createMergeNode} = useCreateNode()
+
+  const LockIcon = locked ? LockOpen : Lock
+  const ScrollIcon = scrollToZoom ? MouseOff : Mouse
 
   return (
     <Panel position="bottom-center" className="flex flex-row shrink-0 gap-2" style={{zIndex: 1000}}>
 
-      <div
-        className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
+      <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Toggle Canvas Lock">
           <button className={controlButtonStyle} onClick={setLocked}>
-            {locked ? <LockOpen size={14}/> : <LucideLock size={14}/>}
+            <LockIcon size={14}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Toggle Scroll to Zoom">
           <button className={controlButtonStyle} onClick={setScrollToZoom}>
-            {scrollToZoom ? <LucideMouseOff size={14}/> : <LucideMouse size={14}/>}
+            <ScrollIcon size={14}/>
           </button>
         </div>
 
@@ -93,8 +109,7 @@ export const Controls = () => {
         </div>
       </div>
 
-      <div
-        className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
+      <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Add Chat Node">
           <button className={controlButtonStyle} onClick={createPromptNode}>

@@ -112,7 +112,7 @@ function Flow() {
           <MiniMapZoomSlider nodeColor={getNodeColor}/>
           <Controls/>
 
-        </ReactFlow>
+        </ReactFlow >
 
 
       </div>

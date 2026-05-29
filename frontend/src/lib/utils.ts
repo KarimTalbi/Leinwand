@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import {Node} from "@xyflow/react";
 import {typeProps} from "@/lib/styles.ts";
+import {NodeTypeNames} from "@/types.ts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,16 +25,7 @@ export function timeAgo(date: number): string {
 }
 
 export function getNodeColor(node: Node): string {
-  switch (node.type) {
-    case 'promptNode':
-      return typeProps.promptNode.color;
-    case 'textNode':
-      return typeProps.textNode.color;
-    case 'mergeNode':
-      return typeProps.mergeNode.color;
-    case 'summaryNode':
-      return typeProps.summaryNode.color;
-    default:
-      return 'gray';
-  }
+  const nodeType = node.type as NodeTypeNames;
+  if (!nodeType) return 'gray';
+  return typeProps[nodeType].color;
 }
