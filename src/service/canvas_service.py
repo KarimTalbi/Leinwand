@@ -1,4 +1,4 @@
-from sqlalchemy import delete
+from sqlalchemy import delete, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
 
@@ -14,14 +14,16 @@ async def create_canvas(session: AsyncSession, canvas: CanvasRead, user_id: str)
 
 
 async def list_canvases(session: AsyncSession, user_id: str) -> list[Canvas]:
-    result = await session.execute(select(Canvas).where(Canvas.user_id == user_id))
+    result: Result[tuple[Canvas]] = await session.execute(
+        select(Canvas).where(Canvas.user_id == user_id)
+    )
     return list(result.scalars().all())
 
 
 async def delete_canvas(session: AsyncSession, canvas_id: str, user_id: str) -> None:
-    canvas = await session.get(Canvas, canvas_id)
+    canvas: Canvas | None = await session.get(Canvas, canvas_id)
 
-    if not canvas or canvas.user_id != user_id:
+    if canvas is None or canvas.user_id != user_id:
         raise CanvasNotFoundException
 
     await session.delete(canvas)
@@ -29,9 +31,9 @@ async def delete_canvas(session: AsyncSession, canvas_id: str, user_id: str) -> 
 
 
 async def update_canvas_data(session: AsyncSession, canvas_id: str, updated_at: int) -> None:
-    canvas = await session.get(Canvas, canvas_id)
+    canvas: Canvas | None = await session.get(Canvas, canvas_id)
 
-    if not canvas:
+    if canvas is None:
         raise CanvasNotFoundException
 
     canvas.updated_at = updated_at
@@ -39,7 +41,7 @@ async def update_canvas_data(session: AsyncSession, canvas_id: str, updated_at: 
 
 
 async def update_canvas_name(session: AsyncSession, canvas_id: str, name: str) -> None:
-    canvas = await session.get(Canvas, canvas_id)
+    canvas: Canvas | None = await session.get(Canvas, canvas_id)
 
     if not canvas:
         raise CanvasNotFoundException

@@ -4,7 +4,17 @@ import os
 
 load_dotenv()
 
-fernet = Fernet(os.getenv("ENCRYPTION_KEY"))
+
+def get_encryption_key() -> str:
+    key: str | None = os.getenv("ENCRYPTION_KEY")
+
+    if not key:
+        raise ValueError("ENCRYPTION_KEY is not set in the environment variables.")
+
+    return key
+
+
+fernet = Fernet(get_encryption_key())
 
 
 def encrypt_key(key: str) -> str:

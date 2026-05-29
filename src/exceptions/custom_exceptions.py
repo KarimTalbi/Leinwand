@@ -27,6 +27,11 @@ class UserAlreadyExistsException(Exception):
         super().__init__(f"User already exists: {username}" if username else "User already exists")
 
 
+class UserNotFoundException(Exception):
+    def __init__(self) -> None:
+        super().__init__("User not found")
+
+
 class InactiveUserException(Exception):
     def __init__(self, username: str | None = None) -> None:
         self.username = username

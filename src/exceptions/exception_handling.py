@@ -11,7 +11,7 @@ from exceptions.custom_exceptions import (
     InactiveUserException,
     NodeNotFoundException,
     UserAlreadyExistsException,
-    InvalidApiKeyException
+    InvalidApiKeyException, UserNotFoundException
 )
 
 logger = logging.getLogger(__name__)
@@ -47,6 +47,11 @@ async def inactive_user_handler(_: Request, exc: InactiveUserException) -> JSONR
 
 async def api_key_not_found_handler(_: Request, exc: InvalidApiKeyException) -> JSONResponse:
     logger.debug("API Key not found:")
+    return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+
+async def user_not_found_handler(_: Request, exc: UserNotFoundException) -> JSONResponse:
+    logger.debug("User not found:")
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
@@ -115,5 +120,9 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         InvalidApiKeyException,
         api_key_not_found_handler,
+    )
+    app.add_exception_handler(
+        UserNotFoundException,
+        user_not_found_handler,
     )
     app.add_exception_handler(Exception, unhandled_exception_handler)

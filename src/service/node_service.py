@@ -1,4 +1,5 @@
-from sqlalchemy import insert, select, delete
+from typing import Any
+from sqlalchemy import insert, select, delete, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import Node, NodeRead, Edge, EdgeRead
@@ -7,7 +8,7 @@ from exceptions import NodeNotFoundException
 
 
 async def list_nodes(session: AsyncSession, user_id: str, canvas_id: str) -> list[Node]:
-    result = await session.execute(
+    result: Result[tuple[Node]] = await session.execute(
         select(Node).where(Node.canvas_id == canvas_id).where(Node.user_id == user_id)
     )
     return list(result.scalars().all())
@@ -22,29 +23,32 @@ async def delete_all_nodes(session: AsyncSession, user_id: str, canvas_id: str) 
     await session.flush()
 
 
-
-async def write_nodes(session: AsyncSession, nodes: list[NodeRead], user_id: str, canvas_id: str):
-    data = [{**node.model_dump(), "user_id": user_id, "canvas_id": canvas_id} for node in nodes]
+async def write_nodes(
+        session: AsyncSession, nodes: list[NodeRead], user_id: str, canvas_id: str) -> None:
+    data: list[dict[str, Any]] = [
+        {**node.model_dump(), "user_id": user_id, "canvas_id": canvas_id} for node in nodes
+    ]
 
     if data:
         await session.execute(insert(Node).values(data))
+
     await session.flush()
 
 
 async def get_node(session: AsyncSession, node_id: str, user_id: str) -> Node:
-    node = await session.get(Node, node_id)
+    node: Node | None = await session.get(Node, node_id)
 
-    if not node or node.user_id != user_id:
+    if node is None or node.user_id != user_id:
         raise NodeNotFoundException
 
     return node
 
 
 async def get_ancestors(session: AsyncSession, node_id: str, user_id: str) -> list[dict]:
-    db_node = await get_node(session, node_id, user_id)
+    db_node: Node = await get_node(session, node_id, user_id)
 
-    result = await session.execute(get_ancestors_recursive(db_node.id))
-    nodes = [dict(row) for row in result.mappings().all()]
+    result: Result[Any] = await session.execute(get_ancestors_recursive(db_node.id))
+    nodes: list[dict[str, Any]] = [dict(row) for row in result.mappings().all()]
 
     for node in nodes:
         node["data"].pop("closed", None)
@@ -54,7 +58,7 @@ async def get_ancestors(session: AsyncSession, node_id: str, user_id: str) -> li
 
 
 async def list_edges(session: AsyncSession, user_id: str, canvas_id: str) -> list[Edge]:
-    result = await session.execute(
+    result: Result[tuple[Edge]] = await session.execute(
         select(Edge).where(Edge.canvas_id == canvas_id).where(Edge.user_id == user_id)
     )
     return list(result.scalars().all())
