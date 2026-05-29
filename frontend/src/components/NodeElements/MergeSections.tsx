@@ -1,71 +1,91 @@
-import {useState} from "react";
-import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
+import {useState} from 'react'
+import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
 import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
   LucideIcon,
-  LucideCircleAlert
-} from "lucide-react";
-import {typeProps} from "@/lib/styles.ts";
-import {Section} from "@/types.ts";
-import getIcon from "@/lib/icons.tsx";
+  LucideCircleAlert,
+} from 'lucide-react'
+import {typeProps} from '@/lib/styles'
+import {Section} from '@/types'
+import getIcon from '@/lib/icons'
 
 
-
+/**
+ * Properties for the MergeContent component.
+ */
 interface MergeContentProps {
-  sections: Section[];
-  onGoToNode?: (nodeId: string) => void;
+  /** Array of section objects representing different parts of a merged conversation. */
+  sections: Section[]
+  /** Optional callback triggered when a user clicks to navigate to a specific node. */
+  onGoToNode?: (nodeId: string) => void
 }
 
 const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  ...typeProps, problemResolution: { label: "ISSUE",   color: "#ef4444", icon: LucideCircleAlert},
-};
+  ...typeProps, problemResolution: { label: 'ISSUE',   color: '#ef4444', icon: LucideCircleAlert},
+}
 
+/**
+ * Renders the content of a specific section based on its type.
+ *
+ * @param props - Component properties.
+ * @param props.section - The section data to render.
+ * @returns The appropriate UI for the section type, or null if unknown.
+ */
 const SectionContent = ({section}: { section: Section }) => {
 
   switch (section.type) {
 
-    case "promptNode":
+    case 'promptNode':
       return (
         <div className="flex flex-col gap-1">
           <p className="text-xs font-bold opacity-60">User</p>
-          <NodeDisplayMarkdown content={section.prompt ?? ""}/>
+          <NodeDisplayMarkdown content={section.prompt ?? ''}/>
           <p className="text-xs font-bold opacity-60 mt-1">AI</p>
-          <NodeDisplayMarkdown content={section.response ?? ""}/>
+          <NodeDisplayMarkdown content={section.response ?? ''}/>
         </div>
-      );
+      )
 
-    case "textNode":
-      return <NodeDisplayMarkdown content={section.text ?? ""}/>;
+    case 'textNode':
+      return <NodeDisplayMarkdown content={section.text ?? ''}/>
 
-    case "summaryNode":
-      return <NodeDisplayMarkdown content={section.response ?? ""}/>;
+    case 'summaryNode':
+      return <NodeDisplayMarkdown content={section.response ?? ''}/>
 
-    case "problemResolution":
+    case 'problemResolution':
       return (
         <div className="flex flex-col gap-1">
           <p className="text-xs font-bold opacity-60">Problem</p>
-          <NodeDisplayMarkdown content={section.problems ?? ""}/>
+          <NodeDisplayMarkdown content={section.problems ?? ''}/>
           <p className="text-xs font-bold opacity-60 mt-1">Solution</p>
-          <NodeDisplayMarkdown content={section.solution ?? ""}/>
+          <NodeDisplayMarkdown content={section.solution ?? ''}/>
         </div>
-      );
+      )
 
-    case "mergeNode":
-      return <p className="text-xs opacity-50 italic">Merge node — no content.</p>;
+    case 'mergeNode':
+      return <p className="text-xs opacity-50 italic">Merge node — no content.</p>
 
     default:
-      return null;
+      return null
   }
-};
+}
 
+/**
+ * Displays an expandable card for a section, showing metadata and an option
+ * to view the full content or jump to the original node.
+ *
+ * @param props - Component properties.
+ * @param props.section - The section data to display.
+ * @param props.onGoToNode - Optional callback for navigating to the node.
+ * @returns A collapsible card representing the section.
+ */
 const SectionCard = ({section, onGoToNode,}: {
-  section: Section;
-  onGoToNode?: (id: string) => void;
+  section: Section
+  onGoToNode?: (id: string) => void
 }) => {
-  const [open, setOpen] = useState(false);
-  const meta = TYPE_META[section.type] ?? {label: section.type, badge: "badge-ghost"};
+  const [open, setOpen] = useState(false)
+  const meta = TYPE_META[section.type] ?? {label: section.type, badge: 'badge-ghost'}
 
   return (
     <div className="rounded-md border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
@@ -103,13 +123,22 @@ const SectionCard = ({section, onGoToNode,}: {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
+/**
+ * Displays a column of sections, representing a branch in a merged flow.
+ *
+ * @param props - Component properties.
+ * @param props.label - The title for the column.
+ * @param props.sections - An array of sections belonging to this branch.
+ * @param props.onGoToNode - Optional callback for navigating to a node.
+ * @returns A column of section cards.
+ */
 const BranchColumn = ({label, sections, onGoToNode}: {
-  label: string;
-  sections: Section[];
-  onGoToNode?: (id: string) => void;
+  label: string
+  sections: Section[]
+  onGoToNode?: (id: string) => void
 }) => (
 
   <div className="flex flex-col flex-1 min-w-0">
@@ -125,17 +154,28 @@ const BranchColumn = ({label, sections, onGoToNode}: {
 
     </div>
   </div>
-);
+)
 
+
+/**
+ * Main component for rendering the content of a Merge Node.
+ * It visualizes two branches of conversation that are being merged, side-by-side,
+ * and highlights any contradictions or problems found between them.
+ *
+ * @param props - Component properties.
+ * @param props.sections - The array of sections constituting the merge inputs.
+ * @param props.onGoToNode - Optional callback for navigating to a source node.
+ * @returns The UI for comparing branches and displaying merge resolutions.
+ */
 const MergeContent = ({sections, onGoToNode}: MergeContentProps) => {
-  if (!sections || sections.length === 0) return null;
+  if (!sections || sections.length === 0) return null
 
-  const problem = sections.find((s) => s.id === "problem");
-  const streamSections = sections.filter((s) => s.id !== "problem");
+  const problem = sections.find((s) => s.id === 'problem')
+  const streamSections = sections.filter((s) => s.id !== 'problem')
 
-  const streamIds = [...new Set(streamSections.map((s) => s.stream_id))].sort();
-  const branch1 = streamSections.filter((s) => s.stream_id === streamIds[0]);
-  const branch2 = streamSections.filter((s) => s.stream_id === streamIds[1]);
+  const streamIds = [...new Set(streamSections.map((s) => s.stream_id))].sort()
+  const branch1 = streamSections.filter((s) => s.stream_id === streamIds[0])
+  const branch2 = streamSections.filter((s) => s.stream_id === streamIds[1])
 
   return (
     <div className="flex flex-col px-2 py-2 gap-2">
@@ -153,7 +193,7 @@ const MergeContent = ({sections, onGoToNode}: MergeContentProps) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MergeContent;
+export default MergeContent
