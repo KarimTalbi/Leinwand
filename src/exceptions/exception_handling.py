@@ -1,4 +1,5 @@
 import logging
+from logging import Logger
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exception_handlers import http_exception_handler
@@ -14,7 +15,7 @@ from exceptions.custom_exceptions import (
     InvalidApiKeyException, UserNotFoundException
 )
 
-logger = logging.getLogger(__name__)
+logger: Logger = logging.getLogger(__name__)
 
 
 # --- Domain exceptions → HTTP responses ---
@@ -80,8 +81,8 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     known = (ValueError, KeyError)
     if isinstance(exc, known):
         logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc)
-
-    logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=True)
+    else:
+        logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=True)
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
@@ -91,38 +92,47 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         NodeNotFoundException,
+        # pyrefly: ignore [bad-argument-type]
         node_not_found_handler,
     )
     app.add_exception_handler(
         EdgeNotFoundException,
+        # pyrefly: ignore [bad-argument-type]
         edge_not_found_handler,
     )
     app.add_exception_handler(
         CanvasNotFoundException,
+        # pyrefly: ignore [bad-argument-type]
         canvas_not_found_handler,
     )
     app.add_exception_handler(
         UserAlreadyExistsException,
+        # pyrefly: ignore [bad-argument-type]
         user_already_exists_handler,
     )
     app.add_exception_handler(
         InactiveUserException,
+        # pyrefly: ignore [bad-argument-type]
         inactive_user_handler,
     )
     app.add_exception_handler(
         HTTPException,
+        # pyrefly: ignore [bad-argument-type]
         http_exception_handler_with_logging,
     )
     app.add_exception_handler(
         RequestValidationError,
+        # pyrefly: ignore [bad-argument-type]
         validation_exception_handler,
     )
     app.add_exception_handler(
         InvalidApiKeyException,
+        # pyrefly: ignore [bad-argument-type]
         api_key_not_found_handler,
     )
     app.add_exception_handler(
         UserNotFoundException,
+        # pyrefly: ignore [bad-argument-type]
         user_not_found_handler,
     )
     app.add_exception_handler(Exception, unhandled_exception_handler)
