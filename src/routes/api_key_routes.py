@@ -16,13 +16,15 @@ from utils import encrypt_key
 
 api_key_router = APIRouter(prefix="/api_key", tags=["api_key"])
 
+
 class ApiKeyDelete(BaseModel):
     key_id: str
+
 
 @api_key_router.get("/list/", response_model=list[ApiKeyReturn])
 async def list_api_keys(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ) -> Any:
     result: list[ApiKey] = await aks.list_keys(session, current_user.id)
     return result
@@ -32,7 +34,7 @@ async def list_api_keys(
 async def create_api_key(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: ApiKeyRead,
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ) -> None:
     provider: Provider = detect_provider(data.key)
     validator: LLMKeyValidator = create_validator(provider, data.key)
@@ -52,6 +54,6 @@ async def create_api_key(
 async def delete_api_key(
     _: Annotated[UserAuth, Depends(get_current_active_user)],
     api_key_id: str,
-    session: AsyncSession = Depends(get_async_session)
+    session: AsyncSession = Depends(get_async_session),
 ) -> None:
     await aks.delete_key(session, api_key_id)

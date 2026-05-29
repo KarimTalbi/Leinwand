@@ -20,6 +20,7 @@ class SyncDataRequest(BaseModel):
     edges: list[EdgeRead]
     time: int
 
+
 class SyncDataResponse(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
@@ -59,4 +60,3 @@ async def sync_data(
     await ns.write_edges(session, data.edges, current_user.id, canvas_id)
 
     await cs.update_canvas_data(session, canvas_id, data.time)
-

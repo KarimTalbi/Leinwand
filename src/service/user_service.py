@@ -17,7 +17,8 @@ from exceptions import (
     CredentialsException,
     InactiveUserException,
     InvalidUserOrPasswordException,
-    UserAlreadyExistsException, UserNotFoundException,
+    UserAlreadyExistsException,
+    UserNotFoundException,
 )
 
 dotenv.load_dotenv()
@@ -123,8 +124,8 @@ async def get_access_token(session: AsyncSession, username: str, password: str) 
 
 
 async def get_current_user(
-        token: Annotated[str, Depends(oauth2_scheme)],
-        session: AsyncSession = Depends(get_async_session),
+    token: Annotated[str, Depends(oauth2_scheme)],
+    session: AsyncSession = Depends(get_async_session),
 ) -> User:
     try:
         payload: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

@@ -165,6 +165,7 @@ class ApiKeyRead(BaseModel):
         extra="ignore",
     )
 
+
 class UserData(BaseModel):
     data: dict[str, Any] | None = None
 

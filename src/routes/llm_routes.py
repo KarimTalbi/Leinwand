@@ -49,15 +49,16 @@ class MergeResolveResponse(BaseModel):
 class MergeRequest(NodeRead):
     check_consistencies: bool = True
 
+
 class ChatRequest(NodeRead):
     node: NodeRead
 
 
 @llm_router.post("/merge/", response_model=MergeResponse)
 async def merge_streams(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: MergeRequest,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: MergeRequest,
+    session: AsyncSession = Depends(get_async_session),
 ) -> Any:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
 
@@ -78,18 +79,16 @@ async def merge_streams(
     )
 
     if response.has_issues:
-        return MergeResponse(
-            context=ancestors, has_issues=True, problems=response.response
-        )
+        return MergeResponse(context=ancestors, has_issues=True, problems=response.response)
 
     return MergeResponse(context=ancestors, has_issues=False)
 
 
 @llm_router.post("/merge/resolve/")
 async def resolve_merge(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: MergeRequest,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: MergeRequest,
+    session: AsyncSession = Depends(get_async_session),
 ) -> MergeResolveResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
@@ -121,9 +120,9 @@ async def resolve_merge(
 
 @llm_router.post("/streaming_chat/")
 async def get_streaming_chat_response(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: NodeRead,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: NodeRead,
+    session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
@@ -132,11 +131,11 @@ async def get_streaming_chat_response(
 
     async def token_generator() -> AsyncGenerator[str]:
         async for chunk in model.astream(
-                [
-                    SystemMessage(f"{pr.CHAT_SYSTEM}\n\n{ancestors}"),
-                    HumanMessage(data.data.get("prompt"))
-                ],
-                config={"callbacks": [langfuse_handler]},
+            [
+                SystemMessage(f"{pr.CHAT_SYSTEM}\n\n{ancestors}"),
+                HumanMessage(data.data.get("prompt")),
+            ],
+            config={"callbacks": [langfuse_handler]},
         ):
             content: str = extract_content(chunk)
             if content:
@@ -150,9 +149,9 @@ async def get_streaming_chat_response(
 
 @llm_router.post("/summary/")
 async def get_summary_response(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: NodeRead,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: NodeRead,
+    session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
@@ -161,11 +160,8 @@ async def get_summary_response(
 
     async def token_generator() -> AsyncGenerator[str]:
         async for chunk in model.astream(
-                [
-                    SystemMessage(f"{pr.SUMMARY_SYSTEM}\n\n{ancestors}"),
-                    HumanMessage(pr.SUMMARY_USER)
-                ],
-                config={"callbacks": [langfuse_handler]},
+            [SystemMessage(f"{pr.SUMMARY_SYSTEM}\n\n{ancestors}"), HumanMessage(pr.SUMMARY_USER)],
+            config={"callbacks": [langfuse_handler]},
         ):
             content: str = extract_content(chunk)
             if content:

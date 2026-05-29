@@ -33,6 +33,7 @@ async def delete_key(session: AsyncSession, api_key_id: str) -> None:
     await session.delete(key)
     await session.flush()
 
+
 async def get_key(session: AsyncSession, api_key_id: str, user_id: str) -> str:
     result: Result[tuple[ApiKey]] = await session.execute(
         select(ApiKey).where(ApiKey.id == api_key_id).where(ApiKey.user_id == user_id)
@@ -61,4 +62,3 @@ async def get_llm_model_config(session, node: NodeRead, user_id: str) -> LLMMode
     api_key: str = await get_key(session, user_key_id, user_id)
 
     return LLMModelConfig(model=user_model, model_provider=user_provider, api_key=api_key)
-

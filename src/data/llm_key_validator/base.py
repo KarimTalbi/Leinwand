@@ -30,8 +30,6 @@ class LLMKeyValidator(ABC):
         """Map a single model ID to its ModelType."""
         ...
 
-    # ── Public API ────────────────────────────────────────────────────────────
-
 
     async def get_models(self) -> list[str]:
         if self._models is not None:
@@ -45,7 +43,6 @@ class LLMKeyValidator(ABC):
 
     async def get_models_by_type(self, model_type: ModelType) -> list[str]:
         return [m for m in await self.get_models() if self._classify(m) == model_type]
-
 
     async def validate(self) -> bool:
         try:

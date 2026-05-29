@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 class SuppressExceptionFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         return record.exc_info is None

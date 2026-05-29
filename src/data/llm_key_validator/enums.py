@@ -1,5 +1,6 @@
 from enum import StrEnum
 
+
 class Provider(StrEnum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"

@@ -1,3 +1,5 @@
+from data import Edge
+from data import Node
 from data import Canvas
 from typing import Annotated, Any
 
@@ -11,7 +13,6 @@ from service import canvas_service as cs, get_current_active_user, node_service 
 canvas_router = APIRouter(prefix="/canvas", tags=["canvas"])
 
 
-
 class CanvasUpdateRequest(BaseModel):
     canvas_id: str
     canvas_name: str
@@ -19,14 +20,14 @@ class CanvasUpdateRequest(BaseModel):
 
 @canvas_router.get("/list/", response_model=list[CanvasRead])
 async def get_canvases(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    session: AsyncSession = Depends(get_async_session),
 ) -> Any:
     canvases: list[Canvas] = await cs.list_canvases(session, current_user.id)
 
     for canvas in canvases:
-        nodes = await ns.list_nodes(session, current_user.id, canvas.id)
-        edges = await ns.list_edges(session, current_user.id, canvas.id)
+        nodes: list[Node] = await ns.list_nodes(session, current_user.id, canvas.id)
+        edges: list[Edge] = await ns.list_edges(session, current_user.id, canvas.id)
         canvas.data = {
             **canvas.data,
             "nodes": [NodeRead.model_validate(n).model_dump() for n in nodes],
@@ -38,18 +39,18 @@ async def get_canvases(
 
 @canvas_router.post("/create/")
 async def create_canvas(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        canvas_create: CanvasRead,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    canvas_create: CanvasRead,
+    session: AsyncSession = Depends(get_async_session),
 ) -> None:
     await cs.create_canvas(session, canvas_create, current_user.id)
 
 
 @canvas_router.delete("/{canvas_id}/delete/")
 async def delete_canvas(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        canvas_id: str,
-        session: AsyncSession = Depends(get_async_session),
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    canvas_id: str,
+    session: AsyncSession = Depends(get_async_session),
 ) -> None:
     await ns.delete_all_edges(session, current_user.id, canvas_id)
     await ns.delete_all_nodes(session, current_user.id, canvas_id)
@@ -58,8 +59,8 @@ async def delete_canvas(
 
 @canvas_router.put("/update")
 async def update_canvas(
-        current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: CanvasUpdateRequest,
-        session: AsyncSession = Depends(get_async_session),
+    _: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: CanvasUpdateRequest,
+    session: AsyncSession = Depends(get_async_session),
 ) -> None:
     await cs.update_canvas_name(session, data.canvas_id, data.canvas_name)

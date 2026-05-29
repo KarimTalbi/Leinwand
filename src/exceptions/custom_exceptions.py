@@ -41,7 +41,9 @@ class InactiveUserException(Exception):
 class InvalidApiKeyException(Exception):
     def __init__(self, message: str | None = None) -> None:
         self.message = message
-        super().__init__(message if message else "Invalid API key. Please check your key and try again.")
+        super().__init__(
+            message if message else "Invalid API key. Please check your key and try again."
+        )
 
 
 class RateLimitError(Exception):
@@ -53,7 +55,9 @@ class RateLimitError(Exception):
 class ProviderError(Exception):
     def __init__(self, message: str | None = None) -> None:
         self.message = message
-        super().__init__(message if message else "An error occurred with the provider. Please try again later.")
+        super().__init__(
+            message if message else "An error occurred with the provider. Please try again later."
+        )
 
 
 class InvalidUserOrPasswordException(HTTPException):
@@ -72,4 +76,3 @@ class CredentialsException(HTTPException):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-

@@ -1,6 +1,7 @@
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from logging import Logger
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,13 +14,12 @@ from utils import setup_logging
 DROP_AND_CREATE_DB = False
 
 setup_logging()
-logger = logging.getLogger(__name__)
+logger: Logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     async with engine.begin() as conn:
-
         if DROP_AND_CREATE_DB:
             logger.info("Dropping and recreating database")
             await conn.run_sync(Base.metadata.drop_all)
@@ -51,12 +51,4 @@ app.include_router(user_router)
 app.include_router(canvas_router)
 app.include_router(node_router)
 app.include_router(llm_router)
-
 app.include_router(api_key_router)
-
-
-# PYTHONPATH=src fastapi dev src/main.py
-# PYTHONPATH=src uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
-# docker compose up -d
-# .venv/bin/alembic revision --autogenerate -m "initial schema"
-# .venv/bin/alembic upgrade head

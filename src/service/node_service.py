@@ -16,15 +16,14 @@ async def list_nodes(session: AsyncSession, user_id: str, canvas_id: str) -> lis
 
 async def delete_all_nodes(session: AsyncSession, user_id: str, canvas_id: str) -> None:
     await session.execute(
-        delete(Node)
-        .where(Node.canvas_id == canvas_id)
-        .where(Node.user_id == user_id)
+        delete(Node).where(Node.canvas_id == canvas_id).where(Node.user_id == user_id)
     )
     await session.flush()
 
 
 async def write_nodes(
-        session: AsyncSession, nodes: list[NodeRead], user_id: str, canvas_id: str) -> None:
+    session: AsyncSession, nodes: list[NodeRead], user_id: str, canvas_id: str
+) -> None:
     data: list[dict[str, Any]] = [
         {**node.model_dump(), "user_id": user_id, "canvas_id": canvas_id} for node in nodes
     ]

@@ -26,7 +26,6 @@ class AnthropicValidator(LLMKeyValidator):
         return [m["id"] for m in r.json()["data"]]
 
     def _classify(self, model_id: str) -> ModelType:
-        # Anthropic currently only exposes chat models
         if model_id.lower().startswith("claude"):
             return ModelType.CHAT
         return ModelType.OTHER
