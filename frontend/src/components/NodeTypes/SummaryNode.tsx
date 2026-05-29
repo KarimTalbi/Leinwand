@@ -1,23 +1,31 @@
-import React, {memo, useState} from 'react';
-import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
+import React, {memo, useState} from 'react'
+import {NodeProps, useNodeConnections, useNodes} from '@xyflow/react'
+import {useShallow} from 'zustand/react/shallow'
+import {Info, TriangleAlert} from 'lucide-react'
 
-import useStore from '../../store.ts';
-import {SummaryNodeType} from "@/types.ts";
-import {NodeDisplayMarkdown,} from "@/components/NodeElements/TextElements.tsx";
-import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
-import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
-import {useShallow} from "zustand/react/shallow";
-import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import AddConnectedNode from '@/components/NodeElements/AddConnectedNode'
+import {ConnectionHandles} from '@/components/NodeElements/ConnectionHandles'
+import {NodeHeader} from '@/components/NodeElements/NodeHeader'
+import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
+import {cn} from '@/lib/utils'
 import {
   NodeBackgroundStyle,
-  typeProps,
+  nodeFooterButtonStyle,
   NodeForegroundStyle,
   pulsingText,
-  nodeFooterButtonStyle
-} from "@/lib/styles.ts";
-import {Info, TriangleAlert} from "lucide-react";
-import {cn} from "@/lib/utils.ts";
+  typeProps,
+} from '@/lib/styles'
+import useStore from '@/store'
+import {SummaryNodeType} from '@/types'
 
+/**
+ * Represents the possible states of the SummaryNode.
+ * - `loading`: The node is currently generating a summary.
+ * - `hasResponse`: The node has successfully generated and is displaying a summary.
+ * - `sourceIsSummary`: The node is connected to another SummaryNode, which is an invalid state.
+ * - `ready`: The node is connected and ready to generate a summary.
+ * - `needs_connection`: The node is not connected to any source.
+ */
 type NodeState =
   | 'loading'
   | 'hasResponse'
@@ -25,41 +33,52 @@ type NodeState =
   | 'ready'
   | 'needs_connection';
 
-const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
+/**
+ * A node designed to summarize the content from its preceding nodes.
+ * It requires a connection to at least one other node to function. It cannot be
+ * connected to another SummaryNode. Once triggered, it generates a summary
+ * and displays it, providing an output handle to continue the flow.
+ *
+ * @param props - The properties of the node, provided by React Flow.
+ * @param props.id - The unique ID of the node.
+ * @param props.data - The data associated with the node, such as its response.
+ * @returns The SummaryNode component.
+ */
+const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
   const {summaryNodeAction} = useStore(useShallow((s) => ({
     summaryNodeAction: s.summaryNodeAction,
-  })));
+  })))
 
-  const [loading, setLoading] = useState(false);
-  const isClosed = data.closed;
-  const nodes = useNodes();
+  const [loading, setLoading] = useState(false)
+  const isClosed = data.closed
+  const nodes = useNodes()
 
-  const connections = useNodeConnections({handleId: "target-1", handleType: "target"});
-  const isConnected = connections.length > 0;
+  const connections = useNodeConnections({handleId: 'target-1', handleType: 'target'})
+  const isConnected = connections.length > 0
   const isSourceSummary = isConnected
     ? nodes.find(n => n.id === connections[0].source)?.type === 'summaryNode'
-    : false;
+    : false
 
   const handleClick = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await summaryNodeAction(id);
+      await summaryNodeAction(id)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   const getNodeState = (): NodeState => {
     if (!isClosed) {
-      if (loading) return 'loading';
-      if (isSourceSummary) return 'sourceIsSummary';
-      if (!isConnected) return 'needs_connection';
-      return 'ready';
+      if (loading) return 'loading'
+      if (isSourceSummary) return 'sourceIsSummary'
+      if (!isConnected) return 'needs_connection'
+      return 'ready'
     }
     return 'hasResponse'
   }
 
-  const nodeState = getNodeState();
+  const nodeState = getNodeState()
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connection: (
@@ -73,7 +92,7 @@ const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
         <TriangleAlert size={12}/> Source can't be a summary
       </div>
     ),
-  };
+  }
 
   return (
     <div className={NodeBackgroundStyle}>
@@ -111,9 +130,9 @@ const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
           </div>
         )}
 
-        {nodeState === "loading" && (
+        {nodeState === 'loading' && (
 
-          <div className={cn(pulsingText, "flex flex-col w-full justify-center items-center h-15")}>
+          <div className={cn(pulsingText, 'flex flex-col w-full justify-center items-center h-15')}>
             <span>generating summary...</span>
           </div>
 
@@ -150,6 +169,6 @@ const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
     </div>
 
   )
-};
+}
 
-export default memo(SummaryNode);
+export default memo(SummaryNode)

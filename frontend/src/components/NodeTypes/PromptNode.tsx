@@ -1,22 +1,30 @@
-import {memo, useLayoutEffect, useState} from 'react';
-import {NodeProps, useNodeConnections, useNodes} from "@xyflow/react";
+import {memo, useLayoutEffect, useState} from 'react'
+import {NodeProps, useNodeConnections, useNodes} from '@xyflow/react'
+import {useShallow} from 'zustand/react/shallow'
 
-import useStore from '@/store.ts';
-import {PromptNodeType} from "@/types.ts";
-import {NodeDisplayMarkdown,} from "@/components/NodeElements/TextElements.tsx";
-import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
-import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
-import {useShallow} from "zustand/react/shallow";
-import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import AddConnectedNode from '@/components/NodeElements/AddConnectedNode'
+import {ConnectionHandles} from '@/components/NodeElements/ConnectionHandles'
+import {NodeHeader} from '@/components/NodeElements/NodeHeader'
+import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
+import {useTextarea} from '@/hooks/useTextarea'
 import {
-  typeProps,
-  pulsingText,
-  NodeForegroundStyle,
   NodeBackgroundStyle,
-  nodeFooterButtonStyle, textareaStyle,
-} from "@/lib/styles.ts";
-import {useTextarea} from "@/hooks/useTextarea.ts";
+  nodeFooterButtonStyle,
+  NodeForegroundStyle,
+  pulsingText,
+  textareaStyle,
+  typeProps,
+} from '@/lib/styles'
+import useStore from '@/store'
+import {PromptNodeType} from '@/types'
 
+/**
+ * Represents the possible states of the PromptNode, which dictate its UI and available actions.
+ * - `loading`: The node is currently waiting for a response from the AI.
+ * - `hasResponse`: The node has received a response and is in a "closed" state.
+ * - `sourceIsPrompt`: The node is connected to another PromptNode, altering its initial display.
+ * - `ready`: The node is ready to accept user input.
+ */
 type NodeState =
   | 'loading'
   | 'hasResponse'
@@ -24,60 +32,71 @@ type NodeState =
   | 'ready';
 
 
+/**
+ * A node that facilitates interaction with an AI model.
+ * It allows users to input a prompt, sends it to the AI, and displays the response.
+ * The node's state and appearance change based on whether it's awaiting input,
+ * processing, or displaying a response.
+ *
+ * @param props - The properties of the node, provided by React Flow.
+ * @param props.id - The unique ID of the node.
+ * @param props.data - The data associated with the node, such as its prompt and response.
+ * @returns The PromptNode component.
+ */
 const PromptNode = (
   {
     id,
     data,
-  }: NodeProps<PromptNodeType>
+  }: NodeProps<PromptNodeType>,
 ) => {
 
   const {promptNodeAction, updateNodeData} = useStore(useShallow((s) => ({
     promptNodeAction: s.promptNodeAction,
     updateNodeData: s.updateNodeData,
-  })));
+  })))
 
   const {localText, handleTextChange, textareaRef} = useTextarea(
-    data.prompt || "",
-    (value) => updateNodeData(id, {prompt: value})
-    );
+    data.prompt || '',
+    (value) => updateNodeData(id, {prompt: value}),
+  )
 
 
   const handleClick = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await promptNodeAction(id);
+      await promptNodeAction(id)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   useLayoutEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
-  }, [localText]);
+  }, [localText])
 
-  const [loading, setLoading] = useState(false);
-  const isClosed = data.closed;
-  const nodes = useNodes();
+  const [loading, setLoading] = useState(false)
+  const isClosed = data.closed
+  const nodes = useNodes()
 
-  const connections = useNodeConnections({handleId: "target-1", handleType: "target"});
-  const isConnected = connections.length > 0;
+  const connections = useNodeConnections({handleId: 'target-1', handleType: 'target'})
+  const isConnected = connections.length > 0
   const isSourcePrompt = isConnected
     ? nodes.find(n => n.id === connections[0].source)?.type === 'promptNode'
-    : false;
+    : false
 
   const getNodeState = (): NodeState => {
     if (!isClosed) {
-      if (loading) return 'loading';
-      if (isConnected && isSourcePrompt) return 'sourceIsPrompt';
-      return 'ready';
+      if (loading) return 'loading'
+      if (isConnected && isSourcePrompt) return 'sourceIsPrompt'
+      return 'ready'
     }
     return 'hasResponse'
   }
 
-  const nodeState = getNodeState();
+  const nodeState = getNodeState()
 
 
   return (
@@ -193,6 +212,6 @@ const PromptNode = (
 
     </div>
   )
-};
+}
 
-export default memo(PromptNode);
+export default memo(PromptNode)

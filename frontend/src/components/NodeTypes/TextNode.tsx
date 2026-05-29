@@ -1,56 +1,73 @@
-import {memo, useLayoutEffect} from 'react';
-import {NodeProps} from "@xyflow/react";
+import {memo, useLayoutEffect} from 'react'
+import {NodeProps} from '@xyflow/react'
+import {useShallow} from 'zustand/react/shallow'
 
-import useStore from '@/store.ts';
-import {TextNodeType} from "@/types.ts";
-import {NodeDisplayMarkdown} from "@/components/NodeElements/TextElements.tsx";
-import {NodeHeader} from "@/components/NodeElements/NodeHeader.tsx";
-import {ConnectionHandles} from "@/components/NodeElements/ConnectionHandles.tsx";
-import {useShallow} from "zustand/react/shallow";
-import AddConnectedNode from "@/components/NodeElements/AddConnectedNode.tsx";
+import AddConnectedNode from '@/components/NodeElements/AddConnectedNode'
+import {ConnectionHandles} from '@/components/NodeElements/ConnectionHandles'
+import {NodeHeader} from '@/components/NodeElements/NodeHeader'
+import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
+import {useTextarea} from '@/hooks/useTextarea'
 import {
   NodeBackgroundStyle,
-  typeProps,
+  nodeFooterButtonStyle,
   NodeForegroundStyle,
   textareaStyle,
-  nodeFooterButtonStyle
-} from "@/lib/styles.ts";
-import {useTextarea} from "@/hooks/useTextarea.ts";
+  typeProps,
+} from '@/lib/styles'
+import useStore from '@/store'
+import {TextNodeType} from '@/types'
 
+
+/**
+ * Represents the possible states of the TextNode.
+ * - `closed`: The node has content and is in a read-only state.
+ * - `open`: The node has content and is in an editable state.
+ * - `empty`: The node has no content and is in an editable state.
+ */
 type NodeState =
   | 'closed'
   | 'open'
   | 'empty';
 
-const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
-  const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})));
+/**
+ * A simple node for adding and displaying text or notes.
+ * The node can be in an "open" state for editing or a "closed" state for display.
+ * It provides input and output handles to be integrated into a flow.
+ *
+ * @param props - The properties of the node, provided by React Flow.
+ * @param props.id - The unique ID of the node.
+ * @param props.data - The data associated with the node, such as its text content.
+ * @returns The TextNode component.
+ */
+const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
+  const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})))
 
   const {localText, handleTextChange, textareaRef} = useTextarea(
-    data.text || "",
-    (value) => updateNodeData(id, {text: value})
-  );
+    data.text || '',
+    (value) => updateNodeData(id, {text: value}),
+  )
 
 
   const handleClick = () => {
     updateNodeData(id, {closed: !data.closed})
-  };
+  }
 
   useLayoutEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
-  }, [localText, handleClick]);
+  }, [localText, handleClick])
 
   const getNodeState = (): NodeState => {
     if (data.text) {
-      if (data.closed) return 'closed';
-      return 'open';
+      if (data.closed) return 'closed'
+      return 'open'
     }
     return 'empty'
   }
 
-  const nodeState = getNodeState();
+  const nodeState = getNodeState()
 
   return (
     <div className={NodeBackgroundStyle}>
@@ -91,7 +108,7 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
         {nodeState === 'closed' && (
           <>
 
-            <NodeDisplayMarkdown content={data.text || ""} className="px-2"/>
+            <NodeDisplayMarkdown content={data.text || ''} className="px-2"/>
 
             <div className="flex justify-end pt-1">
 
@@ -132,6 +149,6 @@ const TextNode = ({id, data,}: NodeProps<TextNodeType>) => {
     </div>
 
   )
-};
+}
 
-export default memo(TextNode);
+export default memo(TextNode)
