@@ -2,6 +2,7 @@ import React from "react";
 import useStore from "@/store.ts";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, LogOut, Settings2} from "lucide-react";
+import {navbarButtonStyle} from "@/lib/styles.ts";
 
 
 export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div">) => {
@@ -34,13 +35,13 @@ export const FlowNavBar = () => {
       <div className="flex gap-2 mr-2">
 
         <div className="tooltip tooltip-bottom" data-tip="Exit Project">
-          <button className="btn btn-square btn-sm" onClick={exitCanvas}>
+          <button className={navbarButtonStyle} onClick={exitCanvas}>
             <ChevronLeft size={14} color="#737373"/>
           </button>
         </div>
 
         <div className="tooltip tooltip-bottom" data-tip="Settings">
-          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+          <button className={navbarButtonStyle} onClick={setSettingsOpen}>
             <Settings2 size={14} color="#737373"/>
           </button>
         </div>
@@ -63,13 +64,13 @@ export const DashboardNavbar = () => {
       <div className="flex gap-2 mr-2">
 
         <div className="tooltip tooltip-bottom" data-tip="Log Out">
-          <button className="btn btn-square btn-sm" onClick={logout}>
+          <button className={navbarButtonStyle} onClick={logout}>
             <LogOut size={14} color="#737373"/>
           </button>
         </div>
 
         <div className="tooltip tooltip-bottom" data-tip="Settings">
-          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+          <button className={navbarButtonStyle} onClick={setSettingsOpen}>
             <Settings2 size={14} color="#737373"/>
           </button>
         </div>
@@ -87,7 +88,7 @@ export const SettingsNavbar = () => {
       <div className="flex gap-2 mr-2">
 
         <div className="tooltip tooltip-bottom" data-tip="Back">
-          <button className="btn btn-square btn-sm" onClick={setSettingsOpen}>
+          <button className={navbarButtonStyle} onClick={setSettingsOpen}>
             <ChevronLeft size={14} color="#737373"/>
           </button>
         </div>
