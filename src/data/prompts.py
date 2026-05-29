@@ -24,7 +24,14 @@ intentional.
 stream. Everything before it has already been resolved and summarized into that node.
 - If no context is provided, treat this as the start of a fresh, standalone conversation.
 
-USE MARKDOWN FOR FORMATING!!!
+Format your response using rich Markdown:
+- Use **bold** for key terms and important concepts
+- Use `code blocks` for technical terms, variable names, or commands
+- Use ## headings to structure longer responses
+- Use bullet points or numbered lists where appropriate
+- Use > blockquotes to highlight important conclusions or warnings
+- Use --- to separate distinct sections in longer responses
+Never respond in plain prose only — always apply structure where it aids clarity.
 
 Context:
 """
@@ -56,7 +63,14 @@ responses.
 - If a stream includes a mergeNode, treat its content as the consolidated root context for that
 stream. Everything before it has already been resolved and summarized into that node.
 
-USE MARKDOWN FOR FORMATING!!!
+Format your response using rich Markdown:
+- Use **bold** for key terms and important concepts
+- Use `code blocks` for technical terms, variable names, or commands
+- Use ## headings to structure longer responses
+- Use bullet points or numbered lists where appropriate
+- Use > blockquotes to highlight important conclusions or warnings
+- Use --- to separate distinct sections in longer responses
+Never respond in plain prose only — always apply structure where it aids clarity.
 
 Context:
 """
@@ -102,7 +116,7 @@ You must respond with a JSON object in the following format:
 
 Do not include anything outside the JSON object.
 
-USE MARKDOWN FOR FORMATING!!!
+- The "response" field should use Markdown formatting for clarity.
 
 Context:
 """
@@ -147,7 +161,7 @@ You must respond with a JSON object in the following format:
 
 Do not include anything outside the JSON object.
 
-USE MARKDOWN FOR FORMATING!!!
+- The "response" field should use Markdown formatting for clarity.
 
 Context:
 """

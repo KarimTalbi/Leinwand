@@ -11,7 +11,7 @@ from pwdlib import PasswordHash
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import Token, TokenData, User, UserCreate, get_async_session
+from data import Token, TokenData, User, UserCreate, get_async_session, UserData
 from exceptions import (
     CredentialsException,
     InactiveUserException,
@@ -41,6 +41,21 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 async def get_user(session: AsyncSession, username: str) -> User | None:
     result = await session.execute(select(User).where(User.username == username))
     return result.scalar_one_or_none()
+
+async def update_user(session: AsyncSession, data: UserData, user_id: str) -> None:
+    user = await session.get(User, user_id)
+
+    if not user.user_data:
+        user.user_data = {}
+
+    for key, value in data.model_dump().items():
+        user.user_data[key] = value
+
+    await session.flush()
+
+async def get_user_data(session: AsyncSession, user_id: str) -> dict:
+    user = await session.get(User, user_id)
+    return user.get("data", {})
 
 
 async def authenticate_user(

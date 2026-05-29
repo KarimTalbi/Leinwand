@@ -1,4 +1,3 @@
-from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
 
@@ -21,3 +20,13 @@ async def delete_key(session: AsyncSession, api_key_id: str) -> None:
     key = await session.get(ApiKey, api_key_id)
     await session.delete(key)
     await session.flush()
+
+async def get_key(session: AsyncSession, api_key_id: str, user_id: str) -> str:
+    result = await session.execute(select(ApiKey).where(ApiKey.id == api_key_id).where(ApiKey.user_id == user_id))
+    api_key = result.scalar_one_or_none()
+
+    if not api_key:
+        raise Exception("API key not found")
+
+    return api_key.key
+

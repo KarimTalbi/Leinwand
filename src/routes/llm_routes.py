@@ -15,9 +15,9 @@ from data import (
     NodeRead,
     UserAuth,
     get_async_session,
-    prompts as pr
+    prompts as pr,
 )
-from service import get_current_active_user, node_service as ns
+from service import get_current_active_user, node_service as ns, api_key_service as aks
 
 load_dotenv()
 
@@ -75,7 +75,23 @@ async def merge_streams(
     if not data.check_consistencies:
         return MergeResponse(context=ancestors, has_issues=False)
 
-    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
+    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
+    model_config = data.node.data.get("model", {})
+
+    user_model = model_config.get("model", "")
+    user_provider = model_config.get("modelProvider", "")
+    user_key_id = model_config.get("key_id", "")
+
+    if not (user_model and user_provider and user_key_id):
+        raise ValueError("No default model set")
+
+    api_key = await aks.get_key(session, user_key_id, current_user.id)
+
+    config = LLMModelConfig(
+        model=user_model,
+        api_key=api_key,
+        model_provider=user_provider,
+    )
 
     # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
@@ -105,7 +121,23 @@ async def resolve_merge(
 ) -> MergeResolveResponse:
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
 
-    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
+    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
+    model_config = data.node.data.get("model", {})
+
+    user_model = model_config.get("model", "")
+    user_provider = model_config.get("modelProvider", "")
+    user_key_id = model_config.get("key_id", "")
+
+    if not (user_model and user_provider and user_key_id):
+        raise ValueError("No default model set")
+
+    api_key = await aks.get_key(session, user_key_id, current_user.id)
+
+    config = LLMModelConfig(
+        model=user_model,
+        api_key=api_key,
+        model_provider=user_provider,
+    )
 
     # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
@@ -129,7 +161,6 @@ async def resolve_merge(
             "solution": response.response,
         }
     )
-    print(context)
 
     return MergeResolveResponse(context=context)
 
@@ -141,7 +172,23 @@ async def get_streaming_chat_response(
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
+    model_config = data.node.data.get("model", {})
+
+    user_model = model_config.get("model", "")
+    user_provider = model_config.get("modelProvider", "")
+    user_key_id = model_config.get("key_id", "")
+
+    if not (user_model and user_provider and user_key_id):
+        raise ValueError("No default model set")
+
+    api_key = await aks.get_key(session, user_key_id, current_user.id)
+
+    config = LLMModelConfig(
+        model=user_model,
+        api_key=api_key,
+        model_provider=user_provider,
+    )
+
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
     async def token_generator() -> AsyncGenerator[str]:
@@ -168,7 +215,23 @@ async def get_summary_response(
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
     ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    config = data.config or LLMModelConfig(model="gemini-2.5-flash", model_provider="google_genai")
+    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
+    model_config = data.node.data.get("model", {})
+
+    user_model = model_config.get("model", "")
+    user_provider = model_config.get("modelProvider", "")
+    user_key_id = model_config.get("key_id", "")
+
+    if not (user_model and user_provider and user_key_id):
+        raise ValueError("No default model set")
+
+    api_key = await aks.get_key(session, user_key_id, current_user.id)
+
+    config = LLMModelConfig(
+        model=user_model,
+        api_key=api_key,
+        model_provider=user_provider,
+    )
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
     async def token_generator() -> AsyncGenerator[str]:

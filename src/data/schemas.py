@@ -23,6 +23,7 @@ class NodeRead(BaseModel):
     type: str
     position: dict[str, float]
     data: dict[str, Any]
+
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,
@@ -92,7 +93,7 @@ class UserInDb(UserBase):
 
 class UserRead(UserBase):
     username: str
-    data: dict[str, Any] | None = None
+    user_data: dict[str, Any] | None = None
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
 
@@ -139,11 +140,17 @@ class MergeAnswer(BaseModel):
 class LLMModelConfig(BaseModel):
     model: str
     model_provider: str
+    api_key: str
     temperature: Annotated[float | int, Field(ge=0.0, le=2.0)] | None = None
     max_tokens: Annotated[int, Field(ge=0)] | None = None
     timeout: Annotated[int, Field(ge=0)] | None = None
     max_retries: Annotated[int, Field(ge=0)] | None = None
     model_kwargs: dict[str, Any] | None = None
+
+    @field_validator("api_key", mode="after")
+    @classmethod
+    def decrypt(cls, v: str) -> str:
+        return decrypt_key(v)
 
 
 class ApiKeyRead(BaseModel):
@@ -158,6 +165,17 @@ class ApiKeyRead(BaseModel):
         alias_generator=to_camel,
         extra="ignore",
     )
+
+class UserData(BaseModel):
+    data: dict[str, Any] | None = None
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        extra="ignore",
+    )
+
 
 class ApiKeyReturn(BaseModel):
     id: UUID4Str
