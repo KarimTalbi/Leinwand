@@ -1,52 +1,61 @@
-import React, { useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import React, {useEffect, useState} from 'react'
+import {NodeTypes, Panel, ReactFlow, ReactFlowProvider} from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import {
-  Plus,
-  Trash2,
-  FolderOpen,
-  Pen,
-  Save,
   ChevronLeft,
   ChevronRight,
+  FolderOpen,
+  Hexagon,
+  Pen,
+  Plus,
+  Save,
   Search,
+  Trash2,
   X,
-  Hexagon
-} from 'lucide-react';
-import useStore from '@/store';
-import { CanvasRead } from '@/types';
-import {DashboardNavbar} from '@/components/Navigation/NavBar.tsx';
-import {NodeTypes, Panel, ReactFlow, ReactFlowProvider} from '@xyflow/react';
+} from 'lucide-react'
+import {useShallow} from 'zustand/react/shallow'
 
-import '@xyflow/react/dist/style.css';
-import PromptNode from '@/components/NodeTypes/PromptNode.tsx';
-import TextNode from '@/components/NodeTypes/TextNode.tsx';
-import MergeNode from '@/components/NodeTypes/MergeNode.tsx';
-import SummaryNode from '@/components/NodeTypes/SummaryNode.tsx';
-import {cn, timeAgo} from "@/lib/utils.ts";
+import {DashboardNavbar} from '@/components/Navigation/NavBar'
+import MergeNode from '@/components/NodeTypes/MergeNode'
+import PromptNode from '@/components/NodeTypes/PromptNode'
+import SummaryNode from '@/components/NodeTypes/SummaryNode'
+import TextNode from '@/components/NodeTypes/TextNode'
+import {cn, timeAgo} from '@/lib/utils'
+import useStore from '@/store'
+import {CanvasRead} from '@/types'
+
 
 const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
   textNode: TextNode,
   mergeNode: MergeNode,
   summaryNode: SummaryNode,
-};
+}
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 6
 
+/**
+ * Main dashboard component where users can view, create, edit, and delete their projects (canvases).
+ * It features a searchable, sortable, and paginated grid of projects. Each project is
+ * displayed as a mini read-only map (using ReactFlow) along with metadata like node count
+ * and last edited time.
+ *
+ * @returns The Dashboard view component.
+ */
 export default function Dashboard() {
-  const [newName, setNewName] = useState('');
-  const [creating, setCreating] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [nameEdit, setNameEdit] = useState<string>('');
-  const [selectedEdit, setSelectedEdit] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [search, setSearch] = useState('');
-  const [showCreate, setShowCreate] = useState(false);
-  const [sortBy, setSortBy] = useState<'date' | 'title'>('date');
+  const [newName, setNewName] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [nameEdit, setNameEdit] = useState<string>('')
+  const [selectedEdit, setSelectedEdit] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [search, setSearch] = useState('')
+  const [showCreate, setShowCreate] = useState(false)
+  const [sortBy, setSortBy] = useState<'date' | 'title'>('date')
 
-  const updateCanvas = useStore((s) => s.updateCanvas);
+  const updateCanvas = useStore((s) => s.updateCanvas)
 
-  const { canvases, loadCanvases, createCanvas, deleteCanvas, selectCanvas } = useStore(
+  const {canvases, loadCanvases, createCanvas, deleteCanvas, selectCanvas} = useStore(
     useShallow((s) => ({
       canvases: s.canvases,
       loadCanvases: s.loadCanvases,
@@ -55,67 +64,67 @@ export default function Dashboard() {
       selectCanvas: s.selectCanvas,
       logout: s.logout,
     }))
-  );
+  )
 
   useEffect(() => {
-    void loadCanvases();
-  }, [loadCanvases]);
+    void loadCanvases()
+  }, [loadCanvases])
 
   const filteredCanvases = canvases
     .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === 'title') {
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name)
       }
-      const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-      const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-      return bTime - aTime;
-    });
+      const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0
+      const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0
+      return bTime - aTime
+    })
 
-  const totalPages = Math.ceil(filteredCanvases.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredCanvases.length / ITEMS_PER_PAGE)
   const paginatedCanvases = filteredCanvases.slice(
     currentPage * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE + ITEMS_PER_PAGE
-  );
+  )
 
-  const handleCreate = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    const name = newName.trim();
-    if (!name) return;
-    setCreating(true);
-    await createCanvas(name);
-    setNewName('');
-    setCreating(false);
-    setShowCreate(false);
-  };
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const name = newName.trim()
+    if (!name) return
+    setCreating(true)
+    await createCanvas(name)
+    setNewName('')
+    setCreating(false)
+    setShowCreate(false)
+  }
 
   const handleDelete = async (e: React.MouseEvent, canvasId: string) => {
-    e.stopPropagation();
-    setDeletingId(canvasId);
-    await deleteCanvas(canvasId);
-    setDeletingId(null);
+    e.stopPropagation()
+    setDeletingId(canvasId)
+    await deleteCanvas(canvasId)
+    setDeletingId(null)
     if (paginatedCanvases.length === 1 && currentPage > 0) {
-      setCurrentPage((p) => p - 1);
+      setCurrentPage((p) => p - 1)
     }
-  };
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setCurrentPage(0);
-  };
+    setSearch(e.target.value)
+    setCurrentPage(0)
+  }
 
   const handleStartEdit = (canvas: CanvasRead) => {
-    setSelectedEdit(canvas.id);
-    setNameEdit(canvas.name);
-  };
+    setSelectedEdit(canvas.id)
+    setNameEdit(canvas.name)
+  }
 
   const handleSaveEdit = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (selectedEdit) {
-      await updateCanvas(selectedEdit, nameEdit);
-      setSelectedEdit(null);
+      await updateCanvas(selectedEdit, nameEdit)
+      setSelectedEdit(null)
     }
-  };
+  }
 
   return (
     <div className="bg-white flex flex-col">
@@ -124,22 +133,20 @@ export default function Dashboard() {
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-10">
 
-
-        {/* Toolbar */}
         <form onSubmit={handleCreate} className="flex items-center gap-2 mb-6">
 
           <div className="flex items-center gap-0.5 ring-1 ring-neutral-200 rounded-sm p-0.5 h-7">
             <button
               type="button"
               onClick={() => {
-                setSortBy('date');
-                setCurrentPage(0);
+                setSortBy('date')
+                setCurrentPage(0)
               }}
               className={cn(
-                "px-2 py-1 text-xs rounded-sm transition-colors",
+                'px-2 py-1 text-xs rounded-sm transition-colors',
                 sortBy === 'date'
-                  ? "bg-neutral-200 text-neutral-800"
-                  : "text-neutral-400 hover:text-neutral-600"
+                  ? 'bg-neutral-200 text-neutral-800'
+                  : 'text-neutral-400 hover:text-neutral-600'
               )}
             >
               Recent
@@ -148,14 +155,14 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => {
-                setSortBy('title');
-                setCurrentPage(0);
+                setSortBy('title')
+                setCurrentPage(0)
               }}
               className={cn(
-                "px-2 py-1 text-xs rounded-sm transition-colors",
+                'px-2 py-1 text-xs rounded-sm transition-colors',
                 sortBy === 'title'
-                  ? "bg-neutral-200 text-neutral-800"
-                  : "text-neutral-400 hover:text-neutral-600"
+                  ? 'bg-neutral-200 text-neutral-800'
+                  : 'text-neutral-400 hover:text-neutral-600'
               )}
             >
               Title
@@ -185,15 +192,14 @@ export default function Dashboard() {
           )}
 
 
-
           <button
             type={showCreate ? 'submit' : 'button'}
             disabled={showCreate && (creating || !newName.trim())}
             onClick={showCreate ? undefined : () => setShowCreate(true)}
             className={cn(
-              "btn btn-sm h-7 flex items-center gap-1 border-none shadow-none font-normal bg-neutral-200 hover:bg-neutral-300",
-              !showCreate ? "ml-auto" : "ml-2"
-              )}
+              'btn btn-sm h-7 flex items-center gap-1 border-none shadow-none font-normal bg-neutral-200 hover:bg-neutral-300',
+              !showCreate ? 'ml-auto' : 'ml-2'
+            )}
           >
             <Plus className="size-3" />
             {showCreate ? (creating ? 'Creating…' : 'Create') : 'New project'}
@@ -202,7 +208,7 @@ export default function Dashboard() {
           {showCreate && (
             <button
               type="button"
-              onClick={() => { setShowCreate(false); setNewName(''); }}
+              onClick={() => { setShowCreate(false); setNewName('') }}
               className="p-2 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
             >
               <X className="size-3" />
@@ -210,7 +216,6 @@ export default function Dashboard() {
           )}
         </form>
 
-        {/* Empty state */}
         {canvases.length === 0 ? (
           <div className="text-center py-16 text-neutral-400">
             <FolderOpen className="size-8 mx-auto mb-2 opacity-50" />
@@ -221,21 +226,19 @@ export default function Dashboard() {
             {filteredCanvases.length === 0 ? (
               <div className="text-center py-16 text-neutral-400">
                 <Search className="size-8 mx-auto mb-2 opacity-50" />
-                <p className="text-xs">No projects match "{search}".</p>
+                <p className="text-xs">No projects match &quot;{search}&quot;.</p>
               </div>
             ) : (
               <>
-                {/* Project grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   {paginatedCanvases.map((canvas: CanvasRead) => (
                     <div
                       key={canvas.id}
                       className="ring-1 ring-neutral-200 rounded-md overflow-hidden hover:shadow-xs hover:border-gray-300 transition-all"
                     >
-                      {/* Canvas preview */}
                       <div
                         className="relative bg-neutral-50 cursor-pointer hover:bg-neutral-100"
-                        style={{ height: 160 }}
+                        style={{height: 160}}
                         onClick={() => void selectCanvas(canvas.id, canvas.name)}
                       >
                         <ReactFlowProvider>
@@ -245,7 +248,7 @@ export default function Dashboard() {
                             nodeTypes={nodeTypes}
                             fitView
                             minZoom={0.1}
-                            proOptions={{ hideAttribution: true }}
+                            proOptions={{hideAttribution: true}}
                             nodesDraggable={false}
                             nodesConnectable={false}
                             elementsSelectable={false}
@@ -265,7 +268,6 @@ export default function Dashboard() {
                         </ReactFlowProvider>
                       </div>
 
-                      {/* Card footer */}
                       <div className="border-t border-neutral-200 px-3 py-2 bg-white flex items-center justify-between gap-2 h-12">
                         <div className="min-w-0 flex-1 items-center">
                           {selectedEdit === canvas.id ? (
@@ -313,7 +315,6 @@ export default function Dashboard() {
                   ))}
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-3">
                     <button
@@ -343,5 +344,5 @@ export default function Dashboard() {
         )}
       </main>
     </div>
-  );
+  )
 }
