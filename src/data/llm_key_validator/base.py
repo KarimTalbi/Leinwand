@@ -3,13 +3,13 @@ from abc import ABC, abstractmethod
 import httpx
 
 from .enums import ModelType, Provider
-from .exceptions import InvalidApiKeyError, ProviderError, RateLimitError
+from exceptions import InvalidApiKeyException, ProviderError, RateLimitError
 
 
 class LLMKeyValidator(ABC):
-    def __init__(self, api_key: str, timeout: float = 10.0) -> None:
+    def __init__(self, api_key: str, timeout: float | int = 10.0) -> None:
         if not isinstance(api_key, str) or not api_key.strip():
-            raise InvalidApiKeyError("API key must be a non-empty string.")
+            raise InvalidApiKeyException("API key must be a non-empty string.")
         self._validate_key_format(api_key)
         self._api_key = api_key
         self._timeout = timeout
@@ -32,9 +32,6 @@ class LLMKeyValidator(ABC):
 
     # ── Public API ────────────────────────────────────────────────────────────
 
-    @property
-    def masked_key(self) -> str:
-        return f"{self._api_key[:6]}...{self._api_key[-4:]}"
 
     async def get_models(self) -> list[str]:
         if self._models is not None:
@@ -49,35 +46,24 @@ class LLMKeyValidator(ABC):
     async def get_models_by_type(self, model_type: ModelType) -> list[str]:
         return [m for m in await self.get_models() if self._classify(m) == model_type]
 
-    async def get_models_grouped(self) -> dict[ModelType, list[str]]:
-        result: dict[ModelType, list[str]] = {t: [] for t in ModelType}
-        for model in await self.get_models():
-            result[self._classify(model)].append(model)
-        return {t: models for t, models in result.items() if models}  # drop empty types
 
     async def validate(self) -> bool:
         try:
             await self.get_models()
             return True
-        except InvalidApiKeyError, ProviderError, RateLimitError:
+        except InvalidApiKeyException, ProviderError, RateLimitError:
             return False
 
     def clear_cache(self) -> None:
         self._models = None
 
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(provider={self.provider}, "
-            f"key={self.masked_key})"
-        )
-
     @staticmethod
     def _handle_http_error(e: httpx.HTTPStatusError) -> None:
-        status = e.response.status_code
+        status: int = e.response.status_code
         if status == 401:
-            raise InvalidApiKeyError("API key is invalid or revoked.") from e
+            raise InvalidApiKeyException("API key is invalid or revoked.") from e
         if status == 403:
-            raise InvalidApiKeyError("API key does not have permission.") from e
+            raise InvalidApiKeyException("API key does not have permission.") from e
         if status == 429:
             raise RateLimitError("Rate limited — try again later.") from e
         raise ProviderError(f"Unexpected provider error: {status}") from e

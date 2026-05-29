@@ -1,3 +1,4 @@
+
 import logging
 from logging import Logger
 
@@ -12,7 +13,7 @@ from exceptions.custom_exceptions import (
     InactiveUserException,
     NodeNotFoundException,
     UserAlreadyExistsException,
-    InvalidApiKeyException, UserNotFoundException
+    InvalidApiKeyException, UserNotFoundException, ProviderError, RateLimitError
 )
 
 logger: Logger = logging.getLogger(__name__)
@@ -47,8 +48,18 @@ async def inactive_user_handler(_: Request, exc: InactiveUserException) -> JSONR
 
 
 async def api_key_not_found_handler(_: Request, exc: InvalidApiKeyException) -> JSONResponse:
-    logger.debug("API Key not found:")
+    logger.debug("API Key Error: %s", exc.message)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+
+async def rate_limit_handler(_: Request, exc: RateLimitError) -> JSONResponse:
+    logger.debug("Rate limit Error: %s", exc.message)
+    return JSONResponse(status_code=429, content={"detail": str(exc)})
+
+
+async def Provider_error_handler(_: Request, exc: ProviderError) -> JSONResponse:
+    logger.debug("Provider Error: %s", exc.message)
+    return JSONResponse(status_code=500, content={"detail": str(exc)})
 
 
 async def user_not_found_handler(_: Request, exc: UserNotFoundException) -> JSONResponse:
@@ -134,5 +145,15 @@ def register_exception_handlers(app: FastAPI) -> None:
         UserNotFoundException,
         # pyrefly: ignore [bad-argument-type]
         user_not_found_handler,
+    )
+    app.add_exception_handler(
+        RateLimitError,
+        # pyrefly: ignore [bad-argument-type]
+        rate_limit_handler,
+    )
+    app.add_exception_handler(
+        ProviderError,
+        # pyrefly: ignore [bad-argument-type]
+        Provider_error_handler,
     )
     app.add_exception_handler(Exception, unhandled_exception_handler)

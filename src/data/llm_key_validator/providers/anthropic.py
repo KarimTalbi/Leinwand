@@ -2,7 +2,7 @@ import httpx
 
 from ..base import LLMKeyValidator
 from ..enums import ModelType, Provider
-from ..exceptions import InvalidApiKeyError
+from exceptions import InvalidApiKeyException
 
 
 class AnthropicValidator(LLMKeyValidator):
@@ -12,7 +12,7 @@ class AnthropicValidator(LLMKeyValidator):
 
     def _validate_key_format(self, key: str) -> None:
         if not key.startswith("sk-ant-"):
-            raise InvalidApiKeyError("Anthropic keys must start with 'sk-ant-'.")
+            raise InvalidApiKeyException("Anthropic keys must start with 'sk-ant-'.")
 
     async def _fetch_models(self, client: httpx.AsyncClient) -> list[str]:
         r = await client.get(

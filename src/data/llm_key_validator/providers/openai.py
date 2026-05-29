@@ -4,7 +4,7 @@ import httpx
 
 from ..base import LLMKeyValidator
 from ..enums import ModelType, Provider
-from ..exceptions import InvalidApiKeyError
+from exceptions import InvalidApiKeyException
 
 
 class OpenAIValidator(LLMKeyValidator):
@@ -14,7 +14,7 @@ class OpenAIValidator(LLMKeyValidator):
 
     def _validate_key_format(self, key: str) -> None:
         if not key.startswith("sk-"):
-            raise InvalidApiKeyError("OpenAI keys must start with 'sk-'.")
+            raise InvalidApiKeyException("OpenAI keys must start with 'sk-'.")
 
     async def _fetch_models(self, client: httpx.AsyncClient) -> list[str]:
         r = await client.get(
@@ -28,12 +28,4 @@ class OpenAIValidator(LLMKeyValidator):
         m = model_id.lower()
         if re.search(r"^(gpt-|o1|o3|chatgpt)", m):
             return ModelType.CHAT
-        if re.search(r"text-embedding|embedding", m):
-            return ModelType.EMBEDDING
-        if re.search(r"dall-e", m):
-            return ModelType.IMAGE
-        if re.search(r"^tts|whisper", m):
-            return ModelType.AUDIO
-        if re.search(r"moderation", m):
-            return ModelType.MODERATION
         return ModelType.OTHER

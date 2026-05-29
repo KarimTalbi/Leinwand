@@ -17,7 +17,7 @@ def create_validator(provider: Provider | str, api_key: str) -> LLMKeyValidator:
     return _VALIDATORS[Provider(provider)](api_key)
 
 
-def detect_provider(api_key: str) -> Provider | None:
+def detect_provider(api_key: str) -> Provider:
     if api_key.startswith("sk-ant-"):
         return Provider.ANTHROPIC
     if api_key.startswith("sk-"):

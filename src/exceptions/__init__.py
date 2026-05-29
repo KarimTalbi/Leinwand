@@ -7,7 +7,9 @@ from .custom_exceptions import (
     NodeNotFoundException,
     UserAlreadyExistsException,
     InvalidApiKeyException,
-UserNotFoundException
+UserNotFoundException,
+ProviderError,
+RateLimitError
 )
 from .exception_handling import register_exception_handlers
 
@@ -21,5 +23,7 @@ __all__ = [
     "UserAlreadyExistsException",
     "register_exception_handlers",
     "InvalidApiKeyException",
-    "UserNotFoundException"
+    "UserNotFoundException",
+    "ProviderError",
+    "RateLimitError"
 ]

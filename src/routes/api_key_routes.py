@@ -1,3 +1,5 @@
+from data.db_models import ApiKey
+from typing import Any
 from data.llm_key_validator import Provider
 from typing import Annotated
 
@@ -21,8 +23,8 @@ class ApiKeyDelete(BaseModel):
 async def list_api_keys(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     session: AsyncSession = Depends(get_async_session)
-):
-    result = await aks.list_keys(session, current_user.id)
+) -> Any:
+    result: list[ApiKey] = await aks.list_keys(session, current_user.id)
     return result
 
 
@@ -32,11 +34,7 @@ async def create_api_key(
     data: ApiKeyRead,
     session: AsyncSession = Depends(get_async_session)
 ) -> None:
-    provider: Provider | None = detect_provider(data.key)
-
-    if not provider:
-        raise InvalidApiKeyException
-
+    provider: Provider = detect_provider(data.key)
     validator: LLMKeyValidator = create_validator(provider, data.key)
     chat_models: list[str] = await validator.get_models_by_type(ModelType.CHAT)
 
