@@ -1,4 +1,4 @@
-import {typeProps} from "@/lib/styles.ts";
+import {addConnectedButtonStyle, typeProps} from "@/lib/styles.ts";
 import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 
@@ -11,25 +11,25 @@ const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
         className="flex flex-row items-center justify-around bg-neutral-50 ring-1 ring-neutral-200 rounded-b-md w-25">
 
         <div className="tooltip tooltip-bottom" data-tip="Prompt Node">
-          <button className="btn btn-ghost btn-square btn-xs" onClick={conPrompt}>
+          <button className={addConnectedButtonStyle} onClick={conPrompt}>
             <typeProps.promptNode.icon size={10} color={typeProps.promptNode.color}/>
           </button>
         </div>
 
         <div className="tooltip tooltip-bottom" data-tip="Text Node">
-          <button className="btn btn-ghost btn-square btn-xs" onClick={conText}>
+          <button className={addConnectedButtonStyle} onClick={conText}>
             <typeProps.textNode.icon size={10} color={typeProps.textNode.color}/>
           </button>
         </div>
 
         <div className="tooltip tooltip-bottom" data-tip="Summary Node">
-          <button className="btn btn-ghost btn-square btn-xs" onClick={conSummary}>
+          <button className={addConnectedButtonStyle} onClick={conSummary}>
             <typeProps.summaryNode.icon size={10} color={typeProps.summaryNode.color}/>
           </button>
         </div>
 
         <div className="tooltip tooltip-bottom" data-tip="Merge Node">
-          <button className="btn btn-ghost btn-square btn-xs" onClick={conMerge}>
+          <button className={addConnectedButtonStyle} onClick={conMerge}>
             <typeProps.mergeNode.icon size={10} color={typeProps.mergeNode.color}/>
           </button>
         </div>
