@@ -80,8 +80,8 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
     known = (ValueError, KeyError)
     if isinstance(exc, known):
         logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc)
-    else:
-        logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=True)
+
+    logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=True)
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 

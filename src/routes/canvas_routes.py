@@ -1,3 +1,4 @@
+from data import Canvas
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
@@ -10,9 +11,6 @@ from service import canvas_service as cs, get_current_active_user, node_service 
 canvas_router = APIRouter(prefix="/canvas", tags=["canvas"])
 
 
-class ThumbnailRequest(BaseModel):
-    image: str
-
 
 class CanvasUpdateRequest(BaseModel):
     canvas_id: str
@@ -24,7 +22,7 @@ async def get_canvases(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
         session: AsyncSession = Depends(get_async_session),
 ) -> Any:
-    canvases = await cs.list_canvases(session, current_user.id)
+    canvases: list[Canvas] = await cs.list_canvases(session, current_user.id)
 
     for canvas in canvases:
         nodes = await ns.list_nodes(session, current_user.id, canvas.id)

@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
+from langfuse.langchain.CallbackHandler import LangchainCallbackHandler
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,24 +18,18 @@ from data import (
     get_async_session,
     prompts as pr,
 )
-from exceptions import InvalidApiKeyException
 from service import get_current_active_user, node_service as ns, api_key_service as aks
 from utils import extract_content
 
 load_dotenv()
 
-langfuse_handler = CallbackHandler()
+langfuse_handler: LangchainCallbackHandler = CallbackHandler()
 
 llm_router = APIRouter(prefix="/llm", tags=["llm"])
 
 
-class LLMBase(BaseModel):
-    config: LLMModelConfig | None = None
-
-
-class MergeRequest(LLMBase):
-    node: NodeRead
-    check_consistencies: bool = True
+class LlmResponse(BaseModel):
+    response: str
 
 
 class MergeResponse(BaseModel):
@@ -43,59 +38,34 @@ class MergeResponse(BaseModel):
     problems: str | None = None
 
 
-class LLMMergeResponse(BaseModel):
-    response: str
+class LLMMergeResponse(LlmResponse):
     has_issues: bool
 
-
-class MergeResolveRequest(LLMBase):
-    node: NodeRead
 
 class MergeResolveResponse(BaseModel):
     context: list[dict[str, Any]]
 
-class LLMMergeResolveResponse(BaseModel):
-    response: str
 
+class MergeRequest(NodeRead):
+    check_consistencies: bool = True
 
-class ChatRequest(LLMBase):
+class ChatRequest(NodeRead):
     node: NodeRead
 
 
-class SummaryRequest(LLMBase):
-    node: NodeRead
-
-
-@llm_router.post("/merge/")
+@llm_router.post("/merge/", response_model=MergeResponse)
 async def merge_streams(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
         data: MergeRequest,
         session: AsyncSession = Depends(get_async_session),
-) -> MergeResponse:
-    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
+) -> Any:
+    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
 
     if not data.check_consistencies:
         return MergeResponse(context=ancestors, has_issues=False)
 
-    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    model_config = data.node.data.get("model", {})
+    config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
-    user_model = model_config.get("model", "")
-    user_provider = model_config.get("modelProvider", "")
-    user_key_id = model_config.get("key_id", "")
-
-    if not (user_model and user_provider and user_key_id):
-        raise InvalidApiKeyException
-
-    api_key = await aks.get_key(session, user_key_id, current_user.id)
-
-    config = LLMModelConfig(
-        model=user_model,
-        api_key=api_key,
-        model_provider=user_provider,
-    )
-
-    # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
     model_structured = model.with_structured_output(LLMMergeResponse)
 
@@ -118,47 +88,30 @@ async def merge_streams(
 @llm_router.post("/merge/resolve/")
 async def resolve_merge(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: MergeResolveRequest,
+        data: MergeRequest,
         session: AsyncSession = Depends(get_async_session),
 ) -> MergeResolveResponse:
+    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
+    config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
-    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    model_config = data.node.data.get("model", {})
-
-    user_model = model_config.get("model", "")
-    user_provider = model_config.get("modelProvider", "")
-    user_key_id = model_config.get("key_id", "")
-
-    if not (user_model and user_provider and user_key_id):
-        raise InvalidApiKeyException
-
-    api_key = await aks.get_key(session, user_key_id, current_user.id)
-
-    config = LLMModelConfig(
-        model=user_model,
-        api_key=api_key,
-        model_provider=user_provider,
-    )
-
-    # noinspection PyUnresolvedReferences
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
-    model_structured = model.with_structured_output(LLMMergeResolveResponse)
+    model_structured = model.with_structured_output(LlmResponse)
 
-    response: LLMMergeResolveResponse = await model_structured.ainvoke(
+    response: LlmResponse = await model_structured.ainvoke(
         [
             SystemMessage(f"{pr.MERGE_RESOLVE_SYSTEM}\n\n{ancestors}"),
-            HumanMessage(data.node.data.get("solution", "Use whatever makes more sense")),
+            HumanMessage(data.data.get("solution", "Use whatever makes more sense")),
         ],
         config={"callbacks": [langfuse_handler]},
     )
 
-    context = ancestors.copy()
+    context: list[dict[str, Any]] = ancestors.copy()
     context.append(
         {
             "id": "problem",
             "type": "problemResolution",
-            "problems": data.node.data.get("problems"),
-            "user": data.node.data.get("solution"),
+            "problems": data.data.get("problems"),
+            "user": data.data.get("solution"),
             "solution": response.response,
         }
     )
@@ -169,26 +122,11 @@ async def resolve_merge(
 @llm_router.post("/streaming_chat/")
 async def get_streaming_chat_response(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: ChatRequest,
+        data: NodeRead,
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
-    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    model_config = data.node.data.get("model", {})
-
-    user_model = model_config.get("model", "")
-    user_provider = model_config.get("modelProvider", "")
-    user_key_id = model_config.get("key_id", "")
-
-    if not (user_model and user_provider and user_key_id):
-        raise InvalidApiKeyException
-
-    api_key = await aks.get_key(session, user_key_id, current_user.id)
-
-    config = LLMModelConfig(
-        model=user_model,
-        api_key=api_key,
-        model_provider=user_provider,
-    )
+    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
+    config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
@@ -196,13 +134,13 @@ async def get_streaming_chat_response(
         async for chunk in model.astream(
                 [
                     SystemMessage(f"{pr.CHAT_SYSTEM}\n\n{ancestors}"),
-                    HumanMessage(data.node.data.get("prompt"))
+                    HumanMessage(data.data.get("prompt"))
                 ],
                 config={"callbacks": [langfuse_handler]},
         ):
-            content = extract_content(chunk)
+            content: str = extract_content(chunk)
             if content:
-                escaped = content.replace("\n", "\\n")
+                escaped: str = content.replace("\n", "\\n")
                 yield f"data: {escaped}\n\n"
 
         yield "data: [DONE]\n\n"
@@ -213,27 +151,12 @@ async def get_streaming_chat_response(
 @llm_router.post("/summary/")
 async def get_summary_response(
         current_user: Annotated[UserAuth, Depends(get_current_active_user)],
-        data: SummaryRequest,
+        data: NodeRead,
         session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
-    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
-    model_config = data.node.data.get("model", {})
+    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
+    config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
-    user_model = model_config.get("model", "")
-    user_provider = model_config.get("modelProvider", "")
-    user_key_id = model_config.get("key_id", "")
-
-    if not (user_model and user_provider and user_key_id):
-        raise InvalidApiKeyException
-
-    api_key = await aks.get_key(session, user_key_id, current_user.id)
-
-    config = LLMModelConfig(
-        model=user_model,
-        api_key=api_key,
-        model_provider=user_provider,
-    )
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
     async def token_generator() -> AsyncGenerator[str]:
@@ -244,9 +167,9 @@ async def get_summary_response(
                 ],
                 config={"callbacks": [langfuse_handler]},
         ):
-            content = extract_content(chunk)
+            content: str = extract_content(chunk)
             if content:
-                escaped = content.replace("\n", "\\n")
+                escaped: str = content.replace("\n", "\\n")
                 yield f"data: {escaped}\n\n"
 
         yield "data: [DONE]\n\n"

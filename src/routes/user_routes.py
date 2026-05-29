@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from data import Token, UserAuth, UserCreate, UserRead, get_async_session, UserData
 from service.user_service import create_user, get_access_token, get_current_active_user, update_user
 
+
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
@@ -30,6 +31,7 @@ async def create_users(
     user: UserCreate, session: AsyncSession = Depends(get_async_session)
 ) -> Any:
     return await create_user(session, user)
+
 
 @user_router.put("/update")
 async def update_user_data(

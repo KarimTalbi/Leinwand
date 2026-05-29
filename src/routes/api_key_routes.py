@@ -1,3 +1,4 @@
+from data.llm_key_validator import Provider
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -5,6 +6,8 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import ApiKeyRead, UserAuth, get_async_session, ApiKeyReturn
+from data.llm_key_validator.base import LLMKeyValidator
+from exceptions import InvalidApiKeyException
 from service import get_current_active_user, api_key_service as aks
 from data.llm_key_validator import detect_provider, create_validator, ModelType
 from utils import encrypt_key
@@ -28,13 +31,17 @@ async def create_api_key(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: ApiKeyRead,
     session: AsyncSession = Depends(get_async_session)
-):
-    provider = detect_provider(data.key)
-    validator = create_validator(provider, data.key)
-    chat_models = await validator.get_models_by_type(ModelType.CHAT)
+) -> None:
+    provider: Provider | None = detect_provider(data.key)
+
+    if not provider:
+        raise InvalidApiKeyException
+
+    validator: LLMKeyValidator = create_validator(provider, data.key)
+    chat_models: list[str] = await validator.get_models_by_type(ModelType.CHAT)
 
     if not chat_models:
-        raise ValueError("No chat models found in the key")
+        raise InvalidApiKeyException
 
     data.model_provider = provider
     data.models = chat_models
@@ -48,5 +55,5 @@ async def delete_api_key(
     _: Annotated[UserAuth, Depends(get_current_active_user)],
     api_key_id: str,
     session: AsyncSession = Depends(get_async_session)
-):
+) -> None:
     await aks.delete_key(session, api_key_id)

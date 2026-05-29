@@ -44,7 +44,7 @@ async def get_node(session: AsyncSession, node_id: str, user_id: str) -> Node:
     return node
 
 
-async def get_ancestors(session: AsyncSession, node_id: str, user_id: str) -> list[dict]:
+async def get_ancestors(session: AsyncSession, node_id: str, user_id: str) -> list[dict[str, Any]]:
     db_node: Node = await get_node(session, node_id, user_id)
 
     result: Result[Any] = await session.execute(get_ancestors_recursive(db_node.id))

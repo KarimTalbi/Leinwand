@@ -21,13 +21,12 @@ UUID4Str = Annotated[str, AfterValidator(check_uuid4)]
 class NodeRead(BaseModel):
     id: UUID4Str
     type: str
-    position: dict[str, float]
+    position: dict[str, float | int]
     data: dict[str, Any]
 
     model_config = ConfigDict(
         from_attributes=True,
         populate_by_name=True,
-        alias_generator=to_camel,
         extra="ignore",
     )
 
@@ -35,7 +34,7 @@ class NodeRead(BaseModel):
 class LoadDataResponse(BaseModel):
     nodes: list[NodeRead]
     edges: list[EdgeRead]
-    time: int | None = None
+    time: int
 
 
 class EdgeRead(BaseModel):

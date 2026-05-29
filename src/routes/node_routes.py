@@ -1,4 +1,5 @@
-from typing import Annotated, Any, Protocol
+from pydantic import BaseModel
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from data import (
     Edge,
     EdgeRead,
-    LoadDataResponse,
     Node,
     NodeRead,
     UserAuth,
@@ -15,20 +15,25 @@ from data import (
 from service import get_current_active_user, node_service as ns, canvas_service as cs
 
 
-class LLMResponse(Protocol):
-    response: str
-    has_issues: bool | None
+class SyncDataRequest(BaseModel):
+    nodes: list[NodeRead]
+    edges: list[EdgeRead]
+    time: int
+
+class SyncDataResponse(BaseModel):
+    nodes: list[NodeRead]
+    edges: list[EdgeRead]
 
 
 node_router = APIRouter(prefix="/node", tags=["node"])
 
 
-@node_router.get("/list/{canvas_id}/", response_model=LoadDataResponse)
+@node_router.get("/list/{canvas_id}/")
 async def get_data(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     canvas_id: str,
     session: AsyncSession = Depends(get_async_session),
-) -> Any:
+) -> SyncDataResponse:
 
     nodes: list[Node] = await ns.list_nodes(session, current_user.id, canvas_id)
     edges: list[Edge] = await ns.list_edges(session, current_user.id, canvas_id)
@@ -36,14 +41,14 @@ async def get_data(
     nodes_read: list[NodeRead] = [NodeRead.model_validate(node) for node in nodes]
     edges_read: list[EdgeRead] = [EdgeRead.model_validate(edge) for edge in edges]
 
-    return LoadDataResponse(nodes=nodes_read, edges=edges_read)
+    return SyncDataResponse(nodes=nodes_read, edges=edges_read)
 
 
 @node_router.post("/sync/{canvas_id}/")
 async def sync_data(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     canvas_id: str,
-    data: LoadDataResponse,
+    data: SyncDataRequest,
     session: AsyncSession = Depends(get_async_session),
 ) -> None:
 
