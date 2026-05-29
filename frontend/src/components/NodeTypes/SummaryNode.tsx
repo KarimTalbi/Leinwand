@@ -63,13 +63,13 @@ const SummaryNode = ({id, data,}: NodeProps<SummaryNodeType>) => {
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connection: (
-      <div className="badge badge-outline badge-secondary badge-xs px-2 gap-1">
+      <div className="badge badge-outline badge-secondary badge-xs px-2 gap-1 mb-1">
         <Info size={12}/> Connection required
       </div>
     ),
 
     sourceIsSummary: (
-      <div className="badge badge-outline badge-error badge-xs px-1 gap-1">
+      <div className="badge badge-outline badge-error badge-xs px-1 gap-1 mb-1">
         <TriangleAlert size={12}/> Source can't be a summary
       </div>
     ),

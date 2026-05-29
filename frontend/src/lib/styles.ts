@@ -1,4 +1,8 @@
-import {LucideIcon, LucideMerge, LucideMessageSquare, LucideMinimize2, LucideNotebook} from "lucide-react";
+import {
+  LucideIcon,
+Merge,
+  MessagesSquare, Minimize2, Notebook
+} from "lucide-react";
 import {NodeTypeNames} from "@/types.ts";
 import {BackgroundVariant} from "@xyflow/react";
 import React from "react";
@@ -15,10 +19,10 @@ interface nodeTypeProps {
 }
 
 export const typeProps: Record<NodeTypeNames, nodeTypeProps> = {
-  promptNode:   {label: "Chat",     color: '#ec4899',   icon: LucideMessageSquare,   iconStyle: ""           },
-  textNode:     {label: "Note",     color: '#309898',   icon: LucideNotebook,        iconStyle: ""           },
-  mergeNode:    {label: "merge",    color: '#f5c45e',   icon: LucideMerge,           iconStyle: "rotate-90"  },
-  summaryNode:  {label: "Summery",  color: '#bf4546',   icon: LucideMinimize2,       iconStyle: "rotate-135" },
+  promptNode:   {label: "Chat",     color: '#ec4899',   icon: MessagesSquare,   iconStyle: ""           },
+  textNode:     {label: "Note",     color: '#309898',   icon: Notebook,        iconStyle: ""           },
+  mergeNode:    {label: "merge",    color: '#f5c45e',   icon: Merge,           iconStyle: "rotate-90"  },
+  summaryNode:  {label: "Summery",  color: '#bf4546',   icon: Minimize2,       iconStyle: "rotate-135" },
 }
 
 

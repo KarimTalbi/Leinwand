@@ -32,19 +32,19 @@ export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
 
       <div className="flex items-center">
 
-        <div className="tooltip" data-tip="move">
+        <div className="tooltip" data-tip="Move Left">
           <button className="btn btn-square btn-ghost btn-sm">
             <ChevronLeft size={14} color={color} onClick={moveLeft}/>
           </button>
         </div>
 
-        <div className="tooltip" data-tip="move">
+        <div className="tooltip" data-tip="Move Right">
           <button className="btn btn-square btn-ghost btn-sm">
             <ChevronRight size={14} color={color} onClick={moveRight}/>
           </button>
         </div>
 
-        <div className="tooltip" data-tip="move">
+        <div className="tooltip" data-tip="Delete">
           <button className="btn btn-square btn-ghost btn-sm">
             <X size={14} color={color} onClick={deleteNodeAction}/>
           </button>

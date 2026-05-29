@@ -33,7 +33,7 @@ export const Controls = () => {
   const {createPromptNode, createSummaryNode, createTextNode, createMergeNode} = useCreateNode()
 
   return (
-    <Panel position="bottom-center" className="flex flex-row shrink-0" style={{zIndex: 1000}}>
+    <Panel position="bottom-center" className="flex flex-row shrink-0 gap-2" style={{zIndex: 1000}}>
 
       <div
         className="flex flex-row gap-1 items-center justify-center text-neutral-500 bg-neutral-50 ring-1 ring-neutral-200 rounded-full px-3 py-1.5">
