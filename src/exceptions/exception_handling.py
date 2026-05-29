@@ -11,6 +11,7 @@ from exceptions.custom_exceptions import (
     InactiveUserException,
     NodeNotFoundException,
     UserAlreadyExistsException,
+    InvalidApiKeyException
 )
 
 logger = logging.getLogger(__name__)
@@ -44,6 +45,11 @@ async def inactive_user_handler(_: Request, exc: InactiveUserException) -> JSONR
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
+async def api_key_not_found_handler(_: Request, exc: InvalidApiKeyException) -> JSONResponse:
+    logger.debug("API Key not found:")
+    return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+
 # --- FastAPI / HTTP exceptions ---
 
 
@@ -65,13 +71,12 @@ async def validation_exception_handler(
 # --- Catch-all ---
 
 
-async def unhandled_exception_handler(request: Request, _: Exception) -> JSONResponse:
-    logger.error(
-        "Unhandled exception on %s %s",
-        request.method,
-        request.url.path,
-        exc_info=True,
-    )
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    known = (ValueError, KeyError)
+    if isinstance(exc, known):
+        logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc)
+    else:
+        logger.error("Unhandled exception on %s %s", request.method, request.url.path, exc_info=True)
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
@@ -81,37 +86,34 @@ async def unhandled_exception_handler(request: Request, _: Exception) -> JSONRes
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         NodeNotFoundException,
-        # pyrefly: ignore [bad-argument-type]
         node_not_found_handler,
     )
     app.add_exception_handler(
         EdgeNotFoundException,
-        # pyrefly: ignore [bad-argument-type]
         edge_not_found_handler,
     )
     app.add_exception_handler(
         CanvasNotFoundException,
-        # pyrefly: ignore [bad-argument-type]
         canvas_not_found_handler,
     )
     app.add_exception_handler(
         UserAlreadyExistsException,
-        # pyrefly: ignore [bad-argument-type]
         user_already_exists_handler,
     )
     app.add_exception_handler(
         InactiveUserException,
-        # pyrefly: ignore [bad-argument-type]
         inactive_user_handler,
     )
     app.add_exception_handler(
         HTTPException,
-        # pyrefly: ignore [bad-argument-type]
         http_exception_handler_with_logging,
     )
     app.add_exception_handler(
         RequestValidationError,
-        # pyrefly: ignore [bad-argument-type]
         validation_exception_handler,
+    )
+    app.add_exception_handler(
+        InvalidApiKeyException,
+        api_key_not_found_handler,
     )
     app.add_exception_handler(Exception, unhandled_exception_handler)

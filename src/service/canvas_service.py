@@ -19,8 +19,12 @@ async def list_canvases(session: AsyncSession, user_id: str) -> list[Canvas]:
 
 
 async def delete_canvas(session: AsyncSession, canvas_id: str, user_id: str) -> None:
-    await session.execute(
-        delete(Canvas).where(Canvas.user_id == user_id).where(Canvas.id == canvas_id))
+    canvas = await session.get(Canvas, canvas_id)
+
+    if not canvas or canvas.user_id != user_id:
+        raise CanvasNotFoundException
+
+    await session.delete(canvas)
     await session.flush()
 
 
@@ -31,7 +35,6 @@ async def update_canvas_data(session: AsyncSession, canvas_id: str, updated_at: 
         raise CanvasNotFoundException
 
     canvas.updated_at = updated_at
-
     await session.flush()
 
 
@@ -42,5 +45,4 @@ async def update_canvas_name(session: AsyncSession, canvas_id: str, name: str) -
         raise CanvasNotFoundException
 
     canvas.name = name
-
     await session.flush()

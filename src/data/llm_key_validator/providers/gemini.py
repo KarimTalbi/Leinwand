@@ -28,12 +28,14 @@ class GeminiValidator(LLMKeyValidator):
         m = model_id.lower()
         if re.search(r"embedding", m):
             return ModelType.EMBEDDING
+        if re.search(r"deep|banana|lyria|001|custom|2.0", m):
+            return ModelType.OTHER
         if re.search(r"image", m):
             return ModelType.IMAGE
         if re.search(r"tts", m):
             return ModelType.AUDIO
         if re.search(r"audio", m):
             return ModelType.AUDIO
-        if re.search(r"gemini", m):
+        if re.search(r"pro|flash", m):
             return ModelType.CHAT
         return ModelType.OTHER

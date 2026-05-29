@@ -13,3 +13,14 @@ def encrypt_key(key: str) -> str:
 
 def decrypt_key(encrypted_key: str) -> str:
     return fernet.decrypt(encrypted_key.encode()).decode()
+
+
+def extract_content(chunk) -> str:
+    if isinstance(chunk.content, str):
+        return chunk.content
+    if isinstance(chunk.content, list):
+        return "".join(
+            block.get("text", "") if isinstance(block, dict) else str(block)
+            for block in chunk.content
+        )
+    return ""

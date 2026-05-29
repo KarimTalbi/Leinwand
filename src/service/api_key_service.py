@@ -3,6 +3,7 @@ from sqlalchemy.sql import select
 
 from data import ApiKeyRead
 from data.db_models import ApiKey
+from exceptions import InvalidApiKeyException
 
 
 async def add_key(session: AsyncSession, key: ApiKeyRead, user_id: str) -> None:
@@ -18,6 +19,10 @@ async def list_keys(session: AsyncSession, user_id: str) -> list[ApiKey]:
 
 async def delete_key(session: AsyncSession, api_key_id: str) -> None:
     key = await session.get(ApiKey, api_key_id)
+
+    if not key:
+        raise InvalidApiKeyException
+
     await session.delete(key)
     await session.flush()
 
@@ -26,7 +31,7 @@ async def get_key(session: AsyncSession, api_key_id: str, user_id: str) -> str:
     api_key = result.scalar_one_or_none()
 
     if not api_key:
-        raise Exception("API key not found")
+        raise InvalidApiKeyException
 
     return api_key.key
 

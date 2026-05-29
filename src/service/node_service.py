@@ -32,12 +32,9 @@ async def write_nodes(session: AsyncSession, nodes: list[NodeRead], user_id: str
 
 
 async def get_node(session: AsyncSession, node_id: str, user_id: str) -> Node:
-    result = await session.execute(
-        select(Node).where(Node.id == node_id).where(Node.user_id == user_id)
-    )
-    node = result.scalar_one_or_none()
+    node = await session.get(Node, node_id)
 
-    if not node:
+    if not node or node.user_id != user_id:
         raise NodeNotFoundException
 
     return node

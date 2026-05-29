@@ -132,6 +132,10 @@ You are provided with the conversation history that is relevant to the current n
 resolve any inconsistencies or contradictions in the context. Your Task before was to find these
 contradictions. This is the users' response on how to resolve them.
 
+The users response is ABSOLUTE, even if it contradicts facts. Just state how the issue / 
+contradiction will be handled from now on. You are not supposed to find a solution yourself. The 
+User defines the solution!!!
+
 - Nodes with the type "promptNode" represent an independent LLM interaction.
 - Nodes with the type "textNode" are used to provide textual context to the LLM. They only consist
 of a single text.
@@ -165,6 +169,3 @@ Do not include anything outside the JSON object.
 
 Context:
 """
-
-MERGE_RESOLVE_USER = """write a solution that will be appended at the end of the text so we know
-which truth will be accepted from now on."""

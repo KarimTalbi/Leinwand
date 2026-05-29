@@ -17,7 +17,9 @@ from data import (
     get_async_session,
     prompts as pr,
 )
+from exceptions import InvalidApiKeyException
 from service import get_current_active_user, node_service as ns, api_key_service as aks
+from utils import extract_content
 
 load_dotenv()
 
@@ -83,7 +85,7 @@ async def merge_streams(
     user_key_id = model_config.get("key_id", "")
 
     if not (user_model and user_provider and user_key_id):
-        raise ValueError("No default model set")
+        raise InvalidApiKeyException
 
     api_key = await aks.get_key(session, user_key_id, current_user.id)
 
@@ -119,7 +121,6 @@ async def resolve_merge(
         data: MergeResolveRequest,
         session: AsyncSession = Depends(get_async_session),
 ) -> MergeResolveResponse:
-    ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.node.id, current_user.id)
 
     ancestors = await ns.get_ancestors(session, data.node.id, current_user.id)
     model_config = data.node.data.get("model", {})
@@ -129,7 +130,7 @@ async def resolve_merge(
     user_key_id = model_config.get("key_id", "")
 
     if not (user_model and user_provider and user_key_id):
-        raise ValueError("No default model set")
+        raise InvalidApiKeyException
 
     api_key = await aks.get_key(session, user_key_id, current_user.id)
 
@@ -146,7 +147,7 @@ async def resolve_merge(
     response: LLMMergeResolveResponse = await model_structured.ainvoke(
         [
             SystemMessage(f"{pr.MERGE_RESOLVE_SYSTEM}\n\n{ancestors}"),
-            HumanMessage(pr.MERGE_RESOLVE_USER),
+            HumanMessage(data.node.data.get("solution", "Use whatever makes more sense")),
         ],
         config={"callbacks": [langfuse_handler]},
     )
@@ -179,7 +180,7 @@ async def get_streaming_chat_response(
     user_key_id = model_config.get("key_id", "")
 
     if not (user_model and user_provider and user_key_id):
-        raise ValueError("No default model set")
+        raise InvalidApiKeyException
 
     api_key = await aks.get_key(session, user_key_id, current_user.id)
 
@@ -199,9 +200,10 @@ async def get_streaming_chat_response(
                 ],
                 config={"callbacks": [langfuse_handler]},
         ):
-            if chunk.content:
-                escaped_content = chunk.content.replace("\n", "\\n")
-                yield f"data: {escaped_content}\n\n"
+            content = extract_content(chunk)
+            if content:
+                escaped = content.replace("\n", "\\n")
+                yield f"data: {escaped}\n\n"
 
         yield "data: [DONE]\n\n"
 
@@ -223,7 +225,7 @@ async def get_summary_response(
     user_key_id = model_config.get("key_id", "")
 
     if not (user_model and user_provider and user_key_id):
-        raise ValueError("No default model set")
+        raise InvalidApiKeyException
 
     api_key = await aks.get_key(session, user_key_id, current_user.id)
 
@@ -242,9 +244,10 @@ async def get_summary_response(
                 ],
                 config={"callbacks": [langfuse_handler]},
         ):
-            if chunk.content:
-                escaped_content = chunk.content.replace("\n", "\\n")
-                yield f"data: {escaped_content}\n\n"
+            content = extract_content(chunk)
+            if content:
+                escaped = content.replace("\n", "\\n")
+                yield f"data: {escaped}\n\n"
 
         yield "data: [DONE]\n\n"
 

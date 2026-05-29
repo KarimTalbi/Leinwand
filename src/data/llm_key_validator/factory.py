@@ -3,14 +3,12 @@ from .enums import Provider
 from .providers import (
     AnthropicValidator,
     GeminiValidator,
-    GroqValidator,
     OpenAIValidator,
 )
 
 _VALIDATORS: dict[Provider, type[LLMKeyValidator]] = {
     Provider.OPENAI: OpenAIValidator,
     Provider.ANTHROPIC: AnthropicValidator,
-    Provider.GROQ: GroqValidator,
     Provider.GEMINI: GeminiValidator,
 }
 
@@ -24,6 +22,4 @@ def detect_provider(api_key: str) -> Provider | None:
         return Provider.ANTHROPIC
     if api_key.startswith("sk-"):
         return Provider.OPENAI
-    if api_key.startswith("gsk_"):
-        return Provider.GROQ
     return Provider.GEMINI

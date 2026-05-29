@@ -33,6 +33,11 @@ class InactiveUserException(Exception):
         super().__init__(f"Inactive user: {username}" if username else "Inactive user")
 
 
+class InvalidApiKeyException(Exception):
+    def __init__(self) -> None:
+        super().__init__("Invalid API key. Please check your key and try again.")
+
+
 class InvalidUserOrPasswordException(HTTPException):
     def __init__(self) -> None:
         super().__init__(
@@ -49,3 +54,4 @@ class CredentialsException(HTTPException):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
