@@ -1,17 +1,17 @@
 import {create} from 'zustand';
 import {v4 as uuidv4} from 'uuid'
-import {addEdge as xyAddEdge, applyNodeChanges, applyEdgeChanges, XYPosition} from "@xyflow/react";
+import {addEdge as xyAddEdge, applyEdgeChanges, applyNodeChanges, XYPosition} from "@xyflow/react";
 
 import api, {BASE_URL} from '@/api';
-import {AppState, NodeTypeNames, CanvasRead, ApiKeyRead} from '@/types';
+import {ApiKeyRead, AppState, CanvasRead, NodeTypeNames} from '@/types';
 import {DEFAULT_COLLISION_OPTIONS, resolveCollisions} from "@/lib/resolve-collisions.ts";
 
 
 const nodeInitData = {
-  promptNode: {prompt: '', response: '', closed: false},
-  textNode: {text: '', closed: false},
-  mergeNode: {context: '', closed: false, problems: '', solution: ''},
-  summaryNode: {response: '', closed: false},
+  promptNode: {prompt: '', response: '', closed: false, model: {}},
+  textNode: {text: '', closed: false, model: {}},
+  mergeNode: {context: '', closed: false, problems: '', solution: '', model: {}},
+  summaryNode: {response: '', closed: false, model: {}},
 };
 
 const useStore = create<AppState>()((set, get) => (
@@ -36,7 +36,7 @@ const useStore = create<AppState>()((set, get) => (
     // state
 
     apiKeys: [],
-    defaultModel: {model: "", key_id: ""},
+    defaultModel: JSON.parse(localStorage.getItem('defaultModel') || '{}'),
 
 
     // ── Auth actions ──────────────────────────────────────────────────────────
@@ -60,8 +60,13 @@ const useStore = create<AppState>()((set, get) => (
         set({token});
 
         const me = await api.get('/users/me');
+        const defaultModel = me.data.user_data.data.defaultModel || {}
+        localStorage.setItem('defaultModel', JSON.stringify(defaultModel))
 
-        set({user: me.data});
+        set({
+          user: {username: me.data.username, disabled: me.data.disabled},
+          defaultModel: defaultModel
+        });
 
       } catch {
 
@@ -72,6 +77,7 @@ const useStore = create<AppState>()((set, get) => (
 
     logout: () => {
       localStorage.removeItem('token');
+      localStorage.removeItem('defaultModel');
 
       set({
         token: null,
@@ -82,7 +88,7 @@ const useStore = create<AppState>()((set, get) => (
         nodes: [],
         edges: [],
         apiKeys: [],
-        defaultModel: {model: "", key_id: ""}
+        defaultModel: {}
       });
     },
 
@@ -244,7 +250,7 @@ const useStore = create<AppState>()((set, get) => (
         set({apiKeys: res.data})
 
       } catch (err) {
-        console.log("Error retrieving API Keys" ,err)
+        console.log("Error retrieving API Keys", err)
       }
     },
 
@@ -261,7 +267,7 @@ const useStore = create<AppState>()((set, get) => (
         void get().loadApiKeys()
 
       } catch (err) {
-        console.log("Error creating API Key" ,err)
+        console.log("Error creating API Key", err)
       }
     },
 
@@ -273,12 +279,21 @@ const useStore = create<AppState>()((set, get) => (
         void get().loadApiKeys()
 
       } catch (err) {
-        console.log("Error deleting API Key" ,err)
+        console.log("Error deleting API Key", err)
       }
     },
 
-    setDefaultApiKey: (model, key_id) => {
-      set({defaultModel: {model: model, key_id: key_id}})
+    setDefaultApiKey: async (model, key_id, provider) => {
+      localStorage.setItem('defaultModel', JSON.stringify({model: model, key_id: key_id, modelProvider: provider}))
+      set({defaultModel: {model: model, key_id: key_id, modelProvider: provider}})
+
+      try {
+        await api.put('/users/update', {
+          data: {defaultModel: {model: model, key_id: key_id, modelProvider: provider}}
+        })
+      } catch (err) {
+        console.log("Error setting default API Key", err)
+      }
     },
 
 
@@ -393,7 +408,10 @@ const useStore = create<AppState>()((set, get) => (
     },
 
     promptNodeAction: async (nodeId) => {
+
+      get().updateNodeData(nodeId, {model: get().defaultModel})
       const node = get().nodes.find((node) => node.id === nodeId)
+
       try {
         const res = await fetch(`${BASE_URL}/llm/streaming_chat/`, {
           headers: {
@@ -419,7 +437,7 @@ const useStore = create<AppState>()((set, get) => (
         set({
           nodes: get().nodes.map((n) =>
             n.id === nodeId
-              ? {...n, data: {...n.data, response: '', closed: true}}
+              ? {...n, data: {...n.data, response: ''}}
               : n
           ),
         });
@@ -442,7 +460,7 @@ const useStore = create<AppState>()((set, get) => (
           set({
             nodes: get().nodes.map((n) =>
               n.id === nodeId
-                ? {...n, data: {...n.data, response: accumulated}}
+                ? {...n, data: {...n.data, response: accumulated, closed: true}}
                 : n
             ),
           });
@@ -465,7 +483,7 @@ const useStore = create<AppState>()((set, get) => (
         console.error('Error prompting Node', err);
 
       } finally {
-        void get().createConnectedNode("promptNode", nodeId)
+        void get().syncCanvas()
       }
     },
 

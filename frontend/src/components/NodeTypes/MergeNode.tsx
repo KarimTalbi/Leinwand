@@ -145,31 +145,31 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connections: (
-      <div className="badge badge-outline badge-secondary badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-error badge-xs px-2 gap-1 mb-1">
         <Info size={12}/> {missingConnections} more connection(s) required
       </div>
     ),
 
     ready: (
-      <div className="badge badge-outline badge-warning badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-warning badge-xs px-2 gap-1 mb-1">
         <CircleCheck size={12}/> Ready
       </div>
     ),
 
     merged: (
-      <div className="badge badge-outline badge-info badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-info badge-xs px-2 gap-1 mb-1">
         <CircleCheck size={12}/> No issues detected
       </div>
     ),
 
     has_problem: (
-      <div className="badge badge-outline badge-error badge-xs px-1 gap-1 mb-1">
+      <div className="badge badge-soft badge-error badge-xs px-1 gap-1 mb-1">
         <TriangleAlert size={12}/> Issue detected
       </div>
     ),
 
     solved: (
-      <div className="badge badge-outline badge-success badge-xs px-1 gap-1 mb-1">
+      <div className="badge badge-soft badge-success badge-xs px-1 gap-1 mb-1">
         <CircleCheck size={12}/> All issues solved
       </div>
     ),
@@ -184,9 +184,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         icon={typeProps.mergeNode.icon}
       >
 
-        <div className="flex-1 items-center px-2 justify-start">
-          {BADGES[nodeState]}
-        </div>
+        {BADGES[nodeState]}
 
       </NodeHeader>
 

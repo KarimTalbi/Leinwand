@@ -17,6 +17,8 @@ import {
 } from '@/lib/styles'
 import useStore from '@/store'
 import {PromptNodeType} from '@/types'
+import {Info} from "lucide-react";
+import {useStoreWithId} from "@/hooks/useStoreWithId.ts";
 
 /**
  * Represents the possible states of the PromptNode, which dictate its UI and available actions.
@@ -55,6 +57,8 @@ const PromptNode = (
     updateNodeData: s.updateNodeData,
   })))
 
+  const {conPrompt} = useStoreWithId(id)
+
   const {localText, handleTextChange, textareaRef} = useTextarea(
     data.prompt || '',
     (value) => updateNodeData(id, {prompt: value}),
@@ -88,6 +92,7 @@ const PromptNode = (
     : false
 
   const getNodeState = (): NodeState => {
+
     if (!isClosed) {
       if (loading) return 'loading'
       if (isConnected && isSourcePrompt) return 'sourceIsPrompt'
@@ -107,7 +112,9 @@ const PromptNode = (
         title="Chat"
         color={typeProps.promptNode.color}
         icon={typeProps.promptNode.icon}
-      />
+      >
+
+      </NodeHeader>
 
       <div className={NodeForegroundStyle}>
 
@@ -182,6 +189,18 @@ const PromptNode = (
               <NodeDisplayMarkdown content={data.response} className="px-2"/>
 
             </div>
+
+            {data.model.model && (
+              <div className="flex justify-between items-center">
+                <div className="badge badge-soft badge-secondary badge-xs">
+                  <Info size={12}/> {data.model.model}
+                </div>
+
+                <button className={nodeFooterButtonStyle} onClick={conPrompt}>
+                  Reply
+                </button>
+              </div>
+            )}
 
           </>
         )}

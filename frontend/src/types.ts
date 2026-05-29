@@ -1,4 +1,4 @@
-import {Edge, Node, OnNodesChange, OnEdgesChange, OnConnect, XYPosition} from "@xyflow/react";
+import {Edge, Node, OnConnect, OnEdgesChange, OnNodesChange, XYPosition} from "@xyflow/react";
 
 
 export interface Section {
@@ -14,16 +14,24 @@ export interface Section {
   solution?: string;
 }
 
+export interface LLMModel {
+  model?: string;
+  key_id?: string;
+  modelProvider?: string;
+}
+
 
 export type PromptNodeType = Node<{
   prompt?: string;
   response?: string;
   closed: boolean;
+  model: Record<string, any>
 }>;
 
 export type TextNodeType = Node<{
   text?: string;
   closed: boolean;
+  model: Record<string, any>
 }>;
 
 export type MergeNodeType = Node<{
@@ -34,11 +42,13 @@ export type MergeNodeType = Node<{
   incomer1?: string;
   incomer2?: string;
   closed: boolean;
+  model: Record<string, any>
 }>;
 
 export type SummaryNodeType = Node<{
   response?: string,
   closed: boolean
+  model: Record<string, any>
 }>;
 
 export type PromptNodeData = PromptNodeType['data'];
@@ -103,8 +113,8 @@ export interface AppState {
   clearAuthError: () => void;
 
   apiKeys: ApiKeyRead[];
-  defaultModel: {model: string, key_id: string};
-  setDefaultApiKey: (model: string, key_id: string) => void;
+  defaultModel: LLMModel;
+  setDefaultApiKey: (model: string, key_id: string, provider: string) => void;
 
 
   // Canvas management actions
@@ -126,7 +136,7 @@ export interface AppState {
   addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
   moveNode: (id: string, position: XYPosition) => void;
   createConnectedNode: (type: NodeTypeNames, sourceId: string) => void;
-  promptNodeAction: (id: string) => Promise<void>;
+  promptNodeAction: (id: string) => Promise<void | null>;
   summaryNodeAction: (id: string) => Promise<void>;
   mergeNodeAction: (id: string, incomer1: string, incomer2: string, checkStreams: boolean) => Promise<void>;
   mergeNodeResolveAction: (id: string) => Promise<void>;

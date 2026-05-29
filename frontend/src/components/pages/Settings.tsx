@@ -23,7 +23,7 @@ export default function Settings() {
   })));
 
   const [newKey, setNewKey] = useState("");
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(defaultModel.model || null);
   const [key_id, setKeyId] = useState<string | null>(null);
 
 
@@ -93,9 +93,9 @@ export default function Settings() {
 
             <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Your API-Keys:</li>
 
-            {apiKeys.map((key) => (
+            {apiKeys.map((key, index) => (
 
-              <li className="list-row">
+              <li key={index} className="list-row">
 
                 <div>
                   <div>{key.key}</div>
@@ -113,8 +113,8 @@ export default function Settings() {
                     className="select select-sm focus:outline-none"
                     defaultValue="placeholder">
                     <option value="placeholder" disabled>Models</option>
-                    {key.models?.map((model) => (
-                      <option value={model} className="disabled:text-neutral-600">{model}</option>
+                    {key.models?.map((model, index) => (
+                      <option key={index} value={model} className="disabled:text-neutral-600">{model}</option>
                     ))}
                   </select>
                 </div>
@@ -124,7 +124,8 @@ export default function Settings() {
                   <div className="tooltip" data-tip="Set as default">
                     <button className="btn btn-sm btn-square btn-success"
                             disabled={key_id !== key.id || selectedModel === defaultModel.model}>
-                      <Check size={14} onClick={() => setDefaultApiKey(selectedModel || "", key.id)}/>
+                      <Check size={14}
+                             onClick={() => setDefaultApiKey(selectedModel || "", key.id, key.modelProvider || "")}/>
                     </button>
                   </div>
 

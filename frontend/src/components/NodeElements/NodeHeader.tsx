@@ -46,7 +46,9 @@ export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
         <h1 className="flex items-center gap-1 text-sm font-semibold">{title}</h1>
       </div>
 
-      {children}
+      <div className="flex-1 items-center px-2 justify-start">
+        {children}
+      </div>
 
       <div className="flex items-center">
 
