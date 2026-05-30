@@ -81,7 +81,7 @@ const SectionCard = ({section, onGoToNode,}: {
   const meta = TYPE_META[section.type] ?? {label: section.type, badge: 'badge-ghost'}
 
   return (
-    <div className="rounded-md border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
+    <div className="rounded-lg border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
       <div className="flex items-center justify-between px-2 py-1 gap-1">
 
         <button
@@ -90,7 +90,7 @@ const SectionCard = ({section, onGoToNode,}: {
         >
 
           <span
-            className="badge badge-xs badge-outline"
+            className="badge"
             style={{color: meta.color}}
           >
             <meta.icon size={10}/>

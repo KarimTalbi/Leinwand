@@ -1,6 +1,6 @@
 import {SettingsNavbar} from "@/components/navigation/NavBar.tsx";
 import {useEffect, useState} from "react";
-import {Check, KeyRound, Trash2} from "lucide-react";
+import {Check, KeyRound, Plus, Trash2} from "lucide-react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 
@@ -41,25 +41,26 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-neutral-100 flex flex-col">
       <SettingsNavbar/>
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-10">
+      <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-10">
 
         <form onSubmit={handleCreate}>
 
           <div className="join flex items-center justify-between mb-4">
 
-            <div className="text-xs uppercase font-semibold opacity-60 tracking-wide">
+            <div className="flex flex-row text-xs uppercase font-semibold opacity-60 tracking-wide items-center">
               Current Default:
               <div
-                className="badge badge-outline badge-xs badge-info ml-2">{defaultModel.model || "no default set"}</div>
+                className="badge badge-sm badge-info ml-2">{defaultModel.model || "no default set"}</div>
             </div>
 
             <div className="flex flex-row justify-around">
 
               <div>
 
-                <label className="input input-sm validator rounded-l-md join-item flex flex-end">
+                <label
+                  className="input input-sm rounded-l-full outline-none join-item flex flex-end">
                   <KeyRound size={12}/>
                   <input
                     type="password"
@@ -68,11 +69,12 @@ export default function Settings() {
                     onChange={(e) => setNewKey(e.target.value)}
                   />
                 </label>
-                <p className="label text-[10px] text-neutral-500">only OpenAi, Google and Anthropic are supported</p>
               </div>
 
-              <button className="btn btn-sm join-item">
-                Add
+              <button
+                className="btn btn-sm pr-4 bg-neutral-300 join-item rounded-r-full text-neutral-800 hover:bg-neutral-400">
+                <Plus size={14}></Plus>
+                <p>Add</p>
               </button>
 
             </div>
@@ -83,13 +85,13 @@ export default function Settings() {
         {apiKeys.length === 0 ? (
 
           <div className="text-center py-16 text-neutral-400">
-            <KeyRound className="size-6 mx-auto mb-2 opacity-50"/>
-            <p className="text-xs">No API-Keys yet. Add one to get started.</p>
+            <KeyRound className="size-10 mx-auto mb-2 opacity-50"/>
+            <p>No API-Keys yet. Add one to get started.</p>
           </div>
 
         ) : (
 
-          <ul className="list bg-base-100">
+          <ul className="list bg-neutral-100">
 
             <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">Your API-Keys:</li>
 
@@ -104,13 +106,13 @@ export default function Settings() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-end">
                   <select
                     onChange={(e) => {
                       setSelectedModel(e.target.value)
                       setKeyId(key.id)
                     }}
-                    className="select select-sm focus:outline-none"
+                    className="select select-sm border-none ring-1 ring-neutral-300 focus:outline-none max-w-60 mx-3"
                     defaultValue="placeholder">
                     <option value="placeholder" disabled>Models</option>
                     {key.models?.map((model, index) => (
@@ -122,7 +124,7 @@ export default function Settings() {
                 <div className="flex flex-row items-center justify-center gap-2">
 
                   <div className="tooltip" data-tip="Set as default">
-                    <button className="btn btn-sm btn-square btn-success"
+                    <button className="btn btn-sm btn-circle btn-ghost"
                             disabled={key_id !== key.id || selectedModel === defaultModel.model}>
                       <Check size={14}
                              onClick={() => setDefaultApiKey(selectedModel || "", key.id, key.modelProvider || "")}/>
@@ -130,7 +132,7 @@ export default function Settings() {
                   </div>
 
                   <div className="tooltip" data-tip="Delete">
-                    <button className="btn btn-sm btn-square btn-error">
+                    <button className="btn btn-sm btn-circle btn-ghost">
                       <Trash2 size={14} onClick={() => deleteApiKey(key.id)}/>
                     </button>
                   </div>
@@ -144,7 +146,9 @@ export default function Settings() {
 
         )}
 
-
+        <div className="flex flex-row justify-center mt-2">
+          <p className="text-xs text-neutral-500">Currently only OpenAi, Google and Anthropic are supported.</p>
+        </div>
       </main>
     </div>
   )

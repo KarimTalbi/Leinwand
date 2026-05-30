@@ -109,7 +109,7 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
     const sourceHeight = node.measured?.height;
     if (!sourceHeight) return;
 
-    const pos = {x: node.position.x, y: node.position.y + sourceHeight + 30};
+    const pos = {x: node.position.x, y: node.position.y + sourceHeight + 40};
     const newNodeId = String(uuidv4());
 
     set({

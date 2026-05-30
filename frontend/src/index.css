@@ -1,4 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
 @plugin "daisyui";
 @plugin "@tailwindcss/typography";
+
+.prose pre:has(code.hljs) {
+    background: transparent;
+    padding: 0;
+}
+
+.prose pre code.hljs {
+    border-radius: 6px;
+}

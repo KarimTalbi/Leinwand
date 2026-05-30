@@ -1,4 +1,4 @@
-import React, {memo} from 'react'
+import React, {memo, useState} from 'react'
 import {NodeProps, useNodeConnections, useNodes} from '@xyflow/react'
 
 import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
@@ -8,17 +8,19 @@ import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {usePromptNode} from '@/hooks/node-actions/usePromptNode'
 import {useStoreWithId} from '@/hooks/useStoreWithId'
 import {
+  bubbleLeftStyle,
+  bubbleRightStyle,
   NodeBackgroundStyle,
-  nodeFooterButtonStyle,
   NodeForegroundStyle,
-  pulsingText,
+  nodeHeaderButtonStyle,
   textareaStyle,
   typeProps,
 } from '@/lib/styles'
 import {PromptNodeType} from '@/types'
-import {Info} from 'lucide-react'
+import {ArrowUp, Bot, Reply} from 'lucide-react'
 import useStore from "@/store";
 import TextareaAutosize from 'react-textarea-autosize';
+import {cn} from "@/lib/utils.ts";
 
 /**
  * Represents the possible states of the PromptNode.
@@ -33,6 +35,8 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
   const updateNodeData = useStore((s) => s.updateNodeData)
   const {conPrompt} = useStoreWithId(id)
   const {run, isStreaming} = usePromptNode(id)
+  const [expanded, setExpanded] = useState(false)
+  const isLong = data.prompt ? data.prompt.length > 80 : false
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     updateNodeData(id, {prompt: e.target.value})
@@ -64,79 +68,108 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
         icon={typeProps.promptNode.icon}
       />
 
+
       <div className={NodeForegroundStyle}>
 
         {nodeState === 'loading' && (
-          <div className="flex flex-col flex-1 justify-between gap-5">
-            <div className="chat chat-end">
-              <div className="chat-bubble text-sm">{data.prompt}</div>
-            </div>
-            <div className="chat chat-start">
-              <div className="chat-bubble text-sm">
-                <span className={pulsingText}>Thinking...</span>
+          <div className="chat chat-start">
+            <div className="chat-image avatar">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#ec4899]/20">
+                <Bot size={30} className="text-[#ec4899]"></Bot>
               </div>
             </div>
+            <div className={bubbleLeftStyle}>
+              <span className="loading loading-dots loading-sm"></span>
+            </div>
           </div>
+
         )}
 
-        <div className="flex flex-col flex-1 justify-between gap-2">
+        <div className="flex flex-col flex-1 justify-between gap-7">
 
           {nodeState === 'ready' && (
             <div className="chat chat-start">
-              <div className="chat-bubble text-sm">How can i help you?</div>
+              <div className="chat-image avatar">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#ec4899]/20">
+                  <Bot size={30} className="text-[#ec4899]"></Bot>
+                </div>
+              </div>
+              <div className={bubbleLeftStyle}>How can i help you?</div>
             </div>
           )}
 
           {(nodeState === 'sourceIsPrompt' || nodeState === 'ready') && (
-            <>
+            <div
+              className="bg-neutral-50 ring-2 ring-neutral-200 rounded-2xl mb-1 shadow-sm hover:ring-neutral-300">
               <TextareaAutosize
                 value={data.prompt}
                 onChange={handleTextChange}
-                className={textareaStyle}
+                className={cn(textareaStyle)}
                 placeholder="Enter your prompt..."
               />
-              <div className="flex justify-end pt-1">
+              <div className="flex justify-end items-center pr-2 pb-2">
 
-                <button className={nodeFooterButtonStyle} onClick={() => null}>
-                  Settings
-                </button>
+                <div className="tooltip" data-tip="Send">
+                  <button
+                    className={cn("btn btn-ghost bg-[#ec4899] btn-sm btn-circle disabled:opacity-30 transition-opacity")}
+                    onClick={run}
+                    disabled={!data.prompt || isStreaming}
+                  >
+                    <ArrowUp size={14} color={"white"}></ArrowUp>
+                  </button>
+                </div>
 
-                <button
-                  className={nodeFooterButtonStyle}
-                  onClick={run}
-                  disabled={!data.prompt || isStreaming}
-                >
-                  Send
-                </button>
               </div>
-            </>
+            </div>
           )}
 
         </div>
 
         {nodeState === 'hasResponse' && (
-          <>
-            <div className="flex flex-col flex-1 justify-between gap-5 pb-2">
-              <div className="chat chat-end">
-                <div className="chat-bubble text-sm">{data.prompt}</div>
+          <div className="flex flex-col flex-1 justify-between gap-7">
+            <div className="chat chat-end">
+              <div className={cn(bubbleRightStyle, "break-all")}>
+                <p className={cn(!expanded && "line-clamp-1")}>
+                  {data.prompt}
+                </p>
+                {isLong && (
+                  <button
+                    className="btn btn-ghost w-full btn-xs bg-transparent border-none shadow-none text-neutral-500"
+                    onClick={() => setExpanded(!expanded)}
+                  >
+                    {expanded ? 'show less' : 'show more'}
+                  </button>
+                )}
               </div>
-              <NodeDisplayMarkdown content={data.response} className="px-2"/>
             </div>
-
-            {data.model.model && (
-              <div className="flex justify-between items-center">
-                <div className="badge badge-soft badge-secondary badge-xs">
-                  <Info size={12}/> {data.model.model}
-                </div>
-                <button className={nodeFooterButtonStyle} onClick={conPrompt}>
-                  Reply
-                </button>
-              </div>
-            )}
-          </>
+            <NodeDisplayMarkdown content={data.response}/>
+          </div>
         )}
 
       </div>
+
+      <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
+
+        {data.model.model && (
+          <div className="flex flex-row items-center justify-start w-full">
+            <div className="badge badge-soft badge-secondary">
+              <Bot size={14}/> {data.model.model}
+            </div>
+          </div>
+        )}
+
+        {nodeState === 'hasResponse' && (
+          <div className="flex flex-row items-center justify-end w-full">
+            <div className="tooltip" data-tip="Reply">
+              <button className={nodeHeaderButtonStyle} onClick={conPrompt}>
+                <Reply size={16} color={typeProps.promptNode.color}></Reply>
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+
 
       <ConnectionHandles
         handleId="target-1"

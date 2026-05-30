@@ -48,19 +48,24 @@ export default function LoginPage() {
       style={{backgroundImage: 'url(\'static/login.png\')', backgroundSize: 'cover', backgroundPosition: 'left'}}
     >
 
-      <div className="w-8/12 h-screen bg-white flex items-center shadow-2xl justify-center">
 
-        <div className="bg-white rounded-3xl w-full max-w-sm p-8">
+      <div className="w-9/12 h-screen bg-neutral-100 flex items-center shadow-2xl justify-center">
+
+        <div style={{position: "absolute", top: 20, left: 10}}>
+          <h1 className="text-neutral-600 text-xl text-shadow-xs font-bold px-5">LEINWAND</h1>
+        </div>
+
+        <div className="rounded-3xl w-full max-w-sm p-8">
           <div
-            className="flex items-center text-md justify-center mb-10">{tab === 'login' ? 'Welcome back to Leinwand!' : 'Welcome to Leinwand!'}</div>
+            className="flex items-center text-lg font-semibold tracking-wide justify-center mb-10">{tab === 'login' ? 'Welcome back to Leinwand!' : 'Welcome to Leinwand!'}</div>
 
           {/* Tabs */}
-          <div className="flex rounded-lg bg-neutral-200 p-1 mb-5">
+          <div className="flex rounded-full bg-neutral-300 p-1 mb-5">
             {(['login', 'register'] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => switchTab(t)}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                className={`flex-1 py-1.5 text-sm font-semibold rounded-full transition-colors cursor-pointer ${
                   tab === t
                     ? 'bg-white text-neutral-900 shadow-sm'
                     : 'text-neutral-600 hover:text-neutral-700'
@@ -73,7 +78,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium px-1 text-neutral-600 mb-0.5">
+              <label className="block text-sm font-medium px-1 text-neutral-600 mb-0.5">
                 Username
               </label>
               <input
@@ -82,7 +87,7 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
-                className="w-full px-3 py-2 ring-1 ring-neutral-200 rounded-lg text-xs text-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+                className="w-full bg-white px-3 py-2 ring-2 ring-neutral-200 rounded-full text-sm text-neutral-600 focus:outline-none focus:ring-2 focus:ring-neutral-300"
               />
             </div>
 
@@ -96,7 +101,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete={tab === 'login' ? 'current-password' : 'new-password'}
-                className="w-full px-3 py-2 ring-1 ring-neutral-200 rounded-lg text-xs text-neutral-600 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+                className="w-full bg-white px-3 py-2 ring-2 ring-neutral-200 rounded-full text-sm text-neutral-600 focus:outline-none focus:ring-2 focus:ring-neutral-300"
               />
             </div>
 
@@ -107,7 +112,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 bg-neutral-200 text-neutral-600 text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors cursor-pointer"
+              className="w-full py-2.5 bg-neutral-300 text-neutral-600 text-sm font-semibold rounded-full hover:bg-neutral-300 disabled:opacity-50 transition-colors cursor-pointer"
             >
               {loading ? '...' : tab === 'login' ? 'Log in' : 'Create account'}
             </button>

@@ -77,27 +77,27 @@ function Flow() {
 
           <Background
             id="1"
-            bgColor="white"
+            bgColor="#f5f5f5"
             size={3}
             gap={[60, 60]}
-            offset={162}
+            offset={132}
           />
 
           <Background
             id="2"
             size={6}
             gap={[300, 300]}
-            offset={190}
+            offset={160}
             variant={BackgroundVariant.Lines}
             lineWidth={12}
-            color="white"
+            color="#f5f5f5"
           />
 
           <Background
             id="3"
             size={4}
             gap={[300, 300]}
-            offset={190}
+            offset={160}
             variant={BackgroundVariant.Lines}
             lineWidth={1}
             color="#e5e5e5"

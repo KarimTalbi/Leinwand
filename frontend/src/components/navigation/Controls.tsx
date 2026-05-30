@@ -66,7 +66,9 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="divider divider-horizontal m-0 my-2"/>
+      </div>
+
+      <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Zoom In">
           <button className={controlButtonStyle} onClick={zoomIn}>
@@ -80,7 +82,9 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="divider divider-horizontal m-0 my-2"/>
+      </div>
+
+      <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Pan Up">
           <button className={controlButtonStyle} onClick={panUp}>
@@ -94,7 +98,9 @@ export const Controls = () => {
           </button>
         </div>
 
-        <div className="divider divider-horizontal m-0 my-2"/>
+      </div>
+
+      <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Pan Left">
           <button className={controlButtonStyle} onClick={panLeft}>

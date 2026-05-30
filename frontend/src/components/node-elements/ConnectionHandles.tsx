@@ -49,8 +49,8 @@ export const ConnectionHandles = (
   })
 
   const handlePositionStyle = () => {
-    if (position === 'top') return 'w-20! h-2! rounded-t-full! rounded-b-none! border-none! -translate-y-1! z-[-1]!'
-    return 'w-20! h-2! rounded-t-none! rounded-b-full! border-none! translate-y-1! z-[-1]!'
+    if (position === 'top') return 'w-30! h-3! rounded-t-full! rounded-b-none! border-none! -translate-y-2! z-[-1]!'
+    return 'w-30! h-3! rounded-t-none! rounded-b-full! border-none! translate-y-2! z-[-1]!'
   }
 
   return (

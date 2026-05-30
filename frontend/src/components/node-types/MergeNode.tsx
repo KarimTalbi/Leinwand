@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react'
 import {NodeProps, useEdges, useNodeConnections, useNodes, useReactFlow} from '@xyflow/react'
-import {CircleCheck, Info, TriangleAlert} from 'lucide-react'
+import {ArrowUp, Bot, CircleCheck, Info, Play, TriangleAlert} from 'lucide-react'
 
 import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
 import {ConnectionHandles} from '@/components/node-elements/ConnectionHandles'
@@ -9,14 +9,7 @@ import {NodeHeader} from '@/components/node-elements/NodeHeader'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {useMergeNode} from '@/hooks/node-actions/useMergeNode'
 import {cn} from '@/lib/utils'
-import {
-  NodeBackgroundStyle,
-  nodeFooterButtonStyle,
-  NodeForegroundStyle,
-  pulsingText,
-  textareaStyle,
-  typeProps,
-} from '@/lib/styles'
+import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, textareaStyle, typeProps,} from '@/lib/styles'
 import useStore from '@/store'
 import TextareaAutosize from 'react-textarea-autosize';
 import {MergeNodeType} from '@/types'
@@ -94,27 +87,27 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connections: (
-      <div className="badge badge-soft badge-error badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-error px-2 gap-1">
         <Info size={12}/> {missingConnections} more connection(s) required
       </div>
     ),
     ready: (
-      <div className="badge badge-soft badge-warning badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-warning px-2 gap-1">
         <CircleCheck size={12}/> Ready
       </div>
     ),
     merged: (
-      <div className="badge badge-soft badge-info badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-info px-2 gap-1">
         <CircleCheck size={12}/> No issues detected
       </div>
     ),
     has_problem: (
-      <div className="badge badge-soft badge-error badge-xs px-1 gap-1 mb-1">
+      <div className="badge badge-soft badge-error px-1 gap-1">
         <TriangleAlert size={12}/> Issue detected
       </div>
     ),
     solved: (
-      <div className="badge badge-soft badge-success badge-xs px-1 gap-1 mb-1">
+      <div className="badge badge-soft badge-success px-1 gap-1">
         <CircleCheck size={12}/> All issues solved
       </div>
     ),
@@ -135,34 +128,8 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
       <div className={NodeForegroundStyle}>
 
         {nodeState === 'loading' && (
-          <div className={cn(pulsingText, 'flex flex-col w-full justify-center items-center h-15')}>
-            <span>Merging...</span>
-          </div>
-        )}
-
-        {(nodeState === 'ready' || nodeState === 'needs_connections') && (
-          <div className="flex flex-col flex-1 nodrag select-text cursor-text">
-            <div className="flex justify-between items-center px-10 py-2">
-              <NodeDisplayMarkdown content="Check streams for inconsistencies"/>
-              <input
-                type="checkbox"
-                checked={checkStreams}
-                onChange={(e) => setCheckStreams(e.target.checked)}
-                className="toggle toggle-xs w-8 h-5 border rounded-full"
-              />
-            </div>
-            <div className="flex justify-end w-full items-center gap-1.5 px-2 pt-2">
-              <button className={nodeFooterButtonStyle} onClick={() => null}>
-                Settings
-              </button>
-              <button
-                className={nodeFooterButtonStyle}
-                onClick={handleMerge}
-                disabled={nodeState === 'needs_connections'}
-              >
-                Merge
-              </button>
-            </div>
+          <div className={cn('flex w-full justify-center items-center p-1')}>
+            <span className="loading loading-dots loading-lg"></span>
           </div>
         )}
 
@@ -170,37 +137,74 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
           <div>
             <div className="flex flex-col flex-1 justify-between gap-5">
               <NodeDisplayMarkdown content={data.problems || ''} className="px-2"/>
-              <TextareaAutosize
-                value={data.solution}
-                onChange={handleTextChange}
-                className={textareaStyle}
-                placeholder="Enter response..."
-              />
-            </div>
-            <div className="flex justify-end w-full items-center px-2 pt-2 shrink-0">
 
-              <button
-                className={nodeFooterButtonStyle}
-                onClick={() => void resolve()}
-                disabled={!data.solution}
-              >
-                Solve
-              </button>
+              <div
+                className="bg-neutral-50 ring-2 ring-neutral-200 rounded-2xl mb-1 shadow-sm hover:ring-neutral-300">
+                <TextareaAutosize
+                  value={data.solution}
+                  onChange={handleTextChange}
+                  className={cn(textareaStyle)}
+                  placeholder="Enter your prompt..."
+                />
+                <div className="flex justify-end items-center pr-2 pb-2">
+
+                  <div className="tooltip" data-tip="Send">
+                    <button
+                      className={cn("btn btn-ghost bg-[#f5c45e] btn-sm btn-circle disabled:opacity-30 transition-opacity")}
+                      onClick={resolve}
+                      disabled={!data.solution}
+                    >
+                      <ArrowUp size={14} color={"white"}></ArrowUp>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {(nodeState === 'merged' || nodeState === 'solved') && (
-          <>
-            <MergeContent sections={data.context ?? []} onGoToNode={goToNode}/>
-            {data.model.model && (
-              <div className="flex justify-start items-center">
-                <div className="badge badge-soft badge-secondary badge-xs">
-                  <Info size={12}/> {data.model.model}
-                </div>
-              </div>
-            )}
-          </>
+          <MergeContent sections={data.context ?? []} onGoToNode={goToNode}/>
+        )}
+
+      </div>
+
+
+      <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
+
+        {data.model.model && (
+          <div className="flex flex-row items-center justify-start w-full">
+            <div className="badge badge-soft badge-secondary">
+              <Bot size={14}/> {data.model.model}
+            </div>
+          </div>
+        )}
+
+        {(nodeState === 'ready' || nodeState === 'needs_connections') && (
+          <div className="flex flex-row items-center justify-between w-full">
+
+            <div className="flex flex-row items-center gap-2">
+              <p className="text-sm font-semibold text-neutral-600">Check for inconsistencies</p>
+              <input
+                type="checkbox"
+                checked={checkStreams}
+                onChange={(e) => setCheckStreams(e.target.checked)}
+                className="toggle toggle-xs w-8 h-5 border rounded-full text-[#f5c45e]"
+              />
+            </div>
+
+            <div className="tooltip" data-tip="Summarize">
+              <button
+                className={cn(nodeHeaderButtonStyle, "bg-[#f5c45e] disabled:opacity-30")}
+                onClick={handleMerge}
+                disabled={!isConnected1 || !isConnected2}
+              >
+                <Play size={16} color="white"></Play>
+              </button>
+            </div>
+
+          </div>
         )}
 
       </div>

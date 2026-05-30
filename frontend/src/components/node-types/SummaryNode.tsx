@@ -1,6 +1,6 @@
 import React, {memo} from 'react'
 import {NodeProps, useNodeConnections, useNodes} from '@xyflow/react'
-import {Info, TriangleAlert} from 'lucide-react'
+import {Bot, CircleCheck, Info, Play, TriangleAlert} from 'lucide-react'
 
 import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
 import {ConnectionHandles} from '@/components/node-elements/ConnectionHandles'
@@ -8,7 +8,7 @@ import {NodeHeader} from '@/components/node-elements/NodeHeader'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {useSummaryNode} from '@/hooks/node-actions/useSummaryNode'
 import {cn} from '@/lib/utils'
-import {NodeBackgroundStyle, nodeFooterButtonStyle, NodeForegroundStyle, pulsingText, typeProps} from '@/lib/styles'
+import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, typeProps} from '@/lib/styles'
 import {SummaryNodeType} from '@/types'
 
 /**
@@ -51,12 +51,19 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
     needs_connection: (
-      <div className="badge badge-soft badge-error badge-xs px-2 gap-1 mb-1">
+      <div className="badge badge-soft badge-error px-2 gap-1">
         <Info size={12}/> Connection required
       </div>
     ),
+
+    ready: (
+      <div className="badge badge-soft badge-info px-2 gap-1">
+        <CircleCheck size={12}/> Ready
+      </div>
+    ),
+
     sourceIsSummary: (
-      <div className="badge badge-soft badge-error badge-xs px-1 gap-1 mb-1">
+      <div className="badge badge-soft badge-error px-1 gap-1">
         <TriangleAlert size={12}/> Source can't be a summary
       </div>
     ),
@@ -79,38 +86,41 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
 
       <div className={NodeForegroundStyle}>
 
-        {isIdle && (
-          <div className="flex justify-end pt-1">
-            <button className={nodeFooterButtonStyle} onClick={() => null}>
-              Settings
-            </button>
-            <button
-              className={nodeFooterButtonStyle}
-              onClick={run}
-              disabled={isDisabled}
-            >
-              Summarize
-            </button>
-          </div>
-        )}
 
         {nodeState === 'loading' && (
-          <div className={cn(pulsingText, 'flex flex-col w-full justify-center items-center h-15')}>
-            <span>generating summary...</span>
+          <div className={cn('flex w-full justify-center items-center p-1')}>
+            <span className="loading loading-dots loading-lg"></span>
           </div>
         )}
 
         {(nodeState === 'streaming' || nodeState === 'hasResponse') && (
-          <>
-            <NodeDisplayMarkdown content={data.response} className="px-2 pb-2"/>
-            {data.model.model && (
-              <div className="flex justify-start items-center">
-                <div className="badge badge-soft badge-secondary badge-xs">
-                  <Info size={12}/> {data.model.model}
-                </div>
-              </div>
-            )}
-          </>
+          <NodeDisplayMarkdown content={data.response}/>
+        )}
+
+      </div>
+
+      <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
+
+        {data.model.model && nodeState === 'hasResponse' && (
+          <div className="flex flex-row justify-start items-center w-full">
+            <div className="badge badge-soft badge-secondary">
+              <Bot size={14}/> {data.model.model}
+            </div>
+          </div>
+        )}
+
+        {isIdle && (
+          <div className="flex flex-row items-center justify-end w-full">
+            <div className="tooltip" data-tip="Summarize">
+              <button
+                className={cn(nodeHeaderButtonStyle, "bg-[#bf4546] disabled:opacity-30")}
+                onClick={run}
+                disabled={isDisabled}
+              >
+                <Play size={16} color="white"></Play>
+              </button>
+            </div>
+          </div>
         )}
 
       </div>

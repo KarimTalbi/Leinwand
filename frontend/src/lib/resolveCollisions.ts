@@ -9,7 +9,7 @@ export type CollisionAlgorithmOptions = {
 export const DEFAULT_COLLISION_OPTIONS: CollisionAlgorithmOptions = {
   maxIterations: Infinity,
   overlapThreshold: 0.5,
-  margin: 15,
+  margin: 10,
 };
 
 export type CollisionAlgorithm = (
@@ -46,7 +46,7 @@ function getBoxesFromNodes(nodes: AnyNodeType[], margin = 0): Box[] {
 
 export const resolveCollisions: CollisionAlgorithm = (
   nodes,
-  { maxIterations = 50, overlapThreshold = 0.5, margin = 0 },
+  {maxIterations = 50, overlapThreshold = 0.5, margin = 0},
 ) => {
   const boxes = getBoxesFromNodes(nodes, margin);
 

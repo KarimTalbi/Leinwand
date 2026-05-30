@@ -3,6 +3,7 @@ import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, LogOut, Settings2} from "lucide-react";
 import {navbarButtonStyle} from "@/lib/styles.ts";
+import {Panel} from "@xyflow/react";
 
 /**
  * Base Navbar component that provides the common layout and styling for all navbars.
@@ -16,7 +17,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
   return (
     <div
       style={{zIndex: 100, position: "sticky", top: 0, left: 0, right: 0, height: "55px"}}
-      className="nodrag nowheel bg-neutral-50 shadow-sm flex flex-row items-center justify-between"
+      className="nodrag nowheel flex flex-row items-center justify-between w-full"
       {...props}
     >
       <div>
@@ -42,25 +43,32 @@ export const FlowNavBar = () => {
   })));
 
   return (
-    <Navbar>
+    <Panel position="top-right">
 
-      <div className="flex gap-2 mr-2">
+      <div
+        className="flex flex-row items-center gap-2 bg-white p-1 rounded-full ring-2 ring-neutral-100 shadow-sm">
+
+        <div>
+          <h1 className="text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
+        </div>
+
 
         <div className="tooltip tooltip-bottom" data-tip="Exit Project">
           <button className={navbarButtonStyle} onClick={exitCanvas}>
-            <ChevronLeft size={14} color="#737373"/>
+            <ChevronLeft size={16} color="#737373"/>
           </button>
         </div>
 
+
         <div className="tooltip tooltip-bottom" data-tip="Settings">
           <button className={navbarButtonStyle} onClick={setSettingsOpen}>
-            <Settings2 size={14} color="#737373"/>
+            <Settings2 size={16} color="#737373"/>
           </button>
         </div>
 
       </div>
 
-    </Navbar>
+    </Panel>
   )
 }
 
@@ -78,19 +86,20 @@ export const DashboardNavbar = () => {
 
   return (
     <Navbar>
-      <div className="flex gap-2 mr-2">
+      <div className="flex gap-1 mr-2">
 
-        <div className="tooltip tooltip-bottom" data-tip="Log Out">
-          <button className={navbarButtonStyle} onClick={logout}>
-            <LogOut size={14} color="#737373"/>
-          </button>
-        </div>
 
-        <div className="tooltip tooltip-bottom" data-tip="Settings">
-          <button className={navbarButtonStyle} onClick={setSettingsOpen}>
-            <Settings2 size={14} color="#737373"/>
-          </button>
-        </div>
+        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={logout}>
+          <LogOut size={16} color="#737373"/>
+          <p>Log Out</p>
+        </button>
+
+
+        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={setSettingsOpen}>
+          <Settings2 size={16} color="#737373"/>
+          <p>Settings</p>
+        </button>
+
 
       </div>
     </Navbar>
@@ -109,11 +118,11 @@ export const SettingsNavbar = () => {
     <Navbar>
       <div className="flex gap-2 mr-2">
 
-        <div className="tooltip tooltip-bottom" data-tip="Back">
-          <button className={navbarButtonStyle} onClick={setSettingsOpen}>
-            <ChevronLeft size={14} color="#737373"/>
-          </button>
-        </div>
+        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={setSettingsOpen}>
+          <ChevronLeft size={16}/>
+          <p>Exit</p>
+        </button>
+
 
       </div>
     </Navbar>

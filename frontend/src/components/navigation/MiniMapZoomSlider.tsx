@@ -11,16 +11,17 @@ import {AnyNodeType} from '@/types'
  * @param props.nodeColor - A function that determines the color of a node in the minimap based on its type or data.
  * @returns The minimap component with zoom controls.
  */
-export function MiniMapZoomSlider({nodeColor}: {nodeColor: (node: AnyNodeType) => string}) {
+export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) => string }) {
   const {resetZoom, zoom, zoomTo, minZoom, maxZoom, zoomPercent} = usePan()
 
   return (
     <Panel position="bottom-right">
 
-      <div className="bg-neutral-50 w-50 h-40 rounded-lg ring-1 ring-neutral-200 shadow-md">
+      <div
+        className="bg-white w-50 h-40 rounded-2xl ring-2 ring-neutral-100 shadow-md">
 
         <MiniMap
-          className="rounded-md w-48 h-30 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
+          className="rounded-xl w-48 h-30 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
           zoomable
           pannable
           bgColor="transparent"
@@ -30,8 +31,8 @@ export function MiniMapZoomSlider({nodeColor}: {nodeColor: (node: AnyNodeType) =
           offsetScale={0}
         />
 
-        <div style={{position: 'absolute', bottom: 130, right: 7, zIndex: 1000}}>
-          <div className="flex gap-2 flex-row items-center w-46.5">
+        <div style={{position: 'absolute', bottom: 130, right: 9, zIndex: 1000}}>
+          <div className="flex gap-2 flex-row items-center w-45">
 
             <input
               type="range"
