@@ -1,24 +1,18 @@
-from data.db_models import ApiKey
-from typing import Any
-from data.llm_key_validator import Provider
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import ApiKeyRead, UserAuth, get_async_session, ApiKeyReturn
+from data import ApiKeyRead, ApiKeyReturn, UserAuth, get_async_session
+from data.db_models import ApiKey
+from data.llm_key_validator import ModelType, Provider, create_validator, detect_provider
 from data.llm_key_validator.base import LLMKeyValidator
 from exceptions import InvalidApiKeyException
-from service import get_current_active_user, api_key_service as aks
-from data.llm_key_validator import detect_provider, create_validator, ModelType
+from service import api_key_service as aks
+from service import get_current_active_user
 from utils import encrypt_key
 
 api_key_router = APIRouter(prefix="/api_key", tags=["api_key"])
-
-
-class ApiKeyDelete(BaseModel):
-    key_id: str
 
 
 @api_key_router.get("/list/", response_model=list[ApiKeyReturn])

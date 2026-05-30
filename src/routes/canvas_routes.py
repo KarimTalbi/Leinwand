@@ -1,21 +1,24 @@
-from data import Edge
-from data import Node
-from data import Canvas
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import CanvasRead, UserAuth, get_async_session, NodeRead, EdgeRead
-from service import canvas_service as cs, get_current_active_user, node_service as ns
+from data import (
+    Canvas,
+    CanvasRead,
+    CanvasUpdateRequest,
+    Edge,
+    EdgeRead,
+    Node,
+    NodeRead,
+    UserAuth,
+    get_async_session,
+)
+from service import canvas_service as cs
+from service import get_current_active_user
+from service import node_service as ns
 
 canvas_router = APIRouter(prefix="/canvas", tags=["canvas"])
-
-
-class CanvasUpdateRequest(BaseModel):
-    canvas_id: str
-    canvas_name: str
 
 
 @canvas_router.get("/list/", response_model=list[CanvasRead])

@@ -8,17 +8,25 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 from langfuse.langchain import CallbackHandler
 from langfuse.langchain.CallbackHandler import LangchainCallbackHandler
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import (
+    LLMMergeResponse,
     LLMModelConfig,
+    LlmResponse,
+    MergeRequest,
+    MergeResolveResponse,
+    MergeResponse,
     NodeRead,
     UserAuth,
     get_async_session,
+)
+from data import (
     prompts as pr,
 )
-from service import get_current_active_user, node_service as ns, api_key_service as aks
+from service import api_key_service as aks
+from service import get_current_active_user
+from service import node_service as ns
 from utils import extract_content
 
 load_dotenv()
@@ -26,32 +34,6 @@ load_dotenv()
 langfuse_handler: LangchainCallbackHandler = CallbackHandler()
 
 llm_router = APIRouter(prefix="/llm", tags=["llm"])
-
-
-class LlmResponse(BaseModel):
-    response: str
-
-
-class MergeResponse(BaseModel):
-    context: list[dict[str, Any]]
-    has_issues: bool
-    problems: str | None = None
-
-
-class LLMMergeResponse(LlmResponse):
-    has_issues: bool
-
-
-class MergeResolveResponse(BaseModel):
-    context: list[dict[str, Any]]
-
-
-class MergeRequest(NodeRead):
-    check_consistencies: bool = True
-
-
-class ChatRequest(NodeRead):
-    node: NodeRead
 
 
 @llm_router.post("/merge/", response_model=MergeResponse)

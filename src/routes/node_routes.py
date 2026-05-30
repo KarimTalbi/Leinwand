@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -11,19 +10,10 @@ from data import (
     NodeRead,
     UserAuth,
     get_async_session,
+    SyncDataRequest,
+    SyncDataResponse,
 )
 from service import get_current_active_user, node_service as ns, canvas_service as cs
-
-
-class SyncDataRequest(BaseModel):
-    nodes: list[NodeRead]
-    edges: list[EdgeRead]
-    time: int
-
-
-class SyncDataResponse(BaseModel):
-    nodes: list[NodeRead]
-    edges: list[EdgeRead]
 
 
 node_router = APIRouter(prefix="/node", tags=["node"])

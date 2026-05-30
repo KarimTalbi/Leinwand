@@ -1,3 +1,14 @@
+"""
+This module sets up and configures the FastAPI application.
+
+It includes:
+- Logging setup
+- Database initialization (with an option to drop and recreate tables)
+- Lifespan management for the application
+- CORS middleware configuration
+- Exception handler registration
+- Inclusion of various API routers
+"""
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -19,6 +30,18 @@ logger: Logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
+    """
+    Asynchronous context manager for the FastAPI application's lifespan.
+
+    This function handles the setup and teardown of the application's resources,
+    specifically the database connection. It ensures that the database tables
+    are created (and optionally dropped and recreated) when the application
+    starts, and that the database engine is properly disposed of when the
+    application shuts down.
+
+    Args:
+        _: The FastAPI application instance.
+    """
     async with engine.begin() as conn:
         if DROP_AND_CREATE_DB:
             logger.info("Dropping and recreating database")

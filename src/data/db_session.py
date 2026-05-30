@@ -1,3 +1,13 @@
+"""
+This module sets up the asynchronous SQLAlchemy database session.
+
+It handles:
+- Loading environment variables for database configuration.
+- Constructing the database connection URL.
+- Creating the asynchronous SQLAlchemy engine.
+- Configuring the asynchronous session maker.
+- Providing a dependency for generating asynchronous database sessions.
+"""
 import os
 from collections.abc import AsyncGenerator
 
@@ -26,5 +36,16 @@ async_session: async_sessionmaker[AsyncSession] = async_sessionmaker(
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession]:
+    """
+    Yields an asynchronous database session.
+
+    This function is intended to be used as a FastAPI dependency. It creates a
+    new database session, begins a transaction, and yields the session. The
+    transaction is automatically committed if no exceptions occur, or rolled
+    back if an exception is raised during the request lifecycle.
+
+    Yields:
+        AsyncSession: An active SQLAlchemy asynchronous database session.
+    """
     async with async_session() as session, session.begin():
         yield session
