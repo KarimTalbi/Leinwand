@@ -1,3 +1,14 @@
+"""
+This module defines the API routes for Language Model (LLM) interactions.
+
+It provides endpoints for:
+- Merging and checking the consistency of data streams using an LLM.
+- Resolving inconsistencies in data streams with LLM assistance.
+- Generating streaming chat responses based on a given context.
+- Generating streaming summaries of a given context.
+
+The routes leverage LangChain for model initialization and Langfuse for tracing.
+"""
 from collections.abc import AsyncGenerator
 from typing import Annotated, Any
 
@@ -42,6 +53,21 @@ async def merge_streams(
     data: MergeRequest,
     session: AsyncSession = Depends(get_async_session),
 ) -> Any:
+    """
+    Analyzes the ancestors of a given node for inconsistencies using an LLM.
+
+    It retrieves the history (ancestors) of a node and asks an LLM to check for
+    logical issues or problems. It returns the context and a flag indicating
+    if any issues were found.
+
+    Args:
+        current_user: The authenticated user.
+        data: The request data, including the node to check.
+        session: The database session.
+
+    Returns:
+        A MergeResponse object containing the context and any identified problems.
+    """
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
 
     if not data.check_consistencies:
@@ -72,6 +98,20 @@ async def resolve_merge(
     data: MergeRequest,
     session: AsyncSession = Depends(get_async_session),
 ) -> MergeResolveResponse:
+    """
+    Uses an LLM to propose a resolution for identified inconsistencies in a data stream.
+
+    Given a node, its history, and a user-provided suggestion, this endpoint
+    asks an LLM to generate a corrected or resolved version of the data.
+
+    Args:
+        current_user: The authenticated user.
+        data: The request data, including the node, its context, and a user solution.
+        session: The database session.
+
+    Returns:
+        A MergeResolveResponse object containing the resolved context.
+    """
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
@@ -106,6 +146,20 @@ async def get_streaming_chat_response(
     data: NodeRead,
     session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
+    """
+    Generates a streaming chat response from an LLM based on node context.
+
+    This endpoint takes a node, retrieves its ancestral context, and streams
+    a response from the LLM based on a prompt contained within the node's data.
+
+    Args:
+        current_user: The authenticated user.
+        data: The node data, including the prompt.
+        session: The database session.
+
+    Returns:
+        A StreamingResponse that yields server-sent events for the chat response.
+    """
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
@@ -135,6 +189,20 @@ async def get_summary_response(
     data: NodeRead,
     session: AsyncSession = Depends(get_async_session),
 ) -> StreamingResponse:
+    """
+    Generates a streaming summary of a node's context using an LLM.
+
+    This endpoint retrieves the ancestral context of a node and asks the LLM
+    to provide a summary, which is then streamed back to the client.
+
+    Args:
+        current_user: The authenticated user.
+        data: The node for which to generate a summary.
+        session: The database session.
+
+    Returns:
+        A StreamingResponse that yields server-sent events for the summary.
+    """
     ancestors: list[dict[str, Any]] = await ns.get_ancestors(session, data.id, current_user.id)
     config: LLMModelConfig = await aks.get_llm_model_config(session, data, current_user.id)
 
