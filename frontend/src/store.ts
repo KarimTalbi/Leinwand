@@ -421,7 +421,7 @@ const useStore = create<AppState>()((set, get) => (
           },
           method: 'POST',
           body:
-            JSON.stringify({node: node}),
+            JSON.stringify({...node}),
         });
 
         if (!res.ok || !res.body) {
@@ -488,7 +488,9 @@ const useStore = create<AppState>()((set, get) => (
     },
 
     summaryNodeAction: async (nodeId) => {
+      get().updateNodeData(nodeId, {model: get().defaultModel})
       const node = get().nodes.find((node) => node.id === nodeId)
+
       try {
         const res = await fetch(`${BASE_URL}/llm/summary/`, {
           headers: {
@@ -498,8 +500,9 @@ const useStore = create<AppState>()((set, get) => (
           },
           method: 'POST',
           body:
-            JSON.stringify({node}),
+            JSON.stringify({...node}),
         });
+
 
         if (!res.ok || !res.body) {
           console.error(`HTTP ${res.status} or no response body`);
@@ -514,7 +517,7 @@ const useStore = create<AppState>()((set, get) => (
         set({
           nodes: get().nodes.map((n) =>
             n.id === nodeId
-              ? {...n, data: {...n.data, response: '', closed: true}}
+              ? {...n, data: {...n.data, response: ''}}
               : n
           ),
         });
@@ -537,7 +540,7 @@ const useStore = create<AppState>()((set, get) => (
           set({
             nodes: get().nodes.map((n) =>
               n.id === nodeId
-                ? {...n, data: {...n.data, response: accumulated}}
+                ? {...n, data: {...n.data, response: accumulated, closed: true}}
                 : n
             ),
           });
@@ -556,20 +559,19 @@ const useStore = create<AppState>()((set, get) => (
         });
 
       } catch (err) {
-
-        console.error('Error prompting Node', err);
-
+        console.error('Error summarizing Node', err);
       } finally {
         void get().syncCanvas()
       }
     },
 
     mergeNodeAction: async (nodeId, incomer1, incomer2, checkStreams) => {
+      get().updateNodeData(nodeId, {model: get().defaultModel})
       const node = get().nodes.find((node) => node.id === nodeId)
 
       try {
         const res = await api.post(`/llm/merge/`,
-          {node: node, check_consistencies: checkStreams},
+          {...node, check_consistencies: checkStreams},
         );
         set({
           nodes: get().nodes.map((n) =>
@@ -607,11 +609,12 @@ const useStore = create<AppState>()((set, get) => (
     },
 
     mergeNodeResolveAction: async (nodeId) => {
+      get().updateNodeData(nodeId, {model: get().defaultModel})
       const node = get().nodes.find((node) => node.id === nodeId)
 
       try {
         const res = await api.post(`/llm/merge/resolve/`,
-          {node: node},
+          {...node},
         );
         set({
           nodes: get().nodes.map((n) =>

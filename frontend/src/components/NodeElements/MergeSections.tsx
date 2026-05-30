@@ -1,15 +1,8 @@
 import {useState} from 'react'
 import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
-import {
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
-  LucideIcon,
-  LucideCircleAlert,
-} from 'lucide-react'
+import {ChevronDown, ChevronUp, ExternalLink, LucideCircleAlert, LucideIcon,} from 'lucide-react'
 import {typeProps} from '@/lib/styles'
 import {Section} from '@/types'
-import getIcon from '@/lib/icons'
 
 
 /**
@@ -23,7 +16,7 @@ interface MergeContentProps {
 }
 
 const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon }> = {
-  ...typeProps, problemResolution: { label: 'ISSUE',   color: '#ef4444', icon: LucideCircleAlert},
+  ...typeProps, problemResolution: {label: 'ISSUE', color: '#ef4444', icon: LucideCircleAlert},
 }
 
 /**
@@ -100,11 +93,12 @@ const SectionCard = ({section, onGoToNode,}: {
             className="badge badge-xs badge-outline"
             style={{color: meta.color}}
           >
-            {getIcon({icon: meta.icon})}
+            <meta.icon size={10}/>
             {meta.label}
           </span>
 
-          {open ? <ChevronUp size={10} className="ml-auto opacity-40"/> : <ChevronDown size={10} className="ml-auto opacity-40"/>}
+          {open ? <ChevronUp size={10} className="ml-auto opacity-40"/> :
+            <ChevronDown size={10} className="ml-auto opacity-40"/>}
         </button>
 
         <button

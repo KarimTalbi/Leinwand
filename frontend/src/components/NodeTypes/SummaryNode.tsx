@@ -106,6 +106,7 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
       <div className={NodeForegroundStyle}>
 
         {(nodeState === 'ready' || nodeState === 'needs_connection' || nodeState === 'sourceIsSummary') && (
+
           <div className="flex justify-end pt-1">
 
             <button
@@ -133,7 +134,17 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
         )}
 
         {nodeState === 'hasResponse' && (
-          <NodeDisplayMarkdown content={data.response} className="px-2 pb-2"/>
+          <>
+            <NodeDisplayMarkdown content={data.response} className="px-2 pb-2"/>
+            {data.model.model && (
+              <div className="flex justify-start items-center">
+                <div className="badge badge-soft badge-secondary badge-xs">
+                  <Info size={12}/>
+                  {data.model.model}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
       </div>
@@ -146,19 +157,21 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
         color="#bf4546"
       />
 
-      {nodeState === 'hasResponse' && (
-        <ConnectionHandles
-          handleId="source-1"
-          handleType="source"
-          position="bottom"
-          nodeId={id}
-          color="#bf4546"
-        >
+      {
+        nodeState === 'hasResponse' && (
+          <ConnectionHandles
+            handleId="source-1"
+            handleType="source"
+            position="bottom"
+            nodeId={id}
+            color="#bf4546"
+          >
 
-          <AddConnectedNode sourceId={id}/>
+            <AddConnectedNode sourceId={id}/>
 
-        </ConnectionHandles>
-      )}
+          </ConnectionHandles>
+        )
+      }
 
     </div>
 

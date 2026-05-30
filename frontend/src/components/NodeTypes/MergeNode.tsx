@@ -231,7 +231,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
                 value={localText}
                 onChange={handleTextChange}
                 className={cn(textareaStyle, 'min-h-0')}
-                placeholder="Enter your prompt..."
+                placeholder="Enter response..."
               />
 
             </div>
@@ -246,7 +246,17 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         )}
 
         {(nodeState === 'merged' || nodeState === 'solved') && (
-          <MergeContent sections={data.context ?? []} onGoToNode={goToNode}/>
+          <>
+            <MergeContent sections={data.context ?? []} onGoToNode={goToNode}/>
+            {data.model.model && (
+              <div className="flex justify-start items-center">
+                <div className="badge badge-soft badge-secondary badge-xs">
+                  <Info size={12}/>
+                  {data.model.model}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
       </div>
