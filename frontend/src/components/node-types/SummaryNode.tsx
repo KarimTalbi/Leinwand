@@ -11,15 +11,6 @@ import {cn} from '@/lib/utils'
 import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, typeProps} from '@/lib/styles'
 import {SummaryNodeType} from '@/types'
 
-/**
- * Represents the possible states of the SummaryNode.
- * - `loading`:          Waiting for the first streaming chunk.
- * - `streaming`:        Actively receiving and displaying streamed content.
- * - `hasResponse`:      Summary complete.
- * - `sourceIsSummary`:  Connected to another SummaryNode — invalid.
- * - `ready`:            Connected and ready to summarize.
- * - `needs_connection`: Not connected to any source.
- */
 type NodeState =
   | 'loading'
   | 'streaming'

@@ -22,13 +22,6 @@ import useStore from "@/store";
 import TextareaAutosize from 'react-textarea-autosize';
 import {cn} from "@/lib/utils.ts";
 
-/**
- * Represents the possible states of the PromptNode.
- * - `loading`:        Waiting for a response from the AI.
- * - `hasResponse`:    Response received, node is closed.
- * - `sourceIsPrompt`: Connected to another PromptNode.
- * - `ready`:          Waiting for user input.
- */
 type NodeState = 'loading' | 'hasResponse' | 'sourceIsPrompt' | 'ready'
 
 const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {

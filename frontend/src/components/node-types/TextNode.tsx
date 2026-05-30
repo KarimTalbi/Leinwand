@@ -12,28 +12,11 @@ import {TextNodeType} from '@/types'
 import {Pen, Save} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
-
-/**
- * Represents the possible states of the TextNode.
- * - `closed`: The node has content and is in a read-only state.
- * - `open`: The node has content and is in an editable state.
- * - `empty`: The node has no content and is in an editable state.
- */
 type NodeState =
   | 'closed'
   | 'open'
   | 'empty';
 
-/**
- * A simple node for adding and displaying text or notes.
- * The node can be in an "open" state for editing or a "closed" state for display.
- * It provides input and output handles to be integrated into a flow.
- *
- * @param props - The properties of the node, provided by React Flow.
- * @param props.id - The unique ID of the node.
- * @param props.data - The data associated with the node, such as its text content.
- * @returns The TextNode component.
- */
 const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
   const updateNodeData = useStore((s) => s.updateNodeData)
   const syncCanvas = useStore((s) => s.syncCanvas)

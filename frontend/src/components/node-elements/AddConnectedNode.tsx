@@ -1,15 +1,6 @@
 import {useStoreWithId} from '@/hooks/useStoreWithId'
 import {addConnectedButtonStyle, typeProps} from '@/lib/styles'
 
-/**
- * A component that renders a row of buttons to add a new node connected
- * to the current node. This component is typically attached to the bottom
- * of a node.
- *
- * @param props - Component properties.
- * @param props.sourceId - The ID of the node from which the new node will be connected.
- * @returns The component containing buttons to add different types of connected nodes.
- */
 const AddConnectedNode = ({sourceId}: { sourceId: string }) => {
   const {conPrompt, conText, conMerge, conSummary} = useStoreWithId(sourceId)
 

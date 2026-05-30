@@ -4,13 +4,6 @@ import useStore from '@/store'
 
 type Tab = 'login' | 'register'
 
-/**
- * Authentication page component that provides both login and registration forms.
- * It manages the local state for the active tab (login/register) and form inputs
- * and interacts with the global store to perform authentication actions and display errors.
- *
- * @returns The login/registration page component.
- */
 export default function LoginPage() {
   const [tab, setTab] = useState<Tab>('login')
   const [username, setUsername] = useState('')

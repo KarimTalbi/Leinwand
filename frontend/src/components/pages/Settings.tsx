@@ -4,7 +4,6 @@ import {Check, KeyRound, Plus, Trash2} from "lucide-react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 
-
 export default function Settings() {
   const {
     apiKeys,

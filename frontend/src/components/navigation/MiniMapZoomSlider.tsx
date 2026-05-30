@@ -2,15 +2,6 @@ import {MiniMap, Panel} from '@xyflow/react'
 import {usePan} from '@/hooks/usePan'
 import {AnyNodeType} from '@/types'
 
-
-/**
- * Displays a minimap of nodes on the canvas, with a range slider for zooming in and out.
- * Positioned at the bottom-right of the screen. Includes a button to reset zoom.
- *
- * @param props - Component properties.
- * @param props.nodeColor - A function that determines the color of a node in the minimap based on its type or data.
- * @returns The minimap component with zoom controls.
- */
 export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) => string }) {
   const {resetZoom, zoom, zoomTo, minZoom, maxZoom, zoomPercent} = usePan()
 

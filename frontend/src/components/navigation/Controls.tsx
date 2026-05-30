@@ -18,13 +18,6 @@ import {controlBarStyle, controlButtonStyle, typeProps} from '@/lib/styles'
 import useStore from '@/store'
 import {AppState} from '@/types'
 
-/**
- * Zustand selector for picking state and actions from the store.
- * This selector is optimized with `useShallow` to prevent unnecessary re-renders.
- *
- * @param state - The global application state.
- * @returns An object containing the selected state and actions.
- */
 const selector = (state: AppState) => ({
   locked: state.locked,
   setLocked: state.setLocked,
@@ -32,15 +25,6 @@ const selector = (state: AppState) => ({
   setScrollToZoom: state.setScrollToZoom,
 })
 
-
-/**
- * Renders a control bar at the bottom of the canvas.
- * This component provides UI controls for canvas interaction, such as panning, zooming,
- * locking the canvas, and toggling scroll-to-zoom behavior. It also includes
- * buttons for creating different types of nodes on the canvas.
- *
- * @returns The control bar component.
- */
 export const Controls = () => {
   const {locked, setLocked, scrollToZoom, setScrollToZoom} = useStore(useShallow(selector))
   const {panUp, panDown, panLeft, panRight, zoomOut, zoomIn} = usePan()

@@ -3,32 +3,14 @@ import {ChevronLeft, ChevronRight, LucideIcon, LucideProps, X} from 'lucide-reac
 import {useNodeMove} from '@/hooks/useNodeMove'
 import {useStoreWithId} from '@/hooks/useStoreWithId'
 
-/**
- * Properties for the NodeHeader component.
- */
 interface HeaderProps {
-  /** The title to display in the header. */
   title: string
-  /** The primary color used for icons in the header. */
   color: string
-  /** The unique identifier of the node this header belongs to. */
   id: string
-  /** Optional icon component from lucide-react to display next to the title. */
   icon?: LucideIcon
-  /** Optional child elements to render in the middle section of the header. */
   children?: React.ReactNode
 }
 
-
-/**
- * Renders the header section of a node.
- * This component provides a title, an optional icon, and built-in controls for moving
- * the node left/right within its branch and deleting the node. It uses custom hooks
- * to interact with the global store based on the node's ID.
- *
- * @param props - Component properties.
- * @returns The header component for a canvas node.
- */
 export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
   const {deleteNodeAction} = useStoreWithId(id)
   const {moveLeft, moveRight} = useNodeMove(id)

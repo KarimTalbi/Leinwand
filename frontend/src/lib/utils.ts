@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import {type ClassValue, clsx} from "clsx"
+import {twMerge} from "tailwind-merge"
 import {Node} from "@xyflow/react";
 import {typeProps} from "@/lib/styles.ts";
 import {NodeTypeNames} from "@/types.ts";

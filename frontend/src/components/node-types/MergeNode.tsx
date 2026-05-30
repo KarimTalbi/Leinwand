@@ -14,15 +14,6 @@ import useStore from '@/store'
 import TextareaAutosize from 'react-textarea-autosize';
 import {MergeNodeType} from '@/types'
 
-/**
- * Represents the possible states of the MergeNode.
- * - `needs_connections`: Missing one or both input connections.
- * - `ready`:             Both inputs connected, ready to merge.
- * - `loading`:           Processing a merge or resolution.
- * - `has_problem`:       Merge completed, inconsistencies found.
- * - `merged`:            Merge completed, no issues.
- * - `solved`:            Issue found and resolved.
- */
 type NodeState =
   | 'needs_connections'
   | 'ready'

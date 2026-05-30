@@ -13,7 +13,6 @@ import {cn, timeAgo} from '@/lib/utils'
 import useStore from '@/store'
 import {CanvasRead} from '@/types'
 
-
 const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
   textNode: TextNode,
@@ -23,14 +22,6 @@ const nodeTypes: NodeTypes = {
 
 const ITEMS_PER_PAGE = 6
 
-/**
- * Main dashboard component where users can view, create, edit, and delete their projects (canvases).
- * It features a searchable, sortable, and paginated grid of projects. Each project is
- * displayed as a mini read-only map (using ReactFlow) along with metadata like node count
- * and last edited time.
- *
- * @returns The Dashboard view component.
- */
 export default function Dashboard() {
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)

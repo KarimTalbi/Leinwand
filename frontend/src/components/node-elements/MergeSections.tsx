@@ -4,14 +4,8 @@ import {ChevronDown, ChevronUp, ExternalLink, LucideCircleAlert, LucideIcon,} fr
 import {typeProps} from '@/lib/styles'
 import {Section} from '@/types'
 
-
-/**
- * Properties for the MergeContent component.
- */
 interface MergeContentProps {
-  /** Array of section objects representing different parts of a merged conversation. */
   sections: Section[]
-  /** Optional callback triggered when a user clicks to navigate to a specific node. */
   onGoToNode?: (nodeId: string) => void
 }
 
@@ -19,13 +13,6 @@ const TYPE_META: Record<string, { label: string; color: string; icon: LucideIcon
   ...typeProps, problemResolution: {label: 'ISSUE', color: '#ef4444', icon: LucideCircleAlert},
 }
 
-/**
- * Renders the content of a specific section based on its type.
- *
- * @param props - Component properties.
- * @param props.section - The section data to render.
- * @returns The appropriate UI for the section type, or null if unknown.
- */
 const SectionContent = ({section}: { section: Section }) => {
 
   switch (section.type) {
@@ -64,15 +51,6 @@ const SectionContent = ({section}: { section: Section }) => {
   }
 }
 
-/**
- * Displays an expandable card for a section, showing metadata and an option
- * to view the full content or jump to the original node.
- *
- * @param props - Component properties.
- * @param props.section - The section data to display.
- * @param props.onGoToNode - Optional callback for navigating to the node.
- * @returns A collapsible card representing the section.
- */
 const SectionCard = ({section, onGoToNode,}: {
   section: Section
   onGoToNode?: (id: string) => void
@@ -120,15 +98,6 @@ const SectionCard = ({section, onGoToNode,}: {
   )
 }
 
-/**
- * Displays a column of sections, representing a branch in a merged flow.
- *
- * @param props - Component properties.
- * @param props.label - The title for the column.
- * @param props.sections - An array of sections belonging to this branch.
- * @param props.onGoToNode - Optional callback for navigating to a node.
- * @returns A column of section cards.
- */
 const BranchColumn = ({label, sections, onGoToNode}: {
   label: string
   sections: Section[]
@@ -150,17 +119,6 @@ const BranchColumn = ({label, sections, onGoToNode}: {
   </div>
 )
 
-
-/**
- * Main component for rendering the content of a Merge Node.
- * It visualizes two branches of conversation that are being merged, side-by-side,
- * and highlights any contradictions or problems found between them.
- *
- * @param props - Component properties.
- * @param props.sections - The array of sections constituting the merge inputs.
- * @param props.onGoToNode - Optional callback for navigating to a source node.
- * @returns The UI for comparing branches and displaying merge resolutions.
- */
 const MergeContent = ({sections, onGoToNode}: MergeContentProps) => {
   if (!sections || sections.length === 0) return null
 
