@@ -26,6 +26,7 @@ type Box = {
   node: AnyNodeType;
 };
 
+/** Converts ReactFlow nodes to axis-aligned bounding boxes, optionally expanded by `margin`. */
 function getBoxesFromNodes(nodes: AnyNodeType[], margin = 0): Box[] {
   const boxes: Box[] = new Array(nodes.length);
 
@@ -44,6 +45,11 @@ function getBoxesFromNodes(nodes: AnyNodeType[], margin = 0): Box[] {
   return boxes;
 }
 
+/**
+ * Iteratively separates overlapping nodes by pushing them apart along the
+ * axis of smallest penetration until no overlaps remain or `maxIterations`
+ * is reached. Nodes that were not moved are returned as-is.
+ */
 export const resolveCollisions: CollisionAlgorithm = (
   nodes,
   {maxIterations = 50, overlapThreshold = 0.5, margin = 0},

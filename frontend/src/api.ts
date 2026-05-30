@@ -2,6 +2,10 @@ import axios from 'axios';
 
 export const BASE_URL = 'http://localhost:8000';
 
+/**
+ * Pre-configured axios instance that injects the JWT token on every request
+ * and redirects to the login page on 401 responses.
+ */
 const api = axios.create({baseURL: BASE_URL});
 
 api.interceptors.request.use((config) => {

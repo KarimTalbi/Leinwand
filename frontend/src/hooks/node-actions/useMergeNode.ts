@@ -2,6 +2,11 @@ import {useState} from 'react';
 import useStore from '@/store';
 import {mergeNodes, resolveMerge} from '@/services/mergeService';
 
+/**
+ * Manages the merge and resolve lifecycle for a merge node.
+ * `run` detects conflicts between two incoming streams; `resolve` asks the LLM
+ * to produce a unified context and removes the incoming edges on success.
+ */
 export function useMergeNode(nodeId: string) {
   const [isLoading, setIsLoading] = useState(false);
 

@@ -2,6 +2,7 @@ import useStore from "@/store";
 import {useStore as useFlowStore} from "@xyflow/react";
 import {useShallow} from "zustand/react/shallow";
 
+/** Returns directional move handlers for a node, stepping by the canvas snap-grid distance. */
 export const useNodeMove = (nodeId: string) => {
   const {moveNode} = useStore(useShallow((s) => ({moveNode: s.moveNode})));
   const moveAmount = useFlowStore((state) => state.snapGrid[0])

@@ -41,6 +41,7 @@ export type FlowSlice = {
   setScrollToZoom: () => void;
 };
 
+/** Zustand slice that manages the ReactFlow graph state and all node/edge mutations. */
 export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, get) => ({
   // ── State ──────────────────────────────────────────────────────────────────
 
@@ -52,6 +53,7 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
 
   // ── Sync ───────────────────────────────────────────────────────────────────
 
+  /** Resolves node collisions locally, then persists the full canvas state to the server. */
   syncCanvas: async () => {
     try {
       const canvasId = get().currentCanvasId;
@@ -102,6 +104,7 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
     void get().syncCanvas();
   },
 
+  /** Adds a new node directly below the source node and creates an edge connecting them. */
   createConnectedNode: (type, source) => {
     const node = get().nodes.find((n) => n.id === source);
     if (!node) return;
@@ -167,6 +170,7 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
     void get().syncCanvas();
   },
 
+  /** ReactFlow handler — syncs to the server after a drag ends or a node is removed. */
   onNodesChange: (changes) => {
     const isDragEnd = changes.some((c) => c.type === 'position' && !c.dragging);
     const hasRemovals = changes.some((c) => c.type === 'remove');

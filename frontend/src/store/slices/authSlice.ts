@@ -17,6 +17,7 @@ export type AuthSlice = {
   clearAuthError: () => void;
 };
 
+/** Zustand slice that manages authentication state and user session. */
 export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, get) => ({
   // ── State ──────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
+  /** Authenticates with username/password, stores the JWT, and hydrates user + defaultModel. */
   login: async (username, password) => {
     set({authError: null});
 
@@ -56,6 +58,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     }
   },
 
+  /** Clears the JWT and resets all user-specific state across slices. */
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('defaultModel');
@@ -75,6 +78,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     });
   },
 
+  /** Creates a new user account then immediately logs in. */
   register: async (username, password) => {
     set({authError: null});
 

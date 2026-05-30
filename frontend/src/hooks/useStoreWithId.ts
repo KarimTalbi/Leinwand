@@ -7,6 +7,7 @@ const selector = (state: AppState) => ({
   deleteNode: state.deleteNode,
 });
 
+/** Binds store actions to a specific node ID, returning shortcuts for creating connected nodes and deleting the node. */
 export const useStoreWithId = (nodeId: string) => {
   const {createConnectedNode, deleteNode} = useStore(useShallow(selector))
 
