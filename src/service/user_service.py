@@ -1,3 +1,13 @@
+"""
+This module provides services for user authentication and management.
+
+It includes functions for:
+- Hashing and verifying passwords.
+- Generating and validating JWT access tokens.
+- Retrieving, creating, and updating user records in the database.
+- Authenticating users and providing FastAPI dependencies for extracting
+  the current active user from incoming requests.
+"""
 from sqlalchemy.orm.attributes import flag_modified
 import os
 from datetime import datetime, timedelta, timezone
@@ -33,14 +43,43 @@ ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("AUTH_ACCESS_TOKEN_EXPIRE_MINUT
 
 
 def get_password_hash(password: str) -> str:
+    """
+    Generates a secure hash for a given password.
+
+    Args:
+        password: The plaintext password to hash.
+
+    Returns:
+        The hashed password string.
+    """
     return password_hash.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verifies a plaintext password against a stored hash.
+
+    Args:
+        plain_password: The plaintext password provided by the user.
+        hashed_password: The stored hash to compare against.
+
+    Returns:
+        True if the password matches the hash, False otherwise.
+    """
     return password_hash.verify(plain_password, hashed_password)
 
 
 async def get_user(session: AsyncSession, username: str) -> User | None:
+    """
+    Retrieves a user from the database by their username.
+
+    Args:
+        session: The asynchronous database session.
+        username: The username to search for.
+
+    Returns:
+        The User object if found, otherwise None.
+    """
     result: Result[tuple[User]] = await session.execute(
         select(User).where(User.username == username)
     )
@@ -49,6 +88,17 @@ async def get_user(session: AsyncSession, username: str) -> User | None:
 
 
 async def update_user(session: AsyncSession, data: UserData, user_id: str) -> None:
+    """
+    Updates the 'user_data' field for a specific user.
+
+    Args:
+        session: The asynchronous database session.
+        data: The new data to merge into the existing user_data.
+        user_id: The ID of the user to update.
+
+    Raises:
+        UserNotFoundException: If the user does not exist.
+    """
     user: User | None = await session.get(User, user_id)
 
     if user is None:
@@ -66,6 +116,23 @@ async def update_user(session: AsyncSession, data: UserData, user_id: str) -> No
 
 
 async def authenticate_user(session: AsyncSession, username: str, password: str) -> User:
+    """
+    Authenticates a user by verifying their username and password.
+
+    This function protects against timing attacks by verifying a dummy hash
+    even if the user is not found.
+
+    Args:
+        session: The asynchronous database session.
+        username: The provided username.
+        password: The provided password.
+
+    Returns:
+        The authenticated User object.
+
+    Raises:
+        InvalidUserOrPasswordException: If authentication fails.
+    """
     user: User | None = await get_user(session, username)
 
     if user is None:
@@ -79,6 +146,19 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
 
 
 async def create_user(session: AsyncSession, user: UserCreate) -> User:
+    """
+    Creates a new user account in the database.
+
+    Args:
+        session: The asynchronous database session.
+        user: The user creation data containing username, ID, and plaintext password.
+
+    Returns:
+        The newly created User object.
+
+    Raises:
+        UserAlreadyExistsException: If a user with the given username already exists.
+    """
     is_user_taken: User | None = await get_user(session, user.username)
 
     if is_user_taken:
@@ -96,6 +176,16 @@ async def create_user(session: AsyncSession, user: UserCreate) -> User:
 
 
 def create_access_token(data: dict[str, str], expires_delta: timedelta | None = None) -> str:
+    """
+    Creates a JWT access token.
+
+    Args:
+        data: The payload data to encode into the token (e.g., subject/username).
+        expires_delta: Optional custom expiration time for the token.
+
+    Returns:
+        The encoded JWT string.
+    """
     to_encode: dict[str, str] = data.copy()
 
     if expires_delta:
@@ -112,6 +202,17 @@ def create_access_token(data: dict[str, str], expires_delta: timedelta | None = 
 
 
 async def get_access_token(session: AsyncSession, username: str, password: str) -> Token:
+    """
+    Authenticates a user and generates a new JWT access token.
+
+    Args:
+        session: The asynchronous database session.
+        username: The user's username.
+        password: The user's plaintext password.
+
+    Returns:
+        A Token object containing the access token and its type.
+    """
     user: User = await authenticate_user(session, username, password)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -127,6 +228,19 @@ async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     session: AsyncSession = Depends(get_async_session),
 ) -> User:
+    """
+    FastAPI dependency to retrieve the current user from a JWT token.
+
+    Args:
+        token: The JWT token provided in the Authorization header.
+        session: The asynchronous database session.
+
+    Returns:
+        The User object associated with the token.
+
+    Raises:
+        CredentialsException: If the token is invalid, expired, or the user is not found.
+    """
     try:
         payload: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str | None = payload.get("sub")
@@ -148,6 +262,18 @@ async def get_current_user(
 
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+    """
+    FastAPI dependency to ensure the current authenticated user is active.
+
+    Args:
+        current_user: The user retrieved by the get_current_user dependency.
+
+    Returns:
+        The active User object.
+
+    Raises:
+        InactiveUserException: If the user's account is disabled.
+    """
     if current_user.disabled:
         raise InactiveUserException
 
