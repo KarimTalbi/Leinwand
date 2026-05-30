@@ -1,3 +1,14 @@
+"""
+This module provides exception handlers for the FastAPI application.
+
+It maps custom domain exceptions to standard HTTP responses, ensuring that
+errors are logged appropriately and returned to the client in a consistent
+JSON format. It also provides a catch-all handler for unhandled exceptions
+to prevent exposing internal application details to the client.
+
+A `register_exception_handlers` function is provided to easily attach
+all handlers to the main FastAPI application instance.
+"""
 import logging
 from logging import Logger
 
@@ -25,46 +36,55 @@ logger: Logger = logging.getLogger(__name__)
 
 
 async def node_not_found_handler(_: Request, exc: NodeNotFoundException) -> JSONResponse:
+    """Handles NodeNotFoundException by returning a 404 Not Found response."""
     logger.debug("Node not found: %s", exc.node_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 async def edge_not_found_handler(_: Request, exc: EdgeNotFoundException) -> JSONResponse:
+    """Handles EdgeNotFoundException by returning a 404 Not Found response."""
     logger.debug("Edge not found: %s", exc.edge_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 async def canvas_not_found_handler(_: Request, exc: CanvasNotFoundException) -> JSONResponse:
+    """Handles CanvasNotFoundException by returning a 404 Not Found response."""
     logger.debug("Canvas not found: %s", exc.canvas_id)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 async def user_already_exists_handler(_: Request, exc: UserAlreadyExistsException) -> JSONResponse:
+    """Handles UserAlreadyExistsException by returning a 409 Conflict response."""
     logger.debug("User already exists: %s", exc.username)
     return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
 async def inactive_user_handler(_: Request, exc: InactiveUserException) -> JSONResponse:
+    """Handles InactiveUserException by returning a 400 Bad Request response."""
     logger.debug("Inactive user: %s", exc.username)
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
 async def api_key_not_found_handler(_: Request, exc: InvalidApiKeyException) -> JSONResponse:
+    """Handles InvalidApiKeyException by returning a 404 Not Found response."""
     logger.debug("API Key Error: %s", exc.message)
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
 
 async def rate_limit_handler(_: Request, exc: RateLimitError) -> JSONResponse:
+    """Handles RateLimitError by returning a 429 Too Many Requests response."""
     logger.debug("Rate limit Error: %s", exc.message)
     return JSONResponse(status_code=429, content={"detail": str(exc)})
 
 
 async def Provider_error_handler(_: Request, exc: ProviderError) -> JSONResponse:
+    """Handles ProviderError by returning a 500 Internal Server Error response."""
     logger.debug("Provider Error: %s", exc.message)
     return JSONResponse(status_code=500, content={"detail": str(exc)})
 
 
 async def user_not_found_handler(_: Request, exc: UserNotFoundException) -> JSONResponse:
+    """Handles UserNotFoundException by returning a 404 Not Found response."""
     logger.debug("User not found:")
     return JSONResponse(status_code=404, content={"detail": str(exc)})
 
@@ -73,6 +93,10 @@ async def user_not_found_handler(_: Request, exc: UserNotFoundException) -> JSON
 
 
 async def http_exception_handler_with_logging(request: Request, exc: HTTPException) -> Response:
+    """
+    Handles standard FastAPI HTTPExceptions with additional logging.
+    Logs as ERROR for 5xx status codes, and DEBUG for others.
+    """
     if exc.status_code >= 500:
         logger.error("HTTP %s on %s %s", exc.status_code, request.method, request.url.path)
     else:
@@ -83,6 +107,10 @@ async def http_exception_handler_with_logging(request: Request, exc: HTTPExcepti
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    """
+    Handles RequestValidationError by returning a 422 Unprocessable Entity
+    response and logging the validation errors.
+    """
     logger.debug("Request validation failed on %s: %s", request.url.path, exc.errors())
     return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
@@ -91,6 +119,11 @@ async def validation_exception_handler(
 
 
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Catch-all handler for unhandled exceptions.
+    Returns a generic 500 Internal Server Error response to avoid leaking
+    internal details, and logs the full exception traceback for debugging.
+    """
     known = (ValueError, KeyError)
     if isinstance(exc, known):
         logger.error("Unhandled exception on %s %s: %s", request.method, request.url.path, exc)
@@ -105,6 +138,12 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 
 def register_exception_handlers(app: FastAPI) -> None:
+    """
+    Registers all defined exception handlers to the FastAPI application instance.
+
+    Args:
+        app: The FastAPI application instance.
+    """
     app.add_exception_handler(
         NodeNotFoundException,
         # pyrefly: ignore [bad-argument-type]
