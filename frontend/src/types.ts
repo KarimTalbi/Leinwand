@@ -136,10 +136,6 @@ export interface AppState {
   addNode: (type: NodeTypeNames, position?: XYPosition) => string | undefined;
   moveNode: (id: string, position: XYPosition) => void;
   createConnectedNode: (type: NodeTypeNames, sourceId: string) => void;
-  promptNodeAction: (id: string) => Promise<void | null>;
-  summaryNodeAction: (id: string) => Promise<void>;
-  mergeNodeAction: (id: string, incomer1: string, incomer2: string, checkStreams: boolean) => Promise<void>;
-  mergeNodeResolveAction: (id: string) => Promise<void>;
   addEdge: (source: string, target: string) => void;
   deleteNode: (id: string) => void;
   updateNodeData: (id: string, data: PartialNodeData) => void;

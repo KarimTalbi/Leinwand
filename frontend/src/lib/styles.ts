@@ -7,10 +7,10 @@ import {cn} from "@/lib/utils.ts";
 
 
 export const typeProps: Record<NodeTypeNames, any> = {
-  promptNode:   { label: "Chat",     color: '#ec4899',   icon: MessagesSquare },
-  textNode:     { label: "Note",     color: '#309898',   icon: Notebook       },
-  mergeNode:    { label: "merge",    color: '#f5c45e',   icon: Merge          },
-  summaryNode:  { label: "Summery",  color: '#bf4546',   icon: Minimize2      },
+  promptNode: {label: "Chat", color: '#ec4899', icon: MessagesSquare},
+  textNode: {label: "Note", color: '#309898', icon: Notebook},
+  mergeNode: {label: "merge", color: '#f5c45e', icon: Merge},
+  summaryNode: {label: "Summery", color: '#bf4546', icon: Minimize2},
 }
 
 
@@ -34,7 +34,7 @@ export const controlButtonStyle = "btn btn-ghost btn-square btn-sm"
 
 
 export const textareaStyle = cn(
-  "nodrag textarea textarea-sm min-h-0 w-full",
+  "nodrag nowheel textarea textarea-sm w-full",
   "border-none bg-neutral-50 resize-none  ring-1 ring-neutral-300",
   "focus:outline-none focus:ring-neutral-500"
 )

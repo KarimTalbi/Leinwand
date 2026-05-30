@@ -6,7 +6,7 @@ type Tab = 'login' | 'register'
 
 /**
  * Authentication page component that provides both login and registration forms.
- * It manages the local state for the active tab (login/register) and form inputs,
+ * It manages the local state for the active tab (login/register) and form inputs
  * and interacts with the global store to perform authentication actions and display errors.
  *
  * @returns The login/registration page component.
@@ -51,7 +51,8 @@ export default function LoginPage() {
       <div className="w-8/12 h-screen bg-white flex items-center shadow-2xl justify-center">
 
         <div className="bg-white rounded-3xl w-full max-w-sm p-8">
-          <div className="flex items-center text-md justify-center mb-10">{tab === 'login' ? 'Welcome back to Leinwand!' : 'Welcome to Leinwand!'}</div>
+          <div
+            className="flex items-center text-md justify-center mb-10">{tab === 'login' ? 'Welcome back to Leinwand!' : 'Welcome to Leinwand!'}</div>
 
           {/* Tabs */}
           <div className="flex rounded-lg bg-neutral-200 p-1 mb-5">

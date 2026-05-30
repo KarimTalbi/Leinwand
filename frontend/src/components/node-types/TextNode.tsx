@@ -1,20 +1,13 @@
-import {memo, useLayoutEffect} from 'react'
+import React, {memo} from 'react'
 import {NodeProps} from '@xyflow/react'
-import {useShallow} from 'zustand/react/shallow'
 
-import AddConnectedNode from '@/components/NodeElements/AddConnectedNode'
-import {ConnectionHandles} from '@/components/NodeElements/ConnectionHandles'
-import {NodeHeader} from '@/components/NodeElements/NodeHeader'
-import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
-import {useTextarea} from '@/hooks/useTextarea'
-import {
-  NodeBackgroundStyle,
-  nodeFooterButtonStyle,
-  NodeForegroundStyle,
-  textareaStyle,
-  typeProps,
-} from '@/lib/styles'
+import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
+import {ConnectionHandles} from '@/components/node-elements/ConnectionHandles'
+import {NodeHeader} from '@/components/node-elements/NodeHeader'
+import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
+import {NodeBackgroundStyle, nodeFooterButtonStyle, NodeForegroundStyle, textareaStyle, typeProps,} from '@/lib/styles'
 import useStore from '@/store'
+import TextareaAutosize from 'react-textarea-autosize';
 import {TextNodeType} from '@/types'
 
 
@@ -40,24 +33,17 @@ type NodeState =
  * @returns The TextNode component.
  */
 const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
-  const {updateNodeData} = useStore(useShallow((s) => ({updateNodeData: s.updateNodeData})))
+  const updateNodeData = useStore((s) => s.updateNodeData)
+  const syncCanvas = useStore((s) => s.syncCanvas)
 
-  const {localText, handleTextChange, textareaRef} = useTextarea(
-    data.text || '',
-    (value) => updateNodeData(id, {text: value}),
-  )
-
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateNodeData(id, {text: e.target.value})
+  }
 
   const handleClick = () => {
     updateNodeData(id, {closed: !data.closed})
+    void syncCanvas()
   }
-
-  useLayoutEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
-  }, [localText, handleClick])
 
   const getNodeState = (): NodeState => {
     if (data.text) {
@@ -83,9 +69,8 @@ const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
       <div className={NodeForegroundStyle}>
         {(nodeState === 'empty' || nodeState === 'open') && (
           <>
-            <textarea
-              ref={textareaRef}
-              value={localText}
+            <TextareaAutosize
+              value={data.text}
               onChange={handleTextChange}
               className={textareaStyle}
               placeholder="Enter your note..."

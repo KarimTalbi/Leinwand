@@ -1,14 +1,13 @@
-import React, {memo, useLayoutEffect, useState} from 'react'
+import React, {memo, useState} from 'react'
 import {NodeProps, useEdges, useNodeConnections, useNodes, useReactFlow} from '@xyflow/react'
-import {useShallow} from 'zustand/react/shallow'
 import {CircleCheck, Info, TriangleAlert} from 'lucide-react'
 
-import AddConnectedNode from '@/components/NodeElements/AddConnectedNode'
-import {ConnectionHandles} from '@/components/NodeElements/ConnectionHandles'
-import MergeContent from '@/components/NodeElements/MergeSections'
-import {NodeHeader} from '@/components/NodeElements/NodeHeader'
-import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
-import {useTextarea} from '@/hooks/useTextarea'
+import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
+import {ConnectionHandles} from '@/components/node-elements/ConnectionHandles'
+import MergeContent from '@/components/node-elements/MergeSections'
+import {NodeHeader} from '@/components/node-elements/NodeHeader'
+import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
+import {useMergeNode} from '@/hooks/node-actions/useMergeNode'
 import {cn} from '@/lib/utils'
 import {
   NodeBackgroundStyle,
@@ -19,63 +18,36 @@ import {
   typeProps,
 } from '@/lib/styles'
 import useStore from '@/store'
-import {AppState, MergeNodeType} from '@/types'
+import TextareaAutosize from 'react-textarea-autosize';
+import {MergeNodeType} from '@/types'
 
 /**
- * Represents the possible states of the MergeNode, which dictate its UI and available actions.
- * - `needs_connections`: The node is missing one or both input connections.
- * - `ready`: The node has both input connections and is ready to perform a merge.
- * - `loading`: The node is currently processing a merge or resolution.
- * - `pending_merge`: (Not currently used) A state for when a merge is queued.
- * - `has_problem`: The merge operation completed and found inconsistencies.
- * - `merged`: The merge completed successfully with no issues.
- * - `solved`: An issue was found, and a resolution has been provided and applied.
+ * Represents the possible states of the MergeNode.
+ * - `needs_connections`: Missing one or both input connections.
+ * - `ready`:             Both inputs connected, ready to merge.
+ * - `loading`:           Processing a merge or resolution.
+ * - `has_problem`:       Merge completed, inconsistencies found.
+ * - `merged`:            Merge completed, no issues.
+ * - `solved`:            Issue found and resolved.
  */
 type NodeState =
   | 'needs_connections'
   | 'ready'
   | 'loading'
-  | 'pending_merge'
   | 'has_problem'
   | 'merged'
-  | 'solved';
+  | 'solved'
 
-/**
- * Zustand selector for picking state and actions from the store.
- * This selector is optimized with `useShallow` to prevent unnecessary re-renders.
- *
- * @param state - The global application state.
- * @returns An object containing the selected state and actions.
- */
-const selector = (state: AppState) => ({
-  mergeNodeAction: state.mergeNodeAction,
-  mergeNodeResolveAction: state.mergeNodeResolveAction,
-  updateNodeData: state.updateNodeData,
-})
-
-/**
- * A specialized node for merging two branches of a conversation flow.
- * It requires two input connections. It can check for inconsistencies between the branches,
- * display them, and allow the user to provide a resolution. Once merged or solved,
- * it provides a single output handle to continue the flow.
- *
- * @param props - The properties of the node, provided by React Flow.
- * @param props.id - The unique ID of the node.
- * @param props.data - The data associated with the node, such as its state and content.
- * @returns The MergeNode component.
- */
 const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
   const {setCenter} = useReactFlow()
-  const {mergeNodeAction, mergeNodeResolveAction, updateNodeData} = useStore(useShallow((selector)))
-  const [loading, setLoading] = useState(false)
-  const [checkStreams, setCheckStreams] = useState(true)
-  const {localText, handleTextChange, textareaRef} = useTextarea(
-    data.solution || '',
-    (value) => updateNodeData(id, {solution: value}),
-  )
+  const updateNodeData = useStore((s) => s.updateNodeData)
+  const {run, resolve, isLoading} = useMergeNode(id)
 
-  const isClosed = data.closed
-  const hasProblem = data.has_issues
+  const [checkStreams, setCheckStreams] = useState(true)
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateNodeData(id, {solution: e.target.value})
+  }
 
   const connections1 = useNodeConnections({handleId: 'target-1', handleType: 'target'})
   const connections2 = useNodeConnections({handleId: 'target-2', handleType: 'target'})
@@ -85,35 +57,26 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
   const edges = useEdges()
 
   const getNodeState = (): NodeState => {
-    if (!loading) {
-      if (isClosed && data.solution) return 'solved'
-      if (isClosed && !data.solution) return 'merged'
-      if (!isClosed && hasProblem) return 'has_problem'
-      if (isConnected1 && isConnected2) return 'ready'
-      return 'needs_connections'
-    }
-    return 'loading'
+    if (isLoading) return 'loading'
+    if (data.closed && data.solution) return 'solved'
+    if (data.closed && !data.solution) return 'merged'
+    if (!data.closed && data.has_issues) return 'has_problem'
+    if (isConnected1 && isConnected2) return 'ready'
+    return 'needs_connections'
   }
 
   const nodeState = getNodeState()
 
-  useLayoutEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
-  }, [localText])
-
   const missingConnections = 2 - (connections1.length + connections2.length)
 
   const getNodeForHandle = (handleId: string) => {
-    const edge = edges.find(e => e.target === id && e.targetHandle === handleId)
+    const edge = edges.find((e) => e.target === id && e.targetHandle === handleId)
     if (!edge) return null
-    return nodes.find(n => n.id === edge.source) ?? null
+    return nodes.find((n) => n.id === edge.source) ?? null
   }
 
   const goToNode = (nodeId: string) => {
-    const node = nodes.find(n => n.id === nodeId)
+    const node = nodes.find((n) => n.id === nodeId)
     if (!node) return
     void setCenter(
       node.position.x + (node.measured?.width ?? 200) / 2,
@@ -122,25 +85,11 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
     )
   }
 
-  const handleMerge = async () => {
+  const handleMerge = () => {
     const node1 = getNodeForHandle('target-1')
     const node2 = getNodeForHandle('target-2')
     if (!node1 || !node2) return
-    setLoading(true)
-    try {
-      await mergeNodeAction(id, node1.id, node2.id, checkStreams)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleResolve = async () => {
-    setLoading(true)
-    try {
-      await mergeNodeResolveAction(id)
-    } finally {
-      setLoading(false)
-    }
+    void run(node1.id, node2.id, checkStreams)
   }
 
   const BADGES: Partial<Record<NodeState, React.ReactNode>> = {
@@ -149,25 +98,21 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         <Info size={12}/> {missingConnections} more connection(s) required
       </div>
     ),
-
     ready: (
       <div className="badge badge-soft badge-warning badge-xs px-2 gap-1 mb-1">
         <CircleCheck size={12}/> Ready
       </div>
     ),
-
     merged: (
       <div className="badge badge-soft badge-info badge-xs px-2 gap-1 mb-1">
         <CircleCheck size={12}/> No issues detected
       </div>
     ),
-
     has_problem: (
       <div className="badge badge-soft badge-error badge-xs px-1 gap-1 mb-1">
         <TriangleAlert size={12}/> Issue detected
       </div>
     ),
-
     solved: (
       <div className="badge badge-soft badge-success badge-xs px-1 gap-1 mb-1">
         <CircleCheck size={12}/> All issues solved
@@ -177,15 +122,14 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
   return (
     <div className={NodeBackgroundStyle}>
+
       <NodeHeader
         title="Merge"
         color={typeProps.mergeNode.color}
         id={id}
         icon={typeProps.mergeNode.icon}
       >
-
         {BADGES[nodeState]}
-
       </NodeHeader>
 
       <div className={NodeForegroundStyle}>
@@ -199,25 +143,26 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         {(nodeState === 'ready' || nodeState === 'needs_connections') && (
           <div className="flex flex-col flex-1 nodrag select-text cursor-text">
             <div className="flex justify-between items-center px-10 py-2">
-
-              <NodeDisplayMarkdown content={'Check streams for inconsistencies'}/>
-
+              <NodeDisplayMarkdown content="Check streams for inconsistencies"/>
               <input
                 type="checkbox"
                 checked={checkStreams}
                 onChange={(e) => setCheckStreams(e.target.checked)}
                 className="toggle toggle-xs w-8 h-5 border rounded-full"
               />
-
             </div>
-
             <div className="flex justify-end w-full items-center gap-1.5 px-2 pt-2">
-              <button className={nodeFooterButtonStyle} onClick={() => null}>Settings</button>
-              <button className={nodeFooterButtonStyle} onClick={handleMerge}
-                      disabled={nodeState === 'needs_connections'}>Merge
+              <button className={nodeFooterButtonStyle} onClick={() => null}>
+                Settings
+              </button>
+              <button
+                className={nodeFooterButtonStyle}
+                onClick={handleMerge}
+                disabled={nodeState === 'needs_connections'}
+              >
+                Merge
               </button>
             </div>
-
           </div>
         )}
 
@@ -225,23 +170,23 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
           <div>
             <div className="flex flex-col flex-1 justify-between gap-5">
               <NodeDisplayMarkdown content={data.problems || ''} className="px-2"/>
-
-              <textarea
-                ref={textareaRef}
-                value={localText}
+              <TextareaAutosize
+                value={data.solution}
                 onChange={handleTextChange}
-                className={cn(textareaStyle, 'min-h-0')}
+                className={textareaStyle}
                 placeholder="Enter response..."
               />
-
             </div>
-
             <div className="flex justify-end w-full items-center px-2 pt-2 shrink-0">
-              <button className={nodeFooterButtonStyle} onClick={handleResolve} disabled={!data.solution}>
+
+              <button
+                className={nodeFooterButtonStyle}
+                onClick={() => void resolve()}
+                disabled={!data.solution}
+              >
                 Solve
               </button>
             </div>
-
           </div>
         )}
 
@@ -251,8 +196,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
             {data.model.model && (
               <div className="flex justify-start items-center">
                 <div className="badge badge-soft badge-secondary badge-xs">
-                  <Info size={12}/>
-                  {data.model.model}
+                  <Info size={12}/> {data.model.model}
                 </div>
               </div>
             )}
@@ -261,7 +205,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
       </div>
 
-      {!isClosed && (
+      {!data.closed && (
         <div>
           <ConnectionHandles handleId="target-1" offset={-100} handleType="target" position="top" nodeId={id}
                              color="#f5c45e"/>
@@ -270,12 +214,12 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
         </div>
       )}
 
-
       {(nodeState === 'merged' || nodeState === 'solved') && (
         <ConnectionHandles handleId="source-1" handleType="source" position="bottom" nodeId={id} color="#f5c45e">
           <AddConnectedNode sourceId={id}/>
         </ConnectionHandles>
       )}
+
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import useStore from "@/store.ts";
+import useStore from "@/store";
 import {useStore as useFlowStore} from "@xyflow/react";
 import {useShallow} from "zustand/react/shallow";
 

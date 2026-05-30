@@ -1,5 +1,5 @@
 import React from "react";
-import useStore from "@/store.ts";
+import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, LogOut, Settings2} from "lucide-react";
 import {navbarButtonStyle} from "@/lib/styles.ts";
@@ -7,7 +7,7 @@ import {navbarButtonStyle} from "@/lib/styles.ts";
 /**
  * Base Navbar component that provides the common layout and styling for all navbars.
  * Features a fixed position at the top with a title and dynamic children elements.
- * 
+ *
  * @param children - The content to be rendered on the right side of the navbar
  * @param props - Additional HTML div element properties
  * @returns A sticky top navigation bar
@@ -32,7 +32,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
 /**
  * Navigation bar used within the flow/canvas view.
  * Contains buttons to exit the project and open the settings panel.
- * 
+ *
  * @returns The flow-specific navigation bar component
  */
 export const FlowNavBar = () => {
@@ -67,7 +67,7 @@ export const FlowNavBar = () => {
 /**
  * Navigation bar used on the main dashboard view.
  * Contains buttons to log out of the application and open the settings panel.
- * 
+ *
  * @returns The dashboard-specific navigation bar component
  */
 export const DashboardNavbar = () => {
@@ -100,7 +100,7 @@ export const DashboardNavbar = () => {
 /**
  * Navigation bar used when the settings panel or view is active.
  * Contains a back button to close the settings view.
- * 
+ *
  * @returns The settings-specific navigation bar component
  */
 export const SettingsNavbar = () => {

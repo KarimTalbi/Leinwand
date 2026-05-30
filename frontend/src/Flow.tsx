@@ -1,16 +1,13 @@
 import {useShallow} from 'zustand/react/shallow'
-import {
-  Background, BackgroundVariant,
-  ReactFlow,
-} from '@xyflow/react';
+import {Background, BackgroundVariant, ReactFlow,} from '@xyflow/react';
 
 import useStore from '@/store';
 import {AppState} from '@/types'
 
 import '@xyflow/react/dist/style.css';
-import {FlowNavBar} from "@/components/Navigation/NavBar.tsx";
-import {Controls} from "./components/Navigation/Controls.tsx";
-import {MiniMapZoomSlider} from "./components/Navigation/MiniMapZoomSlider.tsx";
+import {FlowNavBar} from "@/components/navigation/NavBar.tsx";
+import {Controls} from "@/components/navigation/Controls.tsx";
+import {MiniMapZoomSlider} from "@/components/navigation/MiniMapZoomSlider.tsx";
 import {getNodeColor} from "@/lib/utils.ts";
 import {nodeTypes} from "@/lib/nodeTypes.ts";
 
@@ -31,7 +28,6 @@ const selector = (state: AppState) => ({
   edgeCount: state.edges.length,
   addNode: state.addNode,
   setNodes: state.setNodes,
-  promptNodeAction: state.promptNodeAction,
 });
 
 
@@ -83,36 +79,36 @@ function Flow() {
             id="1"
             bgColor="white"
             size={3}
-            gap={[60,60]}
+            gap={[60, 60]}
             offset={162}
           />
 
           <Background
-          id="2"
-          size={6}
-          gap={[300,300]}
-          offset={190}
-          variant={BackgroundVariant.Lines}
-          lineWidth={12}
-          color="white"
+            id="2"
+            size={6}
+            gap={[300, 300]}
+            offset={190}
+            variant={BackgroundVariant.Lines}
+            lineWidth={12}
+            color="white"
           />
 
           <Background
-          id="3"
-          size={4}
-          gap={[300,300]}
-          offset={190}
-          variant={BackgroundVariant.Lines}
-          lineWidth={1}
-          color="#e5e5e5"
-          style={{strokeDasharray: "15, 10", strokeDashoffset: "20"}}
+            id="3"
+            size={4}
+            gap={[300, 300]}
+            offset={190}
+            variant={BackgroundVariant.Lines}
+            lineWidth={1}
+            color="#e5e5e5"
+            style={{strokeDasharray: "15, 10", strokeDashoffset: "20"}}
           />
 
 
           <MiniMapZoomSlider nodeColor={getNodeColor}/>
           <Controls/>
 
-        </ReactFlow >
+        </ReactFlow>
 
 
       </div>

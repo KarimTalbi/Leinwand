@@ -1,11 +1,9 @@
-import useStore from "@/store.ts"
+import useStore from "@/store"
 import {useShallow} from "zustand/react/shallow";
 import {AppState} from "@/types.ts";
 
 const selector = (state: AppState) => ({
   createConnectedNode: state.createConnectedNode,
-  promptNodeAction: state.promptNodeAction,
-  summaryNodeAction: state.summaryNodeAction,
   deleteNode: state.deleteNode,
 });
 

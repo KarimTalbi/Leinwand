@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {NodeDisplayMarkdown} from '@/components/NodeElements/TextElements'
+import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {ChevronDown, ChevronUp, ExternalLink, LucideCircleAlert, LucideIcon,} from 'lucide-react'
 import {typeProps} from '@/lib/styles'
 import {Section} from '@/types'

@@ -1,25 +1,14 @@
 import React, {useEffect, useState} from 'react'
 import {NodeTypes, Panel, ReactFlow, ReactFlowProvider} from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import {
-  ChevronLeft,
-  ChevronRight,
-  FolderOpen,
-  Hexagon,
-  Pen,
-  Plus,
-  Save,
-  Search,
-  Trash2,
-  X,
-} from 'lucide-react'
+import {ChevronLeft, ChevronRight, FolderOpen, Hexagon, Pen, Plus, Save, Search, Trash2, X,} from 'lucide-react'
 import {useShallow} from 'zustand/react/shallow'
 
-import {DashboardNavbar} from '@/components/Navigation/NavBar'
-import MergeNode from '@/components/NodeTypes/MergeNode'
-import PromptNode from '@/components/NodeTypes/PromptNode'
-import SummaryNode from '@/components/NodeTypes/SummaryNode'
-import TextNode from '@/components/NodeTypes/TextNode'
+import {DashboardNavbar} from '@/components/navigation/NavBar'
+import MergeNode from '@/components/node-types/MergeNode'
+import PromptNode from '@/components/node-types/PromptNode'
+import SummaryNode from '@/components/node-types/SummaryNode'
+import TextNode from '@/components/node-types/TextNode'
 import {cn, timeAgo} from '@/lib/utils'
 import useStore from '@/store'
 import {CanvasRead} from '@/types'
@@ -87,7 +76,7 @@ export default function Dashboard() {
     currentPage * ITEMS_PER_PAGE + ITEMS_PER_PAGE
   )
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = async (e: React.SubmitEvent) => {
     e.preventDefault()
     const name = newName.trim()
     if (!name) return
@@ -170,7 +159,7 @@ export default function Dashboard() {
           </div>
 
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-neutral-400"/>
             <input
               type="text"
               value={search}
@@ -201,31 +190,34 @@ export default function Dashboard() {
               !showCreate ? 'ml-auto' : 'ml-2'
             )}
           >
-            <Plus className="size-3" />
+            <Plus className="size-3"/>
             {showCreate ? (creating ? 'Creating…' : 'Create') : 'New project'}
           </button>
 
           {showCreate && (
             <button
               type="button"
-              onClick={() => { setShowCreate(false); setNewName('') }}
+              onClick={() => {
+                setShowCreate(false);
+                setNewName('')
+              }}
               className="p-2 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
             >
-              <X className="size-3" />
+              <X className="size-3"/>
             </button>
           )}
         </form>
 
         {canvases.length === 0 ? (
           <div className="text-center py-16 text-neutral-400">
-            <FolderOpen className="size-8 mx-auto mb-2 opacity-50" />
+            <FolderOpen className="size-8 mx-auto mb-2 opacity-50"/>
             <p className="text-xs">No projects yet. Create one to get started.</p>
           </div>
         ) : (
           <>
             {filteredCanvases.length === 0 ? (
               <div className="text-center py-16 text-neutral-400">
-                <Search className="size-8 mx-auto mb-2 opacity-50" />
+                <Search className="size-8 mx-auto mb-2 opacity-50"/>
                 <p className="text-xs">No projects match &quot;{search}&quot;.</p>
               </div>
             ) : (
@@ -259,8 +251,9 @@ export default function Dashboard() {
                             panOnDrag={false}
                           >
                             <Panel position="top-right">
-                              <div className="flex items-center gap-1 px-2 py-0.5 bg-neutral-400 text-white text-[10px] font-bold rounded-full translate-x-2 -translate-y-2">
-                                <Hexagon size={10} ></Hexagon>
+                              <div
+                                className="flex items-center gap-1 px-2 py-0.5 bg-neutral-400 text-white text-[10px] font-bold rounded-full translate-x-2 -translate-y-2">
+                                <Hexagon size={10}></Hexagon>
                                 <p>{canvas.data.nodes.length}</p>
                               </div>
                             </Panel>
@@ -268,7 +261,8 @@ export default function Dashboard() {
                         </ReactFlowProvider>
                       </div>
 
-                      <div className="border-t border-neutral-200 px-3 py-2 bg-white flex items-center justify-between gap-2 h-12">
+                      <div
+                        className="border-t border-neutral-200 px-3 py-2 bg-white flex items-center justify-between gap-2 h-12">
                         <div className="min-w-0 flex-1 items-center">
                           {selectedEdit === canvas.id ? (
                             <input
@@ -298,7 +292,7 @@ export default function Dashboard() {
                             }
                             className="btn btn-square btn-xs btn-ghost border-none shadow-none text-neutral-500 hover:text-neutral-800 hover:bg-transparent"
                           >
-                            {selectedEdit === canvas.id ? <Save size={12} /> : <Pen size={12} />}
+                            {selectedEdit === canvas.id ? <Save size={12}/> : <Pen size={12}/>}
                           </button>
 
                           <button
@@ -306,7 +300,7 @@ export default function Dashboard() {
                             disabled={deletingId === canvas.id}
                             className="btn btn-square btn-xs btn-ghost border-none shadow-none text-neutral-500 hover:text-neutral-800 hover:bg-transparent"
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={12}/>
                           </button>
 
                         </div>
@@ -322,7 +316,7 @@ export default function Dashboard() {
                       disabled={currentPage === 0}
                       className="btn btn-circle btn-xs bg-transparent border border-neutral-300 hover:border-neutral-400 text-neutral-500 hover:text-neutral-900 disabled:opacity-30"
                     >
-                      <ChevronLeft size={12} />
+                      <ChevronLeft size={12}/>
                     </button>
 
                     <span className="text-xs text-neutral-500">
@@ -334,7 +328,7 @@ export default function Dashboard() {
                       disabled={currentPage === totalPages - 1}
                       className="btn btn-circle btn-xs bg-transparent border border-neutral-300 hover:border-neutral-400 text-neutral-500 hover:text-neutral-900 disabled:opacity-30"
                     >
-                      <ChevronRight size={12} />
+                      <ChevronRight size={12}/>
                     </button>
                   </div>
                 )}

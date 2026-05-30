@@ -1,7 +1,7 @@
-import {SettingsNavbar} from "@/components/Navigation/NavBar.tsx";
+import {SettingsNavbar} from "@/components/navigation/NavBar.tsx";
 import {useEffect, useState} from "react";
 import {Check, KeyRound, Trash2} from "lucide-react";
-import useStore from "@/store.ts";
+import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 
 
