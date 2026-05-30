@@ -1,5 +1,6 @@
 import {useReactFlow, useStore, useViewport} from "@xyflow/react";
 
+/** Exposes pan and zoom helpers for the canvas toolbar, including current zoom percentage. */
 export const usePan = () => {
   const {zoom} = useViewport();
   const {getViewport, setViewport, zoomTo, screenToFlowPosition} = useReactFlow();

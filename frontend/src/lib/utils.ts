@@ -4,10 +4,12 @@ import {Node} from "@xyflow/react";
 import {typeProps} from "@/lib/styles.ts";
 import {NodeTypeNames} from "@/types.ts";
 
+/** Merges Tailwind class names, resolving conflicts via tailwind-merge. */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/** Converts a Unix-millisecond timestamp to a human-readable relative string (e.g. "3h ago"). */
 export function timeAgo(date: number): string {
   const diff = Date.now() - new Date(date).getTime();
   const minutes = Math.floor(diff / 60_000);
@@ -24,6 +26,7 @@ export function timeAgo(date: number): string {
   return `${Math.floor(months / 12)}y ago`;
 }
 
+/** Returns the accent colour associated with a node's type, falling back to grey for unknown types. */
 export function getNodeColor(node: Node): string {
   const nodeType = node.type as NodeTypeNames;
   if (!nodeType) return 'gray';

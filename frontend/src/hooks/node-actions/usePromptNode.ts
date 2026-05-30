@@ -2,6 +2,10 @@ import {useState} from 'react';
 import useStore from '@/store';
 import {streamingChat} from '@/services/llmService';
 
+/**
+ * Manages the run lifecycle for a prompt node — streams the LLM response token
+ * by token into `updateNodeData` and syncs the canvas when complete.
+ */
 export function usePromptNode(nodeId: string) {
   const [isStreaming, setIsStreaming] = useState(false);
 

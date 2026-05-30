@@ -1,5 +1,10 @@
 import {BASE_URL} from '@/api';
 
+/**
+ * Sends a prompt node to the LLM streaming endpoint and calls `onChunk` with
+ * the accumulated response text after each SSE token.
+ * @returns The full accumulated response string.
+ */
 export async function streamingChat(
   node: unknown,
   token: string,
@@ -22,6 +27,11 @@ export async function streamingChat(
   return readSSEStream(res.body, onChunk);
 }
 
+/**
+ * Sends a summary node to the LLM summary endpoint and calls `onChunk` with
+ * the accumulated response text after each SSE token.
+ * @returns The full accumulated response string.
+ */
 export async function streamingSummary(
   node: unknown,
   token: string,
@@ -44,6 +54,11 @@ export async function streamingSummary(
   return readSSEStream(res.body, onChunk);
 }
 
+/**
+ * Reads an SSE `ReadableStream`, concatenates `data:` lines into a running
+ * string, calls `onChunk` after each decoded chunk, and returns the final
+ * accumulated text when the stream closes or `[DONE]` is received.
+ */
 async function readSSEStream(
   body: ReadableStream<Uint8Array>,
   onChunk: (accumulated: string) => void

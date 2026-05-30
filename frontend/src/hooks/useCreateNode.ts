@@ -7,6 +7,7 @@ const selector = (state: AppState) => ({
   addNode: state.addNode,
 })
 
+/** Returns factory functions that create each node type at the centre of the current viewport. */
 export const useCreateNode = () => {
   const {addNode} = useStore(useShallow(selector))
   const {screenToFlowPosition} = useReactFlow()

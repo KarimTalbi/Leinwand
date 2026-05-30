@@ -24,6 +24,7 @@ export type CanvasSlice = {
   setDefaultApiKey: (model: string, key_id: string, provider: string) => Promise<void>;
 };
 
+/** Zustand slice that manages canvas CRUD and API key management. */
 export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (set, get) => ({
   // ── State ──────────────────────────────────────────────────────────────────
 
@@ -43,6 +44,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     }
   },
 
+  /** Loads nodes and edges for the given canvas and sets it as the active canvas. */
   selectCanvas: async (canvasId, canvasName) => {
     set({nodes: [], edges: [], currentCanvasId: canvasId, currentCanvasName: canvasName});
 
@@ -107,6 +109,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     }
   },
 
+  /** Renames a canvas with an optimistic local update before the API call. */
   updateCanvas: async (canvasId, canvasName) => {
     // Optimistic update
     set({
@@ -161,6 +164,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     }
   },
 
+  /** Persists the chosen model/key pair to localStorage and syncs it with the server. */
   setDefaultApiKey: async (model, key_id, provider) => {
     const defaultModel = {model, key_id, modelProvider: provider};
     localStorage.setItem('defaultModel', JSON.stringify(defaultModel));
