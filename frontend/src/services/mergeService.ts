@@ -9,6 +9,7 @@ export type MergeResult = {
 
 /**
  * Sends a merge node to the backend to analyse incoming streams for conflicts.
+ * @param node - The merge node to analyse.
  * @param checkStreams - When true, the server also checks for cross-stream consistency issues.
  */
 export async function mergeNodes(node: AnyNodeType, checkStreams: boolean): Promise<MergeResult> {

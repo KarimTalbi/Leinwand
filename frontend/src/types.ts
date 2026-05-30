@@ -98,22 +98,10 @@ export interface ApiKeyRead {
 
 export interface AppState {
 
-  // Auth
+  // Auth state
   token: string | null;
   user: UserRead | null;
   authError: string | null;
-
-  // Canvas management
-  canvases: CanvasRead[];
-  currentCanvasId: string | null;
-  currentCanvasName: string | null;
-  updateCanvas: (id: string, name: string) => Promise<void>;
-
-  // Flow state
-  nodes: AnyNodeType[];
-  edges: Edge[];
-  locked: boolean;
-  scrollToZoom: boolean;
 
   // Auth actions
   login: (username: string, password: string) => Promise<void>;
@@ -121,24 +109,34 @@ export interface AppState {
   register: (username: string, password: string) => Promise<void>;
   clearAuthError: () => void;
 
-  apiKeys: ApiKeyRead[];
-  defaultModel: LLMModel;
-  setDefaultApiKey: (model: string, key_id: string, provider: string) => void;
+  // Canvas state
+  canvases: CanvasRead[];
+  currentCanvasId: string | null;
+  currentCanvasName: string | null;
 
-
-  // Canvas management actions
+  // Canvas actions
   loadCanvases: () => Promise<void>;
   selectCanvas: (canvasId: string, canvasName: string) => Promise<void>;
   createCanvas: (name: string) => Promise<void>;
   deleteCanvas: (canvasId: string) => Promise<void>;
   exitCanvas: () => void;
-  settingsOpen: boolean;
-  setSettingsOpen: () => void;
+  updateCanvas: (id: string, name: string) => Promise<void>;
 
-  // Api key management actions
+  // Api key state
+  apiKeys: ApiKeyRead[];
+  defaultModel: LLMModel;
+
+  // Api key actions
   loadApiKeys: () => Promise<void>;
   createApiKey: (key: string) => Promise<void>;
   deleteApiKey: (id: string) => Promise<void>;
+
+  // Flow state
+  nodes: AnyNodeType[];
+  edges: Edge[];
+  locked: boolean;
+  scrollToZoom: boolean;
+  settingsOpen: boolean;
 
   // Flow actions
   syncCanvas: () => Promise<void>;
@@ -150,9 +148,14 @@ export interface AppState {
   updateNodeData: (id: string, data: PartialNodeData) => void;
   updateNodeClosed: (id: string, status: boolean) => void;
 
+  // Flow handlers
   onNodesChange: OnNodesChange<AnyNodeType>;
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
+
+  // setters
+  setSettingsOpen: () => void;
+  setDefaultApiKey: (model: string, key_id: string, provider: string) => void;
   setLocked: () => void;
   setScrollToZoom: () => void;
   setNodes: (nodes: AnyNodeType[]) => void;
