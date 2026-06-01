@@ -3,6 +3,9 @@ import {useEffect, useState} from "react";
 import {Check, KeyRound, Plus, Trash2} from "lucide-react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
+import {useTheme} from "@/hooks/useTheme.ts";
+import {bgColor} from "@/lib/styles.ts";
+import {cn} from "@/lib/utils.ts";
 
 export default function Settings() {
   const {
@@ -24,6 +27,7 @@ export default function Settings() {
   const [newKey, setNewKey] = useState("");
   const [selectedModel, setSelectedModel] = useState<string | null>(defaultModel.model || null);
   const [key_id, setKeyId] = useState<string | null>(null);
+  const {theme} = useTheme()
 
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 flex flex-col">
+    <div className={cn(bgColor, "min-h-screen flex flex-col")}>
       <SettingsNavbar/>
       <main className="flex-1 max-w-2xl w-full mx-auto px-6 py-10">
 

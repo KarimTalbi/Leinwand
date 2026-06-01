@@ -9,7 +9,14 @@ import {NodeHeader} from '@/components/node-elements/NodeHeader'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {useMergeNode} from '@/hooks/node-actions/useMergeNode'
 import {cn} from '@/lib/utils'
-import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, textareaStyle, typeProps,} from '@/lib/styles'
+import {
+  flowButtonStyle,
+  NodeBackgroundStyle,
+  NodeForegroundStyle,
+  textareaStyle,
+  textAreaWrapper,
+  typeProps,
+} from '@/lib/styles'
 import useStore from '@/store'
 import TextareaAutosize from 'react-textarea-autosize';
 import {MergeNodeType} from '@/types'
@@ -130,18 +137,19 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
               <NodeDisplayMarkdown content={data.problems || ''} className="px-2"/>
 
               <div
-                className="bg-neutral-50 ring-2 ring-neutral-200 rounded-2xl mb-1 shadow-sm hover:ring-neutral-300">
+                className={textAreaWrapper}>
                 <TextareaAutosize
                   value={data.solution}
                   onChange={handleTextChange}
                   className={cn(textareaStyle)}
-                  placeholder="Enter your prompt..."
+                  placeholder="Enter your solution..."
                 />
                 <div className="flex justify-end items-center pr-2 pb-2">
 
                   <div className="tooltip" data-tip="Send">
                     <button
-                      className={cn("btn btn-ghost bg-[#f5c45e] btn-sm btn-circle disabled:opacity-30 transition-opacity")}
+                      style={{background: '#f5c45e'}}
+                      className={cn(flowButtonStyle, "btn-sm")}
                       onClick={resolve}
                       disabled={!data.solution}
                     >
@@ -185,9 +193,10 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
               />
             </div>
 
-            <div className="tooltip" data-tip="Summarize">
+            <div className="tooltip" data-tip="Merge">
               <button
-                className={cn(nodeHeaderButtonStyle, "bg-[#f5c45e] disabled:opacity-30")}
+                style={{background: '#f5c45e'}}
+                className={cn(flowButtonStyle, "btn-sm")}
                 onClick={handleMerge}
                 disabled={!isConnected1 || !isConnected2}
               >

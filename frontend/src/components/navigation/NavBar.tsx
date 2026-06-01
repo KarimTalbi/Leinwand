@@ -2,8 +2,9 @@ import React from "react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, LogOut, Settings2} from "lucide-react";
-import {navbarButtonStyle} from "@/lib/styles.ts";
+import {navbarButtonStyle, navbarStyle, text} from "@/lib/styles.ts";
 import {Panel} from "@xyflow/react";
+import {cn} from "@/lib/utils.ts";
 
 export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div">) => {
   return (
@@ -13,7 +14,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
       {...props}
     >
       <div>
-        <h1 className="text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
+        <h1 className={cn(text, "text-neutral-600 text-shadow-xs font-bold px-5")}>LEINWAND</h1>
       </div>
 
       {children}
@@ -22,7 +23,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
   );
 };
 
-export const FlowNavBar = () => {
+export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
   const {exitCanvas, setSettingsOpen} = useStore(useShallow(s => ({
     exitCanvas: s.exitCanvas,
     setSettingsOpen: s.setSettingsOpen,
@@ -32,23 +33,25 @@ export const FlowNavBar = () => {
     <Panel position="top-right">
 
       <div
-        className="flex flex-row items-center gap-2 bg-white p-1 rounded-full ring-2 ring-neutral-100 shadow-sm">
+        className={navbarStyle}>
 
         <div>
-          <h1 className="text-neutral-600 text-shadow-xs font-bold px-5">LEINWAND</h1>
+          <h1 className="text-neutral-600 text-shadow-xs font-bold px-5 dark:text-neutral-100">LEINWAND</h1>
         </div>
+
+        {children}
 
 
         <div className="tooltip tooltip-bottom" data-tip="Exit Project">
           <button className={navbarButtonStyle} onClick={exitCanvas}>
-            <ChevronLeft size={16} color="#737373"/>
+            <ChevronLeft size={16}/>
           </button>
         </div>
 
 
         <div className="tooltip tooltip-bottom" data-tip="Settings">
           <button className={navbarButtonStyle} onClick={setSettingsOpen}>
-            <Settings2 size={16} color="#737373"/>
+            <Settings2 size={16}/>
           </button>
         </div>
 
@@ -90,9 +93,9 @@ export const SettingsNavbar = () => {
   const {setSettingsOpen} = useStore(useShallow(s => ({setSettingsOpen: s.setSettingsOpen,})));
   return (
     <Navbar>
-      <div className="flex gap-2 mr-2">
+      <div className="flex gap-2 mr-4">
 
-        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={setSettingsOpen}>
+        <button className={cn(text, "btn btn-sm btn-ghost hover:bg-neutral-900")} onClick={setSettingsOpen}>
           <ChevronLeft size={16}/>
           <p>Exit</p>
         </button>

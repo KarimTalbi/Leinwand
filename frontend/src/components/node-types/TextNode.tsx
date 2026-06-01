@@ -5,7 +5,14 @@ import AddConnectedNode from '@/components/node-elements/AddConnectedNode'
 import {ConnectionHandles} from '@/components/node-elements/ConnectionHandles'
 import {NodeHeader} from '@/components/node-elements/NodeHeader'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
-import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, textareaStyle, typeProps,} from '@/lib/styles'
+import {
+  flowButtonStyle,
+  NodeBackgroundStyle,
+  NodeForegroundStyle,
+  textareaStyle,
+  textAreaWrapper,
+  typeProps,
+} from '@/lib/styles'
 import useStore from '@/store'
 import TextareaAutosize from 'react-textarea-autosize';
 import {TextNodeType} from '@/types'
@@ -41,7 +48,7 @@ const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
   const nodeState = getNodeState()
 
   return (
-    <div className={NodeBackgroundStyle}>
+    <div className={cn(NodeBackgroundStyle, "gap-1")}>
 
       <NodeHeader
         title="Note"
@@ -55,7 +62,7 @@ const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
         {(nodeState === 'empty' || nodeState === 'open') && (
 
           <div
-            className="bg-neutral-50 ring-2 ring-neutral-200 rounded-2xl mb-1 shadow-sm hover:ring-neutral-300">
+            className={textAreaWrapper}>
             <TextareaAutosize
               value={data.text}
               onChange={handleTextChange}
@@ -67,7 +74,7 @@ const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
               <div className="tooltip" data-tip="Save">
                 <button
                   style={{background: typeProps.textNode.color}}
-                  className={cn("btn btn-ghost btn-sm btn-circle disabled:opacity-30 transition-opacity")}
+                  className={cn(flowButtonStyle, "btn-sm")}
                   onClick={handleClick}
                   disabled={!data.text}
                 >
@@ -87,7 +94,7 @@ const TextNode = ({id, data}: NodeProps<TextNodeType>) => {
       {nodeState === 'closed' && (
         <div className="flex flex-row items-center justify-end w-full shrink-0 pl-2 py-1">
           <div className="tooltip" data-tip="Edit">
-            <button className={nodeHeaderButtonStyle} onClick={handleClick}>
+            <button className={flowButtonStyle} onClick={handleClick}>
               <Pen size={16} color={typeProps.textNode.color}></Pen>
             </button>
           </div>

@@ -2,6 +2,8 @@ import React from 'react'
 import {ChevronLeft, ChevronRight, LucideIcon, LucideProps, X} from 'lucide-react'
 import {useNodeMove} from '@/hooks/useNodeMove'
 import {useStoreWithId} from '@/hooks/useStoreWithId'
+import {nodeHeaderButtonStyle} from "@/lib/styles.ts";
+import {cn} from "@/lib/utils.ts";
 
 interface HeaderProps {
   title: string
@@ -25,7 +27,7 @@ export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
           <Icon size={16} color={color}/>
         )}
 
-        <h1 className="flex items-center gap-1 font-semibold tracking-wide text-neutral-600">{title}</h1>
+        <h1 className="flex items-center gap-1 font-semibold tracking-wide">{title}</h1>
       </div>
 
       <div className="flex-1 items-center px-2 justify-start">
@@ -35,19 +37,19 @@ export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
       <div className="flex items-center gap-1.5">
 
         <div className="tooltip" data-tip="Move Left">
-          <button className="btn btn-circle btn-sm">
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
             <ChevronLeft size={16} color={color} onClick={moveLeft}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Move Right">
-          <button className="btn btn-circle btn-sm">
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
             <ChevronRight size={16} color={color} onClick={moveRight}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Delete">
-          <button className="btn btn-circle btn-sm">
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
             <X size={16} color={color} onClick={deleteNodeAction}/>
           </button>
         </div>

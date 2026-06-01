@@ -8,7 +8,7 @@ export const NodeDisplayMarkdown = ({content, className}: { content?: string, cl
 
   return (
     <div
-      className={cn('prose nodrag select-text cursor-text', className)}
+      className={cn('prose nodrag select-text cursor-text px-2', className)}
       dangerouslySetInnerHTML={{
         __html: DOMPurify.sanitize(marked.parse(toMarkdownNewlines(content || '')) as string),
       }}

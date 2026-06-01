@@ -10,10 +10,11 @@ import {useStoreWithId} from '@/hooks/useStoreWithId'
 import {
   bubbleLeftStyle,
   bubbleRightStyle,
+  flowButtonStyle,
   NodeBackgroundStyle,
   NodeForegroundStyle,
-  nodeHeaderButtonStyle,
   textareaStyle,
+  textAreaWrapper,
   typeProps,
 } from '@/lib/styles'
 import {PromptNodeType} from '@/types'
@@ -78,7 +79,7 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
 
         )}
 
-        <div className="flex flex-col flex-1 justify-between gap-7">
+        <div className="flex flex-col justify-between gap-3">
 
           {nodeState === 'ready' && (
             <div className="chat chat-start">
@@ -93,7 +94,7 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
 
           {(nodeState === 'sourceIsPrompt' || nodeState === 'ready') && (
             <div
-              className="bg-neutral-50 ring-2 ring-neutral-200 rounded-2xl mb-1 shadow-sm hover:ring-neutral-300">
+              className={textAreaWrapper}>
               <TextareaAutosize
                 value={data.prompt}
                 onChange={handleTextChange}
@@ -104,11 +105,12 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
 
                 <div className="tooltip" data-tip="Send">
                   <button
-                    className={cn("btn btn-ghost bg-[#ec4899] btn-sm btn-circle disabled:opacity-30 transition-opacity")}
+                    style={{background: typeProps.promptNode.color}}
+                    className={cn(flowButtonStyle, "btn-sm")}
                     onClick={run}
                     disabled={!data.prompt || isStreaming}
                   >
-                    <ArrowUp size={14} color={"white"}></ArrowUp>
+                    <ArrowUp size={14} color="white"></ArrowUp>
                   </button>
                 </div>
 
@@ -141,10 +143,11 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
 
       </div>
 
-      <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
+
+      <div className="flex flex-row items-center justify-between w-full">
 
         {data.model.model && (
-          <div className="flex flex-row items-center justify-start w-full">
+          <div className="flex flex-row items-center justify-start w-full p-1">
             <div className="badge badge-soft badge-secondary">
               <Bot size={14}/> {data.model.model}
             </div>
@@ -152,9 +155,9 @@ const PromptNode = ({id, data}: NodeProps<PromptNodeType>) => {
         )}
 
         {nodeState === 'hasResponse' && (
-          <div className="flex flex-row items-center justify-end w-full">
+          <div className="flex flex-row items-center justify-end w-full p-1">
             <div className="tooltip" data-tip="Reply">
-              <button className={nodeHeaderButtonStyle} onClick={conPrompt}>
+              <button className={cn(flowButtonStyle)} onClick={conPrompt}>
                 <Reply size={16} color={typeProps.promptNode.color}></Reply>
               </button>
             </div>

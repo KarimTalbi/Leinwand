@@ -1,8 +1,9 @@
 import {useState} from 'react'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {ChevronDown, ChevronUp, ExternalLink, LucideCircleAlert, LucideIcon,} from 'lucide-react'
-import {typeProps} from '@/lib/styles'
+import {foreground, text, typeProps} from '@/lib/styles'
 import {Section} from '@/types'
+import {cn} from "@/lib/utils.ts";
 
 interface MergeContentProps {
   sections: Section[]
@@ -59,7 +60,7 @@ const SectionCard = ({section, onGoToNode,}: {
   const meta = TYPE_META[section.type] ?? {label: section.type, badge: 'badge-ghost'}
 
   return (
-    <div className="rounded-lg border border-base-300 bg-base-100 mb-1 text-xs overflow-hidden w-full">
+    <div className={cn(foreground, "rounded-lg mb-1 text-xs overflow-hidden w-full")}>
       <div className="flex items-center justify-between px-2 py-1 gap-1">
 
         <button
@@ -68,7 +69,7 @@ const SectionCard = ({section, onGoToNode,}: {
         >
 
           <span
-            className="badge"
+            className="badge badge-sm badge-soft badge-neutral"
             style={{color: meta.color}}
           >
             <meta.icon size={10}/>
@@ -90,7 +91,7 @@ const SectionCard = ({section, onGoToNode,}: {
       </div>
 
       {open && (
-        <div className="px-2 pb-2 pt-1 border-t border-base-300 max-h-40 overflow-y-auto nowheel">
+        <div className="px-2 pb-2 pt-1 max-h-40 overflow-y-auto nowheel">
           <SectionContent section={section}/>
         </div>
       )}
@@ -133,14 +134,14 @@ const MergeContent = ({sections, onGoToNode}: MergeContentProps) => {
     <div className="flex flex-col px-2 py-2 gap-2">
       <div className="flex gap-2">
         <BranchColumn label="Branch 1" sections={branch1} onGoToNode={onGoToNode}/>
-        <div className="w-px bg-base-300 shrink-0"/>
+        <div className={cn(foreground, "w-px shrink-0")}/>
         <BranchColumn label="Branch 2" sections={branch2} onGoToNode={onGoToNode}/>
       </div>
 
       {problem && (
         <div className="flex flex-col">
           <div className="w-full h-px bg-base-300 mb-2"/>
-          <p className="text-xs font-bold opacity-40 mb-1 px-0.5 text-center">Contradiction</p>
+          <p className={cn(text, "text-xs font-bold opacity-40 mb-1 px-0.5 text-center")}>Contradiction</p>
           <SectionCard section={problem} onGoToNode={undefined}/>
         </div>
       )}

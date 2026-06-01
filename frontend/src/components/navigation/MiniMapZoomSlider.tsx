@@ -1,6 +1,8 @@
 import {MiniMap, Panel} from '@xyflow/react'
 import {usePan} from '@/hooks/usePan'
 import {AnyNodeType} from '@/types'
+import {cn} from "@/lib/utils.ts";
+import {background, flowButtonStyle, ring, text} from "@/lib/styles.ts";
 
 export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) => string }) {
   const {resetZoom, zoom, zoomTo, minZoom, maxZoom, zoomPercent} = usePan()
@@ -9,10 +11,10 @@ export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) 
     <Panel position="bottom-right">
 
       <div
-        className="bg-white w-50 h-40 rounded-2xl ring-2 ring-neutral-100 shadow-md">
+        className={cn("w-50 h-43 rounded-2xl shadow-md", ring, background)}>
 
         <MiniMap
-          className="rounded-xl w-48 h-30 overflow-hidden absolute -left-2.5 -bottom-2.5! ring-1 ring-neutral-200"
+          className={cn("rounded-xl w-48 h-30 overflow-hidden absolute -left-2.75 -bottom-2.75!", ring)}
           zoomable
           pannable
           bgColor="transparent"
@@ -22,7 +24,7 @@ export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) 
           offsetScale={0}
         />
 
-        <div style={{position: 'absolute', bottom: 130, right: 9, zIndex: 1000}}>
+        <div style={{position: 'absolute', bottom: 133, right: 9, zIndex: 1000}}>
           <div className="flex gap-2 flex-row items-center w-45">
 
             <input
@@ -32,10 +34,11 @@ export function MiniMapZoomSlider({nodeColor}: { nodeColor: (node: AnyNodeType) 
               step={0.1}
               value={zoom}
               onChange={(e) => zoomTo(Number(e.target.value))}
-              className="range range-xs text-neutral-600 [--range-fill:0] [--range-thumb:white]"
+              className={cn("range range-sm [--range-fill:0] [--range-thumb:white]", text)}
             />
 
-            <button className="btn btn-xs" onClick={resetZoom}>
+            <button className={cn(flowButtonStyle, text, "text-[10px] tracking-tighter btn-sm font-light")}
+                    onClick={resetZoom}>
               {zoomPercent}%
             </button>
 

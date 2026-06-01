@@ -23,15 +23,18 @@ const selector = (state: AppState) => ({
   setLocked: state.setLocked,
   scrollToZoom: state.scrollToZoom,
   setScrollToZoom: state.setScrollToZoom,
+  defaultModel: state.defaultModel
 })
 
 export const Controls = () => {
-  const {locked, setLocked, scrollToZoom, setScrollToZoom} = useStore(useShallow(selector))
+  const {locked, setLocked, scrollToZoom, setScrollToZoom, defaultModel} = useStore(useShallow(selector))
   const {panUp, panDown, panLeft, panRight, zoomOut, zoomIn} = usePan()
   const {createPromptNode, createSummaryNode, createTextNode, createMergeNode} = useCreateNode()
 
   const LockIcon = locked ? LockOpen : Lock
   const ScrollIcon = scrollToZoom ? MouseOff : Mouse
+
+  const addNodeDisabled = !defaultModel.model
 
   return (
     <Panel position="bottom-center" className="flex flex-row shrink-0 gap-2" style={{zIndex: 1000}}>
@@ -102,25 +105,25 @@ export const Controls = () => {
       <div className={controlBarStyle}>
 
         <div className="tooltip" data-tip="Add Chat Node">
-          <button className={controlButtonStyle} onClick={createPromptNode}>
+          <button className={controlButtonStyle} onClick={createPromptNode} disabled={addNodeDisabled}>
             <typeProps.promptNode.icon color={typeProps.promptNode.color} size={14}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Add Text Node">
-          <button className={controlButtonStyle} onClick={createTextNode}>
+          <button className={controlButtonStyle} onClick={createTextNode} disabled={addNodeDisabled}>
             <typeProps.textNode.icon color={typeProps.textNode.color} size={14}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Add Summary Node">
-          <button className={controlButtonStyle} onClick={createSummaryNode}>
+          <button className={controlButtonStyle} onClick={createSummaryNode} disabled={addNodeDisabled}>
             <typeProps.summaryNode.icon color={typeProps.summaryNode.color} size={14}/>
           </button>
         </div>
 
         <div className="tooltip" data-tip="Add Merge Node">
-          <button className={controlButtonStyle} onClick={createMergeNode}>
+          <button className={controlButtonStyle} onClick={createMergeNode} disabled={addNodeDisabled}>
             <typeProps.mergeNode.icon color={typeProps.mergeNode.color} size={14}/>
           </button>
         </div>

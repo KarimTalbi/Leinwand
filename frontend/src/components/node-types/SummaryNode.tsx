@@ -8,7 +8,7 @@ import {NodeHeader} from '@/components/node-elements/NodeHeader'
 import {NodeDisplayMarkdown} from '@/components/node-elements/TextElements'
 import {useSummaryNode} from '@/hooks/node-actions/useSummaryNode'
 import {cn} from '@/lib/utils'
-import {NodeBackgroundStyle, NodeForegroundStyle, nodeHeaderButtonStyle, typeProps} from '@/lib/styles'
+import {flowButtonStyle, NodeBackgroundStyle, NodeForegroundStyle, typeProps} from '@/lib/styles'
 import {SummaryNodeType} from '@/types'
 
 type NodeState =
@@ -104,7 +104,8 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
           <div className="flex flex-row items-center justify-end w-full">
             <div className="tooltip" data-tip="Summarize">
               <button
-                className={cn(nodeHeaderButtonStyle, "bg-[#bf4546] disabled:opacity-30")}
+                style={{background: '#bf4546'}}
+                className={cn(flowButtonStyle)}
                 onClick={run}
                 disabled={isDisabled}
               >
