@@ -11,7 +11,7 @@ export const foreground = "bg-neutral-100 dark:bg-neutral-900"
 export const ring = "ring-1 ring-neutral-200 dark:ring-neutral-700"
 export const text = "text-neutral-600 dark:text-neutral-100"
 
-export const bgColor = "bg-neutral-100 dark:bg-neutral-800"
+export const bgColor = "bg-neutral-50 dark:bg-neutral-800"
 
 
 // ——— Node Styles ——————————————————————————————————————————————————————————————————————————————————————————————————
@@ -37,6 +37,7 @@ export const navbarStyle = cn("flex flex-row items-center gap-2 p-1 rounded-full
 // ——— Button Styles ————————————————————————————————————————————————————————————————————————————————————————————————
 
 export const flowButtonStyle = "btn btn-circle disabled:opacity-30 dark:bg-neutral-900"
+export const buttonStyle = "btn disabled:opacity-30 dark:bg-neutral-900 font-thin"
 export const navbarButtonStyle = flowButtonStyle
 export const nodeHeaderButtonStyle = flowButtonStyle
 export const controlButtonStyle = flowButtonStyle

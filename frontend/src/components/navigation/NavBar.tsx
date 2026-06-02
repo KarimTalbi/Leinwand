@@ -2,7 +2,7 @@ import React from "react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
 import {ChevronLeft, LogOut, Settings2} from "lucide-react";
-import {navbarButtonStyle, navbarStyle, text} from "@/lib/styles.ts";
+import {bgColor, buttonStyle, navbarButtonStyle, navbarStyle, text} from "@/lib/styles.ts";
 import {Panel} from "@xyflow/react";
 import {cn} from "@/lib/utils.ts";
 
@@ -10,7 +10,7 @@ export const Navbar = ({children, ...props}: React.ComponentPropsWithoutRef<"div
   return (
     <div
       style={{zIndex: 100, position: "sticky", top: 0, left: 0, right: 0, height: "55px"}}
-      className="nodrag nowheel flex flex-row items-center justify-between w-full"
+      className={cn("nodrag nowheel flex flex-row items-center justify-between w-full", text)}
       {...props}
     >
       <div>
@@ -62,27 +62,18 @@ export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
 }
 
 export const DashboardNavbar = () => {
-  const {logout, setSettingsOpen} = useStore(useShallow(s => ({
+  const {logout} = useStore(useShallow(s => ({
     logout: s.logout,
-    setSettingsOpen: s.setSettingsOpen,
   })));
 
   return (
     <Navbar>
-      <div className="flex gap-1 mr-2">
+      <div className="flex gap-1 mr-4">
 
-
-        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={logout}>
-          <LogOut size={16} color="#737373"/>
+        <button className={cn(buttonStyle, "btn-ghost btn-sm", bgColor)} onClick={logout}>
+          <LogOut size={16}/>
           <p>Log Out</p>
         </button>
-
-
-        <button className="btn btn-ghost text-neutral-600 btn-sm" onClick={setSettingsOpen}>
-          <Settings2 size={16} color="#737373"/>
-          <p>Settings</p>
-        </button>
-
 
       </div>
     </Navbar>
