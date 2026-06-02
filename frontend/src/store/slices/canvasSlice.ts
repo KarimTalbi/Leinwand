@@ -46,7 +46,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
 
   /** Loads nodes and edges for the given canvas and sets it as the active canvas. */
   selectCanvas: async (canvasId, canvasName) => {
-    set({nodes: [], edges: [], currentCanvasId: canvasId, currentCanvasName: canvasName});
+    set({nodes: [], edges: [], currentCanvasId: canvasId, currentCanvasName: canvasName, projectsOpen: false});
 
     try {
       const res = await api.get(`/node/list/${canvasId}`);

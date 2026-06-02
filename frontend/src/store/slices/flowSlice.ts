@@ -19,6 +19,9 @@ export type FlowSlice = {
   locked: boolean;
   scrollToZoom: boolean;
   settingsOpen: boolean;
+  projectsOpen: boolean;
+  loginOpen: boolean;
+
 
   // Actions
   syncCanvas: () => Promise<void>;
@@ -37,8 +40,10 @@ export type FlowSlice = {
   setNodes: (nodes: AppState['nodes']) => void;
   setEdges: (edges: AppState['edges']) => void;
   setLocked: () => void;
-  setSettingsOpen: () => void;
+  setSettingsOpen: (status: boolean) => void;
   setScrollToZoom: () => void;
+  setProjectsOpen: (status: boolean) => void;
+  setLoginOpen: (status: boolean) => void;
 };
 
 /** Zustand slice that manages the ReactFlow graph state and all node/edge mutations. */
@@ -50,6 +55,8 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
   locked: false,
   scrollToZoom: false,
   settingsOpen: false,
+  projectsOpen: false,
+  loginOpen: false,
 
   // ── Sync ───────────────────────────────────────────────────────────────────
 
@@ -206,6 +213,27 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
   setNodes: (nodes) => set({nodes}),
   setEdges: (edges) => set({edges}),
   setLocked: () => set({locked: !get().locked}),
-  setSettingsOpen: () => set({settingsOpen: !get().settingsOpen}),
-  setScrollToZoom: () => set({scrollToZoom: !get().scrollToZoom}),
+
+  setSettingsOpen: (status) => {
+    if (status) {
+      set({projectsOpen: false, loginOpen: false})
+    }
+    set({settingsOpen: status})
+  },
+
+  setProjectsOpen: (status) => {
+    if (status) {
+      set({settingsOpen: false, loginOpen: false})
+    }
+    set({projectsOpen: status})
+  },
+
+  setLoginOpen: (status) => {
+    if (status) {
+      set({settingsOpen: false, projectsOpen: false})
+    }
+    set({loginOpen: status})
+  },
+  
+  setScrollToZoom: () => set({scrollToZoom: !get().scrollToZoom})
 });

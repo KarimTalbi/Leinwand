@@ -7,7 +7,7 @@ import {cn} from "@/lib/utils.ts";
 
 
 export const background = "bg-white dark:bg-neutral-800"
-export const foreground = "bg-neutral-100 dark:bg-neutral-900"
+export const foreground = "bg-neutral-200 dark:bg-neutral-900"
 export const ring = "ring-1 ring-neutral-200 dark:ring-neutral-700"
 export const text = "text-neutral-600 dark:text-neutral-100"
 
@@ -32,7 +32,7 @@ export const NodeBackgroundStyle = cn("flex flex-col w-145 rounded-3xl py-1 px-2
 export const NodeForegroundStyle = "flex flex-col flex-1 rounded-lg"
 
 
-export const navbarStyle = cn("flex flex-row items-center gap-2 p-1 rounded-full shadow-sm", background, ring, text)
+export const navbarStyle = cn("flex flex-row justify-between items-center gap-2 p-1 rounded-full shadow-sm", background, ring, text)
 
 // ——— Button Styles ————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -64,3 +64,5 @@ export const bubbleRightStyle = cn(bubble, "rounded-br-none", foreground)
 export const controlBarStyle = cn(
   "flex flex-row gap-1 items-center justify-center rounded-full shadow-md p-1", text, background, ring
 )
+
+export const inputWithIcon = cn("flex flex-row rounded-full items-center gap-2 px-2", text, foreground, ring)

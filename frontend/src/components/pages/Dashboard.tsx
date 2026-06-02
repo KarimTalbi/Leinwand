@@ -14,8 +14,6 @@ import {
   Trash2,
 } from 'lucide-react'
 import {useShallow} from 'zustand/react/shallow'
-
-import {DashboardNavbar} from '@/components/navigation/NavBar'
 import MergeNode from '@/components/node-types/MergeNode'
 import PromptNode from '@/components/node-types/PromptNode'
 import SummaryNode from '@/components/node-types/SummaryNode'
@@ -23,7 +21,7 @@ import TextNode from '@/components/node-types/TextNode'
 import {cn, timeAgo} from '@/lib/utils'
 import useStore from '@/store'
 import {CanvasRead} from '@/types'
-import {bgColor, flowButtonStyle, foreground, ring, text} from "@/lib/styles.ts";
+import {bgColor, flowButtonStyle, foreground, inputWithIcon, ring, text} from "@/lib/styles.ts";
 
 const nodeTypes: NodeTypes = {
   promptNode: PromptNode,
@@ -120,57 +118,53 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={cn("flex flex-col min-h-screen", text, bgColor)}>
+    <div className={cn(bgColor, ring, "rounded-3xl")}>
 
-      <DashboardNavbar/>
+      <div className="flex flex-col w-145 p-3 gap-1">
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10">
+        <form onSubmit={handleCreate} className="flex flex-col justify-center items-start gap-2 mb-6">
 
-        <form onSubmit={handleCreate} className="flex flex-col justify-center items-start gap-2 mb-6 w-full">
-
-          <div className="flex flex-row gap-2 w-1/3">
+          <div className="flex flex-row items-center gap-2">
             <button
               type="button"
               onClick={handleSort}
-              className={cn(flowButtonStyle)}
+              className={cn(flowButtonStyle, "btn-sm")}
             >
               <SortIcon size={16}/>
             </button>
 
-            <div
-              className={cn("flex flex-row rounded-full items-center gap-2 px-2 h-9 w-full", text, foreground, ring)}>
+            <div className={cn(inputWithIcon, "h-7")}>
               <Search size={16} className={cn(text)}/>
               <input
                 type="text"
                 value={search}
                 onChange={handleSearch}
                 placeholder="Search..."
-                className="focus:outline-none w-full"
+                className="focus:outline-none text-sm"
               />
             </div>
 
 
           </div>
 
-          <div className="flex flex-row gap-2 w-1/3">
+          <div className="flex flex-row items-center gap-2">
 
             <button
               type='submit'
               disabled={!newName.trim()}
-              className={cn(flowButtonStyle)}
+              className={cn(flowButtonStyle, "btn-sm")}
             >
               <Plus size={16}/>
             </button>
 
-            <div
-              className={cn("flex flex-row rounded-full items-center gap-2 px-2 h-9 w-full", text, foreground, ring)}>
+            <div className={cn(inputWithIcon, "h-7")}>
               <Plus size={16} className={cn(text)}/>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="New project name..."
-                className="focus:outline-none w-full"
+                className="focus:outline-none text-sm"
               />
             </div>
 
@@ -193,7 +187,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-3 mb-3">
                   {paginatedCanvases.map((canvas: CanvasRead) => (
                     <div
                       key={canvas.id}
@@ -201,7 +195,7 @@ export default function Dashboard() {
                     >
                       <div
 
-                        style={{height: 200}}
+                        style={{height: 160}}
                         onClick={() => void selectCanvas(canvas.id, canvas.name)}
                       >
                         <ReactFlowProvider>
@@ -300,7 +294,7 @@ export default function Dashboard() {
             )}
           </>
         )}
-      </main>
+      </div>
     </div>
   )
 }

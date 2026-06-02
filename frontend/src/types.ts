@@ -55,6 +55,8 @@ export type SummaryNodeType = Node<{
   model: Record<string, any>
 }>;
 
+export type SettingsNodeType = Node<{}>
+
 export type PromptNodeData = PromptNodeType['data'];
 export type SummaryNodeData = SummaryNodeType['data'];
 export type TextNodeData = TextNodeType['data'];
@@ -137,6 +139,8 @@ export interface AppState {
   locked: boolean;
   scrollToZoom: boolean;
   settingsOpen: boolean;
+  projectsOpen: boolean;
+  loginOpen: boolean;
 
   // Flow actions
   syncCanvas: () => Promise<void>;
@@ -154,10 +158,12 @@ export interface AppState {
   onConnect: OnConnect;
 
   // setters
-  setSettingsOpen: () => void;
+  setSettingsOpen: (status: boolean) => void;
   setDefaultApiKey: (model: string, key_id: string, provider: string) => void;
   setLocked: () => void;
   setScrollToZoom: () => void;
   setNodes: (nodes: AnyNodeType[]) => void;
   setEdges: (edges: Edge[]) => void;
+  setProjectsOpen: (status: boolean) => void;
+  setLoginOpen: (status: boolean) => void;
 }

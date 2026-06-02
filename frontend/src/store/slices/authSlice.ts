@@ -51,6 +51,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
 
       set({
         user: {username: me.data.username, disabled: me.data.disabled},
+        loginOpen: false,
         defaultModel,
       });
     } catch {
@@ -91,6 +92,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         password,
       });
       await get().login(username, password);
+      set({loginOpen: false})
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});

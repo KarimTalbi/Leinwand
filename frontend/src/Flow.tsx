@@ -1,5 +1,5 @@
 import {useShallow} from 'zustand/react/shallow'
-import {Background, BackgroundVariant, ColorMode, Panel, ReactFlow,} from '@xyflow/react';
+import {Background, BackgroundVariant, ColorMode, ReactFlow,} from '@xyflow/react';
 
 import useStore from '@/store';
 import {AppState} from '@/types'
@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 import {useEffect, useState} from "react";
 import {Moon, Sun} from "lucide-react";
 import {navbarButtonStyle} from "@/lib/styles.ts";
+import {Alerts} from "@/components/pages/Alerts.tsx";
 
 
 const selector = (state: AppState) => ({
@@ -27,12 +28,13 @@ const selector = (state: AppState) => ({
   exitCanvas: state.exitCanvas,
   setLocked: state.setLocked,
   setScrollToZoom: state.setScrollToZoom,
-  currentCanvasName: state.currentCanvasName,
   nodeCount: state.nodes.length,
   edgeCount: state.edges.length,
   addNode: state.addNode,
   setNodes: state.setNodes,
-  defaultModel: state.defaultModel
+  defaultModel: state.defaultModel,
+  settingsOpen: state.settingsOpen,
+  currentCanvasId: state.currentCanvasId
 });
 
 
@@ -51,7 +53,6 @@ function Flow() {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    defaultModel
   } = useStore(
     useShallow(selector)
   );
@@ -93,18 +94,7 @@ function Flow() {
           colorMode={colorMode}
         >
 
-          {!defaultModel.model && (
-            <Panel position="top-center">
-              <div role="alert" className="alert alert-warning">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none"
-                     viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <span>No Api Key set! Go to Settings to add your key and set a model to use.</span>
-              </div>
-            </Panel>
-          )}
+          <Alerts/>
 
 
           <FlowNavBar>
