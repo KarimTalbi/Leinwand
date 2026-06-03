@@ -11,20 +11,22 @@ export function useMergeNode(nodeId: string) {
   const [isLoading, setIsLoading] = useState(false);
 
   const node = useStore((s) => s.nodes.find((n) => n.id === nodeId));
+  const defaultMergeModel = useStore((s) => s.defaultMergeModel);
   const defaultModel = useStore((s) => s.defaultModel);
   const updateNodeData = useStore((s) => s.updateNodeData);
   const setEdges = useStore((s) => s.setEdges);
   const edges = useStore((s) => s.edges);
   const syncCanvas = useStore((s) => s.syncCanvas);
+  const model = defaultMergeModel?.model ? defaultMergeModel : defaultModel
 
   const run = async (incomer1: string, incomer2: string, checkStreams: boolean) => {
     if (!node) return;
 
     setIsLoading(true);
-    updateNodeData(nodeId, {model: defaultModel});
+    updateNodeData(nodeId, {model: model});
 
     try {
-      const nodeWithModel = {...node, data: {...node.data, model: defaultModel}};
+      const nodeWithModel = {...node, data: {...node.data, model: model}};
       const result = await mergeNodes(nodeWithModel, checkStreams);
 
       updateNodeData(nodeId, {
@@ -52,10 +54,10 @@ export function useMergeNode(nodeId: string) {
 
     setIsLoading(true);
     await syncCanvas();
-    updateNodeData(nodeId, {model: defaultModel});
+    updateNodeData(nodeId, {model: model});
 
     try {
-      const nodeWithModel = {...node, data: {...node.data, model: defaultModel}};
+      const nodeWithModel = {...node, data: {...node.data, model: model}};
       const result = await resolveMerge(nodeWithModel);
 
       updateNodeData(nodeId, {context: result.context, has_issues: false, closed: true});

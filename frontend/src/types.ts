@@ -34,14 +34,14 @@ export type PromptNodeType = Node<{
   prompt?: string;
   response?: string;
   closed: boolean;
-  model: Record<string, any>
+  model: LLMModel | null;
 }>;
 
 /** A ReactFlow node that stores free-form text (no LLM interaction). */
 export type TextNodeType = Node<{
   text?: string;
   closed: boolean;
-  model: Record<string, any>
+  model: LLMModel | null;
 }>;
 
 /** A ReactFlow node that merges two incoming streams and surfaces any conflicts. */
@@ -53,14 +53,14 @@ export type MergeNodeType = Node<{
   incomer1?: string;
   incomer2?: string;
   closed: boolean;
-  model: Record<string, any>
+  model: LLMModel | null;
 }>;
 
 /** A ReactFlow node that summarises all upstream node outputs into one response. */
 export type SummaryNodeType = Node<{
   response?: string,
   closed: boolean
-  model: Record<string, any>
+  model: LLMModel | null;
 }>;
 
 
