@@ -59,6 +59,8 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       const summaryModel = me.data.user_data?.default_models.summaryNode || {};
       const mergeModel = me.data.user_data?.default_models.mergeNode || {};
 
+      console.log(defaultModel, promptModel, summaryModel, mergeModel)
+
       localStorage.setItem('default', JSON.stringify(defaultModel));
       localStorage.setItem('promptNode', JSON.stringify(promptModel));
       localStorage.setItem('summaryNode', JSON.stringify(summaryModel));
@@ -68,7 +70,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
         user: me.data,
         loginOpen: false,
         defaultModel,
+        defaultPromptModel: promptModel,
+        defaultSummaryModel: summaryModel,
+        defaultMergeModel: mergeModel
       });
+
     } catch {
       set({authError: 'Invalid username or password.'});
     }

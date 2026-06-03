@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
 import api from '@/api';
-import type {ApiKeyRead, AppState, CanvasRead, LLMModel, NodeTypeNames} from '@/types';
+import type {ApiKeyRead, AppState, CanvasRead} from '@/types';
 import type {StateCreator} from 'zustand';
 
 export type CanvasSlice = {
@@ -214,12 +214,14 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     }
 
     try {
-      await api.put<Record<NodeTypeNames | 'default', LLMModel>>('/users/update', {
+      await api.put('/users/update', {
         data: {
-          default: get().defaultModel,
-          promptNode: get().defaultPromptModel,
-          summaryNode: get().defaultSummaryModel,
-          mergeNode: get().defaultMergeModel,
+          default_models: {
+            default: get().defaultModel,
+            promptNode: get().defaultPromptModel,
+            summaryNode: get().defaultSummaryModel,
+            mergeNode: get().defaultMergeModel,
+          }
         }
       });
 
