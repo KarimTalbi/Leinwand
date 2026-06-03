@@ -19,6 +19,9 @@ export type AuthSlice = {
   logout: () => void;
   register: (username: string, password: string) => Promise<void>;
   clearAuthError: () => void;
+  updateUsername: (newUsername: string) => void;
+  updatePassword: (current: string, next: string) => void;
+  deleteUser: () => void;
 };
 
 /** Zustand slice that manages authentication state and user session. */
@@ -28,6 +31,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   token: localStorage.getItem('token'),
   user: JSON.parse(localStorage.getItem('user') || '{}'),
   authError: null,
+
 
   defaultModel: JSON.parse(localStorage.getItem('default') || '{}'),
   defaultPromptModel: JSON.parse(localStorage.getItem('promptNode') || '{}'),
@@ -120,6 +124,58 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});
+    }
+  },
+
+  updateUsername: async (newUsername: string) => {
+    set({authError: null});
+
+    try {
+      await api.put('/users/update_username/', {
+        name: newUsername
+      })
+
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});
+    }
+
+    if (!get().authError) {
+      get().logout();
+    }
+  },
+
+  updatePassword: async (current: string, next: string) => {
+    set({authError: null});
+
+    try {
+      await api.put('/users/update_password', {
+        old_password: current,
+        new_password: next
+      })
+
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});
+    }
+
+    if (!get().authError) {
+      get().logout();
+    }
+  },
+
+  deleteUser: async () => {
+    set({authError: null});
+
+    try {
+      await api.delete('/users/delete')
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});
+    }
+
+    if (!get().authError) {
+      get().logout();
     }
   },
 
