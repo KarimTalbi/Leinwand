@@ -1,27 +1,31 @@
 import React from "react";
 import useStore from "@/store";
 import {useShallow} from "zustand/react/shallow";
-import {Folder, LogIn, LogOut, Settings2} from "lucide-react";
+import {Bot, Folder, LogIn, LogOut, User2} from "lucide-react";
 import {bgColor, navbarButtonStyle, navbarStyle, ring} from "@/lib/styles.ts";
 import {Panel} from "@xyflow/react";
 import {cn} from "@/lib/utils.ts";
-import Settings from "@/components/pages/Settings.tsx";
+import AiSettings from "@/components/pages/AiSettings.tsx";
 import Dashboard from "@/components/pages/Dashboard.tsx";
 import LoginPage from "@/components/pages/LoginPage.tsx";
 
 export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
   const {
-    setSettingsOpen,
-    settingsOpen,
     token,
     loginOpen,
     projectsOpen,
     logout,
     setLoginOpen,
-    setProjectsOpen
+    setProjectsOpen,
+    setAiSettingsOpen,
+    aiSettingsOpen,
+    setUserSettingsOpen,
+    userSettingsOpen,
   } = useStore(useShallow(s => ({
-    setSettingsOpen: s.setSettingsOpen,
-    settingsOpen: s.settingsOpen,
+    setAiSettingsOpen: s.setAiSettingsOpen,
+    aiSettingsOpen: s.aiSettingsOpen,
+    setUserSettingsOpen: s.setUserSettingsOpen,
+    userSettingsOpen: s.userSettingsOpen,
     setProjectsOpen: s.setProjectsOpen,
     projectsOpen: s.projectsOpen,
     setLoginOpen: s.setLoginOpen,
@@ -54,9 +58,17 @@ export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
             </div>
 
 
-            <div className="tooltip tooltip-bottom" data-tip="Settings">
-              <button className={navbarButtonStyle} onClick={() => setSettingsOpen(!settingsOpen)} disabled={!token}>
-                <Settings2 size={16}/>
+            <div className="tooltip tooltip-bottom" data-tip="Ai Settings">
+              <button className={navbarButtonStyle} onClick={() => setAiSettingsOpen(!aiSettingsOpen)}
+                      disabled={!token}>
+                <Bot size={16}/>
+              </button>
+            </div>
+
+            <div className="tooltip tooltip-bottom" data-tip="User Settings">
+              <button className={navbarButtonStyle} onClick={() => setUserSettingsOpen(!userSettingsOpen)}
+                      disabled={!token}>
+                <User2 size={16}/>
               </button>
             </div>
 
@@ -71,8 +83,8 @@ export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
 
         </div>
 
-        {settingsOpen && (
-          <Settings/>
+        {aiSettingsOpen && (
+          <AiSettings/>
         )}
 
         {projectsOpen && (

@@ -6,14 +6,13 @@ import {useEffect} from "react";
 
 
 export const Alerts = () => {
-  const {currentCanvasId, token, setLoginOpen, setProjectsOpen, setSettingsOpen, defaultModel} = useStore(
+  const {currentCanvasId, token, setLoginOpen, setProjectsOpen, setAiSettingsOpen, defaultModel} = useStore(
     useShallow((s) => ({
       currentCanvasId: s.currentCanvasId,
       token: s.token,
       setLoginOpen: s.setLoginOpen,
       setProjectsOpen: s.setProjectsOpen,
-      setSettingsOpen: s.setSettingsOpen,
-      settingsOpen: s.settingsOpen,
+      setAiSettingsOpen: s.setAiSettingsOpen,
       defaultModel: s.defaultModel
     }))
   )
@@ -22,7 +21,7 @@ export const Alerts = () => {
     if (!token) {
       setLoginOpen(true);
     } else if (!defaultModel.model) {
-      setSettingsOpen(true)
+      setAiSettingsOpen(true)
     } else if (!currentCanvasId) {
       setProjectsOpen(true)
     }

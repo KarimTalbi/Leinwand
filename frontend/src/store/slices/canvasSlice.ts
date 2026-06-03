@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
 import api from '@/api';
-import type {ApiKeyRead, AppState, CanvasRead} from '@/types';
+import type {ApiKeyRead, AppState, CanvasRead, LLMModel, NodeTypeNames} from '@/types';
 import type {StateCreator} from 'zustand';
 
 export type CanvasSlice = {
@@ -21,7 +21,7 @@ export type CanvasSlice = {
   loadApiKeys: () => Promise<void>;
   createApiKey: (key: string) => Promise<void>;
   deleteApiKey: (id: string) => Promise<void>;
-  setDefaultApiKey: (model: string, key_id: string, provider: string) => Promise<void>;
+  setDefaultModel: (modelData: Record<string, any>, type: string) => Promise<void>;
 };
 
 /** Zustand slice that manages canvas CRUD and API key management. */
@@ -95,6 +95,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
         data: {},
       });
       await get().loadCanvases();
+      await get().selectCanvas(newCanvasId, name);
     } catch (err) {
       console.error('Error creating canvas:', err);
     }
@@ -104,6 +105,13 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     try {
       await api.delete(`/canvas/${canvasId}/delete/`);
       await get().loadCanvases();
+
+      const currentCanvas = get().currentCanvasId
+
+      if (currentCanvas === canvasId) {
+        get().exitCanvas()
+      }
+
     } catch (err) {
       console.error('Error deleting canvas:', err);
     }
@@ -158,20 +166,63 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
   deleteApiKey: async (id) => {
     try {
       await api.delete(`/api_key/delete/${id}/`);
+
+      if (get().defaultModel?.key_id === id) {
+        localStorage.removeItem('default');
+        set({defaultModel: null});
+      }
+
+      if (get().defaultPromptModel?.key_id === id) {
+        localStorage.removeItem('promptNode');
+        set({defaultPromptModel: null});
+      }
+
+      if (get().defaultSummaryModel?.key_id === id) {
+        localStorage.removeItem('summaryNode');
+        set({defaultSummaryModel: null});
+      }
+
+      if (get().defaultMergeModel?.key_id === id) {
+        localStorage.removeItem('mergeNode');
+        set({defaultMergeModel: null});
+      }
+
       void get().loadApiKeys();
+
     } catch (err) {
       console.error('Error deleting API key:', err);
     }
   },
 
   /** Persists the chosen model/key pair to localStorage and syncs it with the server. */
-  setDefaultApiKey: async (model, key_id, provider) => {
-    const defaultModel = {model, key_id, modelProvider: provider};
-    localStorage.setItem('defaultModel', JSON.stringify(defaultModel));
-    set({defaultModel});
+  setDefaultModel: async (modelData, type) => {
+    localStorage.setItem(type, JSON.stringify(modelData));
+
+    switch (type) {
+      case 'default':
+        set({defaultModel: modelData});
+        break;
+      case 'promptNode':
+        set({defaultPromptModel: modelData});
+        break;
+      case 'summaryNode':
+        set({defaultSummaryModel: modelData});
+        break
+      case 'mergeNode':
+        set({defaultMergeModel: modelData});
+        break
+    }
 
     try {
-      await api.put('/users/update', {data: {defaultModel}});
+      await api.put<Record<NodeTypeNames | 'default', LLMModel>>('/users/update', {
+        data: {
+          default: get().defaultModel,
+          promptNode: get().defaultPromptModel,
+          summaryNode: get().defaultSummaryModel,
+          mergeNode: get().defaultMergeModel,
+        }
+      });
+
     } catch (err) {
       console.error('Error setting default model:', err);
     }

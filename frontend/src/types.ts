@@ -14,11 +14,19 @@ export interface Section {
   solution?: string;
 }
 
+export interface LLMModelConfig {
+  temperature?: number,
+  max_tokens?: number,
+  timeout?: number,
+  max_retries?: number,
+}
+
 /** The selected LLM model and associated API key used when running a node. */
 export interface LLMModel {
-  model?: string;
-  key_id?: string;
-  modelProvider?: string;
+  model?: string | null;
+  key_id?: string | null;
+  model_provider?: string | null;
+  model_config?: LLMModelConfig | null;
 }
 
 /** A ReactFlow node that holds a chat prompt and its LLM response. */
@@ -55,7 +63,6 @@ export type SummaryNodeType = Node<{
   model: Record<string, any>
 }>;
 
-export type SettingsNodeType = Node<{}>
 
 export type PromptNodeData = PromptNodeType['data'];
 export type SummaryNodeData = SummaryNodeType['data'];
@@ -69,9 +76,11 @@ export type PartialNodeData = Partial<PromptNodeData | TextNodeData | MergeNodeD
 /** String literals that identify each supported node type in ReactFlow. */
 export type NodeTypeNames = 'promptNode' | 'textNode' | 'mergeNode' | 'summaryNode';
 
+
 /** Authenticated user returned from `/users/me`. */
 export interface UserRead {
   username: string;
+  user_data: { default_models: Record<NodeTypeNames | 'default', LLMModel> } | null;
   disabled: boolean;
 }
 
@@ -126,7 +135,10 @@ export interface AppState {
 
   // Api key state
   apiKeys: ApiKeyRead[];
-  defaultModel: LLMModel;
+  defaultModel: LLMModel | null;
+  defaultPromptModel: LLMModel | null;
+  defaultSummaryModel: LLMModel | null;
+  defaultMergeModel: LLMModel | null;
 
   // Api key actions
   loadApiKeys: () => Promise<void>;
@@ -138,7 +150,8 @@ export interface AppState {
   edges: Edge[];
   locked: boolean;
   scrollToZoom: boolean;
-  settingsOpen: boolean;
+  aiSettingsOpen: boolean;
+  userSettingsOpen: boolean;
   projectsOpen: boolean;
   loginOpen: boolean;
 
@@ -158,8 +171,9 @@ export interface AppState {
   onConnect: OnConnect;
 
   // setters
-  setSettingsOpen: (status: boolean) => void;
-  setDefaultApiKey: (model: string, key_id: string, provider: string) => void;
+  setAiSettingsOpen: (status: boolean) => void;
+  setUserSettingsOpen: (status: boolean) => void;
+  setDefaultModel: (modelData: LLMModel, type: NodeTypeNames | 'default') => void;
   setLocked: () => void;
   setScrollToZoom: () => void;
   setNodes: (nodes: AnyNodeType[]) => void;

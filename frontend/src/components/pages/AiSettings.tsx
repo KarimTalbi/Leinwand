@@ -5,26 +5,27 @@ import {useShallow} from "zustand/react/shallow";
 import {bgColor, flowButtonStyle, foreground, inputWithIcon, ring, text} from "@/lib/styles.ts";
 import {cn} from "@/lib/utils.ts";
 
-export default function Settings() {
+export default function AiSettings() {
   const {
     apiKeys,
     deleteApiKey,
     loadApiKeys,
     createApiKey,
-    setDefaultApiKey,
+    setDefaultModel,
     defaultModel
   } = useStore(useShallow((state) => ({
     apiKeys: state.apiKeys,
     loadApiKeys: state.loadApiKeys,
     createApiKey: state.createApiKey,
     deleteApiKey: state.deleteApiKey,
-    setDefaultApiKey: state.setDefaultApiKey,
+    setDefaultModel: state.setDefaultModel,
     defaultModel: state.defaultModel,
   })));
 
   const [newKey, setNewKey] = useState("");
-  const [selectedModel, setSelectedModel] = useState<string | null>(defaultModel.model || null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(defaultModel?.model || null);
   const [key_id, setKeyId] = useState<string | null>(null);
+  const [provider, setProvider] = useState<string | null>(null)
 
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function Settings() {
             <div className="flex flex-row uppercase font-semibold opacity-60 tracking-wide items-center">
               <Bot size={24} className={cn(text)}></Bot>
               <div
-                className="flex flex-row badge badge-sm badge-info ml-2">{defaultModel.model || "no default set"}</div>
+                className="flex flex-row badge badge-sm badge-info ml-2">{defaultModel?.model || "no default set"}</div>
             </div>
 
             <div className="flex flex-row gap-1 items-center">
@@ -112,6 +113,7 @@ export default function Settings() {
                       onChange={(e) => {
                         setSelectedModel(e.target.value)
                         setKeyId(key.id)
+                        setProvider(key.modelProvider || null)
                       }}
                       className="w-full"
                       defaultValue="placeholder">
@@ -124,9 +126,16 @@ export default function Settings() {
 
                   <div className="tooltip tooltip-bottom" data-tip="Set as default">
                     <button className={cn(flowButtonStyle, "btn-sm")}
-                            disabled={key_id !== key.id || selectedModel === defaultModel.model}>
+                            disabled={key_id !== key.id || selectedModel === defaultModel?.model}>
                       <Check size={14}
-                             onClick={() => setDefaultApiKey(selectedModel || "", key.id, key.modelProvider || "")}/>
+                             onClick={() => {
+                               setDefaultModel({
+                                 model: selectedModel,
+                                 key_id: key_id,
+                                 model_provider: provider
+                               }, 'default')
+                             }
+                             }/>
                     </button>
                   </div>
 

@@ -25,16 +25,6 @@ const selector = (state: AppState) => ({
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   scrollToZoom: state.scrollToZoom,
-  exitCanvas: state.exitCanvas,
-  setLocked: state.setLocked,
-  setScrollToZoom: state.setScrollToZoom,
-  nodeCount: state.nodes.length,
-  edgeCount: state.edges.length,
-  addNode: state.addNode,
-  setNodes: state.setNodes,
-  defaultModel: state.defaultModel,
-  settingsOpen: state.settingsOpen,
-  currentCanvasId: state.currentCanvasId
 });
 
 

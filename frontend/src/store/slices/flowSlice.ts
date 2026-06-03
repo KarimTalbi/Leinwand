@@ -18,7 +18,8 @@ export type FlowSlice = {
   edges: AppState['edges'];
   locked: boolean;
   scrollToZoom: boolean;
-  settingsOpen: boolean;
+  aiSettingsOpen: boolean;
+  userSettingsOpen: boolean;
   projectsOpen: boolean;
   loginOpen: boolean;
 
@@ -40,7 +41,8 @@ export type FlowSlice = {
   setNodes: (nodes: AppState['nodes']) => void;
   setEdges: (edges: AppState['edges']) => void;
   setLocked: () => void;
-  setSettingsOpen: (status: boolean) => void;
+  setAiSettingsOpen: (status: boolean) => void;
+  setUserSettingsOpen: (status: boolean) => void;
   setScrollToZoom: () => void;
   setProjectsOpen: (status: boolean) => void;
   setLoginOpen: (status: boolean) => void;
@@ -54,7 +56,8 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
   edges: [],
   locked: false,
   scrollToZoom: false,
-  settingsOpen: false,
+  aiSettingsOpen: false,
+  userSettingsOpen: false,
   projectsOpen: false,
   loginOpen: false,
 
@@ -214,26 +217,33 @@ export const createFlowSlice: StateCreator<AppState, [], [], FlowSlice> = (set, 
   setEdges: (edges) => set({edges}),
   setLocked: () => set({locked: !get().locked}),
 
-  setSettingsOpen: (status) => {
+  setAiSettingsOpen: (status) => {
     if (status) {
-      set({projectsOpen: false, loginOpen: false})
+      set({projectsOpen: false, loginOpen: false, userSettingsOpen: false})
     }
-    set({settingsOpen: status})
+    set({aiSettingsOpen: status})
   },
 
   setProjectsOpen: (status) => {
     if (status) {
-      set({settingsOpen: false, loginOpen: false})
+      set({aiSettingsOpen: false, loginOpen: false, userSettingsOpen: false})
     }
     set({projectsOpen: status})
   },
 
   setLoginOpen: (status) => {
     if (status) {
-      set({settingsOpen: false, projectsOpen: false})
+      set({aiSettingsOpen: false, projectsOpen: false, userSettingsOpen: false})
     }
     set({loginOpen: status})
   },
-  
+
+  setUserSettingsOpen: (status) => {
+    if (status) {
+      set({projectsOpen: false, loginOpen: false, aiSettingsOpen: false})
+    }
+    set({userSettingsOpen: status})
+  },
+
   setScrollToZoom: () => set({scrollToZoom: !get().scrollToZoom})
 });

@@ -1,14 +1,18 @@
 import {v4 as uuidv4} from 'uuid';
 import api from '@/api';
-import type {AppState} from '@/types';
+import type {AppState, LLMModel, UserRead} from '@/types';
 import type {StateCreator} from 'zustand';
 
 export type AuthSlice = {
   // State
   token: string | null;
-  user: { username: string; disabled: boolean } | null;
+  user: UserRead | null;
   authError: string | null;
-  defaultModel: Record<string, unknown>;
+  defaultModel: LLMModel | null;
+  defaultPromptModel: LLMModel | null;
+  defaultSummaryModel: LLMModel | null;
+  defaultMergeModel: LLMModel | null;
+
 
   // Actions
   login: (username: string, password: string) => Promise<void>;
@@ -24,7 +28,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   token: localStorage.getItem('token'),
   user: null,
   authError: null,
-  defaultModel: JSON.parse(localStorage.getItem('defaultModel') || '{}'),
+
+  defaultModel: JSON.parse(localStorage.getItem('default') || '{}'),
+  defaultPromptModel: JSON.parse(localStorage.getItem('promptNode') || '{}'),
+  defaultSummaryModel: JSON.parse(localStorage.getItem('summaryNode') || '{}'),
+  defaultMergeModel: JSON.parse(localStorage.getItem('mergeNode') || '{}'),
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -45,12 +53,19 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       localStorage.setItem('token', token);
       set({token});
 
-      const me = await api.get('/users/me');
-      const defaultModel = me.data.user_data.data.defaultModel || {};
-      localStorage.setItem('defaultModel', JSON.stringify(defaultModel));
+      const me = await api.get<UserRead>('/users/me');
+      const defaultModel = me.data.user_data?.default_models.default || {};
+      const promptModel = me.data.user_data?.default_models.promptNode || {};
+      const summaryModel = me.data.user_data?.default_models.summaryNode || {};
+      const mergeModel = me.data.user_data?.default_models.mergeNode || {};
+
+      localStorage.setItem('default', JSON.stringify(defaultModel));
+      localStorage.setItem('promptNode', JSON.stringify(promptModel));
+      localStorage.setItem('summaryNode', JSON.stringify(summaryModel));
+      localStorage.setItem('mergeNode', JSON.stringify(mergeModel));
 
       set({
-        user: {username: me.data.username, disabled: me.data.disabled},
+        user: me.data,
         loginOpen: false,
         defaultModel,
       });
@@ -62,14 +77,16 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   /** Clears the JWT and resets all user-specific state across slices. */
   logout: () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('defaultModel');
+    localStorage.removeItem('default');
+    localStorage.removeItem('promptNode');
+    localStorage.removeItem('summaryNode');
+    localStorage.removeItem('mergeNode');
 
     set({
       token: null,
       user: null,
       authError: null,
       defaultModel: {},
-      // Cross-slice resets — these keys live in other slices but are part of AppState
       canvases: [],
       currentCanvasId: null,
       currentCanvasName: null,
