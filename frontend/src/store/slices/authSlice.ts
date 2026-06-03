@@ -26,7 +26,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
   // ── State ──────────────────────────────────────────────────────────────────
 
   token: localStorage.getItem('token'),
-  user: null,
+  user: JSON.parse(localStorage.getItem('user') || '{}'),
   authError: null,
 
   defaultModel: JSON.parse(localStorage.getItem('default') || '{}'),
@@ -61,6 +61,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
 
       console.log(defaultModel, promptModel, summaryModel, mergeModel)
 
+      localStorage.setItem('user', JSON.stringify(me.data))
       localStorage.setItem('default', JSON.stringify(defaultModel));
       localStorage.setItem('promptNode', JSON.stringify(promptModel));
       localStorage.setItem('summaryNode', JSON.stringify(summaryModel));

@@ -119,6 +119,10 @@ export interface AppState {
   logout: () => void;
   register: (username: string, password: string) => Promise<void>;
   clearAuthError: () => void;
+  updateUsername: (newUsername: string) => void;
+  updatePassword: (current: string, next: string) => void;
+  deleteUser: () => void;
+
 
   // Canvas state
   canvases: CanvasRead[];

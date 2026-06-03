@@ -8,6 +8,7 @@ import {cn} from "@/lib/utils.ts";
 import AiSettings from "@/components/pages/AiSettings.tsx";
 import Dashboard from "@/components/pages/Dashboard.tsx";
 import LoginPage from "@/components/pages/LoginPage.tsx";
+import UserSettings from "@/components/pages/UserSettings.tsx";
 
 export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
   const {
@@ -112,6 +113,10 @@ export const FlowNavBar = ({children}: { children?: React.ReactNode }) => {
 
 
           </>
+        )}
+
+        {userSettingsOpen && (
+          <UserSettings></UserSettings>
         )}
 
       </div>
