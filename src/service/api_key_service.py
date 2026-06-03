@@ -120,11 +120,12 @@ async def get_llm_model_config(session, node: NodeRead, user_id: str) -> LLMMode
     """
     model_config: dict[str, Any] | None = node.data.get("model")
 
+
     if model_config is None:
         raise InvalidApiKeyException
 
     user_model: str | None = model_config.get("model")
-    user_provider: str | None = model_config.get("modelProvider")
+    user_provider: str | None = model_config.get("model_provider")
     user_key_id: str | None = model_config.get("key_id")
 
     if not (user_model and user_provider and user_key_id):
