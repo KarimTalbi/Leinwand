@@ -172,6 +172,15 @@ class UserData(BaseModel):
         extra="ignore",
     )
 
+class UserUpdateName(BaseModel):
+    """Schema for updating a user's name."""
+    name: str
+
+class UserUpdatePassword(BaseModel):
+    """Schema for updating a user's password."""
+    old_password: str
+    new_password: str
+
 
 # --- LLM ---
 

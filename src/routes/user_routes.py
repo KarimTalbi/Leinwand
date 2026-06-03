@@ -10,14 +10,32 @@ It provides endpoints for:
 The routes handle authentication, database session management, and data
 validation using dependencies and Pydantic models.
 """
+
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from data import Token, UserAuth, UserCreate, UserRead, get_async_session, UserData
-from service.user_service import create_user, get_access_token, get_current_active_user, update_user_data
+from data import (
+    Token,
+    UserAuth,
+    UserCreate,
+    UserRead,
+    get_async_session,
+    UserData,
+    UserUpdatePassword,
+    UserUpdateName,
+)
+from service.user_service import (
+    create_user,
+    get_access_token,
+    get_current_active_user,
+    update_user_data,
+    update_username,
+    update_password,
+    delete_user,
+)
 
 
 user_router = APIRouter(prefix="/users", tags=["users"])
@@ -74,6 +92,24 @@ async def create_users(user: UserCreate, session: AsyncSession = Depends(get_asy
     return await create_user(session, user)
 
 
+@user_router.put("/update_password")
+async def update_password_field(
+    user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: UserUpdatePassword,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    await update_password(session, user.id, data.new_password, data.old_password)
+
+
+@user_router.put("/update_username")
+async def update_username_field(
+    user: Annotated[UserAuth, Depends(get_current_active_user)],
+    data: UserUpdateName,
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    await update_username(session, user.id, data.name)
+
+
 @user_router.put("/update")
 async def update_user_data_field(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
@@ -89,3 +125,11 @@ async def update_user_data_field(
         session: The database session.
     """
     await update_user_data(session, data, current_user.id)
+
+
+@user_router.delete("/delete")
+async def delete_current_user(
+    current_user: Annotated[UserAuth, Depends(get_current_active_user)],
+    session: AsyncSession = Depends(get_async_session),
+) -> Any:
+    await delete_user(session, current_user.id)

@@ -23,6 +23,8 @@ from .schemas import (
     UserData,
     UserInDb,
     UserRead,
+UserUpdateName,
+UserUpdatePassword
 )
 
 __all__ = [
@@ -55,4 +57,6 @@ __all__ = [
     "MergeRequest",
     "SyncDataRequest",
     "SyncDataResponse",
+    "UserUpdateName",
+    "UserUpdatePassword"
 ]
