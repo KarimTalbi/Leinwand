@@ -17,7 +17,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import Token, UserAuth, UserCreate, UserRead, get_async_session, UserData
-from service.user_service import create_user, get_access_token, get_current_active_user, update_user
+from service.user_service import create_user, get_access_token, get_current_active_user, update_user_data
 
 
 user_router = APIRouter(prefix="/users", tags=["users"])
@@ -75,7 +75,7 @@ async def create_users(user: UserCreate, session: AsyncSession = Depends(get_asy
 
 
 @user_router.put("/update")
-async def update_user_data(
+async def update_user_data_field(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: UserData,
     session: AsyncSession = Depends(get_async_session),
@@ -88,4 +88,4 @@ async def update_user_data(
         data: The new user data to be stored.
         session: The database session.
     """
-    await update_user(session, data, current_user.id)
+    await update_user_data(session, data, current_user.id)

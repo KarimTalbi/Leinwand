@@ -36,7 +36,7 @@ dotenv.load_dotenv()
 password_hash: PasswordHash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
-DUMMY_HASH: str = os.getenv("AUTH_DUMMY_HASH", "")
+DUMMY_HASH: str = password_hash.hash(os.getenv("AUTH_DUMMY_HASH", ""))
 SECRET_KEY: str = os.getenv("AUTH_SECRET_KEY", "")
 ALGORITHM: str = os.getenv("AUTH_ALGORITHM", "")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("AUTH_ACCESS_TOKEN_EXPIRE_MINUTES", 0))
@@ -87,7 +87,40 @@ async def get_user(session: AsyncSession, username: str) -> User | None:
     return result.scalar_one_or_none()
 
 
-async def update_user(session: AsyncSession, data: UserData, user_id: str) -> None:
+async def update_username(session: AsyncSession, user_id: str, new_username: str) -> None:
+    user: User | None = await session.get(User, user_id)
+
+    if user is None:
+        raise UserNotFoundException
+
+    user.username = new_username
+    await session.flush()
+
+
+async def update_password(session: AsyncSession, user_id: str, new_password: str, old_password: str) -> None:
+    user: User | None = await session.get(User, user_id)
+
+    if user is None:
+        verify_password(old_password, DUMMY_HASH)
+        raise UserNotFoundException
+
+    if not verify_password(old_password, user.hashed_password):
+        raise InvalidUserOrPasswordException
+
+    user.hashed_password = get_password_hash(new_password)
+
+
+async def delete_user(session: AsyncSession, user_id: str) -> None:
+    user: User | None = await session.get(User, user_id)
+
+    if user is None:
+        raise UserNotFoundException
+
+    await session.delete(user)
+    await session.flush()
+
+
+async def update_user_data(session: AsyncSession, data: UserData, user_id: str) -> None:
     """
     Updates the 'user_data' field for a specific user.
 

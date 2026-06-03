@@ -94,8 +94,6 @@ async def delete_canvas(
         canvas_id: The unique identifier of the canvas to delete.
         session: The database session.
     """
-    await ns.delete_all_edges(session, current_user.id, canvas_id)
-    await ns.delete_all_nodes(session, current_user.id, canvas_id)
     await cs.delete_canvas(session, canvas_id, current_user.id)
 
 

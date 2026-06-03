@@ -41,6 +41,26 @@ class User(Base):
     user_data: Mapped[dict[str, Any] | None] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
+class Canvas(Base):
+    """
+    Represents a workspace or canvas containing nodes and edges.
+
+    Attributes:
+        id (str): Unique identifier for the canvas.
+        name (str): Name or title of the canvas.
+        user_id (str): Foreign key referencing the user who owns this canvas.
+        updated_at (int): Timestamp of the last update.
+        data (dict): Additional canvas-specific data or state stored as JSON.
+    """
+    __tablename__ = "canvas"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    updated_at: Mapped[int] = mapped_column(BigInteger)
+    data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
+
+
 class Node(Base):
     """
     Represents a node within a canvas.
@@ -56,8 +76,8 @@ class Node(Base):
     __tablename__ = "nodes"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id"), index=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     type: Mapped[str] = mapped_column(String, index=True)
     position: Mapped[dict[str, float | int]] = mapped_column(MutableDict.as_mutable(JSONB))
     data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
@@ -79,32 +99,15 @@ class Edge(Base):
     __tablename__ = "edges"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id"), index=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
-    source: Mapped[str] = mapped_column(ForeignKey("nodes.id"), index=True)
-    target: Mapped[str] = mapped_column(ForeignKey("nodes.id"), index=True)
+    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvas.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    source: Mapped[str] = mapped_column(ForeignKey("nodes.id", ondelete="CASCADE"), index=True)
+    target: Mapped[str] = mapped_column(ForeignKey("nodes.id", ondelete="CASCADE"), index=True)
     source_handle: Mapped[str | None] = mapped_column(String)
     target_handle: Mapped[str | None] = mapped_column(String)
 
 
-class Canvas(Base):
-    """
-    Represents a workspace or canvas containing nodes and edges.
 
-    Attributes:
-        id (str): Unique identifier for the canvas.
-        name (str): Name or title of the canvas.
-        user_id (str): Foreign key referencing the user who owns this canvas.
-        updated_at (int): Timestamp of the last update.
-        data (dict): Additional canvas-specific data or state stored as JSON.
-    """
-    __tablename__ = "canvas"
-
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
-    updated_at: Mapped[int] = mapped_column(BigInteger)
-    data: Mapped[dict[str, Any]] = mapped_column(MutableDict.as_mutable(JSONB))
 
 
 class ApiKey(Base):
@@ -121,7 +124,7 @@ class ApiKey(Base):
     __tablename__ = "api_key"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     key: Mapped[str] = mapped_column(String)
     models: Mapped[list[str] | None] = mapped_column(ARRAY(Text), default=list)
     model_provider: Mapped[str | None] = mapped_column(String)
