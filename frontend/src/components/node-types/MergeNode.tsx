@@ -172,7 +172,7 @@ const MergeNode = ({id, data}: NodeProps<MergeNodeType>) => {
 
       <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
 
-        {data.model.model && (
+        {data.model?.model && (
           <div className="flex flex-row items-center justify-start w-full">
             <div className="badge badge-soft badge-secondary">
               <Bot size={14}/> {data.model.model}

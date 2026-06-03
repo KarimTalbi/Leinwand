@@ -92,7 +92,7 @@ const SummaryNode = ({id, data}: NodeProps<SummaryNodeType>) => {
 
       <div className="flex flex-row items-center justify-between shrink-0 pl-2 py-1 w-full">
 
-        {data.model.model && nodeState === 'hasResponse' && (
+        {data.model?.model && nodeState === 'hasResponse' && (
           <div className="flex flex-row justify-start items-center w-full">
             <div className="badge badge-soft badge-secondary">
               <Bot size={14}/> {data.model.model}
