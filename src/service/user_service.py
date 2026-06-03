@@ -139,7 +139,7 @@ async def update_user_data(session: AsyncSession, data: UserData, user_id: str) 
 
     user_data: dict = user.user_data or {}
 
-    for key, value in data.model_dump().items():
+    for key, value in data.data.items():
         user_data[key] = value
 
     user.user_data = user_data
