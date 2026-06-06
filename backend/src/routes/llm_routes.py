@@ -9,6 +9,7 @@ It provides endpoints for:
 
 The routes leverage LangChain for model initialization and Langfuse for tracing.
 """
+import os
 from collections.abc import AsyncGenerator
 from typing import Annotated, Any
 
@@ -42,7 +43,10 @@ from utils import extract_content
 
 load_dotenv()
 
-langfuse_handler: LangchainCallbackHandler = CallbackHandler()
+langfuse_handler = None
+
+if os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"):
+    langfuse_handler = CallbackHandler()
 
 llm_router = APIRouter(prefix="/llm", tags=["llm"])
 
@@ -78,12 +82,14 @@ async def merge_streams(
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
     model_structured = model.with_structured_output(LLMMergeResponse)
 
+    callbacks = [langfuse_handler] if langfuse_handler else []
+
     response: LLMMergeResponse = await model_structured.ainvoke(
         [
             SystemMessage(f"{pr.MERGE_SYSTEM}\n\n{ancestors}"),
             HumanMessage(pr.MERGE_USER),
         ],
-        config={"callbacks": [langfuse_handler]},
+        config={"callbacks": callbacks},
     )
 
     if response.has_issues:
@@ -118,12 +124,14 @@ async def resolve_merge(
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
     model_structured = model.with_structured_output(LlmResponse)
 
+    callbacks = [langfuse_handler] if langfuse_handler else []
+
     response: LlmResponse = await model_structured.ainvoke(
         [
             SystemMessage(f"{pr.MERGE_RESOLVE_SYSTEM}\n\n{ancestors}"),
             HumanMessage(data.data.get("solution", "Use whatever makes more sense")),
         ],
-        config={"callbacks": [langfuse_handler]},
+        config={"callbacks": callbacks},
     )
 
     context: list[dict[str, Any]] = ancestors.copy()
@@ -165,13 +173,15 @@ async def get_streaming_chat_response(
 
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
+    callbacks = [langfuse_handler] if langfuse_handler else []
+
     async def token_generator() -> AsyncGenerator[str]:
         async for chunk in model.astream(
             [
                 SystemMessage(f"{pr.CHAT_SYSTEM}\n\n{ancestors}"),
                 HumanMessage(data.data.get("prompt")),
             ],
-            config={"callbacks": [langfuse_handler]},
+            config={"callbacks": callbacks},
         ):
             content: str = extract_content(chunk)
             if content:
@@ -208,10 +218,12 @@ async def get_summary_response(
 
     model = init_chat_model(**config.model_dump(exclude_none=True, exclude_unset=True))
 
+    callbacks = [langfuse_handler] if langfuse_handler else []
+
     async def token_generator() -> AsyncGenerator[str]:
         async for chunk in model.astream(
             [SystemMessage(f"{pr.SUMMARY_SYSTEM}\n\n{ancestors}"), HumanMessage(pr.SUMMARY_USER)],
-            config={"callbacks": [langfuse_handler]},
+            config={"callbacks": callbacks},
         ):
             content: str = extract_content(chunk)
             if content:

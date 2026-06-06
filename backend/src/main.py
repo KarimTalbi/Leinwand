@@ -43,10 +43,13 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
         _: The FastAPI application instance.
     """
     async with engine.begin() as conn:
+
         if DROP_AND_CREATE_DB:
-            logger.info("Dropping and recreating database")
+            logger.info("Dropping database")
             await conn.run_sync(Base.metadata.drop_all)
-            await conn.run_sync(Base.metadata.create_all)
+
+        await conn.run_sync(Base.metadata.create_all)
+
     yield
 
     await engine.dispose()

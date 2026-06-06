@@ -17,7 +17,7 @@ import dotenv
 import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from jwt import InvalidTokenError
+from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
