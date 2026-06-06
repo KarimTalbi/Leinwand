@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@xyflow/react/dist/style.css";
+@import "@xyflow/react/dist/base.css";
+
+@plugin "daisyui";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+html,
+body {
+    margin: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+#app {
+    width: 100vw;
+    height: 100vh;
+}
+
+.prose pre:has(code.hljs) {
+    background: transparent;
+    padding: 0;
+}
+
+.prose pre code.hljs {
+    border-radius: 6px;
+}
