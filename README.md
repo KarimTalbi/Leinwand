@@ -42,6 +42,7 @@ for inconsistencies and guides you through resolving them before they pollute th
 ## Tech Stack
 
 **Frontend:** React, React Flow, Zustand, DaisyUI, Tailwind, Vite
+
 **Backend:** FastAPI, SQLAlchemy, LangChain, PostgreSQL, LangFuse (optional)
 
 ## Getting Started
