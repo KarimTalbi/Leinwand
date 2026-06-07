@@ -41,7 +41,7 @@ from service.user_service import (
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
-@user_router.post("/token", response_model=Token)
+@user_router.post("/token/", response_model=Token)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: AsyncSession = Depends(get_async_session),
@@ -61,7 +61,7 @@ async def login_for_access_token(
     return await get_access_token(session, form_data.username, form_data.password)
 
 
-@user_router.get("/me", response_model=UserRead)
+@user_router.get("/me/", response_model=UserRead)
 async def read_users_me(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
 ) -> Any:
@@ -77,7 +77,7 @@ async def read_users_me(
     return current_user
 
 
-@user_router.post("/create", response_model=UserRead)
+@user_router.post("/create/", response_model=UserRead)
 async def create_users(user: UserCreate, session: AsyncSession = Depends(get_async_session)) -> Any:
     """
     Creates a new user account.
@@ -92,7 +92,7 @@ async def create_users(user: UserCreate, session: AsyncSession = Depends(get_asy
     return await create_user(session, user)
 
 
-@user_router.put("/update_password")
+@user_router.put("/update_password/")
 async def update_password_field(
     user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: UserUpdatePassword,
@@ -101,7 +101,7 @@ async def update_password_field(
     await update_password(session, user.id, data.new_password, data.old_password)
 
 
-@user_router.put("/update_username")
+@user_router.put("/update_username/")
 async def update_username_field(
     user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: UserUpdateName,
@@ -110,7 +110,7 @@ async def update_username_field(
     await update_username(session, user.id, data.name)
 
 
-@user_router.put("/update")
+@user_router.put("/update/")
 async def update_user_data_field(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     data: UserData,
@@ -127,7 +127,7 @@ async def update_user_data_field(
     await update_user_data(session, data, current_user.id)
 
 
-@user_router.delete("/delete")
+@user_router.delete("/delete/")
 async def delete_current_user(
     current_user: Annotated[UserAuth, Depends(get_current_active_user)],
     session: AsyncSession = Depends(get_async_session),

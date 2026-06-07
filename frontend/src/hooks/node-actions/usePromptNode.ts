@@ -19,8 +19,6 @@ export function usePromptNode(nodeId: string) {
   const run = async () => {
     if (!node) return;
 
-    console.log(model)
-
 
     setIsStreaming(true);
     await syncCanvas()

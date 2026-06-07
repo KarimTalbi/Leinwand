@@ -37,20 +37,20 @@ export const NodeHeader = ({title, color, id, icon, children}: HeaderProps) => {
       <div className="flex items-center gap-1.5">
 
         <div className="tooltip" data-tip="Move Left">
-          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
-            <ChevronLeft size={16} color={color} onClick={moveLeft}/>
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")} onClick={moveLeft}>
+            <ChevronLeft size={16} color={color} />
           </button>
         </div>
 
         <div className="tooltip" data-tip="Move Right">
-          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
-            <ChevronRight size={16} color={color} onClick={moveRight}/>
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")} onClick={moveRight}>
+            <ChevronRight size={16} color={color} />
           </button>
         </div>
 
         <div className="tooltip" data-tip="Delete">
-          <button className={cn(nodeHeaderButtonStyle, "btn-sm")}>
-            <X size={16} color={color} onClick={deleteNodeAction}/>
+          <button className={cn(nodeHeaderButtonStyle, "btn-sm")} onClick={deleteNodeAction}>
+            <X size={16} color={color} />
           </button>
         </div>
 

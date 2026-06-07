@@ -49,7 +49,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     set({nodes: [], edges: [], currentCanvasId: canvasId, currentCanvasName: canvasName, projectsOpen: false});
 
     try {
-      const res = await api.get(`/node/list/${canvasId}`);
+      const res = await api.get(`/node/list/${canvasId}/`);
 
       set({
         nodes: (res.data.nodes ?? []).map((n: {
@@ -127,7 +127,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     });
 
     try {
-      await api.put('/canvas/update', {canvas_id: canvasId, canvas_name: canvasName});
+      await api.put('/canvas/update/', {canvas_id: canvasId, canvas_name: canvasName});
     } catch (err) {
       console.error('Error updating canvas:', err);
     }
@@ -214,7 +214,7 @@ export const createCanvasSlice: StateCreator<AppState, [], [], CanvasSlice> = (s
     }
 
     try {
-      await api.put('/users/update', {
+      await api.put('/users/update/', {
         data: {
           default_models: {
             default: get().defaultModel,

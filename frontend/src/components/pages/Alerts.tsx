@@ -17,15 +17,14 @@ export const Alerts = () => {
     }))
   )
   useEffect(() => {
-    console.log('hello')
     if (!token) {
       setLoginOpen(true);
-    } else if (!defaultModel.model) {
+    } else if (!defaultModel?.model) {
       setAiSettingsOpen(true)
     } else if (!currentCanvasId) {
       setProjectsOpen(true)
     }
-  }, [token, defaultModel.model, currentCanvasId]);
+  }, [token, defaultModel?.model, currentCanvasId]);
 
   if (!token) {
 
@@ -39,7 +38,7 @@ export const Alerts = () => {
     )
   }
 
-  if (!defaultModel.model) {
+  if (!defaultModel?.model) {
 
     return (
       <Panel position="top-left">

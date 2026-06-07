@@ -49,7 +49,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       params.append('username', username);
       params.append('password', password);
 
-      const res = await api.post('/users/token', params, {
+      const res = await api.post('/users/token/', params, {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       });
 
@@ -57,13 +57,11 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
       localStorage.setItem('token', token);
       set({token});
 
-      const me = await api.get<UserRead>('/users/me');
+      const me = await api.get<UserRead>('/users/me/');
       const defaultModel = me.data.user_data?.default_models.default || {};
       const promptModel = me.data.user_data?.default_models.promptNode || {};
       const summaryModel = me.data.user_data?.default_models.summaryNode || {};
       const mergeModel = me.data.user_data?.default_models.mergeNode || {};
-
-      console.log(defaultModel, promptModel, summaryModel, mergeModel)
 
       localStorage.setItem('user', JSON.stringify(me.data))
       localStorage.setItem('default', JSON.stringify(defaultModel));
@@ -114,7 +112,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     const newUserId = String(uuidv4());
 
     try {
-      await api.post('/users/create', {
+      await api.post('/users/create/', {
         id: newUserId,
         username,
         password,
@@ -149,7 +147,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({authError: null});
 
     try {
-      await api.put('/users/update_password', {
+      await api.put('/users/update_password/', {
         old_password: current,
         new_password: next
       })
@@ -168,7 +166,7 @@ export const createAuthSlice: StateCreator<AppState, [], [], AuthSlice> = (set, 
     set({authError: null});
 
     try {
-      await api.delete('/users/delete')
+      await api.delete('/users/delete/')
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response?.status;
       set({authError: status === 409 ? 'Username already taken.' : 'Registration failed.'});
