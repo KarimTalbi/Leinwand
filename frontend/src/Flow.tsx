@@ -82,6 +82,7 @@ function Flow() {
           zoomOnScroll={scrollToZoom}
           panOnScroll={!scrollToZoom}
           colorMode={colorMode}
+          fitView
         >
 
           <Alerts/>
