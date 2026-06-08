@@ -97,7 +97,7 @@ async def delete_canvas(
     await cs.delete_canvas(session, canvas_id, current_user.id)
 
 
-@canvas_router.put("/update")
+@canvas_router.put("/update/")
 async def update_canvas(
     _: Annotated[UserAuth, Depends(get_current_active_user)],
     data: CanvasUpdateRequest,
